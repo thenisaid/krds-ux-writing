@@ -2609,16 +2609,29 @@ function closeSearch() {
 }
 
 // ===== PERSONA TAB SWITCHING =====
-function switchPersonaTab(name, btn) {
-  document.querySelectorAll('.persona-tab-btn').forEach(b => {
+function switchPersonaTab(name) {
+  // 모든 탭 버튼 비활성화
+  document.querySelectorAll('.persona-tab').forEach(b => {
     b.classList.remove('active');
     b.setAttribute('aria-selected', 'false');
   });
-  document.querySelectorAll('.persona-tab-content').forEach(c => c.classList.remove('active'));
-  btn.classList.add('active');
-  btn.setAttribute('aria-selected', 'true');
-  const target = document.getElementById('persona-' + name);
-  if (target) target.classList.add('active');
+  // 모든 패널 숨기기
+  document.querySelectorAll('.persona-panel').forEach(p => {
+    p.classList.remove('active');
+    p.hidden = true;
+  });
+  // 선택된 탭 활성화
+  const activeBtn = document.getElementById('tab-btn-' + name);
+  if (activeBtn) {
+    activeBtn.classList.add('active');
+    activeBtn.setAttribute('aria-selected', 'true');
+  }
+  // 선택된 패널 표시
+  const activePanel = document.getElementById('tab-' + name);
+  if (activePanel) {
+    activePanel.classList.add('active');
+    activePanel.hidden = false;
+  }
 }
 
 // ===== SCROLL NAVIGATION =====
