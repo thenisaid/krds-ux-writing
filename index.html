@@ -3,423 +3,751 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KRDS UX Writing Guidelines — 디지털 정부서비스 UI·UX 가이드라인</title>
-<meta name="description" content="디지털 정부서비스 UI·UX 가이드라인(2025.08) 기반 UX 라이팅 실무 가이드. 버튼, 에러 메시지, 온보딩 등 실무 문구 예시 제공.">
-<meta name="keywords" content="UX Writing, KRDS, 디지털 정부서비스, UI가이드라인, UX가이드라인, 마이크로카피">
-<meta property="og:title" content="KRDS UX Writing Guidelines">
-<meta property="og:description" content="디지털 정부서비스 UI·UX 가이드라인 기반 UX 라이팅 실무 가이드">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://thenisaid.github.io/krds-ux-writing/">
-<meta property="og:locale" content="ko_KR">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="KRDS UX Writing Guidelines">
-<link rel="canonical" href="https://thenisaid.github.io/krds-ux-writing/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="description" content="KRDS 기반 UX Writing 가이드라인 — 정부 디지털 서비스의 언어 기준">
+<title>KRDS UX Writing 가이드라인</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ============================================================
-   KRDS UX Writing Portal — Complete Stylesheet
-   ============================================================ */
-
-/* 1. :root 토큰 + 다크모드 + 리셋 */
+/* ===== CSS VARIABLES ===== */
 :root {
-  --parchment: #F6F0E6;
-  --parchment-dark: #EDE5D4;
-  --navy: #0C1D38;
-  --navy-mid: #1A3359;
-  --navy-light: #E8EEF6;
+  /* 배경 */
+  --white: #FFFFFF;
+  --bg-1: #F4F5F6;
+  --bg-2: #EEF2F7;
+  --bg-blue-light: #ECF2FE;
+
+  /* 텍스트 */
+  --text-primary: #1E2124;
+  --text-secondary: #464C53;
+  --text-muted: #8A949E;
+  --text-white: #FFFFFF;
+
+  /* 경계선 */
+  --border: #D4D8DD;
+  --border-light: #EAEDF0;
+  --border-focus: #256EF4;
+  --border-header: #CDD1D5;
+
+  /* Primary (krds blue) */
+  --primary: #256EF4;
+  --primary-hover: #1a5cd4;
+  --primary-dark: #0B50D0;
+  --primary-darker: #052B57;
+  --primary-light: #EEF4FF;
+
+  /* 우리만의 액센트 */
   --gold: #B8922A;
   --gold-light: #F5E9CC;
-  --ink: #18130E;
-  --ink-mid: #4A4038;
-  --ink-muted: #8C7E6E;
-  --green: #2A6B4A;
-  --green-light: #E8F3ED;
-  --red: #8B2A2A;
-  --red-light: #F5E8E8;
-  --border: rgba(13,31,60,0.09);
-  --border-gold: rgba(184,146,42,0.25);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --shadow-sm: 0 1px 3px rgba(13,20,36,0.06), 0 1px 2px rgba(13,20,36,0.04);
-  --shadow-md: 0 4px 16px -2px rgba(13,20,36,0.08), 0 2px 6px -2px rgba(13,20,36,0.05);
-  --shadow-lg: 0 12px 40px -8px rgba(13,20,36,0.12), 0 4px 12px -4px rgba(13,20,36,0.06);
+  --gold-mid: rgba(184,146,42,0.25);
+  --navy: #0C1D38;
+  --navy-mid: #1A3359;
+
+  /* 상태 */
+  --success: #00B37D;
+  --success-light: #E8F3ED;
+  --error: #E5484D;
+  --error-light: #FFE8E8;
+  --warning: #F59E0B;
+  --warning-light: #FFFBEB;
+
+  /* 타이포그래피 */
+  --font-main: 'Pretendard', 'Noto Sans KR', sans-serif;
+  --font-serif: 'Noto Serif KR', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* 폰트 스케일 */
+  --text-hero: clamp(40px, 5vw, 52px);
+  --text-xl: clamp(32px, 4vw, 44px);
+  --text-lg: clamp(26px, 3.5vw, 40px);
+  --text-md: clamp(20px, 2.5vw, 32px);
+  --text-card: 20px;
+  --text-base: 17px;
+  --text-sm: 15px;
+  --text-xs: 14px;
+
+  /* 간격 & 레이아웃 */
+  --container: 1200px;
+  --container-pad: 24px;
+  --gap: 24px;
+  --gap-lg: 48px;
+  --gap-xl: 80px;
+
+  /* 둥글기 */
+  --radius-card: 16px;
+  --radius-btn: 8px;
+  --radius-tag: 100px;
+  --radius-input: 8px;
+  --radius-badge: 4px;
+
+  /* 그림자 */
+  --shadow: 0 4px 20px rgba(0,0,0,0.08);
+  --shadow-hover: 0 8px 32px rgba(0,0,0,0.14);
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-focus: 0 0 0 0.4rem rgba(37,110,244,0.25);
   --shadow-gold: 0 8px 32px -4px rgba(184,146,42,0.25);
+
+  /* 트랜지션 */
+  --transition: 0.4s ease-in-out;
+  --transition-fast: 0.2s ease;
 }
 
+/* ===== DARK MODE ===== */
 [data-theme="dark"] {
-  --parchment: #0D1520;
-  --parchment-dark: #080F1A;
-  --navy-light: #1A2540;
-  --ink: #EDE8E0;
-  --ink-mid: #B8A898;
-  --ink-muted: #6B5E50;
-  --border: rgba(255,255,255,0.07);
-  --border-gold: rgba(184,146,42,0.20);
-  --green-light: #0F2A1C;
-  --red-light: #2A0F0F;
+  --white: #111827;
+  --bg-1: #1A2235;
+  --bg-2: #0D1520;
+  --bg-blue-light: #1A2540;
+
+  --text-primary: #F0F4F8;
+  --text-secondary: #B8C4D0;
+  --text-muted: #7A8A9A;
+
+  --border: #2A3550;
+  --border-light: #1E2D45;
+  --border-header: #2A3550;
+
+  --primary-light: #1A2B4A;
   --gold-light: #2A200A;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 16px -2px rgba(0,0,0,0.4);
-  --shadow-lg: 0 12px 40px -8px rgba(0,0,0,0.5);
+  --success-light: #0F2A1C;
+  --error-light: #2A0F0F;
+  --warning-light: #2A1E05;
+
+  --shadow: 0 4px 20px rgba(0,0,0,0.3);
+  --shadow-hover: 0 8px 32px rgba(0,0,0,0.45);
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* ===== RESET & BASE ===== */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* 2. body */
-body {
-  font-family: 'Noto Sans KR', sans-serif;
-  background: var(--parchment);
-  color: var(--ink);
-  min-height: 100dvh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+html {
+  scroll-behavior: smooth;
 }
 
-/* 3. .gnb */
+body {
+  font-family: var(--font-main);
+  background: var(--white);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: var(--text-base);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+  transition: background var(--transition), color var(--transition);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  box-shadow: var(--shadow-focus);
+}
+
+/* ===== LAYOUT UTILITIES ===== */
+.container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--container-pad);
+}
+
+.section {
+  padding: var(--gap-xl) 0;
+}
+
+.section-sm {
+  padding: 60px 0;
+}
+
+/* ===== TYPOGRAPHY UTILITIES ===== */
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+
+.section-header {
+  margin-bottom: 48px;
+}
+
+.section-title {
+  font-family: var(--font-main);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  line-height: 1.3;
+  margin-bottom: 16px;
+  word-break: keep-all;
+}
+
+.section-desc {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 600px;
+  word-break: keep-all;
+}
+
+/* ===== BUTTON SYSTEM ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: var(--radius-btn);
+  font-family: var(--font-main);
+  font-size: var(--text-base);
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--text-white);
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  box-shadow: var(--shadow);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: rgba(255,255,255,0.85);
+  border-color: rgba(255,255,255,0.3);
+}
+
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.6);
+}
+
+.btn-outline-white {
+  background: transparent;
+  color: var(--text-white);
+  border-color: rgba(255,255,255,0.4);
+}
+
+.btn-outline-white:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.8);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-ghost:hover {
+  background: var(--primary-light);
+}
+
+.btn-white {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  color: var(--primary);
+  padding: 14px 28px;
+  border-radius: var(--radius-btn);
+  font-size: 15px;
+  font-weight: 700;
+  transition: all var(--transition-fast);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-white:hover {
+  background: var(--bg-1);
+  transform: translateY(-2px);
+}
+
+/* ===== SCROLL PROGRESS ===== */
+.scroll-progress {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 999;
+  background: transparent;
+}
+
+.scroll-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary) 0%, #5A9BFF 100%);
+  transition: width 0.08s linear;
+}
+
+/* ===== GNB ===== */
 .gnb {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 72px;
+  height: 70px;
   z-index: 1000;
-  background: rgba(12,29,56,0.92);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border-bottom: 1px solid rgba(184,146,42,0.2);
+  background: var(--white);
+  border-bottom: 1px solid var(--border-header);
   display: flex;
   align-items: center;
-  padding: 0 48px;
-  gap: 40px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+  transition: box-shadow var(--transition), background var(--transition);
 }
 
-/* 4. .gnb-logo */
+.gnb.scrolled {
+  box-shadow: var(--shadow);
+}
+
+.gnb-inner {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 24px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
 .gnb-logo {
-  font-family: 'Noto Serif KR', serif;
-  font-size: 18px;
-  font-weight: 700;
-  color: white;
-  letter-spacing: -0.02em;
-  text-decoration: none;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-/* 5. .gnb-nav */
-.gnb-nav {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-}
-
-/* 6. .gnb-menu-item */
-.gnb-menu-item {
-  position: relative;
-}
-
-/* 7. .gnb-link */
-.gnb-link {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  color: rgba(255,255,255,0.7);
-  font-size: 14px;
-  cursor: pointer;
-  border: none;
-  background: none;
-  font-family: 'Noto Sans KR', sans-serif;
-  transition: color 0.2s, background 0.2s;
   text-decoration: none;
+  flex-shrink: 0;
+}
+
+.gnb-logo-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
   white-space: nowrap;
+  letter-spacing: -0.02em;
 }
 
-/* 8. .gnb-link:hover */
-.gnb-link:hover {
-  color: white;
-  background: rgba(255,255,255,0.08);
+.gnb-logo-sub {
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
-/* 9. .gnb-dropdown */
+.gnb-logo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.gnb-nav {
+  flex: 1;
+  padding: 0 16px;
+}
+
+.gnb-menu {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+}
+
+.gnb-item {
+  position: relative;
+}
+
+.gnb-link {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 14px;
+  border-radius: var(--radius-btn);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  transition: color var(--transition-fast), background var(--transition-fast);
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.gnb-link:hover,
+.gnb-item.active .gnb-link {
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+.gnb-arrow {
+  font-size: 10px;
+  transition: transform var(--transition-fast);
+  display: inline-block;
+}
+
+.gnb-item.open .gnb-arrow {
+  transform: rotate(180deg);
+}
+
 .gnb-dropdown {
   position: absolute;
-  top: calc(100% + 12px);
+  top: calc(100% + 8px);
   left: 0;
   min-width: 200px;
-  background: rgba(15,30,60,0.97);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border-radius: 12px;
-  border: 1px solid rgba(184,146,42,0.25);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-hover);
   padding: 8px;
+  z-index: 100;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transform: translateY(-8px);
-  transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out), visibility 0.2s;
+  transition: opacity var(--transition-fast), transform var(--transition-fast), visibility var(--transition-fast);
 }
 
-/* 10. .gnb-menu-item:hover .gnb-dropdown */
-.gnb-menu-item:hover .gnb-dropdown {
+.gnb-item.open .gnb-dropdown {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transform: none;
+  transform: translateY(0);
 }
 
-/* 11. .gnb-dropdown-item */
+.gnb-dropdown-list {
+  list-style: none;
+}
+
 .gnb-dropdown-item {
   display: block;
-  padding: 10px 14px;
-  border-radius: 8px;
-  color: rgba(255,255,255,0.75);
-  font-size: 13px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
   text-decoration: none;
-  transition: background 0.15s, color 0.15s;
+  transition: background var(--transition-fast), color var(--transition-fast);
   white-space: nowrap;
 }
 
-/* 12. .gnb-dropdown-item:hover */
 .gnb-dropdown-item:hover {
-  background: rgba(184,146,42,0.15);
-  color: var(--gold);
+  background: var(--primary-light);
+  color: var(--primary);
 }
 
-/* 13. .gnb-right */
-.gnb-right {
+.gnb-utils {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-shrink: 0;
 }
 
-/* 14. .gnb-search-btn */
-.gnb-search-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px;
-  padding: 8px 16px;
-  color: rgba(255,255,255,0.45);
-  font-size: 13px;
-  cursor: pointer;
-  font-family: 'Noto Sans KR', sans-serif;
-  transition: all 0.2s;
-}
-
-/* 15. .gnb-search-btn:hover */
-.gnb-search-btn:hover {
-  background: rgba(255,255,255,0.1);
-  border-color: rgba(184,146,42,0.4);
-  color: rgba(255,255,255,0.8);
-}
-
-/* 16. .theme-btn */
-.theme-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.6);
-  cursor: pointer;
-  font-size: 16px;
+.gnb-util-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
 }
 
-/* 17. .theme-btn:hover */
-.theme-btn:hover {
-  background: rgba(184,146,42,0.15);
-  border-color: rgba(184,146,42,0.4);
-  color: var(--gold);
-  transform: rotate(12deg);
+.gnb-util-btn:hover {
+  background: var(--bg-1);
+  border-color: var(--border);
+  color: var(--text-primary);
 }
 
-/* ============================================================
-   18. HERO
-   ============================================================ */
-.hero-wrap {
-  background: linear-gradient(160deg, #0C1D38 0%, #112240 60%, #0C1D38 100%);
-  margin-top: 72px;
+.gnb-util-btn.gnb-search-btn:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
-.hero {
-  min-height: 100vh;
-  padding: 120px 48px 80px;
-  background: linear-gradient(160deg, #0C1D38 0%, #112240 50%, #0C1D38 100%);
+/* ===== HERO SECTION ===== */
+.hero-section {
   position: relative;
+  min-height: 560px;
+  background: var(--navy);
   overflow: hidden;
-  display: grid;
-  grid-template-columns: 1fr 480px;
-  align-items: center;
-  gap: 60px;
-  max-width: 1400px;
-  margin: 0 auto;
+  margin-top: 70px;
 }
 
-.hero::before {
-  content: '';
+.hero-bg {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 80% 40%, rgba(184,146,42,0.12) 0%, transparent 70%);
-  pointer-events: none;
+  z-index: 0;
 }
 
-/* 19. .hero-eyebrow */
-.hero-eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2.5px;
-  color: var(--gold);
-  text-transform: uppercase;
-  margin-bottom: 24px;
-  display: flex;
+.hero-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.hero-bg-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(37,110,244,0.25) 0%, transparent 70%);
+  top: -100px;
+  right: -100px;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 55fr 45fr;
+  gap: var(--gap-lg);
   align-items: center;
-  gap: 12px;
+  min-height: 560px;
+  padding-top: 80px;
+  padding-bottom: 80px;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding-left: var(--container-pad);
+  padding-right: var(--container-pad);
 }
 
-.hero-eyebrow::before {
-  content: '';
-  width: 32px;
-  height: 1px;
-  background: var(--gold);
+.hero-content {
+  position: relative;
 }
 
-/* 20. .hero-title */
+.hero-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
 .hero-title {
-  font-family: 'Noto Serif KR', serif;
-  font-size: clamp(44px, 5.5vw, 76px);
+  font-family: var(--font-serif);
+  font-size: var(--text-hero);
   font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
-  color: white;
-  margin-bottom: 28px;
+  color: #FFFFFF;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  margin-bottom: 24px;
+  word-break: keep-all;
 }
 
 .hero-title em {
-  font-style: italic;
-  color: var(--gold);
+  font-style: normal;
+  color: #7DB3FF;
 }
 
-/* 21. .hero-desc */
 .hero-desc {
-  font-size: 17px;
-  color: rgba(246,240,230,0.7);
-  line-height: 1.8;
-  max-width: 500px;
-  margin-bottom: 48px;
-  font-weight: 300;
+  font-size: var(--text-base);
+  color: rgba(255,255,255,0.72);
+  line-height: 1.75;
+  margin-bottom: 36px;
+  word-break: keep-all;
 }
 
-/* 22. .hero-actions */
-.hero-actions {
+.hero-cta-group {
   display: flex;
+  align-items: center;
   gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+
+/* Hero Stats */
+.hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 28px;
   flex-wrap: wrap;
 }
 
-/* 23. .btn-primary */
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--gold);
-  color: var(--navy);
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hero-stat-num {
+  font-family: var(--font-serif);
+  font-size: 36px;
   font-weight: 700;
-  padding: 16px 32px;
-  border-radius: 10px;
-  font-size: 15px;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-  font-family: 'Noto Sans KR', sans-serif;
-  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s;
+  color: #7DB3FF;
+  line-height: 1;
+  margin-bottom: 6px;
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(184,146,42,0.4);
+.hero-stat-label {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
 }
 
-/* 24. .btn-secondary */
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: transparent;
-  color: var(--gold);
-  font-weight: 600;
-  padding: 15px 32px;
-  border-radius: 10px;
-  font-size: 15px;
-  border: 1.5px solid rgba(184,146,42,0.5);
-  cursor: pointer;
-  text-decoration: none;
-  font-family: 'Noto Sans KR', sans-serif;
-  transition: all 0.2s;
+.hero-stat-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(255,255,255,0.2);
 }
 
-.btn-secondary:hover {
-  background: rgba(184,146,42,0.1);
-  border-color: var(--gold);
-}
-
-/* 25. .hero-visual */
+/* Hero Visual - Floating Cards */
 .hero-visual {
   position: relative;
-  height: 480px;
+  height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* 26. .float-card */
 .float-card {
   position: absolute;
-  background: rgba(26,51,89,0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(184,146,42,0.3);
-  border-radius: 16px;
-  padding: 24px 28px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 22px 26px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  color: #FFFFFF;
+  min-width: 200px;
+  max-width: 280px;
 }
 
+.float-card-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(125,179,255,0.8);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.float-card-text {
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.65;
+}
+
+.float-card-do {
+  font-size: 14px;
+  color: #52E5A8;
+  margin-bottom: 6px;
+}
+
+.float-card-dont {
+  font-size: 14px;
+  color: rgba(255,255,255,0.45);
+  text-decoration: line-through;
+}
+
+.float-card-verdict {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.float-card-verdict.good {
+  background: rgba(0,179,125,0.2);
+  color: #00B37D;
+  border: 1px solid rgba(0,179,125,0.3);
+}
+
+.float-card-verdict.bad {
+  background: rgba(229,72,77,0.2);
+  color: #FF8A8D;
+  border: 1px solid rgba(229,72,77,0.3);
+}
+
+.float-card-1,
 .float-card:nth-child(1) {
   top: 20px;
-  right: 20px;
-  width: 240px;
-  animation: float1 6s ease-in-out infinite;
+  left: 10px;
+  animation: floatY1 6s ease-in-out infinite;
 }
 
+.float-card-2,
 .float-card:nth-child(2) {
-  top: 50%;
-  right: 60px;
-  transform: translateY(-50%);
-  width: 220px;
-  animation: float2 7s ease-in-out infinite 1s;
+  top: 120px;
+  right: 0px;
+  animation: floatY2 8s ease-in-out infinite;
 }
 
+.float-card-3,
 .float-card:nth-child(3) {
   bottom: 20px;
-  right: 30px;
-  width: 200px;
-  animation: float3 5s ease-in-out infinite 2s;
+  left: 40px;
+  animation: floatY3 10s ease-in-out infinite;
 }
 
+@keyframes floatY1 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-14px); }
+}
+
+@keyframes floatY2 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes floatY3 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-18px); }
+}
+
+/* Legacy float card keyframes */
 @keyframes float1 {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
+  50% { transform: translateY(-14px); }
 }
 
 @keyframes float2 {
@@ -432,516 +760,762 @@ body {
   50% { transform: translateY(-8px); }
 }
 
-.float-card-label {
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--gold);
-  font-weight: 700;
-  margin-bottom: 10px;
+/* ===== PERSONA SECTION ===== */
+.persona-section {
+  padding: 96px 0;
+  background: var(--white);
 }
 
-.float-card-text {
-  font-size: 14px;
-  color: rgba(246,240,230,0.9);
-  line-height: 1.6;
-}
-
-.float-card-tag {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  background: rgba(184,146,42,0.2);
-  color: var(--gold);
-  font-size: 11px;
-  font-weight: 600;
-}
-
-/* ============================================================
-   27. SECTION WRAPPER
-   ============================================================ */
-.section-wrap {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 48px;
-}
-
-/* ============================================================
-   28. TABS SECTION
-   ============================================================ */
-.tabs-section {
-  padding: 100px 0;
-  background: var(--parchment);
-}
-
-.tabs-header {
-  margin-bottom: 60px;
-}
-
-.tabs-eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2.5px;
-  color: var(--gold);
-  text-transform: uppercase;
-  margin-bottom: 16px;
+.persona-tabs {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  gap: 8px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 40px;
 }
 
-.tabs-eyebrow::before {
-  content: '';
-  width: 32px;
-  height: 1px;
-  background: var(--gold);
-}
-
-.tabs-title {
-  font-family: 'Noto Serif KR', serif;
-  font-size: clamp(32px, 4vw, 52px);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--navy);
-  margin-bottom: 16px;
-}
-
-[data-theme="dark"] .tabs-title {
-  color: var(--ink);
-}
-
-.tabs-desc {
-  font-size: 16px;
-  color: var(--ink-mid);
-  max-width: 500px;
-  line-height: 1.8;
-}
-
-/* 29. .tab-nav */
-.tab-nav {
+.persona-tab-nav {
   display: flex;
   gap: 4px;
-  margin-bottom: 48px;
-  background: rgba(13,29,56,0.06);
+  margin-bottom: 40px;
+  background: var(--bg-1);
   border-radius: 12px;
-  padding: 6px;
+  padding: 5px;
+  width: fit-content;
 }
 
-[data-theme="dark"] .tab-nav {
-  background: rgba(255,255,255,0.05);
-}
-
-.tab-btn {
-  padding: 12px 24px;
-  border-radius: 8px;
+.persona-tab,
+.persona-tab-btn {
+  padding: 14px 28px;
+  font-family: var(--font-main);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
   border: none;
-  background: none;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink-muted);
   cursor: pointer;
-  font-family: 'Noto Sans KR', sans-serif;
-  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: var(--transition);
   white-space: nowrap;
+  border-radius: 9px;
 }
 
-.tab-btn.active {
-  background: white;
-  color: var(--navy);
-  box-shadow: var(--shadow-sm);
+.persona-tab:hover,
+.persona-tab-btn:hover:not(.active) {
+  color: var(--primary);
 }
 
-[data-theme="dark"] .tab-btn.active {
-  background: rgba(26,51,89,0.8);
-  color: var(--ink);
+.persona-tab.active,
+.persona-tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  font-weight: 600;
+  background: var(--white);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
-.tab-btn:hover:not(.active) {
-  color: var(--navy);
-  background: rgba(255,255,255,0.5);
+[data-theme="dark"] .persona-tab-btn.active {
+  background: var(--bg-1);
 }
 
-[data-theme="dark"] .tab-btn:hover:not(.active) {
-  background: rgba(255,255,255,0.07);
-  color: var(--ink);
-}
-
-/* 30. .tab-content */
-.tab-content {
+.persona-panel,
+.persona-tab-content {
   display: none;
-  grid-template-columns: 2fr 3fr;
-  gap: 60px;
-  align-items: center;
 }
 
-.tab-content.active {
+.persona-panel.active,
+.persona-tab-content.active {
+  display: block;
+  animation: fadeInUp 0.3s ease;
+}
+
+.persona-panel-inner,
+.persona-tab-content.active {
   display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 48px;
+  align-items: start;
 }
 
-/* 31. .tab-explain */
-.tab-explain-title {
-  font-family: 'Noto Serif KR', serif;
-  font-size: 28px;
+.persona-panel-title,
+.persona-explain-title {
+  font-size: var(--text-card);
   font-weight: 700;
-  color: var(--navy);
-  margin-bottom: 20px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
   letter-spacing: -0.02em;
+  word-break: keep-all;
 }
 
-[data-theme="dark"] .tab-explain-title {
-  color: var(--ink);
+.persona-panel-desc p {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.7;
 }
 
-.tab-rule {
+.persona-rule {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
-.tab-rule-icon {
+.persona-rule-icon {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--green);
+  background: var(--primary);
   color: white;
   font-size: 11px;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin-top: 2px;
-  font-weight: 700;
+  margin-top: 1px;
 }
 
-.tab-rule-text {
-  font-size: 14px;
-  color: var(--ink-mid);
+.persona-rule-text {
+  font-size: 15px;
+  color: var(--text-secondary);
   line-height: 1.7;
 }
 
-/* 32. .tab-preview */
-.tab-preview {
-  background: rgba(255,255,255,0.8);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: var(--shadow-md);
+.persona-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  padding: 12px 20px;
+  border-radius: var(--radius-btn);
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all var(--transition-fast);
 }
 
-[data-theme="dark"] .tab-preview {
-  background: rgba(13,21,36,0.7);
+.persona-link-btn:hover {
+  background: var(--primary);
+  color: white;
 }
 
-/* 33. .preview-label etc */
-.preview-label {
-  font-size: 10px;
+.persona-panel-cards,
+.persona-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.persona-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--bg-1);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-card);
+  text-decoration: none;
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.persona-card:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.persona-card-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  display: block;
+  margin-bottom: 0;
+}
+
+.persona-card-title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.persona-card-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.persona-card-arrow {
+  font-size: 16px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.persona-card:hover .persona-card-arrow {
+  color: var(--primary);
+}
+
+/* ===== COMPOSITION SECTION (주요 구성) ===== */
+.composition-section {
+  padding: 96px 0;
+  background: var(--bg-1);
+}
+
+.guide-section {
+  padding: 96px 0;
+  background: var(--bg-1);
+}
+
+.composition-grid,
+.guide-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap);
+  margin-top: 48px;
+}
+
+.comp-card,
+.guide-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 28px 32px;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-card);
+  text-decoration: none;
+  color: var(--text-primary);
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.guide-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-fast);
+}
+
+.comp-card:hover,
+.guide-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--primary);
+}
+
+.guide-card:hover::after {
+  transform: scaleX(1);
+}
+
+.comp-card-icon,
+.guide-card-icon {
+  width: 48px;
+  height: 48px;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-blue-light);
+  border-radius: 12px;
+  flex-shrink: 0;
+  margin-bottom: 0;
+}
+
+.comp-card-title,
+.guide-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0;
+  letter-spacing: -0.02em;
+}
+
+.comp-card-desc,
+.guide-card-desc {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.65;
+  flex: 1;
+}
+
+.comp-card-link,
+.guide-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--primary);
+  transition: gap var(--transition-fast);
+}
+
+.comp-card:hover .comp-card-link,
+.guide-card:hover .guide-card-link {
+  gap: 10px;
+}
+
+/* Guide Card Badges */
+.guide-card-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--radius-tag);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.badge-foundation { background: var(--primary-light); color: var(--primary); }
+.badge-component { background: var(--success-light); color: var(--success); }
+.badge-context { background: var(--warning-light); color: var(--warning); }
+.badge-guideline { background: var(--bg-2); color: var(--text-secondary); }
+
+/* ===== GUIDELINE SECTIONS ===== */
+.guidelines-wrap {
+  background: var(--white);
+  padding: 80px 0;
+}
+
+.guideline-section {
+  padding: 80px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.guideline-section:last-child {
+  border-bottom: none;
+}
+
+.guideline-section:nth-child(even) {
+  background: var(--bg-1);
+}
+
+.guideline-header,
+.guideline-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 40px;
+  max-width: 800px;
+}
+
+.guideline-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: var(--radius-tag);
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: var(--ink-muted);
+  border: 1px solid rgba(37,110,244,0.2);
+  width: fit-content;
+}
+
+.guideline-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.guideline-title {
+  font-family: var(--font-main);
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.guideline-desc {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.8;
+  max-width: 620px;
+  margin-bottom: 32px;
+  word-break: keep-all;
+}
+
+.guideline-card {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-card);
+  padding: 28px 32px;
+  background: var(--white);
   margin-bottom: 16px;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--transition-fast);
 }
 
-.preview-good,
-.preview-bad {
-  padding: 14px 18px;
-  border-radius: 10px;
-  margin-bottom: 10px;
+.guideline-card:hover {
+  box-shadow: var(--shadow);
 }
 
-.preview-good {
-  background: var(--green-light);
-  border: 1px solid rgba(42,107,74,0.15);
-  border-left: 3px solid var(--green);
+.guideline-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.preview-bad {
-  background: var(--red-light);
-  border: 1px solid rgba(139,42,42,0.15);
-  border-left: 3px solid var(--red);
+/* Grid Helpers */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+/* Do/Don't Boxes */
+.do-dont {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 32px;
+  margin-bottom: 20px;
 }
 
-.preview-verdict {
-  font-size: 9px;
+.do-box {
+  padding: 20px 24px;
+  border-radius: var(--radius-card);
+  background: var(--success-light);
+  border: 1px solid rgba(0,179,125,0.15);
+  border-top: 3px solid var(--success);
+}
+
+.dont-box {
+  padding: 20px 24px;
+  border-radius: var(--radius-card);
+  background: var(--error-light);
+  border: 1px solid rgba(229,72,77,0.15);
+  border-top: 3px solid var(--error);
+}
+
+.do-box-label,
+.dont-box-label {
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.do-box-label { color: var(--success); }
+.dont-box-label { color: var(--error); }
+
+.verdict {
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: 2px;
   text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-.preview-verdict-good {
-  color: var(--green);
-}
-
-.preview-verdict-bad {
-  color: var(--red);
-}
-
-.preview-copy-text {
-  font-size: 13.5px;
-  color: var(--ink);
-  line-height: 1.65;
-}
-
-/* ============================================================
-   34. CARDS SECTION
-   ============================================================ */
-.cards-section {
-  padding: 100px 0;
-  background: var(--navy);
-}
-
-.cards-header {
-  margin-bottom: 60px;
-}
-
-.cards-eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2.5px;
-  color: var(--gold);
-  text-transform: uppercase;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
 }
 
-.cards-eyebrow::before {
+.verdict::before {
   content: '';
-  width: 32px;
-  height: 1px;
-  background: var(--gold);
+  width: 14px;
+  height: 1.5px;
+  background: currentColor;
 }
 
-.cards-title {
-  font-family: 'Noto Serif KR', serif;
-  font-size: clamp(32px, 4vw, 52px);
-  font-weight: 700;
-  letter-spacing: -0.02em;
+.verdict-do { color: var(--success); }
+.verdict-dont { color: var(--error); }
+
+.verdict-text {
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.75;
+}
+
+/* Rule List */
+.rule-list { list-style: none; }
+
+.rule-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.rule-item:last-child { border-bottom: none; }
+
+.rule-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--navy);
   color: white;
-  margin-bottom: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 
-.cards-desc {
-  font-size: 16px;
-  color: rgba(246,240,230,0.6);
-  max-width: 500px;
-  line-height: 1.8;
+[data-theme="dark"] .rule-num { background: var(--primary); }
+
+.rule-text {
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.75;
 }
 
-/* 35. .cards-grid */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+/* Copy Examples */
+.copy-example {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border: 1px solid var(--border-light);
+  border-left: 3px solid var(--primary);
+  border-radius: 0 var(--radius-btn) var(--radius-btn) 0;
+  background: var(--bg-1);
+  margin-bottom: 12px;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
 }
 
-.guide-card {
-  background: rgba(26,51,89,0.5);
-  border: 1px solid rgba(184,146,42,0.2);
-  border-radius: 16px;
-  padding: 36px;
+.copy-example:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.copy-text {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.65;
+  font-weight: 500;
+}
+
+.copy-btn {
+  padding: 6px 14px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  color: var(--primary);
+  border-radius: var(--radius-badge);
   cursor: pointer;
-  transition: all 0.3s var(--ease-spring);
-  position: relative;
-  overflow: hidden;
-  text-decoration: none;
-  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-main);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
 }
 
-.guide-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  background: radial-gradient(ellipse at 30% 30%, rgba(184,146,42,0.1), transparent 70%);
-  transition: opacity 0.3s;
+.copy-btn:hover {
+  background: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
 }
 
-.guide-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(184,146,42,0.5);
-  box-shadow: 0 24px 60px rgba(184,146,42,0.15), 0 8px 24px rgba(0,0,0,0.3);
+.copy-btn.copied {
+  background: var(--success);
+  color: white;
+  border-color: var(--success);
 }
 
-.guide-card:hover::before {
-  opacity: 1;
-}
-
-.card-icon {
-  font-size: 40px;
-  margin-bottom: 20px;
-  display: block;
-}
-
-.card-badge {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 10px;
+.example-label {
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
-  background: rgba(184,146,42,0.2);
-  color: var(--gold);
-  border: 1px solid rgba(184,146,42,0.3);
+  color: var(--text-muted);
+  margin: 20px 0 10px;
 }
 
-.card-title {
-  font-family: 'Noto Serif KR', serif;
-  font-size: 20px;
-  font-weight: 700;
-  color: white;
-  margin-bottom: 10px;
-  letter-spacing: -0.01em;
-}
-
-.card-desc {
-  font-size: 13px;
-  color: rgba(246,240,230,0.55);
-  line-height: 1.7;
-}
-
-.card-arrow {
-  margin-top: 20px;
-  color: rgba(184,146,42,0.5);
-  font-size: 18px;
-  transition: transform 0.2s, color 0.2s;
-  display: block;
-}
-
-.guide-card:hover .card-arrow {
-  transform: translateX(4px);
-  color: var(--gold);
-}
-
-/* ============================================================
-   36. CHECKLIST SECTION
-   ============================================================ */
-.checklist-section {
-  padding: 100px 0;
-  background: var(--parchment);
-}
-
-.checklist-inner {
-  max-width: 800px;
-  margin: 0 auto;
-  background: rgba(255,255,255,0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 60px;
-  box-shadow: var(--shadow-lg);
-}
-
-[data-theme="dark"] .checklist-inner {
-  background: rgba(13,21,36,0.7);
-}
-
-.checklist-eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2.5px;
-  color: var(--gold);
-  text-transform: uppercase;
+/* Info & Warn Boxes */
+.info-box {
+  padding: 16px 20px;
+  border-radius: 10px;
+  background: var(--primary-light);
+  border-left: 3px solid var(--primary);
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.75;
   margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
 }
 
-.checklist-eyebrow::before {
-  content: '';
-  width: 32px;
-  height: 1px;
-  background: var(--gold);
+.warn-box {
+  padding: 16px 20px;
+  border-radius: 10px;
+  background: var(--warning-light);
+  border-left: 3px solid var(--warning);
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.75;
+  margin-bottom: 16px;
 }
 
-.checklist-title {
-  font-family: 'Noto Serif KR', serif;
-  font-size: clamp(28px, 3.5vw, 44px);
+/* Pattern Cards */
+.pattern-card {
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 22px 24px;
+  background: var(--white);
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-fast);
+}
+
+.pattern-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.pattern-title {
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--navy);
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.pattern-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.65;
   margin-bottom: 12px;
 }
 
-[data-theme="dark"] .checklist-title {
-  color: var(--ink);
+/* Tables */
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-card);
 }
 
-.checklist-desc {
-  font-size: 15px;
-  color: var(--ink-mid);
-  margin-bottom: 40px;
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
 }
 
-/* 37. .check-item */
+th {
+  background: var(--bg-1);
+  padding: 12px 18px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+td {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+tr:last-child td { border-bottom: none; }
+
+tr:hover td {
+  background: var(--bg-1);
+  transition: background var(--transition-fast);
+}
+
+/* ===== CHECKLIST SECTION ===== */
+.checklist-section {
+  padding: 96px 0;
+  background: var(--bg-2);
+}
+
+.checklist-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  padding: 56px;
+  box-shadow: var(--shadow);
+}
+
+[data-theme="dark"] .checklist-inner { background: var(--bg-1); }
+
 .check-item {
   display: flex;
   align-items: flex-start;
   gap: 16px;
   padding: 16px 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-light);
   cursor: pointer;
-  transition: padding-left 0.15s var(--ease-out);
+  transition: padding-left var(--transition-fast);
 }
 
-.check-item:last-child {
-  border-bottom: none;
-}
+.check-item:last-child { border-bottom: none; }
 
-.check-item:hover {
-  padding-left: 8px;
-  background: rgba(184,146,42,0.03);
-}
+.check-item:hover { padding-left: 6px; }
 
 .check-box {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: 6px;
   flex-shrink: 0;
-  border: 2px solid var(--border-gold);
+  border: 2px solid var(--border);
   margin-top: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s var(--ease-spring);
+  transition: all 0.2s ease;
   background: transparent;
+  color: transparent;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .check-item.checked .check-box {
-  background: var(--green);
-  border-color: var(--green);
+  background: var(--success);
+  border-color: var(--success);
+  color: white;
 }
 
 .check-text {
-  font-size: 14px;
-  color: var(--ink);
-  line-height: 1.7;
+  font-size: 15px;
+  color: var(--text-primary);
+  line-height: 1.65;
 }
 
 .check-item.checked .check-text {
-  color: var(--ink-muted);
+  color: var(--text-muted);
   text-decoration: line-through;
 }
 
 .checklist-complete {
   margin-top: 32px;
-  padding: 20px;
+  padding: 20px 24px;
   border-radius: 12px;
   text-align: center;
-  background: var(--green-light);
-  border: 1px solid rgba(42,107,74,0.2);
-  color: var(--green);
+  background: var(--success-light);
+  border: 1px solid rgba(0,179,125,0.2);
+  color: var(--success);
   font-weight: 600;
   font-size: 15px;
   display: none;
@@ -949,162 +1523,245 @@ body {
 
 .checklist-complete.show {
   display: block;
-  animation: fadeIn 0.4s var(--ease-out);
+  animation: fadeInUp 0.4s ease-in-out;
 }
 
-/* ============================================================
-   38. CTA SECTION
-   ============================================================ */
+/* ===== CTA BANNER ===== */
+.cta-banner,
 .cta-section {
-  padding: 100px 48px;
+  background: var(--primary);
+  padding: 80px 0;
   text-align: center;
-  background: linear-gradient(160deg, #0C1D38 0%, #1A3359 100%);
+}
+
+.cta-banner-inner {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.cta-eyebrow {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: rgba(255,255,255,0.65);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
 }
 
 .cta-title {
-  font-family: 'Noto Serif KR', serif;
-  font-size: clamp(32px, 4vw, 56px);
+  font-family: var(--font-main);
+  font-size: var(--text-md);
   font-weight: 700;
   color: white;
-  margin-bottom: 20px;
-  letter-spacing: -0.02em;
-}
-
-.cta-title em {
-  color: var(--gold);
-  font-style: italic;
+  margin-bottom: 16px;
+  letter-spacing: -0.025em;
+  word-break: keep-all;
+  line-height: 1.3;
 }
 
 .cta-desc {
-  font-size: 17px;
-  color: rgba(246,240,230,0.65);
-  margin-bottom: 48px;
-  max-width: 500px;
+  font-size: var(--text-base);
+  color: rgba(255,255,255,0.75);
+  margin-bottom: 36px;
+  max-width: 480px;
   margin-left: auto;
   margin-right: auto;
-  line-height: 1.8;
+  line-height: 1.7;
+  word-break: keep-all;
 }
 
 .cta-actions {
   display: flex;
-  gap: 16px;
+  align-items: center;
   justify-content: center;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
-/* ============================================================
-   39. FOOTER
-   ============================================================ */
+.cta-btn-primary {
+  background: #FFFFFF;
+  color: var(--primary);
+  border: 1.5px solid #FFFFFF;
+  font-weight: 700;
+}
+
+.cta-btn-primary:hover {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.cta-btn-ghost {
+  background: transparent;
+  color: #FFFFFF;
+  border: 1.5px solid rgba(255,255,255,0.5);
+}
+
+.cta-btn-ghost:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: #FFFFFF;
+}
+
+.btn-outline-white {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: white;
+  padding: 13px 28px;
+  border-radius: var(--radius-btn);
+  font-size: 15px;
+  font-weight: 500;
+  border: 1.5px solid rgba(255,255,255,0.4);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-outline-white:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: white;
+}
+
+/* ===== FOOTER ===== */
 .footer {
-  background: #060D1A;
-  padding: 80px 48px 40px;
-  border-top: 1px solid rgba(184,146,42,0.15);
+  background: #1E2124;
+  padding: 60px 0 40px;
+  border-top: 1px solid rgba(255,255,255,0.06);
 }
 
 .footer-inner {
-  max-width: 1400px;
+  max-width: var(--container);
   margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 56px;
 }
 
 .footer-top {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 60px;
-  margin-bottom: 60px;
+  gap: 48px;
+  margin-bottom: 56px;
 }
 
-.footer-brand .footer-logo {
-  font-family: 'Noto Serif KR', serif;
-  font-size: 20px;
+.footer-logo {
+  font-size: 18px;
   font-weight: 700;
-  color: white;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin-bottom: 12px;
-  display: block;
+}
+
+.footer-logo-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: inline-block;
 }
 
 .footer-tagline {
-  font-size: 13px;
-  color: rgba(255,255,255,0.4);
+  font-size: var(--text-xs);
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 24px;
   line-height: 1.8;
-}
-
-.footer-col-title {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 20px;
-}
-
-.footer-link {
-  display: block;
-  font-size: 13px;
-  color: rgba(255,255,255,0.5);
-  text-decoration: none;
-  margin-bottom: 10px;
-  transition: color 0.15s;
-}
-
-.footer-link:hover {
-  color: var(--gold);
-}
-
-.footer-bottom {
-  border-top: 1px solid rgba(255,255,255,0.06);
-  padding-top: 32px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .footer-copy {
   font-size: 12px;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.25);
 }
 
-/* ============================================================
-   40. SEARCH MODAL
-   ============================================================ */
+.footer-col-title,
+.footer-heading {
+  font-size: 11px;
+  font-weight: 700;
+  color: #8A949E;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+}
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-links a,
+.footer-link {
+  display: block;
+  font-size: var(--text-xs);
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  margin-bottom: 0;
+  transition: color var(--transition-fast);
+}
+
+.footer-links a:hover,
+.footer-link:hover {
+  color: var(--primary);
+}
+
+.footer-version {
+  font-size: 12px;
+  color: rgba(255,255,255,0.25);
+  margin-top: 20px;
+}
+
+.footer-bottom {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 28px 24px 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ===== SEARCH MODAL ===== */
 .search-modal {
   display: none;
   position: fixed;
   inset: 0;
   z-index: 2000;
-  background: rgba(6,13,26,0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(30,33,36,0.6);
+  backdrop-filter: blur(12px);
   align-items: flex-start;
   justify-content: center;
-  padding-top: 96px;
+  padding-top: 90px;
 }
 
 .search-modal.open {
   display: flex;
-  animation: fadeIn 0.2s var(--ease-out);
+  animation: fadeIn 0.2s ease-in-out;
 }
 
 .search-box {
   width: 100%;
   max-width: 600px;
-  background: rgba(246,240,230,0.97);
-  border: 1px solid var(--border-gold);
+  background: var(--white);
+  border: 1px solid var(--border);
   border-radius: 16px;
-  box-shadow: 0 40px 100px rgba(0,0,0,0.4);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.25);
   overflow: hidden;
-  animation: slideDown 0.25s var(--ease-out);
-}
-
-[data-theme="dark"] .search-box {
-  background: rgba(13,21,36,0.98);
+  animation: slideDown 0.25s ease-in-out;
 }
 
 .search-input-row {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   padding: 18px 24px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .search-input {
@@ -1112,70 +1769,71 @@ body {
   border: none;
   background: transparent;
   font-size: 16px;
-  font-family: 'Noto Sans KR', sans-serif;
-  color: var(--ink);
+  font-family: var(--font-main);
+  color: var(--text-primary);
   outline: none;
 }
+
+.search-input::placeholder { color: var(--text-muted); }
 
 .search-result-item {
   padding: 14px 24px;
   cursor: pointer;
-  border-bottom: 1px solid var(--border);
-  transition: background 0.12s, padding-left 0.15s;
+  border-bottom: 1px solid var(--border-light);
+  transition: background var(--transition-fast), padding-left var(--transition-fast);
 }
 
 .search-result-item:hover {
-  background: rgba(184,146,42,0.08);
+  background: var(--primary-light);
   padding-left: 28px;
 }
+
+.search-result-item:last-child { border-bottom: none; }
 
 .search-result-tag {
   font-size: 10px;
   font-weight: 700;
-  color: var(--gold);
+  color: var(--primary);
   text-transform: uppercase;
-  letter-spacing: 1.2px;
+  letter-spacing: 1px;
   margin-bottom: 4px;
 }
 
 .search-result-text {
-  font-size: 13px;
-  color: var(--ink);
+  font-size: 14px;
+  color: var(--text-primary);
 }
 
 .search-footer {
   padding: 12px 24px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-light);
   display: flex;
   gap: 20px;
   font-size: 11px;
-  color: var(--ink-muted);
-  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
 }
 
-/* ============================================================
-   41. ANIMATIONS
-   ============================================================ */
+/* ===== ANIMATIONS ===== */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
 @keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+  from { opacity: 0; transform: translateY(-16px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
 }
 
 .reveal {
   opacity: 0;
-  transform: translateY(32px);
-  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
 .reveal.visible {
@@ -1185,7 +1843,8 @@ body {
 
 .stagger-item {
   opacity: 0;
-  transform: translateY(24px) scale(0.97);
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
 .stagger-item.visible {
@@ -1193,445 +1852,413 @@ body {
   transform: none;
 }
 
-/* ============================================================
-   42. SCROLL PROGRESS
-   ============================================================ */
-.scroll-progress {
-  position: fixed;
-  top: 72px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  z-index: 999;
-  background: transparent;
-}
-
-.scroll-progress-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--gold), #E8C75A 60%, rgba(232,199,90,0.4));
-  box-shadow: 0 0 8px rgba(184,146,42,0.6);
-  transition: width 0.08s linear;
-}
-
-/* ============================================================
-   43. RESPONSIVE
-   ============================================================ */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
-  .hero {
+  .hero-inner {
     grid-template-columns: 1fr;
-    padding-top: 140px;
+    min-height: auto;
+    padding: 60px 24px;
   }
 
-  .hero-visual {
-    display: none;
-  }
+  .hero-visual { display: none; }
 
-  .cards-grid {
+  .composition-grid,
+  .guide-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .tab-content {
+  .persona-panel-inner,
+  .persona-tab-content.active {
     grid-template-columns: 1fr;
   }
 
+  .footer-inner,
   .footer-top {
     grid-template-columns: 1fr 1fr;
+    gap: 32px;
   }
 }
 
-@media (max-width: 640px) {
-  .gnb {
-    padding: 0 20px;
-  }
+@media (max-width: 768px) {
+  .gnb-nav { display: none; }
 
-  .gnb-nav {
-    display: none;
-  }
-
-  .hero {
-    padding: 110px 24px 60px;
+  .hero-inner {
+    padding: 50px 16px 60px;
   }
 
   .hero-title {
-    font-size: 40px;
+    font-size: clamp(32px, 8vw, 44px);
   }
 
-  .section-wrap {
-    padding: 0 24px;
-  }
-
-  .tabs-section,
-  .cards-section,
+  .persona-section,
+  .composition-section,
+  .guide-section,
   .checklist-section {
-    padding: 72px 24px;
+    padding: 72px 0;
   }
 
-  .cards-grid {
+  .composition-grid,
+  .guide-grid {
     grid-template-columns: 1fr;
   }
 
-  .tab-nav {
+  .do-dont,
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .persona-panel-cards,
+  .persona-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .persona-tab-nav,
+  .persona-tabs {
     overflow-x: auto;
+    width: 100%;
   }
 
   .checklist-inner {
     padding: 36px 24px;
   }
 
+  .cta-banner,
   .cta-section {
     padding: 72px 24px;
   }
 
+  .footer-inner,
   .footer-top {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 32px;
   }
+}
 
-  .footer {
-    padding: 60px 24px 32px;
-  }
+@media (max-width: 640px) {
+  .composition-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 0 16px; }
+  .gnb-inner { padding: 0 16px; }
+  .hero-inner { padding: 50px 16px 60px; }
+}
+
+/* ===== ADDITIONAL: GUIDELINE SECTIONS ===== */
+.guidelines-main { background: var(--white); }
+.guideline-section { padding: 80px 0; border-bottom: 1px solid var(--border); }
+.guideline-section:nth-child(even) { background: var(--bg-1); }
+.guideline-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.guideline-tag { font-size: 9.5px; font-weight: 700; text-transform: uppercase; color: var(--primary); background: var(--primary-light); padding: 3px 10px; border-radius: 100px; border: 1px solid rgba(37,110,244,0.2); letter-spacing: 0.5px; }
+.guideline-num { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--text-muted); }
+.guideline-title { font-family: var(--font-serif); font-size: clamp(22px, 2.8vw, 30px); font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
+.guideline-desc { font-size: 14px; color: var(--text-secondary); max-width: 580px; line-height: 1.8; margin-bottom: 28px; }
+.guideline-card { border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; background: var(--white); margin-bottom: 12px; box-shadow: var(--shadow-card); }
+.guideline-card-title { font-size: 12.5px; font-weight: 700; color: var(--text-primary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; margin-top: 20px; }
+.do-box { padding: 20px 22px; border-radius: 10px; background: var(--success-light); border: 1px solid rgba(0,179,125,0.2); border-top: 2px solid var(--success); }
+.dont-box { padding: 20px 22px; border-radius: 10px; background: var(--error-light); border: 1px solid rgba(229,72,77,0.2); border-top: 2px solid var(--error); }
+.verdict { font-size: 9.5px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.verdict-do { color: var(--success); }
+.verdict-dont { color: var(--error); }
+.verdict-text { font-size: 13.5px; color: var(--text-primary); line-height: 1.75; }
+.rule-list { list-style: none; padding: 0; margin: 0; }
+.rule-item { display: flex; gap: 14px; align-items: flex-start; padding: 13px 0; border-bottom: 1px solid var(--border-light); }
+.rule-item:last-child { border-bottom: none; }
+.rule-num { width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.rule-text { font-size: 13.5px; color: var(--text-secondary); line-height: 1.75; }
+.example-label { font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-muted); margin: 18px 0 8px; }
+
+/* CHECKLIST */
+.checklist-section { background: var(--bg-2); padding: 80px 0; }
+.checklist-inner { background: var(--white); border-radius: 20px; padding: 48px; box-shadow: var(--shadow); max-width: 800px; margin: 0 auto; border: 1px solid var(--border); }
+.checklist-title { font-family: var(--font-serif); font-size: clamp(24px,3vw,34px); font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+.checklist-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 28px; }
+.check-item { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border-light); cursor: pointer; transition: var(--transition); border-radius: 8px; padding-left: 8px; padding-right: 8px; }
+.check-item:last-child { border-bottom: none; }
+.check-item:hover { background: var(--bg-1); }
+.check-box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); background: transparent; display: flex; align-items: center; justify-content: center; font-size: 12px; color: transparent; flex-shrink: 0; transition: var(--transition); }
+.check-item.checked .check-box { background: var(--success); border-color: var(--success); color: #fff; }
+.check-text { font-size: 14px; color: var(--text-secondary); transition: color var(--transition); }
+.check-item.checked .check-text { color: var(--text-muted); text-decoration: line-through; }
+.checklist-complete { display: none; padding: 16px 20px; background: var(--success-light); color: var(--success); border-radius: 10px; font-weight: 600; font-size: 14px; text-align: center; margin-top: 20px; border: 1px solid rgba(0,179,125,0.2); }
+.checklist-complete.show { display: block; animation: fadeInUp 0.4s ease; }
+
+/* BUTTONS */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; font-family: var(--font-main); font-size: var(--text-sm); font-weight: 600; border-radius: var(--radius-btn); border: 1.5px solid transparent; cursor: pointer; text-decoration: none; transition: var(--transition); white-space: nowrap; }
+.btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,110,244,0.35); }
+.btn-outline-white { background: transparent; color: #fff; border-color: rgba(255,255,255,0.5); }
+.btn-outline-white:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
+
+/* SEARCH MODAL */
+.search-modal { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.45); backdrop-filter: blur(4px); align-items: flex-start; justify-content: center; padding-top: 80px; }
+.search-modal.open { display: flex; animation: fadeIn 0.2s ease; }
+.search-box { width: 100%; max-width: 600px; background: var(--white); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 32px 80px rgba(0,0,0,0.25); overflow: hidden; animation: slideDown 0.25s ease-in-out; }
+.search-input-row { display: flex; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid var(--border-light); }
+.search-input { flex: 1; border: none; background: transparent; font-size: 16px; font-family: var(--font-main); color: var(--text-primary); outline: none; }
+.search-input::placeholder { color: var(--text-muted); }
+.search-result-item { padding: 14px 24px; cursor: pointer; border-bottom: 1px solid var(--border-light); transition: background var(--transition-fast), padding-left var(--transition-fast); }
+.search-result-item:hover { background: var(--primary-light); padding-left: 28px; }
+.search-result-item:last-child { border-bottom: none; }
+.search-result-tag { font-size: 10px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.search-result-text { font-size: 14px; color: var(--text-primary); }
+.search-footer { padding: 12px 24px; border-top: 1px solid var(--border-light); display: flex; gap: 20px; font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+
+/* SCROLL PROGRESS */
+.scroll-progress { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: var(--border-light); z-index: 2000; pointer-events: none; }
+.scroll-progress-fill { height: 100%; width: 0; background: var(--primary); transition: width 0.1s linear; }
+
+/* SKIP NAV */
+.skip-nav { position: absolute; top: -40px; left: 16px; padding: 8px 16px; background: var(--primary); color: #fff; font-size: 14px; font-weight: 600; border-radius: 0 0 8px 8px; z-index: 9999; text-decoration: none; transition: top 0.2s ease; }
+.skip-nav:focus { top: 0; }
+
+/* SECTION COMMON */
+.section { padding: 80px 0; }
+.section-header { margin-bottom: 48px; }
+.section-eyebrow { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary); margin-bottom: 12px; }
+.section-title { font-size: clamp(28px,3.5vw,40px); font-weight: 700; color: var(--text-primary); margin-bottom: 12px; line-height: 1.3; word-break: keep-all; }
+.section-desc { font-size: var(--text-base); color: var(--text-secondary); line-height: 1.7; max-width: 560px; word-break: keep-all; }
+
+@media (max-width: 768px) {
+  .grid-2 { grid-template-columns: 1fr; }
+  .do-dont { grid-template-columns: 1fr; }
+  .checklist-inner { padding: 28px 20px; }
 }
 </style>
 </head>
 <body>
+<a class="skip-nav" href="#content">본문 바로가기</a>
+<div class="scroll-progress" aria-hidden="true"><div class="scroll-progress-fill" id="scrollFill"></div></div>
+
 <!-- 검색 모달 -->
-<div class="search-modal" id="searchModal">
+<div class="search-modal" id="searchModal" role="dialog" aria-modal="true" aria-label="검색">
   <div class="search-box">
     <div class="search-input-row">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;color:var(--ink-muted)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input type="text" class="search-input" id="searchInput" placeholder="가이드라인 검색..." autocomplete="off">
-      <span style="font-size:11px;color:var(--ink-muted);cursor:pointer;font-family:'JetBrains Mono'" onclick="closeSearch()">ESC</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="color:var(--text-muted);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input class="search-input" id="searchInput" type="search" placeholder="섹션 검색... (예: 에러, 버튼)" autocomplete="off" aria-label="검색어 입력">
+      <button onclick="closeSearch()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:20px;padding:0;line-height:1" aria-label="검색 닫기">×</button>
     </div>
-    <div id="searchResults"></div>
+    <div id="searchResults" role="listbox"></div>
     <div class="search-footer">
-      <span>↑↓ 이동</span><span>↵ 선택</span><span>ESC 닫기</span>
+      <span>↵ 이동</span>
+      <span>ESC 닫기</span>
+      <span>⌘K 열기</span>
     </div>
   </div>
 </div>
 
-<!-- GNB 헤더 -->
+<!-- GNB -->
 <header class="gnb" id="gnb">
-  <a href="#" class="gnb-logo">KRDS<span style="color:var(--gold)">.</span>UX</a>
-  <nav class="gnb-nav">
-    <!-- 1. 기초 원칙 -->
-    <div class="gnb-menu-item">
-      <a href="#principles" class="gnb-link" onclick="scrollToSection('principles')">기초 원칙</a>
-      <div class="gnb-dropdown">
-        <a href="#principles" class="gnb-dropdown-item" onclick="scrollToSection('principles')">언어 원칙</a>
-        <a href="#voice" class="gnb-dropdown-item" onclick="scrollToSection('voice')">브랜드 보이스</a>
-        <a href="#tone" class="gnb-dropdown-item" onclick="scrollToSection('tone')">톤앤매너</a>
-      </div>
+  <div class="container gnb-inner">
+    <a href="#" class="gnb-logo" aria-label="KRDS UX Writing 홈">
+      <span class="gnb-logo-text">KRDS <span class="gnb-logo-sub">UX Writing</span></span>
+      <span class="gnb-logo-dot" aria-hidden="true"></span>
+    </a>
+    <nav class="gnb-nav" aria-label="메인 메뉴">
+      <ul class="gnb-menu" role="list">
+        <li class="gnb-item has-dropdown">
+          <button class="gnb-link" aria-expanded="false" aria-haspopup="true">
+            가이드라인 <span class="gnb-arrow" aria-hidden="true">▾</span>
+          </button>
+          <div class="gnb-dropdown" role="region" aria-label="가이드라인 서브메뉴">
+            <ul class="gnb-dropdown-list" role="list">
+              <li><a href="#principles" class="gnb-dropdown-item">언어 원칙</a></li>
+              <li><a href="#voice" class="gnb-dropdown-item">브랜드 보이스</a></li>
+              <li><a href="#tone" class="gnb-dropdown-item">톤앤매너</a></li>
+            </ul>
+          </div>
+        </li>
+        <li class="gnb-item has-dropdown">
+          <button class="gnb-link" aria-expanded="false" aria-haspopup="true">
+            패턴 라이브러리 <span class="gnb-arrow" aria-hidden="true">▾</span>
+          </button>
+          <div class="gnb-dropdown" role="region" aria-label="패턴 라이브러리 서브메뉴">
+            <ul class="gnb-dropdown-list" role="list">
+              <li><a href="#button" class="gnb-dropdown-item">버튼 &amp; CTA</a></li>
+              <li><a href="#form" class="gnb-dropdown-item">폼 &amp; 입력</a></li>
+              <li><a href="#error" class="gnb-dropdown-item">에러 &amp; 알림</a></li>
+              <li><a href="#help" class="gnb-dropdown-item">도움말 &amp; 온보딩</a></li>
+              <li><a href="#loading" class="gnb-dropdown-item">로딩 &amp; 진행</a></li>
+            </ul>
+          </div>
+        </li>
+        <li class="gnb-item has-dropdown">
+          <button class="gnb-link" aria-expanded="false" aria-haspopup="true">
+            품질 기준 <span class="gnb-arrow" aria-hidden="true">▾</span>
+          </button>
+          <div class="gnb-dropdown" role="region" aria-label="품질 기준 서브메뉴">
+            <ul class="gnb-dropdown-list" role="list">
+              <li><a href="#checklist" class="gnb-dropdown-item">체크리스트</a></li>
+              <li><a href="#help" class="gnb-dropdown-item">온보딩 가이드</a></li>
+            </ul>
+          </div>
+        </li>
+        <li class="gnb-item">
+          <a href="#accessibility" class="gnb-link">접근성 &amp; 국제화</a>
+        </li>
+      </ul>
+    </nav>
+    <div class="gnb-utils">
+      <button class="gnb-util-btn" id="searchBtn" aria-label="검색 열기 (⌘K)" onclick="openSearch()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+      <button class="gnb-util-btn gnb-theme-toggle" id="themeToggle" aria-label="다크모드 전환" onclick="toggleTheme()">
+        <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
     </div>
-    <!-- 2. 작성 패턴 -->
-    <div class="gnb-menu-item">
-      <a href="#button" class="gnb-link" onclick="scrollToSection('button')">작성 패턴</a>
-      <div class="gnb-dropdown">
-        <a href="#button" class="gnb-dropdown-item" onclick="scrollToSection('button')">버튼 &amp; CTA</a>
-        <a href="#form" class="gnb-dropdown-item" onclick="scrollToSection('form')">폼 &amp; 입력</a>
-        <a href="#error" class="gnb-dropdown-item" onclick="scrollToSection('error')">에러 &amp; 알림</a>
-        <a href="#help" class="gnb-dropdown-item" onclick="scrollToSection('help')">도움말 패턴</a>
-        <a href="#loading" class="gnb-dropdown-item" onclick="scrollToSection('loading')">로딩 &amp; 진행</a>
-        <a href="#loading" class="gnb-dropdown-item" onclick="scrollToSection('loading')">성공 &amp; 실패</a>
-      </div>
-    </div>
-    <!-- 3. 컨텍스트별 -->
-    <div class="gnb-menu-item">
-      <a href="#help" class="gnb-link" onclick="scrollToSection('help')">컨텍스트별</a>
-      <div class="gnb-dropdown">
-        <a href="#loading" class="gnb-dropdown-item" onclick="scrollToSection('loading')">내비게이션</a>
-        <a href="#help" class="gnb-dropdown-item" onclick="scrollToSection('help')">온보딩</a>
-        <a href="#help" class="gnb-dropdown-item" onclick="scrollToSection('help')">빈 상태</a>
-      </div>
-    </div>
-    <!-- 4. 가이드라인 -->
-    <div class="gnb-menu-item">
-      <a href="#accessibility" class="gnb-link" onclick="scrollToSection('accessibility')">가이드라인</a>
-      <div class="gnb-dropdown">
-        <a href="#accessibility" class="gnb-dropdown-item" onclick="scrollToSection('accessibility')">접근성</a>
-        <a href="#accessibility" class="gnb-dropdown-item" onclick="scrollToSection('accessibility')">국제화</a>
-        <a href="#checklist" class="gnb-dropdown-item" onclick="scrollToSection('checklist')">체크리스트</a>
-      </div>
-    </div>
-  </nav>
-  <div class="gnb-right">
-    <button class="gnb-search-btn" onclick="openSearch()">
-      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      검색
-      <span style="font-size:11px;font-family:'JetBrains Mono';opacity:0.6">⌘K</span>
-    </button>
-    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" title="다크모드 전환">
-      <span id="themeIcon">🌙</span>
-    </button>
   </div>
 </header>
 
-<!-- 스크롤 프로그레스 바 -->
-<div class="scroll-progress"><div class="scroll-progress-fill" id="scrollFill"></div></div>
+<main id="content">
 
 <!-- 히어로 섹션 -->
-<div class="hero-wrap">
-  <div class="hero">
-    <div class="hero-content">
-      <div class="hero-eyebrow">Korea Design System · UX Writing Guidelines</div>
-      <h1 class="hero-title">사용자와 <em>대화하는</em><br>글쓰기 원칙</h1>
-      <p class="hero-desc">한국형 디자인 시스템의 UX Writing Guidelines.<br>명확하고, 친근하며, 신뢰할 수 있는 정부 서비스 경험을 만듭니다.</p>
-      <div class="hero-actions">
-        <a href="#guide-cards" class="btn-primary">
-          가이드라인 시작하기
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
-        <a href="#checklist" class="btn-secondary">
-          체크리스트 보기
-        </a>
+<section class="hero-section" id="hero" aria-label="히어로 섹션">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-bg-glow"></div>
+  </div>
+  <div class="container hero-inner">
+    <div class="hero-content reveal">
+      <p class="hero-eyebrow">Korea Design System · UX Writing 2025</p>
+      <h1 class="hero-title">정부 서비스의<br>언어를 디자인합니다</h1>
+      <p class="hero-desc">사용자가 이해하고, 신뢰하고, 행동하게 만드는<br>UX 라이팅의 모든 원칙을 담았습니다.</p>
+      <div class="hero-cta-group">
+        <a href="#persona" class="btn btn-primary">가이드라인 시작하기</a>
+        <a href="#checklist" class="btn btn-outline-white">체크리스트 보기</a>
       </div>
-      <div style="margin-top:60px;display:flex;gap:32px;flex-wrap:wrap">
-        <div style="text-align:center">
-          <div style="font-family:'Noto Serif KR';font-size:36px;font-weight:700;color:var(--gold)">15</div>
-          <div style="font-size:12px;color:rgba(246,240,230,0.5);margin-top:4px">가이드라인 섹션</div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-num">9</span>
+          <span class="hero-stat-label">개 영역</span>
         </div>
-        <div style="text-align:center">
-          <div style="font-family:'Noto Serif KR';font-size:36px;font-weight:700;color:var(--gold)">80+</div>
-          <div style="font-size:12px;color:rgba(246,240,230,0.5);margin-top:4px">실무 문구 예시</div>
+        <div class="hero-stat-divider" aria-hidden="true"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">80+</span>
+          <span class="hero-stat-label">문구 예시</span>
         </div>
-        <div style="text-align:center">
-          <div style="font-family:'Noto Serif KR';font-size:36px;font-weight:700;color:var(--gold)">KWCAG</div>
-          <div style="font-size:12px;color:rgba(246,240,230,0.5);margin-top:4px">2.2 준수</div>
+        <div class="hero-stat-divider" aria-hidden="true"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">KWCAG</span>
+          <span class="hero-stat-label">2.2 준수</span>
         </div>
       </div>
     </div>
     <div class="hero-visual" aria-hidden="true">
-      <div class="float-card">
-        <div class="float-card-label">✓ 좋은 예시</div>
-        <div class="float-card-text">"인터넷 연결을 확인하고<br>다시 시도해 주세요."</div>
-        <span class="float-card-tag">에러 메시지</span>
+      <div class="float-card float-card-1">
+        <div class="float-card-label">버튼 텍스트</div>
+        <div class="float-card-do">✓ 저장하기</div>
+        <div class="float-card-dont">✗ 확인</div>
       </div>
-      <div class="float-card">
-        <div class="float-card-label">✓ 버튼 레이블</div>
-        <div class="float-card-text">"신청하기" · "저장하기"<br>"다음 단계로"</div>
-        <span class="float-card-tag">동사형 CTA</span>
+      <div class="float-card float-card-2">
+        <div class="float-card-label">에러 메시지</div>
+        <div class="float-card-do">✓ 비밀번호는 8자 이상이어야 합니다</div>
+        <div class="float-card-dont">✗ 오류가 발생했습니다</div>
       </div>
-      <div class="float-card">
-        <div class="float-card-label">✓ 빈 상태</div>
-        <div class="float-card-text">"신청 내역이 없습니다.<br>지금 바로 신청해 보세요."</div>
-        <span class="float-card-tag">행동 유도</span>
+      <div class="float-card float-card-3">
+        <div class="float-card-label">빈 상태</div>
+        <div class="float-card-do">✓ 아직 등록된 항목이 없어요</div>
+        <div class="float-card-dont">✗ No data</div>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- 탭 섹션 (Quick Access) -->
-<section class="tabs-section" id="quick-access">
-  <div class="section-wrap">
-    <div class="tabs-header reveal">
-      <div class="hero-eyebrow" style="color:var(--gold)">Quick Access</div>
-      <h2 class="tabs-title">핵심 작성 패턴 미리보기</h2>
-      <p class="tabs-desc">자주 쓰는 UI 컴포넌트의 문구 작성 가이드를 바로 확인하세요.</p>
+<!-- 페르소나 탭 섹션 -->
+<section class="persona-section section" id="persona" aria-label="역할별 시작하기">
+  <div class="container">
+    <div class="section-header reveal">
+      <p class="section-eyebrow">시작하기</p>
+      <h2 class="section-title">UX Writing 시작하기</h2>
+      <p class="section-desc">역할에 맞는 가이드라인을 선택해 바로 시작하세요.</p>
     </div>
-    <div class="tab-nav" role="tablist">
-      <button class="tab-btn active" role="tab" aria-selected="true" onclick="switchTab('btn')">버튼 &amp; CTA</button>
-      <button class="tab-btn" role="tab" aria-selected="false" onclick="switchTab('error')">에러 메시지</button>
-      <button class="tab-btn" role="tab" aria-selected="false" onclick="switchTab('help')">도움말 패턴</button>
+    <div class="persona-tabs" role="tablist" aria-label="역할 선택">
+      <button class="persona-tab active" role="tab" aria-selected="true" aria-controls="tab-writer" id="tab-btn-writer" onclick="switchPersonaTab('writer')">UX 라이터</button>
+      <button class="persona-tab" role="tab" aria-selected="false" aria-controls="tab-designer" id="tab-btn-designer" onclick="switchPersonaTab('designer')">디자이너</button>
+      <button class="persona-tab" role="tab" aria-selected="false" aria-controls="tab-developer" id="tab-btn-developer" onclick="switchPersonaTab('developer')">개발자</button>
     </div>
-
-    <!-- 탭 1: 버튼 & CTA -->
-    <div class="tab-content active reveal" id="tab-btn">
-      <div class="tab-explain">
-        <h3 class="tab-explain-title">사용자 행동을 명확히 안내하는<br>버튼 레이블 작성법</h3>
-        <div class="tab-rule"><span class="tab-rule-icon">✓</span><span class="tab-rule-text">동사로 시작해 행동을 명확히 표현</span></div>
-        <div class="tab-rule"><span class="tab-rule-icon">✓</span><span class="tab-rule-text">목적어를 포함해 구체적 행동 명시</span></div>
-        <div class="tab-rule"><span class="tab-rule-icon">✓</span><span class="tab-rule-text">"확인", "OK" 같은 모호한 표현 지양</span></div>
-        <div class="tab-rule"><span class="tab-rule-icon">✓</span><span class="tab-rule-text">긍정형·능동형으로 작성</span></div>
-      </div>
-      <div class="tab-preview">
-        <div class="preview-label">Good vs Bad 비교</div>
-        <div class="preview-good">
-          <div class="preview-verdict preview-verdict-good">✓ Good</div>
-          <div class="preview-copy-text">신청하기 / 저장하기 / 파일 삭제 / 다음 단계로</div>
+    <div class="persona-panel active" id="tab-writer" role="tabpanel" aria-labelledby="tab-btn-writer">
+      <div class="persona-panel-inner">
+        <div class="persona-panel-desc">
+          <h3 class="persona-panel-title">UX 라이터를 위한 가이드</h3>
+          <p>언어 원칙부터 브랜드 보이스, 톤앤매너까지 체계적으로 학습하고 실무에 바로 적용하세요.</p>
+          <a href="#principles" class="btn btn-primary" style="margin-top:24px">가이드 시작하기</a>
         </div>
-        <div class="preview-bad">
-          <div class="preview-verdict preview-verdict-bad">✗ Bad</div>
-          <div class="preview-copy-text">확인 / OK / 예 / 클릭 / 이동</div>
-        </div>
-        <div class="preview-label" style="margin-top:20px">자주 쓰는 레이블</div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px">
-          <span style="padding:6px 14px;border-radius:6px;background:var(--navy-light);color:var(--navy);font-size:13px;font-weight:600">저장하기</span>
-          <span style="padding:6px 14px;border-radius:6px;background:var(--navy-light);color:var(--navy);font-size:13px;font-weight:600">제출하기</span>
-          <span style="padding:6px 14px;border-radius:6px;background:var(--navy-light);color:var(--navy);font-size:13px;font-weight:600">신청하기</span>
-          <span style="padding:6px 14px;border-radius:6px;background:var(--navy-light);color:var(--navy);font-size:13px;font-weight:600">결제하기</span>
-          <span style="padding:6px 14px;border-radius:6px;background:var(--navy-light);color:var(--navy);font-size:13px;font-weight:600">다음 단계로</span>
-          <span style="padding:6px 14px;border-radius:6px;background:var(--navy-light);color:var(--navy);font-size:13px;font-weight:600">이전으로</span>
+        <div class="persona-panel-cards">
+          <a href="#principles" class="persona-card"><span class="persona-card-icon">📝</span><span class="persona-card-title">언어 원칙</span><span class="persona-card-arrow">→</span></a>
+          <a href="#voice" class="persona-card"><span class="persona-card-icon">🎙</span><span class="persona-card-title">브랜드 보이스</span><span class="persona-card-arrow">→</span></a>
+          <a href="#tone" class="persona-card"><span class="persona-card-icon">🎚</span><span class="persona-card-title">톤앤매너</span><span class="persona-card-arrow">→</span></a>
+          <a href="#checklist" class="persona-card"><span class="persona-card-icon">✅</span><span class="persona-card-title">체크리스트</span><span class="persona-card-arrow">→</span></a>
         </div>
       </div>
     </div>
-
-    <!-- 탭 2: 에러 메시지 -->
-    <div class="tab-content" id="tab-error">
-      <div class="tab-explain">
-        <h3 class="tab-explain-title">문제를 명확히 전달하고<br>해결을 돕는 에러 메시지</h3>
-        <div class="tab-rule"><span class="tab-rule-icon">✓</span><span class="tab-rule-text">무엇이 잘못되었는지 명확히</span></div>
-        <div class="tab-rule"><span class="tab-rule-icon">✓</span><span class="tab-rule-text">왜 발생했는지 간략히 설명</span></div>
-        <div class="tab-rule"><span class="tab-rule-icon">✓</span><span class="tab-rule-text">어떻게 해결하면 되는지 안내</span></div>
-        <div class="tab-rule"><span class="tab-rule-icon">✓</span><span class="tab-rule-text">사용자를 탓하지 않는 문체</span></div>
-      </div>
-      <div class="tab-preview">
-        <div class="preview-label">폼 유효성 에러</div>
-        <div class="preview-good">
-          <div class="preview-verdict preview-verdict-good">✓ Good</div>
-          <div class="preview-copy-text">이메일 주소 형식이 올바르지 않습니다. 예) hong@email.com</div>
+    <div class="persona-panel" id="tab-designer" role="tabpanel" aria-labelledby="tab-btn-designer" hidden>
+      <div class="persona-panel-inner">
+        <div class="persona-panel-desc">
+          <h3 class="persona-panel-title">디자이너를 위한 가이드</h3>
+          <p>버튼 레이블, 폼 안내, 도움말 텍스트 등 컴포넌트별 UX 라이팅 기준을 확인하세요.</p>
+          <a href="#button" class="btn btn-primary" style="margin-top:24px">패턴 보기</a>
         </div>
-        <div class="preview-bad">
-          <div class="preview-verdict preview-verdict-bad">✗ Bad</div>
-          <div class="preview-copy-text">잘못된 입력입니다.</div>
-        </div>
-        <div class="preview-label" style="margin-top:20px">네트워크 에러</div>
-        <div class="preview-good">
-          <div class="preview-verdict preview-verdict-good">✓ Good</div>
-          <div class="preview-copy-text">인터넷 연결을 확인하고 다시 시도해 주세요.</div>
-        </div>
-        <div class="preview-bad">
-          <div class="preview-verdict preview-verdict-bad">✗ Bad</div>
-          <div class="preview-copy-text">네트워크 에러 발생 (ETIMEDOUT)</div>
+        <div class="persona-panel-cards">
+          <a href="#button" class="persona-card"><span class="persona-card-icon">🔘</span><span class="persona-card-title">버튼 &amp; CTA</span><span class="persona-card-arrow">→</span></a>
+          <a href="#form" class="persona-card"><span class="persona-card-icon">📋</span><span class="persona-card-title">폼 &amp; 입력</span><span class="persona-card-arrow">→</span></a>
+          <a href="#help" class="persona-card"><span class="persona-card-icon">💡</span><span class="persona-card-title">도움말 패턴</span><span class="persona-card-arrow">→</span></a>
+          <a href="#loading" class="persona-card"><span class="persona-card-icon">🔄</span><span class="persona-card-title">내비게이션</span><span class="persona-card-arrow">→</span></a>
         </div>
       </div>
     </div>
-
-    <!-- 탭 3: 도움말 패턴 -->
-    <div class="tab-content" id="tab-help">
-      <div class="tab-explain">
-        <h3 class="tab-explain-title">사용자가 필요할 때<br>즉시 찾을 수 있는 도움말</h3>
-        <div class="tab-rule"><span class="tab-rule-icon">✓</span><span class="tab-rule-text">맥락 기반으로 적절한 위치에 배치</span></div>
-        <div class="tab-rule"><span class="tab-rule-icon">✓</span><span class="tab-rule-text">간결하고 명확하게 작성</span></div>
-        <div class="tab-rule"><span class="tab-rule-icon">✓</span><span class="tab-rule-text">레이블의 대체 수단으로 사용 금지</span></div>
-        <div class="tab-rule"><span class="tab-rule-icon">✓</span><span class="tab-rule-text">점진적 공개로 정보 과부하 방지</span></div>
-      </div>
-      <div class="tab-preview">
-        <div class="preview-label">6가지 도움말 패턴</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div style="padding:14px;border-radius:10px;background:var(--navy-light);border:1px solid var(--border)">
-            <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px">안내 영역</div>
-            <div style="font-size:12px;color:var(--ink-muted)">페이지 상단 전체 안내</div>
-          </div>
-          <div style="padding:14px;border-radius:10px;background:var(--navy-light);border:1px solid var(--border)">
-            <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px">인라인 텍스트</div>
-            <div style="font-size:12px;color:var(--ink-muted)">필드 하단 보조 설명</div>
-          </div>
-          <div style="padding:14px;border-radius:10px;background:var(--navy-light);border:1px solid var(--border)">
-            <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px">툴팁</div>
-            <div style="font-size:12px;color:var(--ink-muted)">? 아이콘 호버 시 표시</div>
-          </div>
-          <div style="padding:14px;border-radius:10px;background:var(--navy-light);border:1px solid var(--border)">
-            <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px">코치마크</div>
-            <div style="font-size:12px;color:var(--ink-muted)">신규 기능 첫 방문 안내</div>
-          </div>
-          <div style="padding:14px;border-radius:10px;background:var(--navy-light);border:1px solid var(--border)">
-            <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px">맥락적 도움말</div>
-            <div style="font-size:12px;color:var(--ink-muted)">실시간 유효성 안내</div>
-          </div>
-          <div style="padding:14px;border-radius:10px;background:var(--navy-light);border:1px solid var(--border)">
-            <div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px">플레이스홀더</div>
-            <div style="font-size:12px;color:var(--ink-muted)">형식 힌트 전용 (레이블 대체 금지)</div>
-          </div>
+    <div class="persona-panel" id="tab-developer" role="tabpanel" aria-labelledby="tab-btn-developer" hidden>
+      <div class="persona-panel-inner">
+        <div class="persona-panel-desc">
+          <h3 class="persona-panel-title">개발자를 위한 가이드</h3>
+          <p>에러 메시지, 로딩 상태, 성공/실패 피드백 텍스트의 구현 기준을 확인하세요.</p>
+          <a href="#error" class="btn btn-primary" style="margin-top:24px">에러 가이드 보기</a>
+        </div>
+        <div class="persona-panel-cards">
+          <a href="#error" class="persona-card"><span class="persona-card-icon">⚠️</span><span class="persona-card-title">에러 &amp; 알림</span><span class="persona-card-arrow">→</span></a>
+          <a href="#loading" class="persona-card"><span class="persona-card-icon">⏳</span><span class="persona-card-title">로딩 &amp; 진행</span><span class="persona-card-arrow">→</span></a>
+          <a href="#accessibility" class="persona-card"><span class="persona-card-icon">♿</span><span class="persona-card-title">접근성</span><span class="persona-card-arrow">→</span></a>
+          <a href="#checklist" class="persona-card"><span class="persona-card-icon">✅</span><span class="persona-card-title">성공 &amp; 실패</span><span class="persona-card-arrow">→</span></a>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 카드 그리드 섹션 -->
-<section class="cards-section" id="guide-cards">
-  <div class="section-wrap">
-    <div class="cards-header reveal">
-      <div class="hero-eyebrow" style="color:var(--gold)">주요 구성</div>
-      <h2 class="cards-title">UX Writing 가이드라인</h2>
-      <p class="cards-desc">15개 섹션을 9개 주제로 구성한 완전한 UX 라이팅 가이드</p>
+<!-- 주요 구성 카드 그리드 -->
+<section class="composition-section section" id="composition" aria-label="주요 구성">
+  <div class="container">
+    <div class="section-header reveal" style="text-align:center;max-width:600px;margin:0 auto 48px">
+      <p class="section-eyebrow">주요 구성</p>
+      <h2 class="section-title">UX Writing의 모든 영역</h2>
+      <p class="section-desc">가이드라인의 뼈대를 이루는 핵심 구성 요소를 살펴보세요.</p>
     </div>
-    <div class="cards-grid" id="guide-cards-grid">
-      <!-- 카드 1: 언어 원칙 -->
-      <a href="#principles" class="guide-card stagger-item" onclick="scrollToSection('principles')">
-        <span class="card-badge">Foundation</span>
-        <span class="card-icon">📐</span>
-        <h3 class="card-title">언어 원칙</h3>
-        <p class="card-desc">사용자 중심, 간결·명확, 능동태, 일관된 용어 등 6가지 핵심 작성 원칙</p>
-        <div class="card-arrow">→</div>
-      </a>
-      <!-- 카드 2: 브랜드 보이스 -->
-      <a href="#voice" class="guide-card stagger-item" onclick="scrollToSection('voice')">
-        <span class="card-badge">Foundation</span>
-        <span class="card-icon">🎭</span>
-        <h3 class="card-title">브랜드 보이스</h3>
-        <p class="card-desc">신뢰감·전문적, 친근·배려, 명확·직접적, 해결 중심 — 4가지 보이스 특성</p>
-        <div class="card-arrow">→</div>
-      </a>
-      <!-- 카드 3: 톤앤매너 -->
-      <a href="#tone" class="guide-card stagger-item" onclick="scrollToSection('tone')">
-        <span class="card-badge">Foundation</span>
-        <span class="card-icon">🎚️</span>
-        <h3 class="card-title">톤앤매너</h3>
-        <p class="card-desc">일반 안내, 오류, 경고, 성공, 온보딩 등 상황별 적절한 톤 선택 가이드</p>
-        <div class="card-arrow">→</div>
-      </a>
-      <!-- 카드 4: 버튼 & CTA -->
-      <a href="#button" class="guide-card stagger-item" onclick="scrollToSection('button')">
-        <span class="card-badge">Component</span>
-        <span class="card-icon">▶</span>
-        <h3 class="card-title">버튼 &amp; CTA</h3>
-        <p class="card-desc">동사형 레이블 원칙, 용도별 버튼 문구, 로딩 상태 텍스트까지</p>
-        <div class="card-arrow">→</div>
-      </a>
-      <!-- 카드 5: 폼 & 입력 -->
-      <a href="#form" class="guide-card stagger-item" onclick="scrollToSection('form')">
-        <span class="card-badge">Component</span>
-        <span class="card-icon">✏️</span>
-        <h3 class="card-title">폼 &amp; 입력</h3>
-        <p class="card-desc">플레이스홀더 원칙, 필수/선택 구분, 개인 식별 정보 처리 가이드</p>
-        <div class="card-arrow">→</div>
-      </a>
-      <!-- 카드 6: 에러 & 알림 -->
-      <a href="#error" class="guide-card stagger-item" onclick="scrollToSection('error')">
-        <span class="card-badge">Component</span>
-        <span class="card-icon">⚠️</span>
-        <h3 class="card-title">에러 &amp; 알림</h3>
-        <p class="card-desc">오류 메시지 4대 원칙, 폼 유효성 오류, 네트워크·시스템 오류 문구</p>
-        <div class="card-arrow">→</div>
-      </a>
-      <!-- 카드 7: 도움말 & 온보딩 -->
-      <a href="#help" class="guide-card stagger-item" onclick="scrollToSection('help')">
-        <span class="card-badge">Context</span>
-        <span class="card-icon">🧭</span>
-        <h3 class="card-title">도움말 &amp; 온보딩</h3>
-        <p class="card-desc">6가지 도움말 패턴, 환영 문구, 단계별 진행 안내, 빈 상태 문구</p>
-        <div class="card-arrow">→</div>
-      </a>
-      <!-- 카드 8: 상태 메시지 -->
-      <a href="#loading" class="guide-card stagger-item" onclick="scrollToSection('loading')">
-        <span class="card-badge">Context</span>
-        <span class="card-icon">📊</span>
-        <h3 class="card-title">상태 메시지</h3>
-        <p class="card-desc">로딩·진행, 성공·완료, 실패·오류, 내비게이션 등 상태별 메시지</p>
-        <div class="card-arrow">→</div>
-      </a>
-      <!-- 카드 9: 접근성 & 국제화 -->
-      <a href="#accessibility" class="guide-card stagger-item" onclick="scrollToSection('accessibility')">
-        <span class="card-badge">Guideline</span>
-        <span class="card-icon">🌏</span>
-        <h3 class="card-title">접근성 &amp; 국제화</h3>
-        <p class="card-desc">KWCAG 2.2 / WCAG 2.1 AA, aria-label 가이드, 다국어 번역 고려사항</p>
-        <div class="card-arrow">→</div>
-      </a>
+    <div class="composition-grid">
+      <a href="#principles" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">📝</div><h3 class="comp-card-title">언어 원칙</h3><p class="comp-card-desc">명확하고 일관된 한국어 표현의 기준을 정립합니다</p><span class="comp-card-link">자세히 보기 →</span></a>
+      <a href="#voice" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">🎙</div><h3 class="comp-card-title">브랜드 보이스</h3><p class="comp-card-desc">신뢰할 수 있는 정부 서비스만의 일관된 목소리</p><span class="comp-card-link">자세히 보기 →</span></a>
+      <a href="#tone" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">🎚</div><h3 class="comp-card-title">톤앤매너</h3><p class="comp-card-desc">상황에 맞는 어조와 문체 조절 가이드</p><span class="comp-card-link">자세히 보기 →</span></a>
+      <a href="#button" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">🔘</div><h3 class="comp-card-title">버튼 &amp; CTA</h3><p class="comp-card-desc">행동을 유발하는 명확하고 간결한 레이블 작성법</p><span class="comp-card-link">자세히 보기 →</span></a>
+      <a href="#form" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">📋</div><h3 class="comp-card-title">폼 &amp; 입력</h3><p class="comp-card-desc">오류 없는 입력을 돕는 레이블과 플레이스홀더</p><span class="comp-card-link">자세히 보기 →</span></a>
+      <a href="#error" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">⚠️</div><h3 class="comp-card-title">에러 &amp; 알림</h3><p class="comp-card-desc">불안을 줄이고 해결책을 제시하는 에러 메시지</p><span class="comp-card-link">자세히 보기 →</span></a>
+      <a href="#help" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">💡</div><h3 class="comp-card-title">도움말 &amp; 온보딩</h3><p class="comp-card-desc">처음 사용자도 막히지 않는 안내 텍스트 전략</p><span class="comp-card-link">자세히 보기 →</span></a>
+      <a href="#loading" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">⏳</div><h3 class="comp-card-title">로딩 &amp; 진행</h3><p class="comp-card-desc">대기 시간의 불안을 줄이는 상태 메시지 작성</p><span class="comp-card-link">자세히 보기 →</span></a>
+      <a href="#accessibility" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">♿</div><h3 class="comp-card-title">접근성 &amp; 국제화</h3><p class="comp-card-desc">누구나 이해할 수 있는 포용적 언어 가이드</p><span class="comp-card-link">자세히 보기 →</span></a>
     </div>
   </div>
 </section>
 
-<!-- 상세 콘텐츠 섹션들 -->
-<main class="guidelines-main" id="guidelines">
-  <div class="section-wrap">
+<!-- 가이드라인 상세 섹션들 -->
+<div class="guidelines-main">
+  <div class="container">
 
-    <!-- 언어 원칙 섹션 -->
+    <!-- 언어 원칙 -->
     <section class="guideline-section reveal" id="principles">
       <div class="guideline-meta">
         <span class="guideline-tag">Core Principles</span>
-        <span class="guideline-num" style="font-family:'JetBrains Mono';font-size:11px;color:var(--ink-muted)">01</span>
+        <span class="guideline-num" style="font-family:'JetBrains Mono';font-size:11px;color:var(--text-muted)">01</span>
       </div>
       <h2 class="guideline-title">언어 원칙</h2>
       <p class="guideline-desc">모든 UI 문구 작성 시 따라야 하는 기본 원칙입니다.</p>
@@ -1647,18 +2274,12 @@ body {
         </ul>
       </div>
       <div class="do-dont">
-        <div class="do-box">
-          <div class="verdict verdict-do">Do</div>
-          <div class="verdict-text">"인터넷 연결을 확인하고 다시 시도해 주세요."<br><br>"이름을 입력해 주세요."<br><br>"파일을 저장했습니다."</div>
-        </div>
-        <div class="dont-box">
-          <div class="verdict verdict-dont">Don't</div>
-          <div class="verdict-text">"네트워크 에러가 발생했습니다. (err: ETIMEDOUT)"<br><br>"이름 필드가 비어 있습니다."<br><br>"파일이 저장 완료되었습니다."</div>
-        </div>
+        <div class="do-box"><div class="verdict verdict-do">✓ Do</div><div class="verdict-text">"인터넷 연결을 확인하고 다시 시도해 주세요."<br><br>"이름을 입력해 주세요."<br><br>"파일을 저장했습니다."</div></div>
+        <div class="dont-box"><div class="verdict verdict-dont">✗ Don't</div><div class="verdict-text">"네트워크 에러가 발생했습니다. (err: ETIMEDOUT)"<br><br>"이름 필드가 비어 있습니다."<br><br>"파일이 저장 완료되었습니다."</div></div>
       </div>
     </section>
 
-    <!-- 브랜드 보이스 섹션 -->
+    <!-- 브랜드 보이스 -->
     <section class="guideline-section reveal" id="voice">
       <div class="guideline-meta">
         <span class="guideline-tag">Brand Voice</span>
@@ -1669,31 +2290,31 @@ body {
       <div class="grid-2">
         <div class="guideline-card">
           <div class="guideline-card-title">신뢰감 있고 전문적</div>
-          <p style="font-size:13px;color:var(--ink-muted);margin-bottom:12px">정확한 정보와 명확한 안내로 신뢰를 구축합니다.</p>
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">정확한 정보와 명확한 안내로 신뢰를 구축합니다.</p>
           <div class="copy-example"><span class="copy-text">"본인 확인이 완료되었습니다."</span><button class="copy-btn" onclick="cp(this,'본인 확인이 완료되었습니다.')">복사</button></div>
           <div class="copy-example"><span class="copy-text">"서류를 검토 중입니다. 영업일 기준 3일 내 안내드립니다."</span><button class="copy-btn" onclick="cp(this,'서류를 검토 중입니다. 영업일 기준 3일 내 안내드립니다.')">복사</button></div>
         </div>
         <div class="guideline-card">
           <div class="guideline-card-title">친근하고 배려 있게</div>
-          <p style="font-size:13px;color:var(--ink-muted);margin-bottom:12px">딱딱하지 않고, 사용자를 존중하는 말투를 사용합니다.</p>
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">딱딱하지 않고, 사용자를 존중하는 말투를 사용합니다.</p>
           <div class="copy-example"><span class="copy-text">"잠깐이면 됩니다. 정보를 확인해 주세요."</span><button class="copy-btn" onclick="cp(this,'잠깐이면 됩니다. 정보를 확인해 주세요.')">복사</button></div>
           <div class="copy-example"><span class="copy-text">"처음 사용하시나요? 단계별로 안내해 드릴게요."</span><button class="copy-btn" onclick="cp(this,'처음 사용하시나요? 단계별로 안내해 드릴게요.')">복사</button></div>
         </div>
         <div class="guideline-card">
           <div class="guideline-card-title">명확하고 직접적</div>
-          <p style="font-size:13px;color:var(--ink-muted);margin-bottom:12px">돌려 말하지 않고 핵심을 바로 전달합니다.</p>
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">돌려 말하지 않고 핵심을 바로 전달합니다.</p>
           <div class="copy-example"><span class="copy-text">"신청 기간이 종료되었습니다. (마감일: 2025. 12. 31)"</span><button class="copy-btn" onclick="cp(this,'신청 기간이 종료되었습니다. (마감일: 2025. 12. 31)')">복사</button></div>
           <div class="copy-example"><span class="copy-text">"이미 신청한 내역이 있습니다."</span><button class="copy-btn" onclick="cp(this,'이미 신청한 내역이 있습니다.')">복사</button></div>
         </div>
         <div class="guideline-card">
           <div class="guideline-card-title">해결 중심적</div>
-          <p style="font-size:13px;color:var(--ink-muted);margin-bottom:12px">문제를 알리는 것에 그치지 않고 해결책을 함께 안내합니다.</p>
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">문제를 알리는 것에 그치지 않고 해결책을 함께 안내합니다.</p>
           <div class="copy-example"><span class="copy-text">"파일 크기가 초과되었습니다. 10MB 이하로 다시 업로드해 주세요."</span><button class="copy-btn" onclick="cp(this,'파일 크기가 초과되었습니다. 10MB 이하로 다시 업로드해 주세요.')">복사</button></div>
         </div>
       </div>
     </section>
 
-    <!-- 톤앤매너 섹션 -->
+    <!-- 톤앤매너 -->
     <section class="guideline-section reveal" id="tone">
       <div class="guideline-meta">
         <span class="guideline-tag">Tone &amp; Manner</span>
@@ -1713,18 +2334,12 @@ body {
         </ul>
       </div>
       <div class="do-dont">
-        <div class="do-box">
-          <div class="verdict verdict-do">Do</div>
-          <div class="verdict-text">"입력하신 정보를 확인 중입니다."<br><br>"신청이 성공적으로 완료되었습니다."<br><br>"잠시 후 다시 시도해 주세요."</div>
-        </div>
-        <div class="dont-box">
-          <div class="verdict verdict-dont">Don't</div>
-          <div class="verdict-text">"처리 중. 기다리시오."<br><br>"신청 완료!!!"<br><br>"오류가 발생했습니다. 관리자에게 문의하세요."</div>
-        </div>
+        <div class="do-box"><div class="verdict verdict-do">✓ Do</div><div class="verdict-text">"입력하신 정보를 확인 중입니다."<br><br>"신청이 성공적으로 완료되었습니다."<br><br>"잠시 후 다시 시도해 주세요."</div></div>
+        <div class="dont-box"><div class="verdict verdict-dont">✗ Don't</div><div class="verdict-text">"처리 중. 기다리시오."<br><br>"신청 완료!!!"<br><br>"오류가 발생했습니다. 관리자에게 문의하세요."</div></div>
       </div>
     </section>
 
-    <!-- 버튼 섹션 -->
+    <!-- 버튼 & CTA -->
     <section class="guideline-section reveal" id="button">
       <div class="guideline-meta">
         <span class="guideline-tag">Button &amp; CTA</span>
@@ -1752,7 +2367,7 @@ body {
       </div>
     </section>
 
-    <!-- 폼 & 입력 섹션 -->
+    <!-- 폼 & 입력 -->
     <section class="guideline-section reveal" id="form">
       <div class="guideline-meta">
         <span class="guideline-tag">Form &amp; Input</span>
@@ -1781,7 +2396,7 @@ body {
       </div>
     </section>
 
-    <!-- 에러 섹션 -->
+    <!-- 에러 & 알림 -->
     <section class="guideline-section reveal" id="error">
       <div class="guideline-meta">
         <span class="guideline-tag">Error &amp; Alert</span>
@@ -1805,7 +2420,7 @@ body {
       </div>
     </section>
 
-    <!-- 도움말 & 온보딩 섹션 -->
+    <!-- 도움말 & 온보딩 -->
     <section class="guideline-section reveal" id="help">
       <div class="guideline-meta">
         <span class="guideline-tag">Help &amp; Onboarding</span>
@@ -1827,7 +2442,7 @@ body {
       </div>
     </section>
 
-    <!-- 상태 메시지 섹션 -->
+    <!-- 상태 메시지 -->
     <section class="guideline-section reveal" id="loading">
       <div class="guideline-meta">
         <span class="guideline-tag">Status Messages</span>
@@ -1855,7 +2470,7 @@ body {
       </div>
     </section>
 
-    <!-- 접근성 & 국제화 섹션 -->
+    <!-- 접근성 & 국제화 -->
     <section class="guideline-section reveal" id="accessibility">
       <div class="guideline-meta">
         <span class="guideline-tag">Accessibility &amp; i18n</span>
@@ -1882,137 +2497,88 @@ body {
       </div>
     </section>
 
-    <!-- 체크리스트 섹션 -->
-    <section class="checklist-section" id="checklist">
-      <div class="section-wrap">
-        <div class="checklist-inner reveal">
-          <div class="hero-eyebrow" style="color:var(--gold);margin-bottom:16px">Checklist</div>
-          <h2 class="checklist-title">UX Writing 체크리스트</h2>
-          <p class="checklist-desc">문구 작성 후 배포 전 최종 검토 항목입니다.</p>
-          <div id="checklistItems">
-            <div class="check-item" onclick="toggleCheck(this)">
-              <div class="check-box">✓</div>
-              <span class="check-text">버튼 레이블은 동사형인가?</span>
-            </div>
-            <div class="check-item" onclick="toggleCheck(this)">
-              <div class="check-box">✓</div>
-              <span class="check-text">오류 메시지에 해결 방법이 포함되어 있는가?</span>
-            </div>
-            <div class="check-item" onclick="toggleCheck(this)">
-              <div class="check-box">✓</div>
-              <span class="check-text">플레이스홀더를 레이블 대체로 사용하지 않았는가?</span>
-            </div>
-            <div class="check-item" onclick="toggleCheck(this)">
-              <div class="check-box">✓</div>
-              <span class="check-text">필수/선택 항목이 명확하게 구분되어 있는가?</span>
-            </div>
-            <div class="check-item" onclick="toggleCheck(this)">
-              <div class="check-box">✓</div>
-              <span class="check-text">모든 아이콘 버튼에 aria-label이 있는가?</span>
-            </div>
-            <div class="check-item" onclick="toggleCheck(this)">
-              <div class="check-box">✓</div>
-              <span class="check-text">용어가 전체 서비스에서 일관되게 사용되는가?</span>
-            </div>
-            <div class="check-item" onclick="toggleCheck(this)">
-              <div class="check-box">✓</div>
-              <span class="check-text">사용자를 탓하는 표현이 없는가?</span>
-            </div>
-            <div class="check-item" onclick="toggleCheck(this)">
-              <div class="check-box">✓</div>
-              <span class="check-text">빈 상태에 다음 행동 유도 문구가 있는가?</span>
-            </div>
-          </div>
-          <div class="checklist-complete" id="checklistComplete">
-            모든 항목을 확인했습니다! 배포 준비 완료
-          </div>
-        </div>
-      </div>
-    </section>
-
   </div>
-</main>
+</div>
 
-<!-- CTA 섹션 -->
-<section class="cta-section">
-  <h2 class="cta-title">지금 바로 <em>시작하세요</em></h2>
-  <p class="cta-desc">KRDS UX Writing 가이드라인을 적용해 더 나은 사용자 경험을 만드세요.</p>
-  <div class="cta-actions">
-    <a href="#guide-cards" class="btn-primary">가이드라인 둘러보기</a>
-    <a href="https://www.krds.go.kr" target="_blank" rel="noopener" class="btn-secondary">공식 KRDS 사이트</a>
+<!-- 체크리스트 섹션 -->
+<section class="checklist-section" id="checklist">
+  <div class="container">
+    <div class="checklist-inner reveal">
+      <p class="section-eyebrow" style="margin-bottom:16px">Checklist</p>
+      <h2 class="checklist-title">UX Writing 체크리스트</h2>
+      <p class="checklist-desc">문구 작성 후 배포 전 최종 검토 항목입니다.</p>
+      <div id="checklistItems">
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">버튼 레이블은 동사형인가?</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">오류 메시지에 해결 방법이 포함되어 있는가?</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">플레이스홀더를 레이블 대체로 사용하지 않았는가?</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">필수/선택 항목이 명확하게 구분되어 있는가?</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">모든 아이콘 버튼에 aria-label이 있는가?</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">용어가 전체 서비스에서 일관되게 사용되는가?</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">사용자를 탓하는 표현이 없는가?</span></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">빈 상태에 다음 행동 유도 문구가 있는가?</span></div>
+      </div>
+      <div class="checklist-complete" id="checklistComplete">모든 항목을 확인했습니다! 배포 준비 완료 🎉</div>
+    </div>
   </div>
 </section>
 
-<!-- 푸터 -->
-<footer class="footer">
-  <div class="footer-inner">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <div class="footer-logo">KRDS<span style="color:var(--gold)">.</span>UX</div>
-        <p class="footer-tagline">한국형 디자인 시스템 기반<br>UX Writing 가이드라인<br>디지털 정부서비스 UI·UX 가이드라인 2025 기반</p>
-      </div>
-      <div class="footer-col">
-        <div class="footer-col-title">가이드라인</div>
-        <a href="#principles" class="footer-link" onclick="scrollToSection('principles')">언어 원칙</a>
-        <a href="#voice" class="footer-link" onclick="scrollToSection('voice')">브랜드 보이스</a>
-        <a href="#button" class="footer-link" onclick="scrollToSection('button')">버튼 &amp; CTA</a>
-        <a href="#error" class="footer-link" onclick="scrollToSection('error')">에러 &amp; 알림</a>
-        <a href="#checklist" class="footer-link" onclick="scrollToSection('checklist')">체크리스트</a>
-      </div>
-      <div class="footer-col">
-        <div class="footer-col-title">리소스</div>
-        <a href="https://www.krds.go.kr" target="_blank" rel="noopener" class="footer-link">공식 KRDS</a>
-        <a href="https://github.com/thenisaid/krds-ux-writing" target="_blank" rel="noopener" class="footer-link">GitHub</a>
-      </div>
-      <div class="footer-col">
-        <div class="footer-col-title">준수 기준</div>
-        <a href="#" class="footer-link">KWCAG 2.2</a>
-        <a href="#" class="footer-link">WCAG 2.1 AA</a>
-        <a href="#" class="footer-link">KRDS 2025.08</a>
-      </div>
+<!-- CTA 배너 -->
+<section class="cta-banner" id="cta" aria-label="지금 바로 적용하기">
+  <div class="container cta-banner-inner">
+    <p class="cta-eyebrow">준비되셨나요?</p>
+    <h2 class="cta-title">지금 바로 적용해 보세요</h2>
+    <p class="cta-desc">KRDS UX Writing 가이드라인으로 더 나은 정부 서비스 언어를 만들어보세요</p>
+    <div class="cta-actions">
+      <a href="#principles" class="btn cta-btn-primary">가이드라인 시작하기</a>
+      <a href="#checklist" class="btn cta-btn-ghost">체크리스트 확인하기</a>
     </div>
-    <div class="footer-bottom">
-      <p class="footer-copy">© 2026 KRDS UX Writing Guidelines. 디지털 정부서비스 UI·UX 가이드라인 기반.</p>
-      <p class="footer-copy">Korea Design System · KWCAG 2.2 · WCAG 2.1 AA</p>
+  </div>
+</section>
+
+</main>
+
+<!-- 푸터 -->
+<footer class="footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col footer-brand">
+      <p class="footer-logo">KRDS UX Writing<span class="footer-logo-dot"></span></p>
+      <p class="footer-tagline">정부 서비스의 언어 기준을 만듭니다</p>
+      <p class="footer-copy">&copy; 2025 KRDS UX Writing Guide</p>
+    </div>
+    <div class="footer-col">
+      <h3 class="footer-heading">가이드라인</h3>
+      <ul class="footer-links">
+        <li><a href="#principles">언어 원칙</a></li>
+        <li><a href="#voice">브랜드 보이스</a></li>
+        <li><a href="#tone">톤앤매너</a></li>
+        <li><a href="#button">버튼 &amp; CTA</a></li>
+        <li><a href="#form">폼 &amp; 입력</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h3 class="footer-heading">패턴 라이브러리</h3>
+      <ul class="footer-links">
+        <li><a href="#error">에러 &amp; 알림</a></li>
+        <li><a href="#help">도움말 &amp; 온보딩</a></li>
+        <li><a href="#loading">로딩 &amp; 진행</a></li>
+        <li><a href="#accessibility">접근성</a></li>
+        <li><a href="#checklist">체크리스트</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h3 class="footer-heading">준수 기준</h3>
+      <ul class="footer-links">
+        <li><a href="https://www.krds.go.kr" target="_blank" rel="noopener">KRDS 디자인 시스템</a></li>
+        <li><a href="#accessibility">KWCAG 2.2</a></li>
+        <li><a href="https://thenisaid.github.io/krds-ux-writing/" target="_blank" rel="noopener">서비스 바로가기</a></li>
+      </ul>
+      <p class="footer-version">v2.0 · 2025년 기준</p>
     </div>
   </div>
 </footer>
 
-<!-- 추가 인라인 스타일: guideline-section 클래스 보완 -->
-<style>
-.guidelines-main { padding: 80px 0; background: var(--parchment); }
-.guideline-section { padding-top: 80px; border-bottom: 1px solid var(--border); padding-bottom: 60px; }
-.guideline-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-.guideline-tag { font-size: 9.5px; font-weight: 700; text-transform: uppercase; color: var(--gold); background: var(--gold-light); padding: 3px 10px; border-radius: 100px; border: 1px solid var(--border-gold); }
-.guideline-num { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--ink-muted); }
-.guideline-title { font-family: 'Noto Serif KR', serif; font-size: clamp(22px, 2.8vw, 30px); font-weight: 700; color: var(--navy); margin-bottom: 10px; }
-.guideline-desc { font-size: 14px; color: var(--ink-mid); max-width: 580px; line-height: 1.8; margin-bottom: 28px; }
-.guideline-card { border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; background: rgba(255,255,255,0.7); margin-bottom: 12px; box-shadow: var(--shadow-sm); }
-.guideline-card-title { font-size: 12.5px; font-weight: 700; color: var(--ink); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-.do-box { padding: 20px 22px; border-radius: 10px; background: var(--green-light); border: 1px solid rgba(42,107,74,0.15); border-top: 2px solid var(--green); }
-.dont-box { padding: 20px 22px; border-radius: 10px; background: var(--red-light); border: 1px solid rgba(139,42,42,0.15); border-top: 2px solid var(--red); }
-.verdict { font-size: 9.5px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-.verdict-do { color: var(--green); }
-.verdict-dont { color: var(--red); }
-.verdict-text { font-size: 13.5px; color: var(--ink); line-height: 1.75; }
-.rule-list { list-style: none; padding: 0; margin: 0; }
-.rule-item { display: flex; gap: 14px; align-items: flex-start; padding: 13px 0; border-bottom: 1px solid var(--border); }
-.rule-item:last-child { border-bottom: none; }
-.rule-num { width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: rgba(255,255,255,0.9); font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
-.rule-text { font-size: 13.5px; color: var(--ink); line-height: 1.75; }
-.copy-example { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border: 1px solid var(--border); border-radius: 8px; background: rgba(255,255,255,0.5); margin-bottom: 6px; }
-.copy-text { flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--ink); line-height: 1.65; }
-.copy-btn { background: transparent; border: 1px solid var(--border); color: var(--ink-muted); padding: 4px 10px; border-radius: 100px; cursor: pointer; font-size: 10.5px; font-weight: 600; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
-.copy-btn:hover { background: var(--navy); color: white; border-color: var(--navy); }
-.example-label { font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--ink-muted); margin: 18px 0 8px; }
-@media (max-width: 768px) {
-  .grid-2 { grid-template-columns: 1fr; }
-  .do-dont { grid-template-columns: 1fr; }
-}
-</style>
 <script>
+// ===== SEARCH DATA & FUNCTIONS =====
 const searchData = [
   {id:'principles', tag:'언어 원칙', text:'6가지 핵심 원칙 사용자 중심 간결 능동태 일관된 용어 긍정적'},
   {id:'voice', tag:'브랜드 보이스', text:'신뢰감 전문적 친근한 명확 해결 중심 배려'},
@@ -2021,7 +2587,13 @@ const searchData = [
   {id:'form', tag:'폼 & 입력', text:'플레이스홀더 필수 선택 개인정보 생년월일 성별 입력 제한'},
   {id:'error', tag:'에러 & 알림', text:'오류 메시지 4대 원칙 네트워크 시스템 권한 접근 유효성'},
   {id:'help', tag:'도움말 패턴', text:'안내 영역 인라인 텍스트 툴팁 코치마크 맥락적'},
+  {id:'nav-section', tag:'내비게이션', text:'메뉴 레이블 브레드크럼 단계 표시'},
+  {id:'onboarding', tag:'온보딩', text:'환영 문구 시작 화면 단계별 진행 처음 사용자'},
+  {id:'empty', tag:'빈 상태', text:'신청 내역 없음 검색 결과 없음 행동 유도'},
+  {id:'loading', tag:'로딩 & 진행', text:'불러오는 중 처리 중 업로드 대기 진행'},
+  {id:'feedback', tag:'성공 & 실패', text:'완료 저장 비밀번호 결제 실패 삭제 확인'},
   {id:'accessibility', tag:'접근성', text:'KWCAG WCAG aria-label 스크린리더 색상 대비 초점'},
+  {id:'i18n', tag:'국제화', text:'다국어 번역 날짜 형식 화폐 전화번호 i18n'},
   {id:'checklist', tag:'체크리스트', text:'필수 권장 버튼 레이블 오류 aria 일관성 빈 상태'},
 ];
 
@@ -2029,99 +2601,314 @@ function openSearch() {
   document.getElementById('searchModal').classList.add('open');
   setTimeout(() => document.getElementById('searchInput').focus(), 50);
 }
+
 function closeSearch() {
   document.getElementById('searchModal').classList.remove('open');
   document.getElementById('searchInput').value = '';
   document.getElementById('searchResults').innerHTML = '';
 }
-document.getElementById('searchModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeSearch();
-});
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
-  if (e.key === 'Escape') closeSearch();
-});
-document.getElementById('searchInput').addEventListener('input', function() {
-  const q = this.value.trim().toLowerCase();
-  const res = document.getElementById('searchResults');
-  if (!q) { res.innerHTML = ''; return; }
-  const hits = searchData.filter(d => d.text.toLowerCase().includes(q) || d.tag.toLowerCase().includes(q));
-  if (!hits.length) {
-    res.innerHTML = '<div style="padding:20px 24px;color:var(--ink-muted);font-size:13px">검색 결과가 없습니다.</div>';
-    return;
-  }
-  res.innerHTML = hits.map(h => `
-    <div class="search-result-item" onclick="scrollToSection('${h.id}');closeSearch()">
-      <div class="search-result-tag">${h.tag}</div>
-      <div class="search-result-text">${h.tag} 가이드라인 보기</div>
-    </div>`).join('');
-});
 
-function switchTab(name) {
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  const targetContent = document.getElementById('tab-' + name);
-  if (targetContent) targetContent.classList.add('active');
-  event.currentTarget.classList.add('active');
+// ===== PERSONA TAB SWITCHING =====
+function switchPersonaTab(name, btn) {
+  document.querySelectorAll('.persona-tab-btn').forEach(b => {
+    b.classList.remove('active');
+    b.setAttribute('aria-selected', 'false');
+  });
+  document.querySelectorAll('.persona-tab-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  btn.setAttribute('aria-selected', 'true');
+  const target = document.getElementById('persona-' + name);
+  if (target) target.classList.add('active');
 }
 
+// ===== SCROLL NAVIGATION =====
 function scrollToSection(id) {
   const el = document.getElementById(id);
   if (!el) return;
-  const top = el.getBoundingClientRect().top + window.scrollY - 90;
+  const top = el.getBoundingClientRect().top + window.scrollY - 86;
   window.scrollTo({ top, behavior: 'smooth' });
 }
 
-window.addEventListener('scroll', () => {
-  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
-  document.getElementById('scrollFill').style.width = Math.min(pct, 100) + '%';
-}, { passive: true });
-
-const revealObserver = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-      revealObserver.unobserve(e.target);
+// ===== GNB SCROLL EFFECT =====
+function initGnbScroll() {
+  const gnb = document.getElementById('gnb');
+  if (!gnb) return;
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 10) {
+      gnb.classList.add('scrolled');
+    } else {
+      gnb.classList.remove('scrolled');
     }
-  });
-}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+  }, { passive: true });
+}
 
-const staggerObserver = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      const items = e.target.querySelectorAll('.stagger-item');
-      items.forEach((item, i) => {
-        setTimeout(() => item.classList.add('visible'), i * 80);
-      });
-      staggerObserver.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.1 });
+// ===== SCROLL PROGRESS BAR =====
+function initScrollProgress() {
+  const fill = document.getElementById('scrollFill');
+  if (!fill) return;
+  window.addEventListener('scroll', () => {
+    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    fill.style.width = Math.min(pct, 100) + '%';
+  }, { passive: true });
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-  const cardsGrid = document.getElementById('guide-cards-grid');
-  if (cardsGrid) staggerObserver.observe(cardsGrid);
-});
+// ===== INTERSECTION OBSERVER (REVEAL + STAGGER) =====
+function initReveal() {
+  const revealObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
 
+  const staggerObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const items = e.target.querySelectorAll('.stagger-item');
+        items.forEach((item, i) => {
+          setTimeout(() => item.classList.add('visible'), i * 80);
+        });
+        staggerObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+  const grid = document.getElementById('guideGrid');
+  if (grid) staggerObs.observe(grid);
+}
+
+// ===== CHECKLIST =====
 function toggleCheck(item) {
   item.classList.toggle('checked');
   const box = item.querySelector('.check-box');
   if (item.classList.contains('checked')) {
-    box.style.background = 'var(--green)';
-    box.style.borderColor = 'var(--green)';
+    box.style.background = 'var(--success)';
+    box.style.borderColor = 'var(--success)';
     box.style.color = 'white';
   } else {
     box.style.background = 'transparent';
-    box.style.borderColor = 'var(--border-gold)';
+    box.style.borderColor = 'var(--border)';
     box.style.color = 'transparent';
   }
   const all = document.querySelectorAll('.check-item');
   const checked = document.querySelectorAll('.check-item.checked');
-  if (all.length === checked.length) {
-    document.getElementById('checklistComplete').classList.add('show');
+  const complete = document.getElementById('checklistComplete');
+  if (complete) {
+    if (all.length === checked.length && checked.length > 0) {
+      complete.classList.add('show');
+    } else {
+      complete.classList.remove('show');
+    }
+  }
+}
+
+// ===== COPY FUNCTION =====
+function cp(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const prev = btn.textContent;
+    btn.textContent = '✓ 복사됨';
+    btn.classList.add('copied');
+    btn.animate([
+      { transform: 'scale(1)' },
+      { transform: 'scale(1.1)' },
+      { transform: 'scale(0.97)' },
+      { transform: 'scale(1)' }
+    ], { duration: 300, easing: 'ease-out' });
+    setTimeout(() => {
+      btn.textContent = prev;
+      btn.classList.remove('copied');
+    }, 1500);
+  });
+}
+
+// ===== DARK MODE =====
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  const icon = document.getElementById('themeIcon');
+  if (icon) icon.textContent = next === 'dark' ? '☀️' : '🌙';
+  localStorage.setItem('krds-theme', next);
+}
+
+(function initTheme() {
+  const saved = localStorage.getItem('krds-theme') ||
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', saved);
+  document.addEventListener('DOMContentLoaded', () => {
+    const icon = document.getElementById('themeIcon');
+    if (icon) icon.textContent = saved === 'dark' ? '☀️' : '🌙';
+  });
+})();
+
+// ===== DOMCONTENTLOADED: SEARCH MODAL =====
+document.addEventListener('DOMContentLoaded', function() {
+  const modal = document.getElementById('searchModal');
+  if (modal) modal.addEventListener('click', e => { if (e.target === e.currentTarget) closeSearch(); });
+  const input = document.getElementById('searchInput');
+  if (input) input.addEventListener('input', function() {
+    const q = this.value.trim().toLowerCase();
+    const res = document.getElementById('searchResults');
+    if (!q) { res.innerHTML = ''; return; }
+    const hits = searchData.filter(d => d.text.toLowerCase().includes(q) || d.tag.toLowerCase().includes(q));
+    if (!hits.length) {
+      res.innerHTML = '<div style="padding:20px 24px;color:var(--text-muted);font-size:14px">검색 결과가 없습니다.</div>';
+      return;
+    }
+    res.innerHTML = hits.map(h => `
+      <div class="search-result-item" onclick="scrollToSection('${h.id}');closeSearch()">
+        <div class="search-result-tag">${h.tag}</div>
+        <div class="search-result-text">${h.tag} 가이드라인 보기</div>
+      </div>`).join('');
+  });
+});
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+  if (e.key === 'Escape') closeSearch();
+});
+
+// ===== DOMCONTENTLOADED: ANCHOR LINKS =====
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href').slice(1);
+      if (!id) return;
+      const el = document.getElementById(id);
+      if (el) {
+        e.preventDefault();
+        const top = el.getBoundingClientRect().top + window.scrollY - 86;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+});
+
+// ===== DOMCONTENTLOADED: INIT =====
+document.addEventListener('DOMContentLoaded', function() {
+  initGnbScroll();
+  initScrollProgress();
+  initReveal();
+});
+
+// ===== GNB DROPDOWN TOGGLE =====
+function initGnbDropdowns() {
+  document.querySelectorAll('.gnb-item.has-dropdown .gnb-link').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const item = btn.closest('.gnb-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.gnb-item.has-dropdown').forEach(i => {
+        i.classList.remove('open');
+        const b = i.querySelector('.gnb-link');
+        if (b) b.setAttribute('aria-expanded', 'false');
+      });
+      if (!isOpen) {
+        item.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.gnb-item.has-dropdown').forEach(i => {
+      i.classList.remove('open');
+      const b = i.querySelector('.gnb-link');
+      if (b) b.setAttribute('aria-expanded', 'false');
+    });
+  });
+}
+
+// ===== SEARCH EVENT LISTENERS =====
+document.addEventListener('DOMContentLoaded', () => {
+  initGnbDropdowns();
+  initGnbScroll();
+  initReveal();
+  initScrollProgress();
+
+  // Theme init
+  const saved = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  updateThemeIcon(saved);
+
+  // Search modal events
+  const modal = document.getElementById('searchModal');
+  if (modal) {
+    modal.addEventListener('click', e => {
+      if (e.target === modal) closeSearch();
+    });
+  }
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+    if (e.key === 'Escape') closeSearch();
+  });
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      const q = this.value.trim().toLowerCase();
+      const res = document.getElementById('searchResults');
+      if (!q) { res.innerHTML = ''; return; }
+      const hits = searchData.filter(d => d.text.toLowerCase().includes(q) || d.tag.toLowerCase().includes(q));
+      if (!hits.length) {
+        res.innerHTML = '<div style="padding:20px 24px;color:var(--text-muted);font-size:13px">검색 결과가 없습니다.</div>';
+        return;
+      }
+      res.innerHTML = hits.map(h => `
+        <div class="search-result-item" role="option" onclick="scrollToSection('${h.id}');closeSearch()">
+          <div class="search-result-tag">${h.tag}</div>
+          <div class="search-result-text">${h.tag} 가이드라인 보기</div>
+        </div>`).join('');
+    });
+  }
+
+  // Anchor smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href').slice(1);
+      const el = document.getElementById(id);
+      if (el) {
+        e.preventDefault();
+        const top = el.getBoundingClientRect().top + window.scrollY - 86;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+});
+
+function updateThemeIcon(theme) {
+  const sun = document.querySelector('.icon-sun');
+  const moon = document.querySelector('.icon-moon');
+  if (!sun || !moon) return;
+  if (theme === 'dark') {
+    sun.style.display = 'none';
+    moon.style.display = 'block';
   } else {
-    document.getElementById('checklistComplete').classList.remove('show');
+    sun.style.display = 'block';
+    moon.style.display = 'none';
+  }
+}
+
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  updateThemeIcon(newTheme);
+}
+
+function toggleCheck(item) {
+  item.classList.toggle('checked');
+  const all = document.querySelectorAll('.check-item');
+  const checked = document.querySelectorAll('.check-item.checked');
+  const complete = document.getElementById('checklistComplete');
+  if (all.length === checked.length) {
+    if (complete) complete.classList.add('show');
+  } else {
+    if (complete) complete.classList.remove('show');
   }
 }
 
@@ -2129,52 +2916,18 @@ function cp(btn, text) {
   navigator.clipboard.writeText(text).then(() => {
     const prev = btn.textContent;
     btn.textContent = '✓ 복사됨';
-    btn.style.background = 'var(--green)';
-    btn.style.color = 'white';
-    btn.style.borderColor = 'var(--green)';
+    btn.classList.add('copied');
     btn.animate([
       { transform: 'scale(1)' },
-      { transform: 'scale(1.12)' },
-      { transform: 'scale(0.97)' },
+      { transform: 'scale(1.1)' },
       { transform: 'scale(1)' }
-    ], { duration: 360, easing: 'ease-out' });
+    ], { duration: 300, easing: 'ease-out' });
     setTimeout(() => {
       btn.textContent = prev;
-      btn.style.background = '';
-      btn.style.color = '';
-      btn.style.borderColor = '';
+      btn.classList.remove('copied');
     }, 1600);
   });
 }
-
-function toggleTheme() {
-  const html = document.documentElement;
-  const isDark = html.getAttribute('data-theme') === 'dark';
-  const newTheme = isDark ? 'light' : 'dark';
-  html.setAttribute('data-theme', newTheme);
-  document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
-  localStorage.setItem('krds-theme', newTheme);
-}
-
-(function() {
-  const saved = localStorage.getItem('krds-theme') ||
-    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  document.documentElement.setAttribute('data-theme', saved);
-  const icon = document.getElementById('themeIcon');
-  if (icon) icon.textContent = saved === 'dark' ? '☀️' : '🌙';
-})();
-
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    const id = a.getAttribute('href').slice(1);
-    const el = document.getElementById(id);
-    if (el) {
-      e.preventDefault();
-      const top = el.getBoundingClientRect().top + window.scrollY - 90;
-      window.scrollTo({ top, behavior: 'smooth' });
-    }
-  });
-});
 </script>
 </body>
 </html>
