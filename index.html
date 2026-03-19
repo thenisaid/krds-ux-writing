@@ -2542,13 +2542,13 @@ tr:hover td {
       </div>
     </section>
 
-    <!-- 상태 메시지 -->
+    <!-- 로딩 & 진행 -->
     <section class="guideline-section reveal" id="loading">
       <div class="guideline-meta">
         <span class="guideline-tag">Status Messages</span>
         <span class="guideline-num">08</span>
       </div>
-      <h2 class="guideline-title">상태 메시지</h2>
+      <h2 class="guideline-title">로딩 &amp; 진행</h2>
       <p class="guideline-desc">로딩, 성공, 실패 등 처리 상태를 사용자에게 명확하게 전달합니다.</p>
       <div class="guideline-card">
         <div class="guideline-card-title">로딩 &amp; 진행</div>
@@ -2643,7 +2643,7 @@ tr:hover td {
     <div class="footer-col footer-brand">
       <p class="footer-logo">KRDS UX Writing<span class="footer-logo-dot"></span></p>
       <p class="footer-tagline">정부 서비스의 언어 기준을 만듭니다</p>
-      <p class="footer-copy">&copy; 2025 KRDS UX Writing Guide</p>
+      <p class="footer-copy">&copy; 2026 KRDS UX Writing Guide</p>
     </div>
     <div class="footer-col">
       <h3 class="footer-heading">가이드라인</h3>
@@ -2817,29 +2817,29 @@ function toggleCheck(item) {
     }
   }
   // Save state to localStorage
-  const checkedIndices = [];
-  all.forEach((el, idx) => { if (el.classList.contains('checked')) checkedIndices.push(idx); });
-  localStorage.setItem('krds-checklist', JSON.stringify(checkedIndices));
+  all.forEach((el, idx) => {
+    localStorage.setItem('krds-checklist-' + idx, el.classList.contains('checked') ? 'checked' : '');
+  });
 }
 
 function initChecklist() {
-  const saved = localStorage.getItem('krds-checklist');
-  if (!saved) return;
-  const checkedIndices = JSON.parse(saved);
   const all = document.querySelectorAll('.check-item');
-  checkedIndices.forEach(idx => {
-    const item = all[idx];
-    if (!item) return;
-    item.classList.add('checked');
-    const box = item.querySelector('.check-box');
-    if (box) {
-      box.style.background = 'var(--success)';
-      box.style.borderColor = 'var(--success)';
-      box.style.color = 'white';
+  let checkedCount = 0;
+  all.forEach((item, idx) => {
+    const saved = localStorage.getItem('krds-checklist-' + idx);
+    if (saved === 'checked') {
+      item.classList.add('checked');
+      const box = item.querySelector('.check-box');
+      if (box) {
+        box.style.background = 'var(--success)';
+        box.style.borderColor = 'var(--success)';
+        box.style.color = 'white';
+      }
+      checkedCount++;
     }
   });
   const complete = document.getElementById('checklistComplete');
-  if (complete && all.length > 0 && checkedIndices.length === all.length) {
+  if (complete && all.length > 0 && checkedCount === all.length) {
     complete.classList.add('show');
   }
 }
