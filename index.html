@@ -481,9 +481,14 @@ button {
   white-space: nowrap;
 }
 
-.gnb-dropdown-item:hover {
+.gnb-dropdown-item:hover,
+.gnb-dropdown-item.active {
   background: var(--primary-light);
   color: var(--primary);
+}
+
+.gnb-dropdown-item.active {
+  font-weight: 600;
 }
 
 .gnb-utils {
@@ -3025,10 +3030,83 @@ function initGnbDropdowns() {
   });
 }
 
+// ===== SCROLL SPY =====
+function initScrollSpy() {
+  // Map section id → dropdown item href
+  const sectionToDropdownMap = {
+    principles: '#principles',
+    voice: '#voice',
+    tone: '#tone',
+    button: '#button',
+    form: '#form',
+    error: '#error',
+    help: '#help',
+    loading: '#loading',
+    accessibility: '#accessibility',
+    checklist: '#checklist'
+  };
+
+  function clearActiveStates() {
+    document.querySelectorAll('.gnb-item.active').forEach(i => i.classList.remove('active'));
+    document.querySelectorAll('.gnb-dropdown-item.active').forEach(a => a.classList.remove('active'));
+  }
+
+  function setActiveSection(sectionId) {
+    clearActiveStates();
+    const href = sectionToDropdownMap[sectionId];
+    if (!href) return;
+
+    // Find the dropdown item with matching href
+    const dropdownItem = document.querySelector('.gnb-dropdown-item[href="' + href + '"]');
+    if (dropdownItem) {
+      dropdownItem.classList.add('active');
+      // Also activate the parent gnb-item
+      const parentItem = dropdownItem.closest('.gnb-item');
+      if (parentItem) parentItem.classList.add('active');
+    } else {
+      // Non-dropdown link (e.g. accessibility)
+      const directLink = document.querySelector('.gnb-link[href="' + href + '"]');
+      if (directLink) {
+        const parentItem = directLink.closest('.gnb-item');
+        if (parentItem) parentItem.classList.add('active');
+      }
+    }
+  }
+
+  const sections = document.querySelectorAll('.guideline-section[id], .checklist-section[id]');
+  if (!sections.length) return;
+
+  // Track which section is most visible
+  const visibleSections = new Map();
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        visibleSections.set(e.target.id, e.intersectionRatio);
+      } else {
+        visibleSections.delete(e.target.id);
+      }
+    });
+
+    if (visibleSections.size === 0) return;
+
+    // Pick the section with highest intersection ratio
+    let topId = null;
+    let topRatio = 0;
+    visibleSections.forEach((ratio, id) => {
+      if (ratio > topRatio) { topRatio = ratio; topId = id; }
+    });
+    if (topId) setActiveSection(topId);
+  }, { threshold: [0, 0.1, 0.25, 0.5], rootMargin: '-60px 0px -30% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+}
+
 // ===== GNB DROPDOWNS INIT =====
 document.addEventListener('DOMContentLoaded', function() {
   initGnbDropdowns();
   initAnchorButtons();
+  initScrollSpy();
 });
 </script>
 </body>
