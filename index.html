@@ -2084,6 +2084,11 @@ tr:hover td {
   .do-dont { grid-template-columns: 1fr; }
   .checklist-inner { padding: 28px 20px; }
 }
+.anchor-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: none; background: transparent; cursor: pointer; color: var(--text-muted); opacity: 0; border-radius: 6px; font-size: 14px; vertical-align: middle; margin-left: 8px; transition: opacity 0.2s, color 0.2s, background 0.15s; }
+.anchor-btn:hover { opacity: 1 !important; color: var(--primary); background: var(--bg-2); }
+.guideline-title:hover .anchor-btn, .anchor-btn:focus { opacity: 1; }
+#anchor-toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(12px); background: var(--text-primary); color: var(--bg); padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; pointer-events: none; opacity: 0; transition: opacity 0.2s, transform 0.2s; z-index: 9999; white-space: nowrap; }
+#anchor-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
@@ -2824,6 +2829,36 @@ function initChecklist() {
 }
 
 // ===== COPY FUNCTION =====
+// ===== ANCHOR LINK COPY =====
+function copyAnchorLink(sectionId) {
+  const url = window.location.href.split('#')[0] + '#' + sectionId;
+  navigator.clipboard.writeText(url).then(() => {
+    let toast = document.getElementById('anchor-toast');
+    toast.classList.add('show');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => { toast.classList.remove('show'); }, 2500);
+  });
+}
+
+function initAnchorButtons() {
+  const toast = document.createElement('div');
+  toast.id = 'anchor-toast';
+  toast.textContent = '🔗 링크 복사됨';
+  document.body.appendChild(toast);
+
+  document.querySelectorAll('.guideline-section[id]').forEach(section => {
+    const h2 = section.querySelector('h2.guideline-title');
+    if (!h2) return;
+    const btn = document.createElement('button');
+    btn.className = 'anchor-btn';
+    btn.setAttribute('aria-label', '섹션 링크 복사');
+    btn.setAttribute('title', '섹션 링크 복사');
+    btn.innerHTML = '🔗';
+    btn.addEventListener('click', () => copyAnchorLink(section.id));
+    h2.appendChild(btn);
+  });
+}
+
 function cp(btn, text) {
   navigator.clipboard.writeText(text).then(() => {
     const prev = btn.textContent;
@@ -2993,6 +3028,7 @@ function initGnbDropdowns() {
 // ===== GNB DROPDOWNS INIT =====
 document.addEventListener('DOMContentLoaded', function() {
   initGnbDropdowns();
+  initAnchorButtons();
 });
 </script>
 </body>
