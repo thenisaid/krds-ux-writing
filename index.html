@@ -2123,7 +2123,7 @@ tr:hover td {
     <div class="search-footer">
       <span>↵ 이동</span>
       <span>ESC 닫기</span>
-      <span>⌘K 열기</span>
+      <span id="searchShortcutHint">⌘K 열기</span>
     </div>
   </div>
 </div>
@@ -2146,6 +2146,8 @@ tr:hover td {
               <li><a href="#principles" class="gnb-dropdown-item">언어 원칙</a></li>
               <li><a href="#voice" class="gnb-dropdown-item">브랜드 보이스</a></li>
               <li><a href="#tone" class="gnb-dropdown-item">톤앤매너</a></li>
+              <li><a href="#button" class="gnb-dropdown-item">버튼 &amp; CTA</a></li>
+              <li><a href="#form" class="gnb-dropdown-item">폼 &amp; 입력</a></li>
             </ul>
           </div>
         </li>
@@ -2170,7 +2172,7 @@ tr:hover td {
           <div class="gnb-dropdown" role="region" aria-label="품질 기준 서브메뉴">
             <ul class="gnb-dropdown-list" role="list">
               <li><a href="#checklist" class="gnb-dropdown-item">체크리스트</a></li>
-              <li><a href="#help" class="gnb-dropdown-item">온보딩 가이드</a></li>
+              <li><a href="#accessibility" class="gnb-dropdown-item">접근성 &amp; 국제화</a></li>
             </ul>
           </div>
         </li>
@@ -2680,21 +2682,21 @@ tr:hover td {
 <script>
 // ===== SEARCH DATA & FUNCTIONS =====
 const searchData = [
-  {id:'principles', tag:'언어 원칙', text:'6가지 핵심 원칙 사용자 중심 간결 능동태 일관된 용어 긍정적'},
-  {id:'voice', tag:'브랜드 보이스', text:'신뢰감 전문적 친근한 명확 해결 중심 배려'},
-  {id:'tone', tag:'톤앤매너', text:'상황별 톤 오류 경고 성공 온보딩 경어 사용'},
-  {id:'button', tag:'버튼 & CTA', text:'동사형 레이블 신청하기 결제하기 저장하기 제출하기 삭제'},
-  {id:'form', tag:'폼 & 입력', text:'플레이스홀더 필수 선택 개인정보 생년월일 성별 입력 제한'},
-  {id:'error', tag:'에러 & 알림', text:'오류 메시지 4대 원칙 네트워크 시스템 권한 접근 유효성'},
-  {id:'help', tag:'도움말 패턴', text:'안내 영역 인라인 텍스트 툴팁 코치마크 맥락적'},
-  {id:'nav-section', tag:'내비게이션', text:'메뉴 레이블 브레드크럼 단계 표시'},
-  {id:'onboarding', tag:'온보딩', text:'환영 문구 시작 화면 단계별 진행 처음 사용자'},
-  {id:'empty', tag:'빈 상태', text:'신청 내역 없음 검색 결과 없음 행동 유도'},
-  {id:'loading', tag:'로딩 & 진행', text:'불러오는 중 처리 중 업로드 대기 진행'},
+  {id:'principles', tag:'언어 원칙', text:'6가지 핵심 원칙 사용자 중심 간결 능동태 일관된 용어 긍정적 표현 명확성'},
+  {id:'voice', tag:'브랜드 보이스', text:'신뢰감 있고 전문적 친근하고 배려 해결 중심 명확 배려 톤 보이스'},
+  {id:'tone', tag:'톤앤매너', text:'상황별 톤 오류 상황 경고 주의 성공 완료 온보딩 빈 상태 경어 사용'},
+  {id:'button', tag:'버튼 & CTA', text:'동사형 레이블 신청하기 결제하기 저장하기 제출하기 삭제 CTA 버튼'},
+  {id:'form', tag:'폼 & 입력', text:'레이블 플레이스홀더 필수 선택 이메일 비밀번호 개인정보 생년월일 성별 입력 제한 폼 유효성'},
+  {id:'error', tag:'에러 & 알림', text:'오류 메시지 4대 원칙 네트워크 오류 시스템 권한 접근 유효성 폼 유효성 세션 만료'},
+  {id:'help', tag:'도움말 패턴', text:'온보딩 문구 빈 상태 안내 영역 인라인 텍스트 툴팁 코치마크 맥락적'},
+  {id:'nav-section', tag:'내비게이션', text:'내비게이션 상태 메뉴 레이블 브레드크럼 단계 표시'},
+  {id:'onboarding', tag:'온보딩', text:'온보딩 문구 환영 문구 시작 화면 단계별 진행 처음 사용자 빈 상태'},
+  {id:'empty', tag:'빈 상태', text:'신청 내역 없음 검색 결과 없음 행동 유도 빈 상태'},
+  {id:'loading', tag:'로딩 & 진행', text:'로딩 불러오는 중 처리 중 성공 완료 업로드 대기 진행 내비게이션 상태'},
   {id:'feedback', tag:'성공 & 실패', text:'완료 저장 비밀번호 결제 실패 삭제 확인'},
-  {id:'accessibility', tag:'접근성', text:'KWCAG WCAG aria-label 스크린리더 색상 대비 초점'},
-  {id:'i18n', tag:'국제화', text:'다국어 번역 날짜 형식 화폐 전화번호 i18n'},
-  {id:'checklist', tag:'체크리스트', text:'필수 권장 버튼 레이블 오류 aria 일관성 빈 상태'},
+  {id:'accessibility', tag:'접근성 & 국제화', text:'KWCAG WCAG aria-label alt 속성 스크린리더 색상 대비 초점 국제화 다국어 i18n'},
+  {id:'i18n', tag:'국제화', text:'다국어 번역 날짜 형식 화폐 전화번호 i18n 국제화'},
+  {id:'checklist', tag:'체크리스트', text:'동사형 해결 방법 일관성 필수 권장 버튼 레이블 오류 aria 빈 상태'},
 ];
 
 function openSearch() {
@@ -2905,6 +2907,8 @@ function updateThemeIcon(theme) {
     sun.style.display = 'block';
     moon.style.display = 'none';
   }
+  const btn = document.getElementById('themeToggle');
+  if (btn) btn.setAttribute('aria-label', theme === 'dark' ? '라이트모드로 전환' : '다크모드로 전환');
 }
 
 function toggleTheme() {
@@ -2921,6 +2925,18 @@ function toggleTheme() {
   document.documentElement.setAttribute('data-theme', saved);
   document.addEventListener('DOMContentLoaded', () => {
     updateThemeIcon(saved);
+  });
+})();
+
+// ===== OS 단축키 감지 =====
+(function initSearchShortcutHint() {
+  const isMac = navigator.platform.includes('Mac') || navigator.userAgent.includes('Mac');
+  const shortcutKey = isMac ? '⌘K' : 'Ctrl+K';
+  document.addEventListener('DOMContentLoaded', function() {
+    const hint = document.getElementById('searchShortcutHint');
+    if (hint) hint.textContent = shortcutKey + ' 열기';
+    const searchBtn = document.getElementById('searchBtn');
+    if (searchBtn) searchBtn.setAttribute('aria-label', '검색 열기 (' + shortcutKey + ')');
   });
 })();
 
