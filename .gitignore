@@ -1,0 +1,18 @@
+# Ralph 자율 에이전트 (로컬 전용)
+.ralph/
+
+# Playwright MCP 캐시
+.playwright-mcp/
+
+# 프로젝트 컨텍스트 메모 (세션별 임시)
+context.md
+
+# QA / 스크린샷
+krds-*.png
+qa-*.png
+
+# macOS
+.DS_Store
+
+# JSON 데이터 캐시
+krds-sections-data.json
