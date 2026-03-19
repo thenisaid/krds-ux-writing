@@ -2738,14 +2738,25 @@ function cp(btn, text) {
 }
 
 // ===== DARK MODE =====
+function updateThemeIcon(theme) {
+  const sun = document.querySelector('.icon-sun');
+  const moon = document.querySelector('.icon-moon');
+  if (!sun || !moon) return;
+  if (theme === 'dark') {
+    sun.style.display = 'none';
+    moon.style.display = 'block';
+  } else {
+    sun.style.display = 'block';
+    moon.style.display = 'none';
+  }
+}
+
 function toggleTheme() {
-  const html = document.documentElement;
-  const isDark = html.getAttribute('data-theme') === 'dark';
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const next = isDark ? 'light' : 'dark';
-  html.setAttribute('data-theme', next);
-  const icon = document.getElementById('themeIcon');
-  if (icon) icon.textContent = next === 'dark' ? '☀️' : '🌙';
+  document.documentElement.setAttribute('data-theme', next);
   localStorage.setItem('krds-theme', next);
+  updateThemeIcon(next);
 }
 
 (function initTheme() {
@@ -2753,8 +2764,7 @@ function toggleTheme() {
     (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   document.documentElement.setAttribute('data-theme', saved);
   document.addEventListener('DOMContentLoaded', () => {
-    const icon = document.getElementById('themeIcon');
-    if (icon) icon.textContent = saved === 'dark' ? '☀️' : '🌙';
+    updateThemeIcon(saved);
   });
 })();
 
@@ -2836,111 +2846,10 @@ function initGnbDropdowns() {
   });
 }
 
-// ===== SEARCH EVENT LISTENERS =====
-document.addEventListener('DOMContentLoaded', () => {
+// ===== GNB DROPDOWNS INIT =====
+document.addEventListener('DOMContentLoaded', function() {
   initGnbDropdowns();
-  initGnbScroll();
-  initReveal();
-  initScrollProgress();
-
-  // Theme init
-  const saved = localStorage.getItem('theme') || 'light';
-  document.documentElement.setAttribute('data-theme', saved);
-  updateThemeIcon(saved);
-
-  // Search modal events
-  const modal = document.getElementById('searchModal');
-  if (modal) {
-    modal.addEventListener('click', e => {
-      if (e.target === modal) closeSearch();
-    });
-  }
-  document.addEventListener('keydown', e => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
-    if (e.key === 'Escape') closeSearch();
-  });
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput) {
-    searchInput.addEventListener('input', function() {
-      const q = this.value.trim().toLowerCase();
-      const res = document.getElementById('searchResults');
-      if (!q) { res.innerHTML = ''; return; }
-      const hits = searchData.filter(d => d.text.toLowerCase().includes(q) || d.tag.toLowerCase().includes(q));
-      if (!hits.length) {
-        res.innerHTML = '<div style="padding:20px 24px;color:var(--text-muted);font-size:13px">검색 결과가 없습니다.</div>';
-        return;
-      }
-      res.innerHTML = hits.map(h => `
-        <div class="search-result-item" role="option" onclick="scrollToSection('${h.id}');closeSearch()">
-          <div class="search-result-tag">${h.tag}</div>
-          <div class="search-result-text">${h.tag} 가이드라인 보기</div>
-        </div>`).join('');
-    });
-  }
-
-  // Anchor smooth scroll
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      const id = a.getAttribute('href').slice(1);
-      const el = document.getElementById(id);
-      if (el) {
-        e.preventDefault();
-        const top = el.getBoundingClientRect().top + window.scrollY - 86;
-        window.scrollTo({ top, behavior: 'smooth' });
-      }
-    });
-  });
 });
-
-function updateThemeIcon(theme) {
-  const sun = document.querySelector('.icon-sun');
-  const moon = document.querySelector('.icon-moon');
-  if (!sun || !moon) return;
-  if (theme === 'dark') {
-    sun.style.display = 'none';
-    moon.style.display = 'block';
-  } else {
-    sun.style.display = 'block';
-    moon.style.display = 'none';
-  }
-}
-
-function toggleTheme() {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const newTheme = isDark ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
-  updateThemeIcon(newTheme);
-}
-
-function toggleCheck(item) {
-  item.classList.toggle('checked');
-  const all = document.querySelectorAll('.check-item');
-  const checked = document.querySelectorAll('.check-item.checked');
-  const complete = document.getElementById('checklistComplete');
-  if (all.length === checked.length) {
-    if (complete) complete.classList.add('show');
-  } else {
-    if (complete) complete.classList.remove('show');
-  }
-}
-
-function cp(btn, text) {
-  navigator.clipboard.writeText(text).then(() => {
-    const prev = btn.textContent;
-    btn.textContent = '✓ 복사됨';
-    btn.classList.add('copied');
-    btn.animate([
-      { transform: 'scale(1)' },
-      { transform: 'scale(1.1)' },
-      { transform: 'scale(1)' }
-    ], { duration: 300, easing: 'ease-out' });
-    setTimeout(() => {
-      btn.textContent = prev;
-      btn.classList.remove('copied');
-    }, 1600);
-  });
-}
 </script>
 </body>
 </html>
