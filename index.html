@@ -2716,6 +2716,32 @@ function toggleCheck(item) {
       complete.classList.remove('show');
     }
   }
+  // Save state to localStorage
+  const checkedIndices = [];
+  all.forEach((el, idx) => { if (el.classList.contains('checked')) checkedIndices.push(idx); });
+  localStorage.setItem('krds-checklist', JSON.stringify(checkedIndices));
+}
+
+function initChecklist() {
+  const saved = localStorage.getItem('krds-checklist');
+  if (!saved) return;
+  const checkedIndices = JSON.parse(saved);
+  const all = document.querySelectorAll('.check-item');
+  checkedIndices.forEach(idx => {
+    const item = all[idx];
+    if (!item) return;
+    item.classList.add('checked');
+    const box = item.querySelector('.check-box');
+    if (box) {
+      box.style.background = 'var(--success)';
+      box.style.borderColor = 'var(--success)';
+      box.style.color = 'white';
+    }
+  });
+  const complete = document.getElementById('checklistComplete');
+  if (complete && all.length > 0 && checkedIndices.length === all.length) {
+    complete.classList.add('show');
+  }
 }
 
 // ===== COPY FUNCTION =====
@@ -2817,6 +2843,7 @@ document.addEventListener('DOMContentLoaded', function() {
   initGnbScroll();
   initScrollProgress();
   initReveal();
+  initChecklist();
 });
 
 // ===== GNB DROPDOWN TOGGLE =====
