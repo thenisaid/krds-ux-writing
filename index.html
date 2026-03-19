@@ -2061,6 +2061,7 @@ tr:hover td {
 .search-result-item:last-child { border-bottom: none; }
 .search-result-tag { font-size: 10px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
 .search-result-text { font-size: 14px; color: var(--text-primary); }
+.search-result-text mark { background: #FEF08A; color: inherit; border-radius: 2px; padding: 0 1px; }
 .search-footer { padding: 12px 24px; border-top: 1px solid var(--border-light); display: flex; gap: 20px; font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
 
 /* SCROLL PROGRESS */
@@ -2886,10 +2887,16 @@ document.addEventListener('DOMContentLoaded', function() {
       res.innerHTML = '<div style="padding:20px 24px;color:var(--text-muted);font-size:14px">검색 결과가 없습니다.</div>';
       return;
     }
+    const escapeHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const highlight = (text, query) => {
+      const escaped = escapeHtml(text);
+      const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+      return escaped.replace(regex, m => `<mark>${m}</mark>`);
+    };
     res.innerHTML = hits.map(h => `
       <div class="search-result-item" onclick="scrollToSection('${h.id}');closeSearch()">
-        <div class="search-result-tag">${h.tag}</div>
-        <div class="search-result-text">${h.tag} 가이드라인 보기</div>
+        <div class="search-result-tag">${highlight(h.tag, q)}</div>
+        <div class="search-result-text">${highlight(h.tag + ' 가이드라인 보기', q)}</div>
       </div>`).join('');
   });
 });
