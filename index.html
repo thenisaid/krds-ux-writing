@@ -1889,8 +1889,53 @@ tr:hover td {
   }
 }
 
+/* ===== MOBILE MENU ===== */
+.mobile-menu-btn { display: none; }
+
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg-0);
+  z-index: 999;
+  overflow-y: auto;
+  padding: 24px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.mobile-menu.open { display: block; }
+
+.mobile-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mobile-menu-item {
+  display: block;
+  padding: 14px 16px;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: var(--transition);
+}
+
+.mobile-menu-item:hover {
+  background: var(--bg-1);
+  color: var(--primary);
+}
+
 @media (max-width: 768px) {
   .gnb-nav { display: none; }
+  .mobile-menu-btn { display: flex; }
 
   .hero-inner {
     padding: 50px 16px 60px;
@@ -2119,7 +2164,29 @@ tr:hover td {
         <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
+      <button class="gnb-util-btn mobile-menu-btn" id="mobileMenuBtn" aria-label="메뉴 열기" aria-expanded="false" onclick="toggleMobileMenu()">
+        <svg class="icon-hamburger" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
+  </div>
+  <!-- 모바일 메뉴 패널 -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <nav aria-label="모바일 메뉴">
+      <ul class="mobile-menu-list">
+        <li><a href="#persona" class="mobile-menu-item" onclick="closeMobileMenu()">시작하기</a></li>
+        <li><a href="#principles" class="mobile-menu-item" onclick="closeMobileMenu()">언어 원칙</a></li>
+        <li><a href="#voice" class="mobile-menu-item" onclick="closeMobileMenu()">브랜드 보이스</a></li>
+        <li><a href="#tone" class="mobile-menu-item" onclick="closeMobileMenu()">톤앤매너</a></li>
+        <li><a href="#button" class="mobile-menu-item" onclick="closeMobileMenu()">버튼 &amp; CTA</a></li>
+        <li><a href="#form" class="mobile-menu-item" onclick="closeMobileMenu()">폼 &amp; 입력</a></li>
+        <li><a href="#error" class="mobile-menu-item" onclick="closeMobileMenu()">에러 &amp; 알림</a></li>
+        <li><a href="#help" class="mobile-menu-item" onclick="closeMobileMenu()">도움말 &amp; 온보딩</a></li>
+        <li><a href="#loading" class="mobile-menu-item" onclick="closeMobileMenu()">로딩 &amp; 진행</a></li>
+        <li><a href="#accessibility" class="mobile-menu-item" onclick="closeMobileMenu()">접근성 &amp; 국제화</a></li>
+        <li><a href="#checklist" class="mobile-menu-item" onclick="closeMobileMenu()">체크리스트</a></li>
+      </ul>
+    </nav>
   </div>
 </header>
 
@@ -2829,8 +2896,40 @@ document.addEventListener('DOMContentLoaded', function() {
 // ===== KEYBOARD SHORTCUTS =====
 document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
-  if (e.key === 'Escape') closeSearch();
+  if (e.key === 'Escape') { closeSearch(); closeMobileMenu(); }
 });
+
+// ===== MOBILE MENU =====
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const btn = document.getElementById('mobileMenuBtn');
+  if (!menu) return;
+  const isOpen = menu.classList.contains('open');
+  if (isOpen) {
+    closeMobileMenu();
+  } else {
+    menu.classList.add('open');
+    menu.setAttribute('aria-hidden', 'false');
+    btn.setAttribute('aria-expanded', 'true');
+    btn.querySelector('.icon-hamburger').style.display = 'none';
+    btn.querySelector('.icon-close').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const btn = document.getElementById('mobileMenuBtn');
+  if (!menu || !menu.classList.contains('open')) return;
+  menu.classList.remove('open');
+  menu.setAttribute('aria-hidden', 'true');
+  if (btn) {
+    btn.setAttribute('aria-expanded', 'false');
+    btn.querySelector('.icon-hamburger').style.display = 'block';
+    btn.querySelector('.icon-close').style.display = 'none';
+  }
+  document.body.style.overflow = '';
+}
 
 // ===== DOMCONTENTLOADED: ANCHOR LINKS =====
 document.addEventListener('DOMContentLoaded', function() {
