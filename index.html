@@ -2776,7 +2776,7 @@ function initReveal() {
         revealObs.unobserve(e.target);
       }
     });
-  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+  }, { threshold: 0, rootMargin: '0px 0px 120px 0px' });
 
   const staggerObs = new IntersectionObserver(entries => {
     entries.forEach(e => {
@@ -2794,23 +2794,32 @@ function initReveal() {
   const grid = document.querySelector('.composition-grid');
   if (grid) staggerObs.observe(grid);
 
-  // 앵커 이동 후 스크롤 완료 시점에 뷰포트 밖(위) 요소를 즉시 visible 처리
-  function checkOffscreenReveal() {
+  // 뷰포트 위(이미 지나친)와 뷰포트 안(현재 보이는) 요소를 즉시 visible 처리
+  function revealInAndAbove() {
+    const vh = window.innerHeight;
     document.querySelectorAll('.reveal:not(.visible)').forEach(el => {
-      if (el.getBoundingClientRect().bottom < 0) el.classList.add('visible');
+      const top = el.getBoundingClientRect().top;
+      // 뷰포트 위(bottom<0) 또는 뷰포트 안(top < vh)인 요소
+      if (top < vh) el.classList.add('visible');
     });
     const g = document.querySelector('.composition-grid');
-    if (g && g.getBoundingClientRect().bottom < 0) {
-      g.querySelectorAll('.stagger-item:not(.visible)').forEach(item => item.classList.add('visible'));
+    if (g) {
+      const top = g.getBoundingClientRect().top;
+      if (top < vh) {
+        g.querySelectorAll('.stagger-item:not(.visible)').forEach((item, i) => {
+          setTimeout(() => item.classList.add('visible'), i * 80);
+        });
+      }
     }
   }
-  // 앵커 이동은 DOMContentLoaded 이후 첫 scroll 이벤트로 완료됨
-  // → 첫 scroll(앵커 스크롤 포함)과 load 이후에 체크
-  window.addEventListener('scroll', function onFirstScroll() {
-    checkOffscreenReveal();
-    window.removeEventListener('scroll', onFirstScroll);
-  }, { passive: true });
-  window.addEventListener('load', checkOffscreenReveal, { once: true });
+
+  // 앵커 이동 후 스크롤 완료 시점에 실행
+  // hashchange: 앵커 클릭 → 스크롤 완료 후 100ms 대기
+  window.addEventListener('hashchange', () => {
+    setTimeout(revealInAndAbove, 100);
+  });
+  // 초기 앵커(URL에 이미 #hash 있는 경우): load 후 실행
+  window.addEventListener('load', revealInAndAbove, { once: true });
 }
 
 // ===== CHECKLIST =====
