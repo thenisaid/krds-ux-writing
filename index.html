@@ -2791,8 +2791,26 @@ function initReveal() {
   }, { threshold: 0.08 });
 
   document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
-  const grid = document.getElementById('guideGrid');
+  const grid = document.querySelector('.composition-grid');
   if (grid) staggerObs.observe(grid);
+
+  // 앵커 이동 후 스크롤 완료 시점에 뷰포트 밖(위) 요소를 즉시 visible 처리
+  function checkOffscreenReveal() {
+    document.querySelectorAll('.reveal:not(.visible)').forEach(el => {
+      if (el.getBoundingClientRect().bottom < 0) el.classList.add('visible');
+    });
+    const g = document.querySelector('.composition-grid');
+    if (g && g.getBoundingClientRect().bottom < 0) {
+      g.querySelectorAll('.stagger-item:not(.visible)').forEach(item => item.classList.add('visible'));
+    }
+  }
+  // 앵커 이동은 DOMContentLoaded 이후 첫 scroll 이벤트로 완료됨
+  // → 첫 scroll(앵커 스크롤 포함)과 load 이후에 체크
+  window.addEventListener('scroll', function onFirstScroll() {
+    checkOffscreenReveal();
+    window.removeEventListener('scroll', onFirstScroll);
+  }, { passive: true });
+  window.addEventListener('load', checkOffscreenReveal, { once: true });
 }
 
 // ===== CHECKLIST =====
