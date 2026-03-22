@@ -17,7 +17,8 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%231251A1'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
 <title>KRDS UX Writing 가이드라인</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-gov.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ===== KRDS v1.0.0 디자인 토큰 ===== */
@@ -199,7 +200,11 @@
   --space-20: 8rem;    /* 80px */
 
   /* ─── KRDS Typography ─── */
-  --typo-font-family: 'Pretendard GOV', 'Pretendard', 'Noto Sans KR', sans-serif;
+  --typo-font-family: "Pretendard GOV Variable", "Pretendard GOV",
+    -apple-system, BlinkMacSystemFont, system-ui, Roboto,
+    "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo",
+    "Noto Sans KR", "Malgun Gothic",
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
   --typo-font-weight-regular: 400;
   --typo-font-weight-bold:    700;
   /* PC Type Scale (rem) */
@@ -265,11 +270,11 @@
   --font-serif: 'Noto Serif KR', serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* 폰트 스케일 (KRDS 타입 스케일 기준) */
-  --text-hero: clamp(36px, 5vw, 52px);   /* ≈ heading-xlarge 4rem */
-  --text-xl:   clamp(28px, 4vw, 40px);   /* ≈ heading-large 3.2rem */
-  --text-lg:   clamp(22px, 3.5vw, 32px); /* ≈ heading-medium 2.4rem */
-  --text-md:   clamp(18px, 2.5vw, 24px); /* ≈ heading-small 1.9rem */
+  /* 폰트 스케일 (KRDS 타입 스케일 고정값) */
+  --text-hero: 3.6rem;  /* 36px = display-small (PC) */
+  --text-xl:   4rem;    /* 40px = heading-xlarge */
+  --text-lg:   3.2rem;  /* 32px = heading-large */
+  --text-md:   2.4rem;  /* 24px = heading-medium */
   --text-card: 19px;  /* KRDS body-large 1.9rem */
   --text-base: 17px;  /* KRDS body-medium 1.7rem */
   --text-sm:   15px;  /* KRDS body-small 1.5rem */
@@ -365,7 +370,7 @@ body {
   font-family: var(--font-main);
   background: var(--white);
   color: var(--text-primary);
-  line-height: 1.6;
+  line-height: 1.5;
   font-size: var(--text-base);
   -webkit-font-smoothing: antialiased;
   min-height: 100dvh;
@@ -432,7 +437,7 @@ button {
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.025em;
-  line-height: 1.3;
+  line-height: 1.5;
   margin-bottom: 16px;
   word-break: keep-all;
 }
@@ -440,7 +445,7 @@ button {
 .section-desc {
   font-size: var(--text-base);
   color: var(--text-secondary);
-  line-height: 1.7;
+  line-height: 1.5;
   max-width: 600px;
   word-break: keep-all;
 }
@@ -813,7 +818,7 @@ button {
   font-size: var(--text-hero);
   font-weight: 700;
   color: #FFFFFF;
-  line-height: 1.25;
+  line-height: 1.5;
   letter-spacing: -0.025em;
   margin-bottom: 24px;
   word-break: keep-all;
@@ -827,7 +832,7 @@ button {
 .hero-desc {
   font-size: var(--text-base);
   color: rgba(255,255,255,0.72);
-  line-height: 1.75;
+  line-height: 1.5;
   margin-bottom: 36px;
   word-break: keep-all;
 }
@@ -907,9 +912,9 @@ button {
 }
 
 .float-card-text {
-  font-size: 13.5px;
+  font-size: 13px;
   color: rgba(255,255,255,0.85);
-  line-height: 1.65;
+  line-height: 1.5;
 }
 
 .float-card-do {
@@ -1087,7 +1092,7 @@ button {
 .persona-panel-desc p {
   font-size: var(--text-sm);
   color: var(--text-secondary);
-  line-height: 1.7;
+  line-height: 1.5;
 }
 
 .persona-rule {
@@ -1115,7 +1120,7 @@ button {
 .persona-rule-text {
   font-size: 15px;
   color: var(--text-secondary);
-  line-height: 1.7;
+  line-height: 1.5;
 }
 
 .persona-link-btn {
@@ -1286,7 +1291,7 @@ button {
 .guide-card-desc {
   font-size: var(--text-xs);
   color: var(--text-secondary);
-  line-height: 1.65;
+  line-height: 1.5;
   flex: 1;
 }
 
@@ -1380,7 +1385,7 @@ button {
   font-size: var(--text-md);
   font-weight: 700;
   color: var(--text-primary);
-  line-height: 1.3;
+  line-height: 1.5;
   margin-bottom: 12px;
   letter-spacing: -0.02em;
 }
@@ -1388,7 +1393,7 @@ button {
 .guideline-desc {
   font-size: var(--text-base);
   color: var(--text-secondary);
-  line-height: 1.8;
+  line-height: 1.5;
   max-width: 620px;
   margin-bottom: 32px;
   word-break: keep-all;
@@ -1482,7 +1487,7 @@ button {
 .verdict-text {
   font-size: 14px;
   color: var(--text-primary);
-  line-height: 1.75;
+  line-height: 1.5;
 }
 
 /* Rule List */
@@ -1519,7 +1524,7 @@ button {
 .rule-text {
   font-size: 14px;
   color: var(--text-primary);
-  line-height: 1.75;
+  line-height: 1.5;
 }
 
 /* Copy Examples */
@@ -1547,7 +1552,7 @@ button {
   font-family: var(--font-mono);
   font-size: 13px;
   color: var(--text-primary);
-  line-height: 1.65;
+  line-height: 1.5;
   font-weight: 500;
 }
 
@@ -1595,7 +1600,7 @@ button {
   border-left: 3px solid var(--primary);
   font-size: 14px;
   color: var(--text-primary);
-  line-height: 1.75;
+  line-height: 1.5;
   margin-bottom: 16px;
 }
 
@@ -1606,7 +1611,7 @@ button {
   border-left: 3px solid var(--warning);
   font-size: 14px;
   color: var(--text-primary);
-  line-height: 1.75;
+  line-height: 1.5;
   margin-bottom: 16px;
 }
 
@@ -1636,7 +1641,7 @@ button {
 .pattern-desc {
   font-size: 13px;
   color: var(--text-muted);
-  line-height: 1.65;
+  line-height: 1.5;
   margin-bottom: 12px;
 }
 
@@ -1737,7 +1742,7 @@ tr:hover td {
 .check-text {
   font-size: 15px;
   color: var(--text-primary);
-  line-height: 1.65;
+  line-height: 1.5;
 }
 
 .check-item.checked .check-text {
@@ -1793,7 +1798,7 @@ tr:hover td {
   margin-bottom: 16px;
   letter-spacing: -0.025em;
   word-break: keep-all;
-  line-height: 1.3;
+  line-height: 1.5;
 }
 
 .cta-desc {
@@ -1803,7 +1808,7 @@ tr:hover td {
   max-width: 480px;
   margin-left: auto;
   margin-right: auto;
-  line-height: 1.7;
+  line-height: 1.5;
   word-break: keep-all;
 }
 
@@ -1906,7 +1911,7 @@ tr:hover td {
   font-size: var(--text-xs);
   color: rgba(255,255,255,0.35);
   margin-bottom: 24px;
-  line-height: 1.8;
+  line-height: 1.5;
 }
 
 .footer-copy {
@@ -2161,6 +2166,13 @@ tr:hover td {
 }
 
 @media (max-width: 768px) {
+  :root {
+    --text-hero: 2.8rem;  /* 28px = display-small mobile */
+    --text-xl:   2.8rem;  /* 28px = heading-xlarge mobile */
+    --text-lg:   2.4rem;  /* 24px = heading-large mobile */
+    --text-md:   2.2rem;  /* 22px = heading-medium mobile */
+  }
+
   .gnb-nav { display: none; }
   .mobile-menu-btn { display: flex; }
 
@@ -2169,7 +2181,7 @@ tr:hover td {
   }
 
   .hero-title {
-    font-size: clamp(32px, 8vw, 44px);
+    font-size: var(--text-hero);
   }
 
   .persona-section,
@@ -2232,31 +2244,31 @@ tr:hover td {
 .guideline-section { padding: 80px 0; border-bottom: 1px solid var(--border); }
 .guideline-section:nth-child(even) { background: var(--bg-1); }
 .guideline-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-.guideline-tag { font-size: 9.5px; font-weight: 700; text-transform: uppercase; color: var(--primary); background: var(--primary-light); padding: 3px 10px; border-radius: 100px; border: 1px solid rgba(37,110,244,0.2); letter-spacing: 0.5px; }
-.guideline-num { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--text-muted); }
-.guideline-title { font-family: var(--font-serif); font-size: clamp(22px, 2.8vw, 30px); font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
-.guideline-desc { font-size: 14px; color: var(--text-secondary); max-width: 580px; line-height: 1.8; margin-bottom: 28px; }
+.guideline-tag { font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--primary); background: var(--primary-light); padding: 3px 10px; border-radius: 100px; border: 1px solid rgba(37,110,244,0.2); letter-spacing: 0.5px; }
+.guideline-num { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-muted); }
+.guideline-title { font-family: var(--font-main); font-size: 24px; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; line-height: 1.5; }
+.guideline-desc { font-size: 15px; color: var(--text-secondary); max-width: 580px; line-height: 1.5; margin-bottom: 28px; }
 .guideline-card { border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; background: var(--white); margin-bottom: 12px; box-shadow: var(--shadow-card); }
 .guideline-card-title { font-size: 12.5px; font-weight: 700; color: var(--text-primary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; margin-top: 20px; }
 .do-box { padding: 20px 22px; border-radius: 10px; background: var(--success-light); border: 1px solid rgba(0,179,125,0.2); border-top: 2px solid var(--success); }
 .dont-box { padding: 20px 22px; border-radius: 10px; background: var(--error-light); border: 1px solid rgba(229,72,77,0.2); border-top: 2px solid var(--error); }
-.verdict { font-size: 9.5px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.verdict { font-size: 13px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
 .verdict-do { color: var(--success); }
 .verdict-dont { color: var(--error); }
-.verdict-text { font-size: 13.5px; color: var(--text-primary); line-height: 1.75; }
+.verdict-text { font-size: 13px; color: var(--text-primary); line-height: 1.5; }
 .rule-list { list-style: none; padding: 0; margin: 0; }
 .rule-item { display: flex; gap: 14px; align-items: flex-start; padding: 13px 0; border-bottom: 1px solid var(--border-light); }
 .rule-item:last-child { border-bottom: none; }
 .rule-num { width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
-.rule-text { font-size: 13.5px; color: var(--text-secondary); line-height: 1.75; }
+.rule-text { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
 .example-label { font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-muted); margin: 18px 0 8px; }
 
 /* CHECKLIST */
 .checklist-section { background: var(--bg-2); padding: 80px 0; }
 .checklist-inner { background: var(--white); border-radius: 20px; padding: 48px; box-shadow: var(--shadow); max-width: 800px; margin: 0 auto; border: 1px solid var(--border); }
-.checklist-title { font-family: var(--font-serif); font-size: clamp(24px,3vw,34px); font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+.checklist-title { font-family: var(--font-main); font-size: 28px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
 .checklist-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 28px; }
 .check-item { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border-light); cursor: pointer; transition: var(--transition); border-radius: 8px; padding-left: 8px; padding-right: 8px; }
 .check-item:last-child { border-bottom: none; }
@@ -2301,9 +2313,9 @@ tr:hover td {
 /* SECTION COMMON */
 .section { padding: 80px 0; }
 .section-header { margin-bottom: 48px; }
-.section-eyebrow { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary); margin-bottom: 12px; }
-.section-title { font-size: clamp(28px,3.5vw,40px); font-weight: 700; color: var(--text-primary); margin-bottom: 12px; line-height: 1.3; word-break: keep-all; }
-.section-desc { font-size: var(--text-base); color: var(--text-secondary); line-height: 1.7; max-width: 560px; word-break: keep-all; }
+.section-eyebrow { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary); margin-bottom: 12px; }
+.section-title { font-size: var(--text-lg); font-weight: 700; color: var(--text-primary); margin-bottom: 12px; line-height: 1.5; word-break: keep-all; }
+.section-desc { font-size: var(--text-base); color: var(--text-secondary); line-height: 1.5; max-width: 560px; word-break: keep-all; }
 
 @media (max-width: 768px) {
   .grid-2 { grid-template-columns: 1fr; }
