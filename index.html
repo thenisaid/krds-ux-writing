@@ -20,91 +20,312 @@
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ===== CSS VARIABLES ===== */
+/* ===== KRDS v1.0.0 디자인 토큰 ===== */
+/* Source: github.com/KRDS-uiux/krds-uiux (tokens/transformed_tokens.json) */
 :root {
+
+  /* ─── KRDS Primitive: Primary ─── */
+  --color-primary-5:  #ecf2fe;
+  --color-primary-10: #d8e5fd;
+  --color-primary-20: #b1cefb;
+  --color-primary-30: #86aff9;
+  --color-primary-40: #4c87f6;
+  --color-primary-50: #256ef4;
+  --color-primary-60: #0b50d0;
+  --color-primary-70: #083891;
+  --color-primary-80: #052561;
+  --color-primary-90: #03163a;
+
+  /* ─── KRDS Primitive: Secondary ─── */
+  --color-secondary-5:  #eef2f7;
+  --color-secondary-10: #d6e0eb;
+  --color-secondary-20: #bacbde;
+  --color-secondary-30: #90b0d5;
+  --color-secondary-40: #6b96c7;
+  --color-secondary-50: #346fb2;
+  --color-secondary-60: #1c589c;
+  --color-secondary-70: #063a74;
+  --color-secondary-80: #052b57;
+  --color-secondary-90: #031f3f;
+
+  /* ─── KRDS Primitive: Gray ─── */
+  --color-gray-0:   #ffffff;
+  --color-gray-5:   #f4f5f6;
+  --color-gray-10:  #e6e8ea;
+  --color-gray-20:  #cdd1d5;
+  --color-gray-30:  #b1b8be;
+  --color-gray-40:  #8a949e;
+  --color-gray-50:  #6d7882;
+  --color-gray-60:  #58616a;
+  --color-gray-70:  #464c53;
+  --color-gray-80:  #33363d;
+  --color-gray-90:  #1e2124;
+  --color-gray-95:  #131416;
+  --color-gray-100: #000000;
+
+  /* ─── KRDS Primitive: Danger ─── */
+  --color-danger-5:  #fdefec;
+  --color-danger-10: #fcdfd9;
+  --color-danger-20: #f7afa1;
+  --color-danger-30: #f48771;
+  --color-danger-40: #f05f42;
+  --color-danger-50: #de3412;
+  --color-danger-60: #bd2c0f;
+  --color-danger-70: #8a240f;
+
+  /* ─── KRDS Primitive: Warning ─── */
+  --color-warning-5:  #fff3db;
+  --color-warning-10: #ffe0a3;
+  --color-warning-20: #ffc95c;
+  --color-warning-30: #ffb114;
+  --color-warning-40: #c78500;
+  --color-warning-50: #9e6a00;
+  --color-warning-60: #8a5c00;
+
+  /* ─── KRDS Primitive: Success ─── */
+  --color-success-5:  #eaf6ec;
+  --color-success-10: #d8eedd;
+  --color-success-20: #a9dab4;
+  --color-success-30: #7ec88e;
+  --color-success-40: #3fa654;
+  --color-success-50: #228738;
+  --color-success-60: #267337;
+  --color-success-70: #285d33;
+
+  /* ─── KRDS Primitive: Information ─── */
+  --color-information-5:  #e7f4fe;
+  --color-information-50: #0b78cb;
+
+  /* ─── KRDS Primitive: Point ─── */
+  --color-point-5:  #fbeff0;
+  --color-point-50: #d63d4a;
+  --color-point-60: #ab2b36;
+
+  /* ─── KRDS Semantic: Text ─── */
+  --color-text-bolder:  #131416;
+  --color-text-basic:   #1e2124;
+  --color-text-subtle:  #464c53;
+  --color-text-disabled:#8a949e;
+  --color-text-primary: #0b50d0;
+  --color-text-danger:  #bd2c0f;
+  --color-text-warning: #8a5c00;
+  --color-text-success: #267337;
+  --color-text-information: #096ab3;
+  --color-text-bolder-inverse: #ffffff;
+  --color-text-basic-inverse:  #ffffff;
+
+  /* ─── KRDS Semantic: Border ─── */
+  --color-border-gray-light: #cdd1d5;
+  --color-border-gray:       #b1b8be;
+  --color-border-gray-dark:  #58616a;
+  --color-border-primary:    #256ef4;
+  --color-border-primary-light: #d8e5fd;
+  --color-border-danger:     #de3412;
+  --color-border-success:    #228738;
+  --color-border-warning:    #9e6a00;
+  --color-border-disabled:   #b1b8be;
+  --color-border-inverse:    #ffffff;
+
+  /* ─── KRDS Semantic: Surface ─── */
+  --color-surface-white:           #ffffff;
+  --color-surface-gray-subtler:    #f4f5f6;
+  --color-surface-gray-subtle:     #e6e8ea;
+  --color-surface-primary-subtler: #ecf2fe;
+  --color-surface-secondary-subtler: #eef2f7;
+  --color-surface-danger-subtler:  #fdefec;
+  --color-surface-warning-subtler: #fff3db;
+  --color-surface-success-subtler: #eaf6ec;
+  --color-surface-inverse:         #1e2124;
+
+  /* ─── KRDS Semantic: Button ─── */
+  --color-button-primary-fill:         #256ef4;
+  --color-button-primary-fill-hover:   #0b50d0;
+  --color-button-primary-fill-pressed: #083891;
+  --color-button-secondary-fill:       #ecf2fe;
+  --color-button-secondary-fill-hover: #d8e5fd;
+  --color-button-secondary-border:     #256ef4;
+  --color-button-disabled-fill:        #cdd1d5;
+
+  /* ─── KRDS Semantic: Input ─── */
+  --color-input-border:          #58616a;
+  --color-input-border-active:   #256ef4;
+  --color-input-border-error:    #de3412;
+  --color-input-border-disabled: #b1b8be;
+  --color-input-surface:         #ffffff;
+  --color-input-surface-disabled:#cdd1d5;
+
+  /* ─── KRDS Semantic: Background ─── */
+  --color-background-white:         #ffffff;
+  --color-background-gray-subtler:  #f4f5f6;
+  --color-background-gray-subtle:   #e6e8ea;
+  --color-background-inverse:       #1e2124;
+  --color-background-dim:           #000000bf;
+
+  /* ─── KRDS Semantic: Link ─── */
+  --color-link-default: #256ef4;
+  --color-link-hover:   #0b50d0;
+  --color-link-pressed: #083891;
+  --color-link-visited: #5917b8;
+
+  /* ─── KRDS Shadow (Alpha) ─── */
+  --color-alpha-shadow-1: #0000000d;
+  --color-alpha-shadow-2: #00000014;
+  --color-alpha-shadow-3: #0000001f;
+
+  /* ─── KRDS Border Radius ─── */
+  --radius-xsmall:   0.2rem;  /* 2px */
+  --radius-small:    0.4rem;  /* 4px */
+  --radius-medium:   0.6rem;  /* 6px */
+  --radius-medium-lg:0.8rem;  /* 8px */
+  --radius-large:    1rem;    /* 10px */
+  --radius-xlarge:   1.2rem;  /* 12px */
+  --radius-max:      100rem;
+
+  /* ─── KRDS Border Width ─── */
+  --border-width-regular: 0.1rem;
+  --border-width-medium:  0.2rem;
+
+  /* ─── KRDS Spacing Scale ─── */
+  --space-5:  0.8rem;  /* 8px */
+  --space-7:  1.2rem;  /* 12px */
+  --space-8:  1.6rem;  /* 16px */
+  --space-9:  2rem;    /* 20px */
+  --space-10: 2.4rem;  /* 24px */
+  --space-11: 2.8rem;  /* 28px */
+  --space-12: 3.2rem;  /* 32px */
+  --space-14: 4rem;    /* 40px */
+  --space-16: 4.8rem;  /* 48px */
+  --space-18: 6.4rem;  /* 64px */
+  --space-20: 8rem;    /* 80px */
+
+  /* ─── KRDS Typography ─── */
+  --typo-font-family: 'Pretendard GOV', 'Pretendard', 'Noto Sans KR', sans-serif;
+  --typo-font-weight-regular: 400;
+  --typo-font-weight-bold:    700;
+  /* PC Type Scale (rem) */
+  --typo-pc-heading-xlarge: 4rem;    /* 40px */
+  --typo-pc-heading-large:  3.2rem;  /* 32px */
+  --typo-pc-heading-medium: 2.4rem;  /* 24px */
+  --typo-pc-heading-small:  1.9rem;  /* 19px */
+  --typo-pc-heading-xsmall: 1.7rem;  /* 17px */
+  --typo-pc-body-large:     1.9rem;  /* 19px */
+  --typo-pc-body-medium:    1.7rem;  /* 17px */
+  --typo-pc-body-small:     1.5rem;  /* 15px */
+  --typo-pc-body-xsmall:    1.3rem;  /* 13px */
+  --typo-pc-label-medium:   1.7rem;
+  --typo-pc-label-small:    1.5rem;
+  --typo-pc-label-xsmall:   1.3rem;
+
+  /* ═══════════════════════════════════════════
+     기존 CSS 변수 → KRDS 토큰 매핑
+     ═══════════════════════════════════════════ */
+
   /* 배경 */
-  --white: #FFFFFF;
-  --bg-1: #F4F5F6;
-  --bg-2: #EEF2F7;
-  --bg-blue-light: #ECF2FE;
+  --white: var(--color-surface-white);         /* #ffffff */
+  --bg-1: var(--color-gray-5);                 /* #f4f5f6 */
+  --bg-2: var(--color-secondary-5);            /* #eef2f7 */
+  --bg-blue-light: var(--color-primary-5);     /* #ecf2fe */
 
   /* 텍스트 */
-  --text-primary: #1E2124;
-  --text-secondary: #464C53;
-  --text-muted: #8A949E;
+  --text-primary: var(--color-text-basic);     /* #1e2124 */
+  --text-secondary: var(--color-text-subtle);  /* #464c53 */
+  --text-muted: var(--color-text-disabled);    /* #8a949e */
   --text-white: #FFFFFF;
 
   /* 경계선 */
-  --border: #D4D8DD;
+  --border: var(--color-border-gray-light);    /* #cdd1d5 (KRDS 공식) */
   --border-light: #EAEDF0;
-  --border-focus: #256EF4;
-  --border-header: #CDD1D5;
+  --border-focus: var(--color-border-primary); /* #256ef4 */
+  --border-header: var(--color-border-gray-light); /* #cdd1d5 */
 
-  /* Primary (krds blue) */
-  --primary: #256EF4;
-  --primary-hover: #1a5cd4;
-  --primary-dark: #0B50D0;
-  --primary-darker: #052B57;
-  --primary-light: #EEF4FF;
+  /* Primary */
+  --primary: var(--color-primary-50);          /* #256ef4 */
+  --primary-hover: var(--color-primary-60);    /* #0b50d0 */
+  --primary-dark: var(--color-primary-60);     /* #0b50d0 */
+  --primary-darker: var(--color-secondary-80); /* #052b57 */
+  --primary-light: var(--color-primary-5);     /* #ecf2fe */
 
-  /* 우리만의 액센트 */
+  /* 고유 액센트 (KRDS 외 커스텀) */
   --gold: #B8922A;
   --gold-light: #F5E9CC;
   --gold-mid: rgba(184,146,42,0.25);
   --navy: #0C1D38;
   --navy-mid: #1A3359;
 
-  /* 상태 */
-  --success: #00B37D;
-  --success-light: #E8F3ED;
-  --error: #E5484D;
-  --error-light: #FFE8E8;
-  --warning: #F59E0B;
-  --warning-light: #FFFBEB;
+  /* 상태 — KRDS 공식값 적용 */
+  --success: var(--color-success-50);          /* #228738 (기존 #00B37D→수정) */
+  --success-light: var(--color-success-5);     /* #eaf6ec */
+  --error: var(--color-danger-50);             /* #de3412 (기존 #E5484D→수정) */
+  --error-light: var(--color-danger-5);        /* #fdefec */
+  --warning: var(--color-warning-30);          /* #ffb114 (기존 #F59E0B→수정) */
+  --warning-light: var(--color-warning-5);     /* #fff3db */
 
-  /* 타이포그래피 */
-  --font-main: 'Pretendard', 'Noto Sans KR', sans-serif;
+  /* 타이포그래피 — KRDS Pretendard GOV 우선 */
+  --font-main: var(--typo-font-family);
   --font-serif: 'Noto Serif KR', serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* 폰트 스케일 */
-  --text-hero: clamp(40px, 5vw, 52px);
-  --text-xl: clamp(32px, 4vw, 44px);
-  --text-lg: clamp(26px, 3.5vw, 40px);
-  --text-md: clamp(20px, 2.5vw, 32px);
-  --text-card: 20px;
-  --text-base: 17px;
-  --text-sm: 15px;
-  --text-xs: 14px;
+  /* 폰트 스케일 (KRDS 타입 스케일 기준) */
+  --text-hero: clamp(36px, 5vw, 52px);   /* ≈ heading-xlarge 4rem */
+  --text-xl:   clamp(28px, 4vw, 40px);   /* ≈ heading-large 3.2rem */
+  --text-lg:   clamp(22px, 3.5vw, 32px); /* ≈ heading-medium 2.4rem */
+  --text-md:   clamp(18px, 2.5vw, 24px); /* ≈ heading-small 1.9rem */
+  --text-card: 19px;  /* KRDS body-large 1.9rem */
+  --text-base: 17px;  /* KRDS body-medium 1.7rem */
+  --text-sm:   15px;  /* KRDS body-small 1.5rem */
+  --text-xs:   13px;  /* KRDS body-xsmall 1.3rem */
 
   /* 간격 & 레이아웃 */
   --container: 1200px;
   --container-pad: 24px;
-  --gap: 24px;
-  --gap-lg: 48px;
-  --gap-xl: 80px;
+  --gap: 24px;      /* KRDS gap-7: 2.4rem */
+  --gap-lg: 48px;   /* KRDS gap-10: 4.8rem */
+  --gap-xl: 80px;   /* KRDS gap-12: 8rem */
 
-  /* 둥글기 */
-  --radius-card: 16px;
-  --radius-btn: 8px;
-  --radius-tag: 100px;
-  --radius-input: 8px;
-  --radius-badge: 4px;
+  /* 둥글기 — KRDS radius 토큰 기준 */
+  --radius-card:  12px;  /* KRDS radius-xlarge 1.2rem (기존 16px→수정) */
+  --radius-btn:    8px;  /* KRDS radius-medium-lg 0.8rem */
+  --radius-tag:  100px;  /* KRDS radius-max */
+  --radius-input:  8px;  /* KRDS radius-medium-lg 0.8rem */
+  --radius-badge:  4px;  /* KRDS radius-small 0.4rem */
 
   /* 그림자 */
-  --shadow: 0 4px 20px rgba(0,0,0,0.08);
+  --shadow:       0 4px 20px rgba(0,0,0,0.08);
   --shadow-hover: 0 8px 32px rgba(0,0,0,0.14);
-  --shadow-card: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-card:  0 2px 8px rgba(0,0,0,0.06);
   --shadow-focus: 0 0 0 0.4rem rgba(37,110,244,0.25);
-  --shadow-gold: 0 8px 32px -4px rgba(184,146,42,0.25);
+  --shadow-gold:  0 8px 32px -4px rgba(184,146,42,0.25);
 
   /* 트랜지션 */
   --transition: 0.4s ease-in-out;
   --transition-fast: 0.2s ease;
 }
 
-/* ===== DARK MODE ===== */
+/* ===== DARK MODE (KRDS High Contrast 토큰 기반) ===== */
 [data-theme="dark"] {
+  /* KRDS HC Surface */
+  --color-surface-white:         #000000;
+  --color-surface-gray-subtler:  #131416;
+  --color-surface-gray-subtle:   #1e2124;
+  --color-surface-primary-subtler: #020f27;
+  --color-surface-inverse:       #e6e8ea;
+
+  /* KRDS HC Text */
+  --color-text-basic:    #f4f5f6;
+  --color-text-subtle:   #cdd1d5;
+  --color-text-disabled: #58616a;
+  --color-text-primary:  #86aff9;
+  --color-text-danger:   #f7afa1;
+  --color-text-warning:  #ffc95c;
+  --color-text-success:  #a9dab4;
+
+  /* KRDS HC Background */
+  --color-background-white:        #000000;
+  --color-background-gray-subtler: #131416;
+  --color-background-gray-subtle:  #1e2124;
+  --color-background-inverse:      #e6e8ea;
+
+  /* 기존 변수 유지 (KRDS 다크 팔레트 적용) */
   --white: #111827;
   --bg-1: #1A2235;
   --bg-2: #0D1520;
