@@ -330,19 +330,19 @@
   --color-background-gray-subtle:  #1e2124;
   --color-background-inverse:      #e6e8ea;
 
-  /* 기존 변수 유지 (KRDS 다크 팔레트 적용) */
-  --white: #111827;
-  --bg-1: #1A2235;
-  --bg-2: #0D1520;
-  --bg-blue-light: #1A2540;
+  /* 기존 변수 유지 (KRDS HC 표준 기반) */
+  --white: #000000;
+  --bg-1: #131416;
+  --bg-2: #1e2124;
+  --bg-blue-light: #020f27;
 
-  --text-primary: #F0F4F8;
-  --text-secondary: #B8C4D0;
-  --text-muted: #7A8A9A;
+  --text-primary: #f4f5f6;
+  --text-secondary: #cdd1d5;
+  --text-muted: #58616a;
 
-  --border: #2A3550;
-  --border-light: #1E2D45;
-  --border-header: #2A3550;
+  --border: #28292B;
+  --border-light: #28292B;
+  --border-header: #28292B;
 
   --primary-light: #1A2B4A;
   --gold-light: #2A200A;
@@ -560,12 +560,10 @@ button {
 
 /* ===== GNB ===== */
 .gnb {
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
   height: 70px;
-  z-index: 1000;
+  z-index: 70;
   background: var(--white);
   border-bottom: 1px solid var(--border-header);
   display: flex;
@@ -641,7 +639,7 @@ button {
   padding: 8px 14px;
   border-radius: var(--radius-btn);
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: 700;
   color: var(--text-secondary);
   background: none;
   border: none;
@@ -757,7 +755,6 @@ button {
   min-height: 560px;
   background: var(--navy);
   overflow: hidden;
-  margin-top: 70px;
 }
 
 .hero-bg {
@@ -826,7 +823,7 @@ button {
 
 .hero-title em {
   font-style: normal;
-  color: #7DB3FF;
+  color: var(--color-primary-30);
 }
 
 .hero-desc {
@@ -863,7 +860,7 @@ button {
   font-family: var(--font-serif);
   font-size: 36px;
   font-weight: 700;
-  color: #7DB3FF;
+  color: var(--color-primary-30);
   line-height: 1;
   margin-bottom: 6px;
 }
@@ -919,7 +916,7 @@ button {
 
 .float-card-do {
   font-size: 14px;
-  color: #52E5A8;
+  color: var(--color-success-30);
   margin-bottom: 6px;
 }
 
@@ -939,15 +936,15 @@ button {
 }
 
 .float-card-verdict.good {
-  background: rgba(0,179,125,0.2);
-  color: #00B37D;
-  border: 1px solid rgba(0,179,125,0.3);
+  background: rgba(34,135,56,0.2);
+  color: var(--color-success-50);
+  border: 1px solid rgba(34,135,56,0.3);
 }
 
 .float-card-verdict.bad {
-  background: rgba(229,72,77,0.2);
-  color: #FF8A8D;
-  border: 1px solid rgba(229,72,77,0.3);
+  background: rgba(222,52,18,0.2);
+  color: var(--color-danger-30);
+  border: 1px solid rgba(222,52,18,0.3);
 }
 
 .float-card-1,
