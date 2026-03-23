@@ -3098,10 +3098,10 @@ function initReveal() {
 
 // ===== CHECKLIST =====
 function toggleCheck(item) {
-  const checked = item.classList.toggle('checked');
-  item.setAttribute('aria-checked', checked ? 'true' : 'false');
+  const isChecked = item.classList.toggle('checked');
+  item.setAttribute('aria-checked', isChecked ? 'true' : 'false');
   const box = item.querySelector('.check-box');
-  if (item.classList.contains('checked')) {
+  if (isChecked) {
     box.style.background = 'var(--success)';
     box.style.borderColor = 'var(--success)';
     box.style.color = 'white';
