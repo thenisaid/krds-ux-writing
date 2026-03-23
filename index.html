@@ -344,6 +344,8 @@
   --border-light: #28292B;
   --border-header: #28292B;
 
+  --navy: #1a2f52;
+
   --primary-light: #1A2B4A;
   --gold-light: #2A200A;
   --success-light: #0F2A1C;
@@ -543,12 +545,13 @@ button {
 /* ===== SCROLL PROGRESS ===== */
 .scroll-progress {
   position: fixed;
-  top: 70px;
+  top: 0;
   left: 0;
   right: 0;
   height: 3px;
-  z-index: 999;
+  z-index: 71;
   background: transparent;
+  pointer-events: none;
 }
 
 .scroll-progress-fill {
@@ -636,7 +639,7 @@ button {
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 8px 14px;
+  padding: 10px 14px;
   border-radius: var(--radius-btn);
   font-size: var(--text-sm);
   font-weight: 700;
@@ -727,8 +730,8 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: transparent;
@@ -2092,6 +2095,25 @@ tr:hover td {
   transform: none;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .stagger-item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .reveal.visible,
+  .stagger-item.visible {
+    opacity: 1;
+    transform: none;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
   .hero-inner {
@@ -2300,9 +2322,7 @@ tr:hover td {
 .search-result-text mark { background: #FEF08A; color: inherit; border-radius: 2px; padding: 0 1px; }
 .search-footer { padding: 12px 24px; border-top: 1px solid var(--border-light); display: flex; gap: 20px; font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
 
-/* SCROLL PROGRESS */
-.scroll-progress { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: var(--border-light); z-index: 2000; pointer-events: none; }
-.scroll-progress-fill { height: 100%; width: 0; background: var(--primary); transition: width 0.1s linear; }
+/* SCROLL PROGRESS — 단일 정의는 위쪽 .scroll-progress 블록 참조 */
 
 /* SKIP NAV */
 .skip-nav { position: absolute; top: -40px; left: 16px; padding: 8px 16px; background: var(--primary); color: #fff; font-size: 14px; font-weight: 600; border-radius: 0 0 8px 8px; z-index: 9999; text-decoration: none; transition: top 0.2s ease; }
@@ -2377,8 +2397,6 @@ tr:hover td {
               <li><a href="#principles" class="gnb-dropdown-item">언어 원칙</a></li>
               <li><a href="#voice" class="gnb-dropdown-item">브랜드 보이스</a></li>
               <li><a href="#tone" class="gnb-dropdown-item">톤앤매너</a></li>
-              <li><a href="#button" class="gnb-dropdown-item">버튼 &amp; CTA</a></li>
-              <li><a href="#form" class="gnb-dropdown-item">폼 &amp; 입력</a></li>
             </ul>
           </div>
         </li>
@@ -2406,9 +2424,6 @@ tr:hover td {
               <li><a href="#accessibility" class="gnb-dropdown-item">접근성 &amp; 국제화</a></li>
             </ul>
           </div>
-        </li>
-        <li class="gnb-item">
-          <a href="#accessibility" class="gnb-link">접근성 &amp; 국제화</a>
         </li>
       </ul>
     </nav>
@@ -2841,14 +2856,14 @@ tr:hover td {
       <h2 class="checklist-title">UX Writing 체크리스트</h2>
       <p class="checklist-desc">문구 작성 후 배포 전 최종 검토 항목입니다.</p>
       <div id="checklistItems">
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">버튼 레이블은 동사형인가?</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">오류 메시지에 해결 방법이 포함되어 있는가?</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">플레이스홀더를 레이블 대체로 사용하지 않았는가?</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">필수/선택 항목이 명확하게 구분되어 있는가?</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">모든 아이콘 버튼에 aria-label이 있는가?</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">용어가 전체 서비스에서 일관되게 사용되는가?</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">사용자를 탓하는 표현이 없는가?</span></div>
-        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="check-text">빈 상태에 다음 행동 유도 문구가 있는가?</span></div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheck(this);}"><div class="check-box">✓</div><span class="check-text">버튼 레이블은 동사형인가?</span></div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheck(this);}"><div class="check-box">✓</div><span class="check-text">오류 메시지에 해결 방법이 포함되어 있는가?</span></div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheck(this);}"><div class="check-box">✓</div><span class="check-text">플레이스홀더를 레이블 대체로 사용하지 않았는가?</span></div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheck(this);}"><div class="check-box">✓</div><span class="check-text">필수/선택 항목이 명확하게 구분되어 있는가?</span></div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheck(this);}"><div class="check-box">✓</div><span class="check-text">모든 아이콘 버튼에 aria-label이 있는가?</span></div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheck(this);}"><div class="check-box">✓</div><span class="check-text">용어가 전체 서비스에서 일관되게 사용되는가?</span></div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheck(this);}"><div class="check-box">✓</div><span class="check-text">사용자를 탓하는 표현이 없는가?</span></div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheck(this);}"><div class="check-box">✓</div><span class="check-text">빈 상태에 다음 행동 유도 문구가 있는가?</span></div>
       </div>
       <div class="checklist-complete" id="checklistComplete">모든 항목을 확인했습니다! 배포 준비 완료 🎉</div>
     </div>
@@ -2920,23 +2935,51 @@ const searchData = [
   {id:'form', tag:'폼 & 입력', text:'레이블 플레이스홀더 필수 선택 이메일 비밀번호 개인정보 생년월일 성별 입력 제한 폼 유효성'},
   {id:'error', tag:'에러 & 알림', text:'오류 메시지 4대 원칙 네트워크 오류 시스템 권한 접근 유효성 폼 유효성 세션 만료'},
   {id:'help', tag:'도움말 패턴', text:'온보딩 문구 빈 상태 안내 영역 인라인 텍스트 툴팁 코치마크 맥락적'},
-  {id:'nav-section', tag:'내비게이션', text:'내비게이션 상태 메뉴 레이블 브레드크럼 단계 표시'},
-  {id:'onboarding', tag:'온보딩', text:'온보딩 문구 환영 문구 시작 화면 단계별 진행 처음 사용자 빈 상태'},
-  {id:'empty', tag:'빈 상태', text:'신청 내역 없음 검색 결과 없음 행동 유도 빈 상태'},
+  {id:'help', tag:'내비게이션 & 온보딩', text:'내비게이션 상태 메뉴 레이블 브레드크럼 온보딩 문구 환영 시작 화면 단계별 진행'},
+  {id:'help', tag:'빈 상태 & 도움말', text:'신청 내역 없음 검색 결과 없음 행동 유도 빈 상태 인라인 텍스트 툴팁'},
   {id:'loading', tag:'로딩 & 진행', text:'로딩 불러오는 중 처리 중 성공 완료 업로드 대기 진행 내비게이션 상태'},
-  {id:'feedback', tag:'성공 & 실패', text:'완료 저장 비밀번호 결제 실패 삭제 확인'},
-  {id:'accessibility', tag:'접근성 & 국제화', text:'KWCAG WCAG aria-label alt 속성 스크린리더 색상 대비 초점 국제화 다국어 i18n'},
-  {id:'i18n', tag:'국제화', text:'다국어 번역 날짜 형식 화폐 전화번호 i18n 국제화'},
+  {id:'error', tag:'성공 & 실패', text:'완료 저장 비밀번호 결제 실패 삭제 확인 오류'},
+  {id:'accessibility', tag:'접근성 & 국제화', text:'KWCAG WCAG aria-label alt 속성 스크린리더 색상 대비 초점 국제화 다국어 i18n 날짜 형식 화폐 전화번호'},
   {id:'checklist', tag:'체크리스트', text:'동사형 해결 방법 일관성 필수 권장 버튼 레이블 오류 aria 빈 상태'},
 ];
 
+function trapFocus(modalEl) {
+  const focusable = modalEl.querySelectorAll(
+    'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])'
+  );
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  modalEl._trapHandler = function(e) {
+    if (e.key !== 'Tab') return;
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  };
+  modalEl.addEventListener('keydown', modalEl._trapHandler);
+}
+
+function releaseFocus(modalEl) {
+  if (modalEl._trapHandler) {
+    modalEl.removeEventListener('keydown', modalEl._trapHandler);
+    modalEl._trapHandler = null;
+  }
+}
+
 function openSearch() {
-  document.getElementById('searchModal').classList.add('open');
-  setTimeout(() => document.getElementById('searchInput').focus(), 50);
+  const modal = document.getElementById('searchModal');
+  modal.classList.add('open');
+  setTimeout(() => {
+    document.getElementById('searchInput').focus();
+    trapFocus(modal);
+  }, 50);
 }
 
 function closeSearch() {
-  document.getElementById('searchModal').classList.remove('open');
+  const modal = document.getElementById('searchModal');
+  modal.classList.remove('open');
+  releaseFocus(modal);
   document.getElementById('searchInput').value = '';
   document.getElementById('searchResults').innerHTML = '';
 }
@@ -3055,7 +3098,8 @@ function initReveal() {
 
 // ===== CHECKLIST =====
 function toggleCheck(item) {
-  item.classList.toggle('checked');
+  const checked = item.classList.toggle('checked');
+  item.setAttribute('aria-checked', checked ? 'true' : 'false');
   const box = item.querySelector('.check-box');
   if (item.classList.contains('checked')) {
     box.style.background = 'var(--success)';
@@ -3136,7 +3180,7 @@ function initAnchorButtons() {
 }
 
 function cp(btn, text) {
-  navigator.clipboard.writeText(text).then(() => {
+  function onSuccess() {
     const prev = btn.textContent;
     btn.textContent = '✓ 복사됨';
     btn.classList.add('copied');
@@ -3150,7 +3194,23 @@ function cp(btn, text) {
       btn.textContent = prev;
       btn.classList.remove('copied');
     }, 1500);
-  });
+  }
+  function onFail() {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (ok) { onSuccess(); }
+    else { alert('복사에 실패했습니다. 텍스트를 직접 선택하여 복사해 주세요.'); }
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(onSuccess).catch(onFail);
+  } else {
+    onFail();
+  }
 }
 
 // ===== DARK MODE =====
