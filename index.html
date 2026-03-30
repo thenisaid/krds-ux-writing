@@ -719,6 +719,57 @@ button {
   font-weight: 600;
 }
 
+/* ===== STICKY TOC ===== */
+.sticky-toc {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  z-index: 90;
+  max-height: calc(100vh - 140px);
+  overflow: hidden;
+  padding: 4px 0;
+}
+.sticky-toc-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 0;
+  transition: color var(--transition-fast);
+  white-space: nowrap;
+  line-height: 1.3;
+}
+.sticky-toc-item::before {
+  content: '';
+  display: block;
+  width: 2px;
+  height: 16px;
+  background: var(--border-light);
+  border-radius: 1px;
+  flex-shrink: 0;
+  transition: background var(--transition-fast), height var(--transition-fast);
+}
+.sticky-toc-item:hover { color: var(--primary); }
+.sticky-toc-item:hover::before { background: var(--color-primary-30); }
+.sticky-toc-item.active {
+  color: var(--primary);
+  font-weight: 700;
+}
+.sticky-toc-item.active::before {
+  background: var(--primary);
+  height: 22px;
+}
+@media (max-width: 1380px) {
+  .sticky-toc { display: none; }
+}
+
 .gnb-utils {
   display: flex;
   align-items: center;
@@ -2412,19 +2463,12 @@ tr:hover td {
               <li><a href="#error" class="gnb-dropdown-item">에러 &amp; 알림</a></li>
               <li><a href="#help" class="gnb-dropdown-item">도움말 &amp; 온보딩</a></li>
               <li><a href="#loading" class="gnb-dropdown-item">로딩 &amp; 진행</a></li>
-            </ul>
-          </div>
-        </li>
-        <li class="gnb-item has-dropdown">
-          <button class="gnb-link" aria-expanded="false" aria-haspopup="true">
-            품질 기준 <span class="gnb-arrow" aria-hidden="true">▾</span>
-          </button>
-          <div class="gnb-dropdown" role="region" aria-label="품질 기준 서브메뉴">
-            <ul class="gnb-dropdown-list" role="list">
-              <li><a href="#checklist" class="gnb-dropdown-item">체크리스트</a></li>
               <li><a href="#accessibility" class="gnb-dropdown-item">접근성 &amp; 국제화</a></li>
             </ul>
           </div>
+        </li>
+        <li class="gnb-item">
+          <a href="#checklist" class="gnb-link">체크리스트</a>
         </li>
       </ul>
     </nav>
@@ -2902,6 +2946,20 @@ tr:hover td {
     </div>
   </div>
 </section>
+
+<!-- Sticky TOC -->
+<aside class="sticky-toc" aria-label="섹션 목차" id="stickyToc">
+  <a href="#principles" class="sticky-toc-item" data-toc="principles">언어 원칙</a>
+  <a href="#voice" class="sticky-toc-item" data-toc="voice">브랜드 보이스</a>
+  <a href="#tone" class="sticky-toc-item" data-toc="tone">톤앤매너</a>
+  <a href="#button" class="sticky-toc-item" data-toc="button">버튼 &amp; CTA</a>
+  <a href="#form" class="sticky-toc-item" data-toc="form">폼 &amp; 입력</a>
+  <a href="#error" class="sticky-toc-item" data-toc="error">에러 &amp; 알림</a>
+  <a href="#help" class="sticky-toc-item" data-toc="help">도움말</a>
+  <a href="#loading" class="sticky-toc-item" data-toc="loading">로딩 &amp; 진행</a>
+  <a href="#accessibility" class="sticky-toc-item" data-toc="accessibility">접근성</a>
+  <a href="#checklist" class="sticky-toc-item" data-toc="checklist">체크리스트</a>
+</aside>
 
 </main>
 
@@ -3488,10 +3546,55 @@ function initScrollSpy() {
 }
 
 // ===== GNB DROPDOWNS INIT =====
+// ===== STICKY TOC =====
+function initStickyToc() {
+  const toc = document.getElementById('stickyToc');
+  if (!toc) return;
+  const sections = ['principles','voice','tone','button','form','error','help','loading','accessibility','checklist'];
+  const tocItems = {};
+  sections.forEach(id => {
+    tocItems[id] = toc.querySelector('[data-toc="' + id + '"]');
+  });
+  let activeId = null;
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const id = entry.target.id;
+      if (entry.isIntersecting) {
+        if (activeId && tocItems[activeId]) tocItems[activeId].classList.remove('active');
+        activeId = id;
+        if (tocItems[id]) tocItems[id].classList.add('active');
+      }
+    });
+  }, { rootMargin: '-10% 0px -70% 0px', threshold: 0 });
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+  // TOC 링크 클릭 시 즉시 활성화
+  toc.querySelectorAll('.sticky-toc-item').forEach(a => {
+    a.addEventListener('click', function() {
+      const id = this.dataset.toc;
+      if (activeId && tocItems[activeId]) tocItems[activeId].classList.remove('active');
+      activeId = id;
+      if (tocItems[id]) tocItems[id].classList.add('active');
+    });
+  });
+  // 히어로/상단일 때 TOC 숨기기
+  const hero = document.getElementById('hero');
+  if (hero) {
+    const heroObserver = new IntersectionObserver(([entry]) => {
+      toc.style.opacity = entry.isIntersecting ? '0' : '1';
+      toc.style.pointerEvents = entry.isIntersecting ? 'none' : '';
+    }, { threshold: 0.1 });
+    heroObserver.observe(hero);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   initGnbDropdowns();
   initAnchorButtons();
   initScrollSpy();
+  initStickyToc();
 });
 </script>
 </body>
