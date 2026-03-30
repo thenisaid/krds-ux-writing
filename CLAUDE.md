@@ -98,18 +98,19 @@ lsof -ti:8300 | xargs kill -9 2>/dev/null
 
 ---
 
-## 현재 상태 (2026-03-30)
+## 현재 상태 (2026-03-31)
 
 ### 완료
 - US-001~010 구현
-- Phase 2 부분 완료 (11개 이슈)
+- Phase 2 완료 (전체 이슈)
 - P1 KRDS 통일화 (GNB sticky, Hero 색상 토큰, 다크모드 HC)
 - P1 접근성 (체크리스트 ARIA, 포커스 트랩, reduced-motion, clipboard fallback)
-- H4-2: GNB 구조 개선 (접근성→패턴 라이브러리 이동, 체크리스트 직링크)
-- H6-1: Sticky TOC (우측 고정 목차, IntersectionObserver, 1380px+ 데스크톱 전용)
+- P1 폰트 (Pretendard GOV Variable CDN, line-height 1.5, 13px 미만 수정)
+- P2 GNB 키보드 내비게이션 (ArrowDown/Up/Esc/Tab, ARIA menu role)
+- P2 검색 미리보기 강화 (preview 텍스트, 키보드 내비게이션)
+- P2 border-light 토큰화 (--color-border-gray-lightest)
+- P3 CSS 중복 제거 (393줄 감소), 변수명 KRDS 전환
+- H4-2: GNB 구조 개선, H6-1: Sticky TOC
 
 ### 남은 작업 (우선순위 순)
-- **P1**: Pretendard GOV CDN 교체, line-height 1.5 통일, 9.5px 접근성 위반 수정
-- **P2**: GNB 키보드 내비게이션, 검색 미리보기 강화, border-light 토큰화
-- **P3**: CSS 중복 제거, 변수명 KRDS 전환
 - **기능**: 크롬 확장 프로그램
