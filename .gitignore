@@ -7,9 +7,11 @@
 # 프로젝트 컨텍스트 메모 (세션별 임시)
 context.md
 
-# QA / 스크린샷
-krds-*.png
-qa-*.png
+# 스크린샷 / 이미지 (로컬 작업용)
+*.png
+*.jpg
+*.jpeg
+PPT/
 
 # macOS
 .DS_Store
