@@ -117,6 +117,7 @@
   --color-text-basic-inverse:  #ffffff;
 
   /* ─── KRDS Semantic: Border ─── */
+  --color-border-gray-lightest: #EAEDF0;
   --color-border-gray-light: #cdd1d5;
   --color-border-gray:       #b1b8be;
   --color-border-gray-dark:  #58616a;
@@ -240,7 +241,7 @@
 
   /* 경계선 */
   --border: var(--color-border-gray-light);    /* #cdd1d5 (KRDS 공식) */
-  --border-light: #EAEDF0;
+  --border-light: var(--color-border-gray-lightest);
   --border-focus: var(--color-border-primary); /* #256ef4 */
   --border-header: var(--color-border-gray-light); /* #cdd1d5 */
 
@@ -2441,29 +2442,29 @@ tr:hover td {
     <nav class="gnb-nav" aria-label="메인 메뉴">
       <ul class="gnb-menu" role="list">
         <li class="gnb-item has-dropdown">
-          <button class="gnb-link" aria-expanded="false" aria-haspopup="true">
+          <button class="gnb-link" aria-expanded="false" aria-haspopup="menu">
             가이드라인 <span class="gnb-arrow" aria-hidden="true">▾</span>
           </button>
           <div class="gnb-dropdown" role="region" aria-label="가이드라인 서브메뉴">
-            <ul class="gnb-dropdown-list" role="list">
-              <li><a href="#principles" class="gnb-dropdown-item">언어 원칙</a></li>
-              <li><a href="#voice" class="gnb-dropdown-item">브랜드 보이스</a></li>
-              <li><a href="#tone" class="gnb-dropdown-item">톤앤매너</a></li>
+            <ul class="gnb-dropdown-list" role="menu">
+              <li><a href="#principles" role="menuitem" class="gnb-dropdown-item">언어 원칙</a></li>
+              <li><a href="#voice" role="menuitem" class="gnb-dropdown-item">브랜드 보이스</a></li>
+              <li><a href="#tone" role="menuitem" class="gnb-dropdown-item">톤앤매너</a></li>
             </ul>
           </div>
         </li>
         <li class="gnb-item has-dropdown">
-          <button class="gnb-link" aria-expanded="false" aria-haspopup="true">
+          <button class="gnb-link" aria-expanded="false" aria-haspopup="menu">
             패턴 라이브러리 <span class="gnb-arrow" aria-hidden="true">▾</span>
           </button>
           <div class="gnb-dropdown" role="region" aria-label="패턴 라이브러리 서브메뉴">
-            <ul class="gnb-dropdown-list" role="list">
-              <li><a href="#button" class="gnb-dropdown-item">버튼 &amp; CTA</a></li>
-              <li><a href="#form" class="gnb-dropdown-item">폼 &amp; 입력</a></li>
-              <li><a href="#error" class="gnb-dropdown-item">에러 &amp; 알림</a></li>
-              <li><a href="#help" class="gnb-dropdown-item">도움말 &amp; 온보딩</a></li>
-              <li><a href="#loading" class="gnb-dropdown-item">로딩 &amp; 진행</a></li>
-              <li><a href="#accessibility" class="gnb-dropdown-item">접근성 &amp; 국제화</a></li>
+            <ul class="gnb-dropdown-list" role="menu">
+              <li><a href="#button" role="menuitem" class="gnb-dropdown-item">버튼 &amp; CTA</a></li>
+              <li><a href="#form" role="menuitem" class="gnb-dropdown-item">폼 &amp; 입력</a></li>
+              <li><a href="#error" role="menuitem" class="gnb-dropdown-item">에러 &amp; 알림</a></li>
+              <li><a href="#help" role="menuitem" class="gnb-dropdown-item">도움말 &amp; 온보딩</a></li>
+              <li><a href="#loading" role="menuitem" class="gnb-dropdown-item">로딩 &amp; 진행</a></li>
+              <li><a href="#accessibility" role="menuitem" class="gnb-dropdown-item">접근성 &amp; 국제화</a></li>
             </ul>
           </div>
         </li>
@@ -3006,19 +3007,17 @@ tr:hover td {
 <script>
 // ===== SEARCH DATA & FUNCTIONS =====
 const searchData = [
-  {id:'principles', tag:'언어 원칙', text:'6가지 핵심 원칙 사용자 중심 간결 능동태 일관된 용어 긍정적 표현 명확성'},
-  {id:'voice', tag:'브랜드 보이스', text:'신뢰감 있고 전문적 친근하고 배려 해결 중심 명확 배려 톤 보이스'},
-  {id:'tone', tag:'톤앤매너', text:'상황별 톤 오류 상황 경고 주의 성공 완료 온보딩 빈 상태 경어 사용'},
-  {id:'button', tag:'버튼 & CTA', text:'동사형 레이블 신청하기 결제하기 저장하기 제출하기 삭제 CTA 버튼'},
-  {id:'form', tag:'폼 & 입력', text:'레이블 플레이스홀더 필수 선택 이메일 비밀번호 개인정보 생년월일 성별 입력 제한 폼 유효성'},
-  {id:'error', tag:'에러 & 알림', text:'오류 메시지 4대 원칙 네트워크 오류 시스템 권한 접근 유효성 폼 유효성 세션 만료'},
-  {id:'help', tag:'도움말 패턴', text:'온보딩 문구 빈 상태 안내 영역 인라인 텍스트 툴팁 코치마크 맥락적'},
-  {id:'help', tag:'내비게이션 & 온보딩', text:'내비게이션 상태 메뉴 레이블 브레드크럼 온보딩 문구 환영 시작 화면 단계별 진행'},
-  {id:'help', tag:'빈 상태 & 도움말', text:'신청 내역 없음 검색 결과 없음 행동 유도 빈 상태 인라인 텍스트 툴팁'},
-  {id:'loading', tag:'로딩 & 진행', text:'로딩 불러오는 중 처리 중 성공 완료 업로드 대기 진행 내비게이션 상태'},
-  {id:'error', tag:'성공 & 실패', text:'완료 저장 비밀번호 결제 실패 삭제 확인 오류'},
-  {id:'accessibility', tag:'접근성 & 국제화', text:'KWCAG WCAG aria-label alt 속성 스크린리더 색상 대비 초점 국제화 다국어 i18n 날짜 형식 화폐 전화번호'},
-  {id:'checklist', tag:'체크리스트', text:'동사형 해결 방법 일관성 필수 권장 버튼 레이블 오류 aria 빈 상태'},
+  {id:'principles', tag:'언어 원칙', text:'6가지 핵심 원칙 사용자 중심 간결 능동태 일관된 용어 긍정적 표현 명확성', preview:'사용자 중심·간결성·능동태·일관된 용어·긍정적 표현·명확성 6원칙'},
+  {id:'voice', tag:'브랜드 보이스', text:'신뢰감 있고 전문적 친근하고 배려 해결 중심 명확 배려 톤 보이스', preview:'신뢰감 있고 전문적이되, 친근하고 배려하는 해결 중심 보이스'},
+  {id:'tone', tag:'톤앤매너', text:'상황별 톤 오류 상황 경고 주의 성공 완료 온보딩 빈 상태 경어 사용', preview:'오류·경고·성공·온보딩 등 상황별 톤 가이드 및 경어 사용 원칙'},
+  {id:'button', tag:'버튼 & CTA', text:'동사형 레이블 신청하기 결제하기 저장하기 제출하기 삭제 CTA 버튼', preview:'동사형 레이블 원칙 — "신청하기", "저장하기" 등 CTA 작성법'},
+  {id:'form', tag:'폼 & 입력', text:'레이블 플레이스홀더 필수 선택 이메일 비밀번호 개인정보 생년월일 성별 입력 제한 폼 유효성', preview:'레이블·플레이스홀더·필수/선택 표시, 유효성 검사 메시지 작성법'},
+  {id:'error', tag:'에러 & 알림', text:'오류 메시지 4대 원칙 네트워크 오류 시스템 권한 접근 유효성 폼 유효성 세션 만료', preview:'오류 메시지 4원칙 — 원인·영향·해결책·긍정적 마무리'},
+  {id:'help', tag:'도움말 & 온보딩', text:'온보딩 문구 빈 상태 안내 영역 인라인 텍스트 툴팁 코치마크 맥락적 내비게이션 메뉴 레이블 브레드크럼', preview:'온보딩 문구·빈 상태 안내·인라인 텍스트·툴팁·코치마크 패턴'},
+  {id:'loading', tag:'로딩 & 진행', text:'로딩 불러오는 중 처리 중 성공 완료 업로드 대기 진행 내비게이션 상태', preview:'"불러오는 중…" 등 진행 상태별 메시지와 성공/실패 피드백'},
+  {id:'error', tag:'성공 & 실패 메시지', text:'완료 저장 비밀번호 결제 실패 삭제 확인 오류', preview:'저장 완료·결제 실패·삭제 확인 등 결과 상태 메시지 패턴'},
+  {id:'accessibility', tag:'접근성 & 국제화', text:'KWCAG WCAG aria-label alt 속성 스크린리더 색상 대비 초점 국제화 다국어 i18n 날짜 형식 화폐 전화번호', preview:'aria-label·alt 속성·스크린리더 대응, 날짜·화폐·전화번호 국제화'},
+  {id:'checklist', tag:'체크리스트', text:'동사형 해결 방법 일관성 필수 권장 버튼 레이블 오류 aria 빈 상태', preview:'UX 라이팅 필수·권장 체크리스트 — 배포 전 점검 항목'},
 ];
 
 function trapFocus(modalEl) {
@@ -3358,8 +3357,16 @@ document.addEventListener('DOMContentLoaded', function() {
   const modal = document.getElementById('searchModal');
   if (modal) modal.addEventListener('click', e => { if (e.target === e.currentTarget) closeSearch(); });
   const input = document.getElementById('searchInput');
-  if (input) input.addEventListener('input', function() {
-    const q = this.value.trim().toLowerCase();
+  if (!input) return;
+
+  const escapeHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const highlight = (text, query) => {
+    const escaped = escapeHtml(text);
+    const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    return escaped.replace(regex, m => `<mark>${m}</mark>`);
+  };
+
+  function renderResults(q) {
     const res = document.getElementById('searchResults');
     if (!q) { res.innerHTML = ''; return; }
     const hits = searchData.filter(d => d.text.toLowerCase().includes(q) || d.tag.toLowerCase().includes(q));
@@ -3367,19 +3374,45 @@ document.addEventListener('DOMContentLoaded', function() {
       res.innerHTML = '<div style="padding:20px 24px;color:var(--text-muted);font-size:14px">검색 결과가 없습니다.</div>';
       return;
     }
-    const escapeHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const highlight = (text, query) => {
-      const escaped = escapeHtml(text);
-      const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-      return escaped.replace(regex, m => `<mark>${m}</mark>`);
-    };
-    res.innerHTML = hits.map(h => `
-      <div class="search-result-item" onclick="scrollToSection('${h.id}');closeSearch()">
+    res.innerHTML = hits.map((h, i) => `
+      <div class="search-result-item" role="option" tabindex="-1" data-section="${h.id}"
+           onclick="scrollToSection('${h.id}');closeSearch()"
+           onkeydown="handleResultKey(event,this)">
         <div class="search-result-tag">${highlight(h.tag, q)}</div>
-        <div class="search-result-text">${highlight(h.tag + ' 가이드라인 보기', q)}</div>
+        <div class="search-result-text">${highlight(h.preview || h.tag, q)}</div>
       </div>`).join('');
+  }
+
+  input.addEventListener('input', function() {
+    renderResults(this.value.trim().toLowerCase());
+  });
+
+  // 검색 입력창에서 ArrowDown → 첫 번째 결과로 포커스
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const first = document.querySelector('#searchResults .search-result-item');
+      if (first) first.focus();
+    }
   });
 });
+
+// ===== 검색 결과 키보드 내비게이션 =====
+function handleResultKey(e, el) {
+  const items = Array.from(document.querySelectorAll('#searchResults .search-result-item'));
+  const idx = items.indexOf(el);
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (idx < items.length - 1) items[idx + 1].focus();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (idx > 0) items[idx - 1].focus();
+    else document.getElementById('searchInput').focus();
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    el.click();
+  }
+}
 
 // ===== KEYBOARD SHORTCUTS =====
 document.addEventListener('keydown', e => {
@@ -3444,30 +3477,74 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ===== GNB DROPDOWN TOGGLE =====
+function closeAllGnbDropdowns() {
+  document.querySelectorAll('.gnb-item.has-dropdown').forEach(i => {
+    i.classList.remove('open');
+    const b = i.querySelector('.gnb-link');
+    if (b) b.setAttribute('aria-expanded', 'false');
+  });
+}
+
+function openGnbDropdown(item, btn) {
+  closeAllGnbDropdowns();
+  item.classList.add('open');
+  btn.setAttribute('aria-expanded', 'true');
+}
+
 function initGnbDropdowns() {
   document.querySelectorAll('.gnb-item.has-dropdown .gnb-link').forEach(btn => {
+    const item = btn.closest('.gnb-item');
+    const dropItems = () => Array.from(item.querySelectorAll('.gnb-dropdown-item'));
+
+    // 클릭 토글
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      const item = btn.closest('.gnb-item');
       const isOpen = item.classList.contains('open');
-      document.querySelectorAll('.gnb-item.has-dropdown').forEach(i => {
-        i.classList.remove('open');
-        const b = i.querySelector('.gnb-link');
-        if (b) b.setAttribute('aria-expanded', 'false');
-      });
-      if (!isOpen) {
-        item.classList.add('open');
-        btn.setAttribute('aria-expanded', 'true');
+      if (isOpen) { closeAllGnbDropdowns(); } else { openGnbDropdown(item, btn); }
+    });
+
+    // 키보드: ArrowDown/Up → 드롭다운 열고 포커스
+    btn.addEventListener('keydown', (e) => {
+      const isOpen = item.classList.contains('open');
+      const items = dropItems();
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (!isOpen) openGnbDropdown(item, btn);
+        if (items.length) items[0].focus();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (!isOpen) openGnbDropdown(item, btn);
+        if (items.length) items[items.length - 1].focus();
+      } else if (e.key === 'Escape') {
+        closeAllGnbDropdowns();
       }
     });
-  });
-  document.addEventListener('click', () => {
-    document.querySelectorAll('.gnb-item.has-dropdown').forEach(i => {
-      i.classList.remove('open');
-      const b = i.querySelector('.gnb-link');
-      if (b) b.setAttribute('aria-expanded', 'false');
+
+    // 드롭다운 아이템 키보드 내비게이션
+    item.querySelectorAll('.gnb-dropdown-item').forEach(link => {
+      link.addEventListener('keydown', (e) => {
+        const items = dropItems();
+        const idx = items.indexOf(link);
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (idx < items.length - 1) items[idx + 1].focus();
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (idx > 0) items[idx - 1].focus(); else btn.focus();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          closeAllGnbDropdowns();
+          btn.focus();
+        } else if (e.key === 'Tab') {
+          // Tab/Shift+Tab으로 드롭다운 벗어날 때 닫기
+          const leaving = (e.shiftKey && idx === 0) || (!e.shiftKey && idx === items.length - 1);
+          if (leaving) closeAllGnbDropdowns();
+        }
+      });
     });
   });
+
+  document.addEventListener('click', closeAllGnbDropdowns);
 }
 
 // ===== SCROLL SPY =====
