@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KRDS UX Writing 가이드</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon" aria-hidden="true">
+        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 2h2v5l4-5h2.5L7 8l4.5 6H9L5 8.5V14H3V2z" fill="white"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-text">KRDS UX Writing</div>
+        <span class="logo-sub">공공기관 UX 라이팅 가이드</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="openFullBtn" title="전체 가이드 열기" aria-label="전체 가이드 새 탭에서 열기">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15,3 21,3 21,9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Search -->
+  <section class="search-area">
+    <div class="search-wrap" role="search">
+      <span class="search-icon" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </span>
+      <input
+        class="search-input"
+        id="searchInput"
+        type="search"
+        placeholder="가이드 검색... (예: 에러, 버튼)"
+        autocomplete="off"
+        aria-label="가이드 검색"
+      >
+      <button class="search-clear" id="clearBtn" aria-label="검색어 지우기" title="지우기">✕</button>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <nav class="categories" aria-label="섹션 바로가기">
+    <div class="category-label">빠른 탐색</div>
+    <div class="category-chips" id="categoryChips">
+      <a class="chip" data-section="button" href="#" aria-label="버튼 & CTA 섹션">
+        <span class="chip-icon">🔘</span>버튼
+      </a>
+      <a class="chip" data-section="form" href="#" aria-label="폼 & 입력 섹션">
+        <span class="chip-icon">📝</span>폼
+      </a>
+      <a class="chip" data-section="error" href="#" aria-label="에러 & 알림 섹션">
+        <span class="chip-icon">⚠️</span>에러
+      </a>
+      <a class="chip" data-section="help" href="#" aria-label="도움말 & 온보딩 섹션">
+        <span class="chip-icon">💡</span>온보딩
+      </a>
+      <a class="chip" data-section="loading" href="#" aria-label="로딩 & 진행 섹션">
+        <span class="chip-icon">⏳</span>로딩
+      </a>
+      <a class="chip" data-section="accessibility" href="#" aria-label="접근성 & 국제화 섹션">
+        <span class="chip-icon">♿</span>접근성
+      </a>
+      <a class="chip" data-section="tone" href="#" aria-label="톤앤매너 섹션">
+        <span class="chip-icon">🎨</span>톤
+      </a>
+      <a class="chip" data-section="principles" href="#" aria-label="언어 원칙 섹션">
+        <span class="chip-icon">📐</span>원칙
+      </a>
+    </div>
+  </nav>
+
+  <!-- Content: Search results or Quick tips -->
+  <main class="content" id="content">
+    <!-- Quick Tips (default view) -->
+    <div class="tips-section" id="tipsView">
+      <div class="tips-title">오늘의 UX 라이팅 원칙</div>
+
+      <div class="tip-card">
+        <div class="tip-label">버튼 & CTA</div>
+        <div class="tip-do">신청하기</div>
+        <div class="tip-dont">확인</div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-label">에러 메시지</div>
+        <div class="tip-do">비밀번호가 맞지 않아요. 다시 시도해 주세요.</div>
+        <div class="tip-dont">오류가 발생했습니다.</div>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-label">로딩 상태</div>
+        <div class="tip-do">신청 정보를 저장하는 중이에요</div>
+        <div class="tip-dont">로딩 중...</div>
+      </div>
+    </div>
+
+    <!-- Search Results -->
+    <div id="resultsView" style="display:none;">
+      <div class="results-list" id="resultsList" role="listbox" aria-label="검색 결과"></div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <a class="btn-full-guide" id="fullGuideBtn" href="#" title="KRDS UX Writing 가이드 전체 열기">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+      </svg>
+      전체 가이드 열기
+    </a>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "KRDS UX Writing 가이드",
+  "version": "1.0.0",
+  "description": "공공기관 UX 라이팅 원칙 빠른 참조 — 버튼·폼·에러 메시지·접근성 가이드",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "KRDS UX Writing 가이드",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [],
+  "host_permissions": []
+}
