@@ -111,6 +111,7 @@ lsof -ti:8300 | xargs kill -9 2>/dev/null
 - P2 border-light 토큰화 (--color-border-gray-lightest)
 - P3 CSS 중복 제거 (393줄 감소), 변수명 KRDS 전환
 - H4-2: GNB 구조 개선, H6-1: Sticky TOC
+- 크롬 확장 프로그램 v1.0.0 (`krds-extension/`, Manifest V3)
 
-### 남은 작업 (우선순위 순)
-- **기능**: 크롬 확장 프로그램
+### 남은 작업
+- 없음 (모든 계획 항목 완료)
