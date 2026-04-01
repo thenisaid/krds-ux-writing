@@ -87,6 +87,41 @@ lsof -ti:8300 | xargs kill -9 2>/dev/null
 
 ---
 
+## gstack
+
+웹 브라우징은 반드시 `/browse` 스킬을 사용. `mcp__claude-in-chrome__*` 툴 사용 금지.
+
+스킬이 동작하지 않으면: `cd .claude/skills/gstack && ./setup`
+
+| 스킬 | 역할 |
+|------|------|
+| `/office-hours` | 제품 전략 재정의 (YC 방식) |
+| `/plan-ceo-review` | CEO 관점 플랜 검토 |
+| `/plan-eng-review` | 엔지니어링 아키텍처 검토 |
+| `/plan-design-review` | 디자인 품질 검토 |
+| `/design-consultation` | 디자인 시스템 구축 |
+| `/design-review` | 디자인 감사 + 수정 |
+| `/review` | 코드 리뷰 (프로덕션 버그 검출) |
+| `/investigate` | 루트 코즈 디버깅 |
+| `/qa` | 실브라우저 QA + 버그 수정 |
+| `/qa-only` | QA 리포트만 (수정 없음) |
+| `/ship` | PR 생성 + 테스트 |
+| `/land-and-deploy` | 머지 → 배포 → 카나리 검증 |
+| `/canary` | 배포 후 모니터링 |
+| `/benchmark` | 성능 회귀 감지 |
+| `/browse` | 헤드리스 브라우저 |
+| `/document-release` | 문서 자동 업데이트 |
+| `/retro` | 주간 회고 분석 |
+| `/cso` | 보안 감사 (OWASP + STRIDE) |
+| `/autoplan` | CEO+Design+Eng 자동 리뷰 |
+| `/careful` | 파괴적 명령어 경고 |
+| `/freeze` | 편집 범위 제한 |
+| `/guard` | 최대 안전 모드 |
+| `/unfreeze` | freeze 해제 |
+| `/gstack-upgrade` | gstack 업그레이드 |
+
+---
+
 ## 참조 문서
 
 | 파일 | 내용 |
@@ -113,5 +148,11 @@ lsof -ti:8300 | xargs kill -9 2>/dev/null
 - H4-2: GNB 구조 개선, H6-1: Sticky TOC
 - 크롬 확장 프로그램 v1.0.0 (`krds-extension/`, Manifest V3)
 
-### 남은 작업
+### 남은 작업 (기존 site 유지보수)
 - 없음 (모든 계획 항목 완료)
+
+### 다음 단계 — 가이드라인 전체 재구성 (2026-04~)
+- KRDS UX Writing 원칙 전면 재설계 (사용자 주도 / 어시스턴트는 구조화·문서화·슬라이드 변환 담당)
+- 워크플로우: KRDS 원칙 설계 → SeMA(서울시립미술관) 파생 적용 → 슬라이드 제작
+- SeMA 납품 슬라이드: UX Writing 진단·개선안 + 실습 워크샵 자료 (금요일 납품)
+- index.html 전면 재작성 (데드라인 이후)
