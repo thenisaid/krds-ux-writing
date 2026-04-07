@@ -1425,6 +1425,407 @@ img { max-width: 100%; }
   a { color: #000; text-decoration: underline; }
 }
 
+
+/* ===== 새 원칙 체계 전용 CSS ===== */
+
+/* 챕터 헤더 */
+.chapter-label {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+.chapter-num {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 4px 12px;
+  border-radius: var(--radius-tag);
+}
+.chapter-title {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 700;
+  letter-spacing: -.025em;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+.chapter-desc {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 680px;
+  margin-bottom: 64px;
+}
+.chapter-divider {
+  height: 1px;
+  background: var(--border-light);
+  margin: 80px 0;
+}
+
+/* 서브섹션 */
+.subsection { margin-bottom: 72px; }
+.subsection-num {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.subsection-title {
+  font-size: clamp(20px, 2.5vw, 26px);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  letter-spacing: -.02em;
+  line-height: 1.3;
+}
+.subsection-desc {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 640px;
+  margin-bottom: 32px;
+}
+
+/* 주권자 기대 카드 (1.1) */
+.audience-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 0;
+}
+.audience-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 28px 24px;
+  position: relative;
+}
+.audience-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: .08em;
+  margin-bottom: 16px;
+}
+.audience-card-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.audience-card-sub {
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.audience-card-desc {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+/* 원칙 블록 (1.2) */
+.principle-block {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--white);
+  padding: 36px 40px;
+  margin-bottom: 24px;
+}
+.principle-block:last-child { margin-bottom: 0; }
+.principle-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+.principle-icon {
+  font-size: 28px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.principle-title-group {}
+.principle-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  letter-spacing: -.01em;
+}
+.principle-subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+.principle-intro {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 28px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border-light);
+}
+.principle-rule {
+  margin-bottom: 24px;
+}
+.principle-rule:last-child { margin-bottom: 0; }
+.rule-title {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+/* 비교 테이블 */
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.compare-table th {
+  background: var(--bg-1);
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: var(--text-muted);
+}
+.compare-table th.th-dont { background: var(--error-light); color: var(--error); }
+.compare-table th.th-do   { background: var(--success-light); color: var(--success); }
+.compare-table td { padding: 10px 16px; border-top: 1px solid var(--border-light); color: var(--text-secondary); }
+.compare-table td.td-dont { color: var(--error); }
+.compare-table td.td-do   { color: var(--success); font-weight: 600; }
+.compare-table tr:first-child td { border-top: none; }
+
+/* 예시 블록 (Do/Don't) */
+.example-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+.ex-dont, .ex-do {
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+.ex-dont {
+  background: var(--error-light);
+  border: 1px solid #f7afa1;
+  color: var(--error);
+}
+.ex-do {
+  background: var(--success-light);
+  border: 1px solid #a9dab4;
+  color: var(--success);
+  font-weight: 600;
+}
+.ex-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* 톤 매트릭스 (1.3) */
+.tone-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.tone-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--white);
+  padding: 24px;
+}
+.tone-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.tone-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.tone-dot-green  { background: #22c55e; }
+.tone-dot-yellow { background: #eab308; }
+.tone-dot-red    { background: #ef4444; }
+.tone-dot-blue   { background: #3b82f6; }
+.tone-state {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.tone-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+.tone-emotion {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+.tone-example {
+  background: var(--bg-1);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+/* 보이스 속성 카드 */
+.voice-attrs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 48px;
+}
+.voice-attr {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 22px;
+}
+.voice-attr-en {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
+.voice-attr-ko {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.voice-attr-desc {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* 서문 테이블 */
+.mapping-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-top: 32px;
+}
+.mapping-table th {
+  background: var(--bg-1);
+  padding: 10px 20px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: var(--text-muted);
+}
+.mapping-table td {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.mapping-table td:first-child { color: var(--text-primary); font-weight: 600; }
+.mapping-table tr:first-child td { border-top: none; }
+
+/* 플레이스홀더 섹션 */
+.placeholder-banner {
+  background: var(--white);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-card);
+  padding: 64px 40px;
+  text-align: center;
+}
+.placeholder-icon { font-size: 40px; margin-bottom: 16px; }
+.placeholder-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.placeholder-desc {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Sticky TOC 업데이트 */
+.sticky-toc { top: 80px; }
+
+/* 새 히어로 */
+.hero-preface {
+  max-width: 680px;
+}
+.hero-rule-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 40px;
+}
+.hero-rule-card {
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.8);
+  border-radius: 10px;
+  padding: 16px 18px;
+  backdrop-filter: blur(8px);
+}
+.hero-rule-old {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  text-decoration: line-through;
+}
+.hero-rule-new {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.hero-rule-en {
+  font-size: 11px;
+  color: var(--primary);
+  margin-top: 2px;
+}
+
+/* 반응형 */
+@media (max-width: 960px) {
+  .audience-grid { grid-template-columns: 1fr; }
+  .voice-attrs { grid-template-columns: 1fr; }
+  .tone-grid { grid-template-columns: 1fr; }
+  .hero-rule-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .principle-block { padding: 24px 20px; }
+  .example-pair { grid-template-columns: 1fr; }
+}
+
 </style>
 </head>
 <body>
@@ -1436,7 +1837,7 @@ img { max-width: 100%; }
   <div class="search-box">
     <div class="search-input-row">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="color:var(--text-muted);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input class="search-input" id="searchInput" type="search" placeholder="섹션 검색... (예: 에러, 버튼)" autocomplete="off" aria-label="검색어 입력">
+      <input class="search-input" id="searchInput" type="search" placeholder="섹션 검색... (예: 오류, 보이스)" autocomplete="off" aria-label="검색어 입력">
       <button style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:20px;padding:0;line-height:1" aria-label="검색 닫기">×</button>
     </div>
     <div id="searchResults" role="listbox"></div>
@@ -1457,67 +1858,35 @@ img { max-width: 100%; }
     </a>
     <nav class="gnb-nav" aria-label="메인 메뉴">
       <ul class="gnb-menu" role="list">
-        <li class="gnb-item has-dropdown">
-          <button class="gnb-link" aria-expanded="false" aria-haspopup="menu">
-            가이드라인 <span class="gnb-arrow" aria-hidden="true">▾</span>
-          </button>
-          <div class="gnb-dropdown" role="region" aria-label="가이드라인 서브메뉴">
-            <ul class="gnb-dropdown-list" role="menu">
-              <li><a href="#principles" role="menuitem" class="gnb-dropdown-item">언어 원칙</a></li>
-              <li><a href="#voice" role="menuitem" class="gnb-dropdown-item">브랜드 보이스</a></li>
-              <li><a href="#tone" role="menuitem" class="gnb-dropdown-item">톤앤매너</a></li>
-            </ul>
-          </div>
-        </li>
-        <li class="gnb-item has-dropdown">
-          <button class="gnb-link" aria-expanded="false" aria-haspopup="menu">
-            패턴 라이브러리 <span class="gnb-arrow" aria-hidden="true">▾</span>
-          </button>
-          <div class="gnb-dropdown" role="region" aria-label="패턴 라이브러리 서브메뉴">
-            <ul class="gnb-dropdown-list" role="menu">
-              <li><a href="#button" role="menuitem" class="gnb-dropdown-item">버튼 &amp; CTA</a></li>
-              <li><a href="#form" role="menuitem" class="gnb-dropdown-item">폼 &amp; 입력</a></li>
-              <li><a href="#error" role="menuitem" class="gnb-dropdown-item">에러 &amp; 알림</a></li>
-              <li><a href="#help" role="menuitem" class="gnb-dropdown-item">도움말 &amp; 온보딩</a></li>
-              <li><a href="#loading" role="menuitem" class="gnb-dropdown-item">로딩 &amp; 진행</a></li>
-              <li><a href="#accessibility" role="menuitem" class="gnb-dropdown-item">접근성 &amp; 국제화</a></li>
-            </ul>
-          </div>
-        </li>
-        <li class="gnb-item">
-          <a href="#checklist" class="gnb-link">체크리스트</a>
-        </li>
+        <li class="gnb-item"><a href="#preface" class="gnb-link">서문</a></li>
+        <li class="gnb-item"><a href="#chapter1" class="gnb-link">1장. 파운데이션</a></li>
+        <li class="gnb-item"><a href="#chapter2" class="gnb-link">2장. 맥락별 가이드</a></li>
+        <li class="gnb-item"><a href="#chapter3" class="gnb-link">3장. 파생 적용</a></li>
+        <li class="gnb-item"><a href="#checklist" class="gnb-link">체크리스트</a></li>
       </ul>
     </nav>
     <div class="gnb-utils">
-      <button class="gnb-util-btn" id="searchBtn" aria-label="검색 열기 (⌘K)" >
+      <button class="gnb-util-btn" id="searchBtn" aria-label="검색 열기 (⌘K)">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       </button>
-      <button class="gnb-util-btn gnb-theme-toggle" id="themeToggle" aria-label="다크모드 전환" >
+      <button class="gnb-util-btn gnb-theme-toggle" id="themeToggle" aria-label="다크모드 전환">
         <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
-      <button class="gnb-util-btn mobile-menu-btn" id="mobileMenuBtn" aria-label="메뉴 열기" aria-expanded="false" >
+      <button class="gnb-util-btn mobile-menu-btn" id="mobileMenuBtn" aria-label="메뉴 열기" aria-expanded="false">
         <svg class="icon-hamburger" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
   </div>
-  <!-- 모바일 메뉴 패널 -->
   <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
     <nav aria-label="모바일 메뉴">
       <ul class="mobile-menu-list">
-        <li><a href="#persona" class="mobile-menu-item" >시작하기</a></li>
-        <li><a href="#principles" class="mobile-menu-item" >언어 원칙</a></li>
-        <li><a href="#voice" class="mobile-menu-item" >브랜드 보이스</a></li>
-        <li><a href="#tone" class="mobile-menu-item" >톤앤매너</a></li>
-        <li><a href="#button" class="mobile-menu-item" >버튼 &amp; CTA</a></li>
-        <li><a href="#form" class="mobile-menu-item" >폼 &amp; 입력</a></li>
-        <li><a href="#error" class="mobile-menu-item" >에러 &amp; 알림</a></li>
-        <li><a href="#help" class="mobile-menu-item" >도움말 &amp; 온보딩</a></li>
-        <li><a href="#loading" class="mobile-menu-item" >로딩 &amp; 진행</a></li>
-        <li><a href="#accessibility" class="mobile-menu-item" >접근성 &amp; 국제화</a></li>
-        <li><a href="#checklist" class="mobile-menu-item" >체크리스트</a></li>
+        <li><a href="#preface" class="mobile-menu-item">서문</a></li>
+        <li><a href="#chapter1" class="mobile-menu-item">1장. 파운데이션</a></li>
+        <li><a href="#chapter2" class="mobile-menu-item">2장. 맥락별 가이드</a></li>
+        <li><a href="#chapter3" class="mobile-menu-item">3장. 파생 적용</a></li>
+        <li><a href="#checklist" class="mobile-menu-item">체크리스트</a></li>
       </ul>
     </nav>
   </div>
@@ -1525,456 +1894,474 @@ img { max-width: 100%; }
 
 <main id="content">
 
-<!-- 히어로 섹션 -->
+<!-- ===== HERO ===== -->
 <section class="hero-section" id="hero" aria-label="히어로 섹션">
   <div class="hero-bg" aria-hidden="true">
     <div class="hero-bg-grid"></div>
     <div class="hero-bg-glow"></div>
   </div>
   <div class="container hero-inner">
-    <div class="hero-content reveal">
+    <div class="hero-content reveal hero-preface">
       <p class="hero-eyebrow">Korea Design System · UX Writing 2025</p>
-      <h1 class="hero-title">정부 서비스의<br>언어를 디자인합니다</h1>
-      <p class="hero-desc">사용자가 이해하고, 신뢰하고, 행동하게 만드는<br>UX 라이팅의 모든 원칙을 담았습니다.</p>
-      <div class="hero-cta-group">
-        <a href="#persona" class="btn btn-primary">가이드라인 시작하기</a>
-        <a href="#checklist" class="btn btn-outline-white">체크리스트 보기</a>
-      </div>
-      <div class="hero-stats">
-        <div class="hero-stat">
-          <span class="hero-stat-num">9</span>
-          <span class="hero-stat-label">개 영역</span>
+      <h1 class="hero-title">누구나 포기하지 않고<br>끝까지 쓸 수 있게</h1>
+      <p class="hero-desc">공공 서비스의 글은 멋있거나 유려할 필요가 없습니다.<br>국민이 헷갈리지 않고, 제때 세금을 내고, 필요한 지원금을 무사히 받게 돕는<br><strong>친절한 표지판</strong>이어야 합니다.</p>
+      <div class="hero-rule-grid">
+        <div class="hero-rule-card">
+          <div class="hero-rule-old">명확하게</div>
+          <div class="hero-rule-new">무번역의 원칙</div>
+          <div class="hero-rule-en">No-Translation</div>
         </div>
-        <div class="hero-stat-divider" aria-hidden="true"></div>
-        <div class="hero-stat">
-          <span class="hero-stat-num">80+</span>
-          <span class="hero-stat-label">문구 예시</span>
+        <div class="hero-rule-card">
+          <div class="hero-rule-old">간결하게</div>
+          <div class="hero-rule-new">정보 핵심화의 원칙</div>
+          <div class="hero-rule-en">Essentialism</div>
         </div>
-        <div class="hero-stat-divider" aria-hidden="true"></div>
-        <div class="hero-stat">
-          <span class="hero-stat-num">KWCAG</span>
-          <span class="hero-stat-label">2.2 준수</span>
+        <div class="hero-rule-card">
+          <div class="hero-rule-old">유용하게</div>
+          <div class="hero-rule-new">심리적 안전망의 원칙</div>
+          <div class="hero-rule-en">Psychological Safety</div>
+        </div>
+        <div class="hero-rule-card">
+          <div class="hero-rule-old">일관되게</div>
+          <div class="hero-rule-new">세 원칙이 쌓일 때 생기는 신뢰</div>
+          <div class="hero-rule-en">Consistency</div>
         </div>
       </div>
-    </div>
-    <div class="hero-visual" aria-hidden="true">
-      <div class="float-card float-card-1">
-        <div class="float-card-label">버튼 텍스트</div>
-        <div class="float-card-do">✓ 저장하기</div>
-        <div class="float-card-dont">✗ 확인</div>
-      </div>
-      <div class="float-card float-card-2">
-        <div class="float-card-label">에러 메시지</div>
-        <div class="float-card-do">✓ 비밀번호는 8자 이상이어야 합니다</div>
-        <div class="float-card-dont">✗ 오류가 발생했습니다</div>
-      </div>
-      <div class="float-card float-card-3">
-        <div class="float-card-label">빈 상태</div>
-        <div class="float-card-do">✓ 아직 등록된 항목이 없어요</div>
-        <div class="float-card-dont">✗ No data</div>
+      <div class="hero-cta-group" style="margin-top:40px">
+        <a href="#preface" class="btn btn-primary">서문부터 읽기</a>
+        <a href="#chapter1" class="btn btn-outline-white">1장 바로 가기</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 페르소나 탭 섹션 -->
-<section class="persona-section section" id="persona" aria-label="역할별 시작하기">
+<!-- ===== 서문 ===== -->
+<section class="section" id="preface" aria-label="서문">
   <div class="container">
-    <div class="section-header reveal">
-      <p class="section-eyebrow">시작하기</p>
-      <h2 class="section-title">UX Writing 시작하기</h2>
-      <p class="section-desc">역할에 맞는 가이드라인을 선택해 바로 시작하세요.</p>
+    <div class="chapter-label">
+      <span class="chapter-num">서문</span>
     </div>
-    <div class="persona-tabs" role="tablist" aria-label="역할 선택">
-      <button class="persona-tab active" role="tab" aria-selected="true" aria-controls="tab-writer" id="tab-btn-writer" >UX 라이터</button>
-      <button class="persona-tab" role="tab" aria-selected="false" aria-controls="tab-designer" id="tab-btn-designer" >디자이너</button>
-      <button class="persona-tab" role="tab" aria-selected="false" aria-controls="tab-developer" id="tab-btn-developer" >개발자</button>
-    </div>
-    <div class="persona-panel active" id="tab-writer" role="tabpanel" aria-labelledby="tab-btn-writer">
-      <div class="persona-panel-inner">
-        <div class="persona-panel-desc">
-          <h3 class="persona-panel-title">UX 라이터를 위한 가이드</h3>
-          <p>언어 원칙부터 브랜드 보이스, 톤앤매너까지 체계적으로 학습하고 실무에 바로 적용하세요.</p>
-          <a href="#principles" class="btn btn-primary" style="margin-top:24px">가이드 시작하기</a>
-        </div>
-        <div class="persona-panel-cards">
-          <a href="#principles" class="persona-card"><span class="persona-card-icon">📝</span><span class="persona-card-title">언어 원칙</span><span class="persona-card-arrow">→</span></a>
-          <a href="#voice" class="persona-card"><span class="persona-card-icon">🎙</span><span class="persona-card-title">브랜드 보이스</span><span class="persona-card-arrow">→</span></a>
-          <a href="#tone" class="persona-card"><span class="persona-card-icon">🎚</span><span class="persona-card-title">톤앤매너</span><span class="persona-card-arrow">→</span></a>
-          <a href="#checklist" class="persona-card"><span class="persona-card-icon">✅</span><span class="persona-card-title">체크리스트</span><span class="persona-card-arrow">→</span></a>
-        </div>
-      </div>
-    </div>
-    <div class="persona-panel" id="tab-designer" role="tabpanel" aria-labelledby="tab-btn-designer" hidden>
-      <div class="persona-panel-inner">
-        <div class="persona-panel-desc">
-          <h3 class="persona-panel-title">디자이너를 위한 가이드</h3>
-          <p>버튼 레이블, 폼 안내, 도움말 텍스트 등 컴포넌트별 UX 라이팅 기준을 확인하세요.</p>
-          <a href="#button" class="btn btn-primary" style="margin-top:24px">패턴 보기</a>
-        </div>
-        <div class="persona-panel-cards">
-          <a href="#button" class="persona-card"><span class="persona-card-icon">🔘</span><span class="persona-card-title">버튼 &amp; CTA</span><span class="persona-card-arrow">→</span></a>
-          <a href="#form" class="persona-card"><span class="persona-card-icon">📋</span><span class="persona-card-title">폼 &amp; 입력</span><span class="persona-card-arrow">→</span></a>
-          <a href="#help" class="persona-card"><span class="persona-card-icon">💡</span><span class="persona-card-title">도움말 패턴</span><span class="persona-card-arrow">→</span></a>
-          <a href="#loading" class="persona-card"><span class="persona-card-icon">🔄</span><span class="persona-card-title">내비게이션</span><span class="persona-card-arrow">→</span></a>
-        </div>
-      </div>
-    </div>
-    <div class="persona-panel" id="tab-developer" role="tabpanel" aria-labelledby="tab-btn-developer" hidden>
-      <div class="persona-panel-inner">
-        <div class="persona-panel-desc">
-          <h3 class="persona-panel-title">개발자를 위한 가이드</h3>
-          <p>에러 메시지, 로딩 상태, 성공/실패 피드백 텍스트의 구현 기준을 확인하세요.</p>
-          <a href="#error" class="btn btn-primary" style="margin-top:24px">에러 가이드 보기</a>
-        </div>
-        <div class="persona-panel-cards">
-          <a href="#error" class="persona-card"><span class="persona-card-icon">⚠️</span><span class="persona-card-title">에러 &amp; 알림</span><span class="persona-card-arrow">→</span></a>
-          <a href="#loading" class="persona-card"><span class="persona-card-icon">⏳</span><span class="persona-card-title">로딩 &amp; 진행</span><span class="persona-card-arrow">→</span></a>
-          <a href="#accessibility" class="persona-card"><span class="persona-card-icon">♿</span><span class="persona-card-title">접근성</span><span class="persona-card-arrow">→</span></a>
-          <a href="#checklist" class="persona-card"><span class="persona-card-icon">✅</span><span class="persona-card-title">성공 &amp; 실패</span><span class="persona-card-arrow">→</span></a>
-        </div>
-      </div>
+    <h2 class="chapter-title reveal">왜 이 가이드라인인가</h2>
+    <p class="chapter-desc reveal">우리는 그동안 글을 쓸 때 "명확하게, 간결하게, 유용하게, 일관되게" 쓰라는 말을 수없이 들어왔습니다. 하지만 이 모호한 형용사들은 현장에서 아무런 도움이 되지 않았습니다. KRDS는 이 4가지 기준을 실무자가 당장 모니터 앞에서 쓸 수 있는 <strong>구체적인 행동 규칙</strong>으로 바꿨습니다.</p>
+
+    <table class="mapping-table reveal">
+      <thead>
+        <tr>
+          <th>기존 기준</th>
+          <th>KRDS 행동 규칙</th>
+          <th>핵심 질문</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>명확하게</td>
+          <td>무번역의 원칙 — No-Translation</td>
+          <td>14세 중학생이 사전 없이 바로 이해하는가?</td>
+        </tr>
+        <tr>
+          <td>간결하게</td>
+          <td>정보 핵심화의 원칙 — Essentialism</td>
+          <td>1초만 봐도 다음 행동을 알 수 있는가?</td>
+        </tr>
+        <tr>
+          <td>유용하게</td>
+          <td>심리적 안전망의 원칙 — Psychological Safety</td>
+          <td>실수했을 때 당황하지 않고 스스로 해결할 수 있는가?</td>
+        </tr>
+        <tr>
+          <td>일관되게</td>
+          <td>세 원칙을 예외 없이 지킬 때 쌓이는 신뢰</td>
+          <td>어디서나 동일한 경험인가?</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:48px;padding:28px 32px;background:var(--primary-light);border-radius:var(--radius-card);border-left:4px solid var(--primary)" class="reveal">
+      <p style="font-size:var(--text-base);color:var(--text-primary);line-height:1.75">어디를 가든 쉬운 말로 안내받고 실수해도 괜찮은 경험이 쌓일 때, 비로소 시스템과 국민 사이에 <strong>"정부 서비스는 헷갈리지 않는다"</strong>는 보이지 않는 신뢰의 선이 연결됩니다.</p>
     </div>
   </div>
 </section>
 
-<!-- 주요 구성 카드 그리드 -->
-<section class="composition-section section" id="composition" aria-label="주요 구성">
+<!-- ===== 제1장. 파운데이션 ===== -->
+<section class="section" id="chapter1" aria-label="제1장 파운데이션" style="background:var(--white)">
   <div class="container">
-    <div class="section-header reveal" style="text-align:center;max-width:600px;margin:0 auto 48px">
-      <p class="section-eyebrow">주요 구성</p>
-      <h2 class="section-title">UX Writing의 모든 영역</h2>
-      <p class="section-desc">가이드라인의 뼈대를 이루는 핵심 구성 요소를 살펴보세요.</p>
+    <div class="chapter-label">
+      <span class="chapter-num">Chapter 01</span>
     </div>
-    <div class="composition-grid">
-      <a href="#principles" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">📝</div><h3 class="comp-card-title">언어 원칙</h3><p class="comp-card-desc">명확하고 일관된 한국어 표현의 기준을 정립합니다</p><span class="comp-card-link">자세히 보기 →</span></a>
-      <a href="#voice" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">🎙</div><h3 class="comp-card-title">브랜드 보이스</h3><p class="comp-card-desc">신뢰할 수 있는 정부 서비스만의 일관된 목소리</p><span class="comp-card-link">자세히 보기 →</span></a>
-      <a href="#tone" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">🎚</div><h3 class="comp-card-title">톤앤매너</h3><p class="comp-card-desc">상황에 맞는 어조와 문체 조절 가이드</p><span class="comp-card-link">자세히 보기 →</span></a>
-      <a href="#button" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">🔘</div><h3 class="comp-card-title">버튼 &amp; CTA</h3><p class="comp-card-desc">행동을 유발하는 명확하고 간결한 레이블 작성법</p><span class="comp-card-link">자세히 보기 →</span></a>
-      <a href="#form" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">📋</div><h3 class="comp-card-title">폼 &amp; 입력</h3><p class="comp-card-desc">오류 없는 입력을 돕는 레이블과 플레이스홀더</p><span class="comp-card-link">자세히 보기 →</span></a>
-      <a href="#error" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">⚠️</div><h3 class="comp-card-title">에러 &amp; 알림</h3><p class="comp-card-desc">불안을 줄이고 해결책을 제시하는 에러 메시지</p><span class="comp-card-link">자세히 보기 →</span></a>
-      <a href="#help" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">💡</div><h3 class="comp-card-title">도움말 &amp; 온보딩</h3><p class="comp-card-desc">처음 사용자도 막히지 않는 안내 텍스트 전략</p><span class="comp-card-link">자세히 보기 →</span></a>
-      <a href="#loading" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">⏳</div><h3 class="comp-card-title">로딩 &amp; 진행</h3><p class="comp-card-desc">대기 시간의 불안을 줄이는 상태 메시지 작성</p><span class="comp-card-link">자세히 보기 →</span></a>
-      <a href="#accessibility" class="comp-card stagger-item"><div class="comp-card-icon" aria-hidden="true">♿</div><h3 class="comp-card-title">접근성 &amp; 국제화</h3><p class="comp-card-desc">누구나 이해할 수 있는 포용적 언어 가이드</p><span class="comp-card-link">자세히 보기 →</span></a>
+    <h2 class="chapter-title reveal">파운데이션 (Foundation)</h2>
+    <p class="chapter-desc reveal">대한민국 공공 서비스가 국민을 바라보는 시각과, 그들을 대할 때 지켜야 할 가장 변하지 않는 근본적인 철학과 태도를 정의합니다.</p>
+
+    <!-- 1.1 우리의 대상 -->
+    <div class="subsection" id="ch1-1">
+      <div class="subsection-num">1.1</div>
+      <h3 class="subsection-title reveal">우리의 대상: '시간과 권리가 소중한 주권자'</h3>
+      <p class="subsection-desc reveal">공공 서비스의 사용자는 행정 절차를 배우러 온 학생이 아닙니다. 낯선 시스템 앞에서 불이익을 받을까 봐 초조해하며, 자신의 목적을 달성하고 일상으로 돌아가길 원하는 <strong>주권자</strong>입니다. 글을 쓰기 전, 주권자가 가진 3가지 정당한 기대를 이해해야 합니다.</p>
+      <div class="audience-grid reveal">
+        <div class="audience-card">
+          <div class="audience-num">① 정보의 효율성에 대한 기대</div>
+          <div class="audience-card-title">목적 지향적 스캐닝</div>
+          <div class="audience-card-sub">화면을 읽지 않고 훑어봅니다</div>
+          <div class="audience-card-desc">주권자는 버튼과 핵심 결과만 빠르게 찾습니다. 가장 중요한 결론과 다음 행동 지시를 화면 최상단과 버튼에 배치해야 합니다.</div>
+        </div>
+        <div class="audience-card">
+          <div class="audience-num">② 보편적 이해에 대한 권리</div>
+          <div class="audience-card-title">14세 기준 무장벽 언어</div>
+          <div class="audience-card-sub">누구도 정보에서 배제하지 않습니다</div>
+          <div class="audience-card-desc">공공의 언어는 한자어나 행정 관습어의 장벽을 두어선 안 됩니다. 문장의 수준을 중학교 2학년(14세) 독해력에 맞춥니다.</div>
+        </div>
+        <div class="audience-card">
+          <div class="audience-num">③ 심리적 안전망에 대한 요구</div>
+          <div class="audience-card-title">실수 복구의 권리</div>
+          <div class="audience-card-sub">클릭이 무겁습니다</div>
+          <div class="audience-card-desc">오류가 발생했을 때 '실패 통보'로 끝내지 않고, '어떻게 궤도를 수정할 수 있는지' 명확한 대안을 제시해야 합니다.</div>
+        </div>
+      </div>
     </div>
+
+    <div class="chapter-divider"></div>
+
+    <!-- 1.2 3대 원칙 -->
+    <div class="subsection" id="ch1-2">
+      <div class="subsection-num">1.2</div>
+      <h3 class="subsection-title reveal">라이팅 핵심 철학: 주권자의 시간을 아끼는 3대 원칙</h3>
+      <p class="subsection-desc reveal">공공 서비스의 글은 주권자가 단어의 뜻을 유추하느라 멈춰 서지 않고, 안심하며 다음 버튼을 누를 수 있도록 돕는 실용적인 표지판이어야 합니다.</p>
+
+      <!-- 원칙 1 -->
+      <div class="principle-block reveal">
+        <div class="principle-header">
+          <div class="principle-icon">⚖️</div>
+          <div class="principle-title-group">
+            <div class="principle-title">원칙 1. 무번역의 원칙</div>
+            <div class="principle-subtitle">No-Translation</div>
+          </div>
+        </div>
+        <p class="principle-intro">공급자의 행정적 정확성보다 주권자의 즉각적인 이해가 우선입니다. 뇌가 일상어로 다시 '번역'해야 하는 단어는 철저히 배제합니다.</p>
+
+        <div class="principle-rule">
+          <div class="rule-title">행정 관습어 폐기 — 1:1 치환</div>
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th class="th-dont">쓰지 마세요</th>
+                <th class="th-do">대신 쓰세요</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="td-dont">명일까지 제출</td><td class="td-do">내일까지 제출</td></tr>
+              <tr><td class="td-dont">직접 내방하여</td><td class="td-do">직접 방문하여</td></tr>
+              <tr><td class="td-dont">기표 완료</td><td class="td-do">등록 완료</td></tr>
+              <tr><td class="td-dont">상기 사항</td><td class="td-do">위 내용</td></tr>
+              <tr><td class="td-dont">동 기간 내</td><td class="td-do">같은 기간 안에</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="principle-rule">
+          <div class="rule-title">이중 부정 금지 — 긍정문으로 전환</div>
+          <div class="example-pair">
+            <div class="ex-dont">
+              <span class="ex-label">❌ 이중 부정</span>
+              미비하지 않으면 신청 가능합니다
+            </div>
+            <div class="ex-do">
+              <span class="ex-label">✅ 긍정문</span>
+              모두 준비되면 신청할 수 있습니다
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 원칙 2 -->
+      <div class="principle-block reveal">
+        <div class="principle-header">
+          <div class="principle-icon">⚖️</div>
+          <div class="principle-title-group">
+            <div class="principle-title">원칙 2. 정보 핵심화의 원칙</div>
+            <div class="principle-subtitle">Essentialism</div>
+          </div>
+        </div>
+        <p class="principle-intro">무작정 글자 수를 줄이는 것이 아니라, 주권자가 핵심에 도달하는 생각의 거리를 물리적으로 줄여주는 '노이즈 제거' 과정입니다.</p>
+
+        <div class="principle-rule">
+          <div class="rule-title">결론 우선 (Front-loading) — 핵심 행동을 맨 앞에</div>
+          <div class="example-pair">
+            <div class="ex-dont">
+              <span class="ex-label">❌ 결론 후치</span>
+              귀하의 소득 및 재산 현황을 검토한 결과, 지원 대상에 해당되지 않음을 알려드립니다.
+            </div>
+            <div class="ex-do">
+              <span class="ex-label">✅ 결론 우선</span>
+              지원 대상이 아닙니다. 소득 기준을 초과했습니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="principle-rule">
+          <div class="rule-title">당연한 말 생략 — 핵심 정보만</div>
+          <div class="example-pair">
+            <div class="ex-dont">
+              <span class="ex-label">❌ 노이즈</span>
+              소중한 개인정보 보호를 위해 안전하게 처리됩니다.
+            </div>
+            <div class="ex-do">
+              <span class="ex-label">✅ 삭제</span>
+              (당연한 사항 — 생략)
+            </div>
+          </div>
+        </div>
+
+        <div class="principle-rule">
+          <div class="rule-title">시각적 리듬과 청킹 (Chunking)</div>
+          <p style="font-size:var(--text-sm);color:var(--text-secondary);line-height:1.7">한 문장에 담는 의미의 마디(청크)는 3개를 넘지 않도록 합니다. 의미 단위로 줄을 바꿔 스캐닝을 돕습니다.</p>
+        </div>
+      </div>
+
+      <!-- 원칙 3 -->
+      <div class="principle-block reveal">
+        <div class="principle-header">
+          <div class="principle-icon">⚖️</div>
+          <div class="principle-title-group">
+            <div class="principle-title">원칙 3. 심리적 안전망의 원칙</div>
+            <div class="principle-subtitle">Psychological Safety</div>
+          </div>
+        </div>
+        <p class="principle-intro">실수해도 언제든 궤도를 수정할 수 있다는 확신을 주어 비가역적 공포를 없앱니다.</p>
+
+        <div class="principle-rule">
+          <div class="rule-title">100% 예측 가능한 버튼 — 누른 뒤 일어날 일을 명확히</div>
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th class="th-dont">모호한 버튼</th>
+                <th class="th-do">예측 가능한 버튼</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="td-dont">확인</td><td class="td-do">신청서 제출하기</td></tr>
+              <tr><td class="td-dont">취소</td><td class="td-do">작성 취소하고 나가기</td></tr>
+              <tr><td class="td-dont">다음</td><td class="td-do">본인 인증으로 이동</td></tr>
+              <tr><td class="td-dont">완료</td><td class="td-do">신청 완료 — 접수번호 확인하기</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="principle-rule">
+          <div class="rule-title">비난 없는 오류 복구 — 원인 + 해결책 함께</div>
+          <div class="example-pair">
+            <div class="ex-dont">
+              <span class="ex-label">❌ 오류 코드만</span>
+              ERROR 4023: 인증 실패
+            </div>
+            <div class="ex-do">
+              <span class="ex-label">✅ 원인 + 해결</span>
+              인증 번호가 틀렸습니다. 문자로 받은 6자리 숫자를 다시 입력해 주세요.
+            </div>
+          </div>
+        </div>
+
+        <div class="principle-rule">
+          <div class="rule-title">비가역 행동 앞의 제동 — 명확한 경고로 흐름 끊기</div>
+          <div style="background:var(--warning-light);border:1px solid var(--warning);border-radius:8px;padding:14px 18px;font-size:var(--text-sm);color:var(--text-primary);margin-top:12px">
+            <strong>예시:</strong> 제출하면 수정할 수 없습니다. 내용을 다시 확인해 주세요.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter-divider"></div>
+
+    <!-- 1.3 보이스·톤 -->
+    <div class="subsection" id="ch1-3">
+      <div class="subsection-num">1.3</div>
+      <h3 class="subsection-title reveal">보이스 앤 톤: 주권자를 대하는 정부의 일관된 인격</h3>
+      <p class="subsection-desc reveal">흔들리지 않는 하나의 보이스(Voice)를 유지하되, 주권자의 감정 곡선에 맞춰 말투(Tone)를 4단계로 유연하게 변주합니다.</p>
+
+      <h4 style="font-size:17px;font-weight:700;color:var(--text-primary);margin-bottom:20px">🏛️ 우리의 보이스: '권위를 뺀 든든한 조력자'</h4>
+      <div class="voice-attrs reveal">
+        <div class="voice-attr">
+          <div class="voice-attr-en">Transparent</div>
+          <div class="voice-attr-ko">객관적이고 투명한</div>
+          <div class="voice-attr-desc">제한 사항을 숨기지 않고 명확히 밝힙니다.</div>
+        </div>
+        <div class="voice-attr">
+          <div class="voice-attr-en">Accountable</div>
+          <div class="voice-attr-ko">단호하지만 책임을 지는</div>
+          <div class="voice-attr-desc">안 되는 것은 선을 긋되, 대안을 책임지고 안내합니다.</div>
+        </div>
+        <div class="voice-attr">
+          <div class="voice-attr-en">Respectful</div>
+          <div class="voice-attr-ko">담백하게 정중한</div>
+          <div class="voice-attr-desc">불필요한 이모지나 극존칭을 빼고 존중의 의미만 남깁니다.</div>
+        </div>
+      </div>
+
+      <h4 style="font-size:17px;font-weight:700;color:var(--text-primary);margin:40px 0 20px">🎛️ 상황별 톤 매트릭스</h4>
+      <div class="tone-grid reveal">
+        <div class="tone-card">
+          <div class="tone-card-header">
+            <span class="tone-dot tone-dot-green"></span>
+            <span class="tone-state">탐색과 안내</span>
+          </div>
+          <div class="tone-name">톤 1. 길잡이</div>
+          <div class="tone-emotion">주권자 감정: 안정 상태</div>
+          <div class="tone-example">"어떤 서비스가 필요하신가요? 아래에서 선택해 주세요."</div>
+        </div>
+        <div class="tone-card">
+          <div class="tone-card-header">
+            <span class="tone-dot tone-dot-yellow"></span>
+            <span class="tone-state">대기와 로딩</span>
+          </div>
+          <div class="tone-name">톤 2. 중계자</div>
+          <div class="tone-emotion">주권자 감정: 초조·의심 상태</div>
+          <div class="tone-example">"국세청에서 소득 정보를 불러오고 있습니다. (약 10초 소요)"</div>
+        </div>
+        <div class="tone-card">
+          <div class="tone-card-header">
+            <span class="tone-dot tone-dot-red"></span>
+            <span class="tone-state">오류와 실패</span>
+          </div>
+          <div class="tone-name">톤 3. 해결사</div>
+          <div class="tone-emotion">주권자 감정: 당황·분노 상태</div>
+          <div class="tone-example">"인증 번호가 틀렸습니다. 문자로 받은 6자리 숫자를 다시 입력해 주세요."</div>
+        </div>
+        <div class="tone-card">
+          <div class="tone-card-header">
+            <span class="tone-dot tone-dot-blue"></span>
+            <span class="tone-state">완료와 성공</span>
+          </div>
+          <div class="tone-name">톤 4. 마침표</div>
+          <div class="tone-emotion">주권자 감정: 안도 상태</div>
+          <div class="tone-example">"지원금 신청이 끝났습니다. 심사 결과는 3일 뒤 카카오톡으로 알려드릴게요."</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
-<!-- 가이드라인 상세 섹션들 -->
-<div class="guidelines-main">
-
-    <!-- 언어 원칙 -->
-    <section class="guideline-section reveal" id="principles">
-      <div class="container">
-      <div class="guideline-meta">
-        <span class="guideline-tag">Core Principles</span>
-        <span class="guideline-num" style="font-family:var(--font-mono);font-size:13px;color:var(--text-muted)">01</span>
-      </div>
-      <h2 class="guideline-title">언어 원칙</h2>
-      <p class="guideline-desc">모든 UI 문구 작성 시 따라야 하는 기본 원칙입니다.</p>
-      <div class="guideline-card">
-        <div class="guideline-card-title">6가지 핵심 원칙</div>
-        <ul class="rule-list">
-          <li class="rule-item"><span class="rule-num">1</span><span class="rule-text"><strong>사용자 중심</strong> — 시스템이 아닌 사용자 관점에서 작성. "오류 코드 E-404" → "페이지를 찾을 수 없습니다"</span></li>
-          <li class="rule-item"><span class="rule-num">2</span><span class="rule-text"><strong>간결하고 명확하게</strong> — 불필요한 단어 제거. 한 문장에 하나의 개념만</span></li>
-          <li class="rule-item"><span class="rule-num">3</span><span class="rule-text"><strong>능동태 사용</strong> — "파일이 삭제되었습니다" → "파일을 삭제했습니다"</span></li>
-          <li class="rule-item"><span class="rule-num">4</span><span class="rule-text"><strong>구체적 행동 유도</strong> — 다음에 무엇을 해야 하는지 명확하게 안내</span></li>
-          <li class="rule-item"><span class="rule-num">5</span><span class="rule-text"><strong>일관된 용어</strong> — 같은 기능·개념은 항상 같은 단어 사용</span></li>
-          <li class="rule-item"><span class="rule-num">6</span><span class="rule-text"><strong>긍정적 표현</strong> — "입력하지 않으면 안 됩니다" → "필수로 입력해 주세요"</span></li>
-        </ul>
-      </div>
-      <div class="do-dont">
-        <div class="do-box"><div class="verdict verdict-do">✓ Do</div><div class="verdict-text">"인터넷 연결을 확인하고 다시 시도해 주세요."<br><br>"이름을 입력해 주세요."<br><br>"파일을 저장했습니다."</div></div>
-        <div class="dont-box"><div class="verdict verdict-dont">✗ Don't</div><div class="verdict-text">"네트워크 에러가 발생했습니다. (err: ETIMEDOUT)"<br><br>"이름 필드가 비어 있습니다."<br><br>"파일이 저장 완료되었습니다."</div></div>
-      </div>
-      </div>
-    </section>
-
-    <!-- 브랜드 보이스 -->
-    <section class="guideline-section reveal" id="voice">
-      <div class="container">
-      <div class="guideline-meta">
-        <span class="guideline-tag">Brand Voice</span>
-        <span class="guideline-num">02</span>
-      </div>
-      <h2 class="guideline-title">브랜드 보이스</h2>
-      <p class="guideline-desc">KRDS 기반 서비스의 언어적 성격과 일관된 표현 방식입니다.</p>
-      <div class="grid-2">
-        <div class="guideline-card">
-          <div class="guideline-card-title">신뢰감 있고 전문적</div>
-          <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">정확한 정보와 명확한 안내로 신뢰를 구축합니다.</p>
-          <div class="copy-example"><span class="copy-text">"본인 확인이 완료되었습니다."</span><button class="copy-btn" data-copy="본인 확인이 완료되었습니다." >복사</button></div>
-          <div class="copy-example"><span class="copy-text">"서류를 검토 중입니다. 영업일 기준 3일 내 안내드립니다."</span><button class="copy-btn" data-copy="서류를 검토 중입니다. 영업일 기준 3일 내 안내드립니다." >복사</button></div>
-        </div>
-        <div class="guideline-card">
-          <div class="guideline-card-title">친근하고 배려 있게</div>
-          <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">딱딱하지 않고, 사용자를 존중하는 말투를 사용합니다.</p>
-          <div class="copy-example"><span class="copy-text">"잠깐이면 됩니다. 정보를 확인해 주세요."</span><button class="copy-btn" data-copy="잠깐이면 됩니다. 정보를 확인해 주세요." >복사</button></div>
-          <div class="copy-example"><span class="copy-text">"처음 사용하시나요? 단계별로 안내해 드릴게요."</span><button class="copy-btn" data-copy="처음 사용하시나요? 단계별로 안내해 드릴게요." >복사</button></div>
-        </div>
-        <div class="guideline-card">
-          <div class="guideline-card-title">명확하고 직접적</div>
-          <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">돌려 말하지 않고 핵심을 바로 전달합니다.</p>
-          <div class="copy-example"><span class="copy-text">"신청 기간이 종료되었습니다. (마감일: 2025. 12. 31)"</span><button class="copy-btn" data-copy="신청 기간이 종료되었습니다. (마감일: 2025. 12. 31)" >복사</button></div>
-          <div class="copy-example"><span class="copy-text">"이미 신청한 내역이 있습니다."</span><button class="copy-btn" data-copy="이미 신청한 내역이 있습니다." >복사</button></div>
-        </div>
-        <div class="guideline-card">
-          <div class="guideline-card-title">해결 중심적</div>
-          <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">문제를 알리는 것에 그치지 않고 해결책을 함께 안내합니다.</p>
-          <div class="copy-example"><span class="copy-text">"파일 크기가 초과되었습니다. 10MB 이하로 다시 업로드해 주세요."</span><button class="copy-btn" data-copy="파일 크기가 초과되었습니다. 10MB 이하로 다시 업로드해 주세요." >복사</button></div>
-        </div>
-      </div>
-      </div>
-    </section>
-
-    <!-- 톤앤매너 -->
-    <section class="guideline-section reveal" id="tone">
-      <div class="container">
-      <div class="guideline-meta">
-        <span class="guideline-tag">Tone &amp; Manner</span>
-        <span class="guideline-num">03</span>
-      </div>
-      <h2 class="guideline-title">톤앤매너</h2>
-      <p class="guideline-desc">상황과 맥락에 따라 적절한 톤을 선택해 일관된 사용자 경험을 만듭니다.</p>
-      <div class="guideline-card">
-        <div class="guideline-card-title">상황별 톤 가이드</div>
-        <ul class="rule-list">
-          <li class="rule-item"><span class="rule-num">1</span><span class="rule-text"><strong>일반 안내</strong> — 중립적이고 명확하게. "신청서를 작성해 주세요."</span></li>
-          <li class="rule-item"><span class="rule-num">2</span><span class="rule-text"><strong>오류 상황</strong> — 차분하고 해결 중심으로. 사용자 불안을 최소화. "다시 시도해 주세요."</span></li>
-          <li class="rule-item"><span class="rule-num">3</span><span class="rule-text"><strong>경고·주의</strong> — 명확하되 위협적이지 않게. "저장하지 않은 내용이 사라집니다."</span></li>
-          <li class="rule-item"><span class="rule-num">4</span><span class="rule-text"><strong>성공·완료</strong> — 따뜻하고 긍정적으로. "신청이 완료되었습니다!"</span></li>
-          <li class="rule-item"><span class="rule-num">5</span><span class="rule-text"><strong>온보딩</strong> — 친근하고 격려하는 톤. "처음 방문이시군요! 함께 시작해 볼까요?"</span></li>
-          <li class="rule-item"><span class="rule-num">6</span><span class="rule-text"><strong>빈 상태</strong> — 행동을 유도하는 긍정적 톤. "아직 내역이 없습니다. 지금 시작해 보세요."</span></li>
-        </ul>
-      </div>
-      <div class="do-dont">
-        <div class="do-box"><div class="verdict verdict-do">✓ Do</div><div class="verdict-text">"입력하신 정보를 확인 중입니다."<br><br>"신청이 성공적으로 완료되었습니다."<br><br>"잠시 후 다시 시도해 주세요."</div></div>
-        <div class="dont-box"><div class="verdict verdict-dont">✗ Don't</div><div class="verdict-text">"처리 중. 기다리시오."<br><br>"신청 완료!!!"<br><br>"오류가 발생했습니다. 관리자에게 문의하세요."</div></div>
-      </div>
-      </div>
-    </section>
-
-    <!-- 버튼 & CTA -->
-    <section class="guideline-section reveal" id="button">
-      <div class="container">
-      <div class="guideline-meta">
-        <span class="guideline-tag">Button &amp; CTA</span>
-        <span class="guideline-num">04</span>
-      </div>
-      <h2 class="guideline-title">버튼 &amp; CTA</h2>
-      <p class="guideline-desc">버튼 텍스트는 실행되는 기능을 예측할 수 있는 명확한 내용을 <strong>동사형</strong>으로 제공합니다.</p>
-      <div class="guideline-card">
-        <div class="guideline-card-title">용도별 버튼 레이블</div>
-        <div class="example-label">기본 동작</div>
-        <div class="copy-example"><span class="copy-text">저장하기</span><button class="copy-btn" data-copy="저장하기" >복사</button></div>
-        <div class="copy-example"><span class="copy-text">제출하기</span><button class="copy-btn" data-copy="제출하기" >복사</button></div>
-        <div class="copy-example"><span class="copy-text">다음 단계로</span><button class="copy-btn" data-copy="다음 단계로" >복사</button></div>
-        <div class="copy-example"><span class="copy-text">이전으로</span><button class="copy-btn" data-copy="이전으로" >복사</button></div>
-        <div class="example-label">결제 / 신청</div>
-        <div class="copy-example"><span class="copy-text">신청하기</span><button class="copy-btn" data-copy="신청하기" >복사</button></div>
-        <div class="copy-example"><span class="copy-text">결제하기</span><button class="copy-btn" data-copy="결제하기" >복사</button></div>
-        <div class="copy-example"><span class="copy-text">예약하기</span><button class="copy-btn" data-copy="예약하기" >복사</button></div>
-        <div class="example-label">삭제 / 위험 동작</div>
-        <div class="copy-example"><span class="copy-text">파일 삭제</span><button class="copy-btn" data-copy="파일 삭제" >복사</button></div>
-        <div class="copy-example"><span class="copy-text">계정 탈퇴하기</span><button class="copy-btn" data-copy="계정 탈퇴하기" >복사</button></div>
-        <div class="example-label">로딩 중 상태</div>
-        <div class="copy-example"><span class="copy-text">저장 중...</span><button class="copy-btn" data-copy="저장 중..." >복사</button></div>
-        <div class="copy-example"><span class="copy-text">처리 중... 잠시 기다려 주세요</span><button class="copy-btn" data-copy="처리 중... 잠시 기다려 주세요" >복사</button></div>
-      </div>
-      </div>
-    </section>
-
-    <!-- 폼 & 입력 -->
-    <section class="guideline-section reveal" id="form">
-      <div class="container">
-      <div class="guideline-meta">
-        <span class="guideline-tag">Form &amp; Input</span>
-        <span class="guideline-num">05</span>
-      </div>
-      <h2 class="guideline-title">폼 &amp; 입력</h2>
-      <p class="guideline-desc">폼 요소의 레이블, 플레이스홀더, 도움말 텍스트를 올바르게 작성해 입력 실수를 줄입니다.</p>
-      <div class="guideline-card">
-        <div class="guideline-card-title">플레이스홀더 원칙</div>
-        <ul class="rule-list">
-          <li class="rule-item"><span class="rule-num">1</span><span class="rule-text"><strong>레이블 대체 금지</strong> — 플레이스홀더는 레이블을 대신할 수 없습니다. 항상 레이블과 함께 사용.</span></li>
-          <li class="rule-item"><span class="rule-num">2</span><span class="rule-text"><strong>형식 힌트 전용</strong> — 예시 값이나 형식 안내에만 사용. 예) "예) hong@email.com"</span></li>
-          <li class="rule-item"><span class="rule-num">3</span><span class="rule-text"><strong>필수·선택 구분</strong> — 필수 항목은 레이블 옆에 "(필수)" 또는 * 표시. 선택은 "(선택)"</span></li>
-        </ul>
-      </div>
-      <div class="guideline-card" style="margin-top:12px">
-        <div class="guideline-card-title">레이블 작성 예시</div>
-        <div class="example-label">이름 / 연락처</div>
-        <div class="copy-example"><span class="copy-text">이름 (필수)</span><button class="copy-btn" data-copy="이름 (필수)" >복사</button></div>
-        <div class="copy-example"><span class="copy-text">휴대폰 번호 — 예) 010-1234-5678</span><button class="copy-btn" data-copy="휴대폰 번호 — 예) 010-1234-5678" >복사</button></div>
-        <div class="example-label">이메일 / 비밀번호</div>
-        <div class="copy-example"><span class="copy-text">이메일 주소 — 예) hong@email.com</span><button class="copy-btn" data-copy="이메일 주소 — 예) hong@email.com" >복사</button></div>
-        <div class="copy-example"><span class="copy-text">비밀번호 — 영문·숫자 조합 8자 이상</span><button class="copy-btn" data-copy="비밀번호 — 영문·숫자 조합 8자 이상" >복사</button></div>
-        <div class="example-label">개인 식별 정보</div>
-        <div class="copy-example"><span class="copy-text">주민등록번호 앞 6자리 — 이 정보는 본인 확인 목적으로만 사용됩니다.</span><button class="copy-btn" data-copy="주민등록번호 앞 6자리 — 이 정보는 본인 확인 목적으로만 사용됩니다." >복사</button></div>
-      </div>
-      </div>
-    </section>
-
-    <!-- 에러 & 알림 -->
-    <section class="guideline-section reveal" id="error">
-      <div class="container">
-      <div class="guideline-meta">
-        <span class="guideline-tag">Error &amp; Alert</span>
-        <span class="guideline-num">06</span>
-      </div>
-      <h2 class="guideline-title">에러 &amp; 알림</h2>
-      <p class="guideline-desc">오류 메시지는 사용자가 문제를 빠르게 인지하고 해결할 수 있도록 작성합니다.</p>
-      <div class="guideline-card">
-        <div class="guideline-card-title">폼 유효성 오류</div>
-        <div class="copy-example"><span class="copy-text">이메일 주소 형식이 올바르지 않습니다. 예) hong@email.com</span><button class="copy-btn" data-copy="이메일 주소 형식이 올바르지 않습니다. 예) hong@email.com" >복사</button></div>
-        <div class="copy-example"><span class="copy-text">비밀번호는 영문·숫자 조합 8자 이상이어야 합니다.</span><button class="copy-btn" data-copy="비밀번호는 영문·숫자 조합 8자 이상이어야 합니다." >복사</button></div>
-        <div class="copy-example"><span class="copy-text">이미 사용 중인 이메일 주소입니다. 다른 이메일로 시도해 주세요.</span><button class="copy-btn" data-copy="이미 사용 중인 이메일 주소입니다. 다른 이메일로 시도해 주세요." >복사</button></div>
-        <div class="copy-example"><span class="copy-text">필수 항목을 입력해 주세요.</span><button class="copy-btn" data-copy="필수 항목을 입력해 주세요." >복사</button></div>
-      </div>
-      <div class="guideline-card" style="margin-top:12px">
-        <div class="guideline-card-title">네트워크 &amp; 시스템 오류</div>
-        <div class="copy-example"><span class="copy-text">인터넷 연결을 확인하고 다시 시도해 주세요.</span><button class="copy-btn" data-copy="인터넷 연결을 확인하고 다시 시도해 주세요." >복사</button></div>
-        <div class="copy-example"><span class="copy-text">일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</span><button class="copy-btn" data-copy="일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요." >복사</button></div>
-        <div class="copy-example"><span class="copy-text">페이지를 찾을 수 없습니다. 주소를 확인하거나 홈으로 이동해 주세요.</span><button class="copy-btn" data-copy="페이지를 찾을 수 없습니다. 주소를 확인하거나 홈으로 이동해 주세요." >복사</button></div>
-        <div class="copy-example"><span class="copy-text">세션이 만료되었습니다. 다시 로그인해 주세요.</span><button class="copy-btn" data-copy="세션이 만료되었습니다. 다시 로그인해 주세요." >복사</button></div>
-      </div>
-      </div>
-    </section>
-
-    <!-- 도움말 & 온보딩 -->
-    <section class="guideline-section reveal" id="help">
-      <div class="container">
-      <div class="guideline-meta">
-        <span class="guideline-tag">Help &amp; Onboarding</span>
-        <span class="guideline-num">07</span>
-      </div>
-      <h2 class="guideline-title">도움말 &amp; 온보딩</h2>
-      <p class="guideline-desc">사용자가 서비스를 처음 접할 때부터 익숙해질 때까지 단계별로 안내합니다.</p>
-      <div class="guideline-card">
-        <div class="guideline-card-title">온보딩 문구</div>
-        <div class="copy-example"><span class="copy-text">처음 오셨군요! KRDS 서비스 사용 방법을 안내해 드릴게요.</span><button class="copy-btn" data-copy="처음 오셨군요! KRDS 서비스 사용 방법을 안내해 드릴게요." >복사</button></div>
-        <div class="copy-example"><span class="copy-text">단계별로 작성하면 어렵지 않아요. 함께 시작해 볼까요?</span><button class="copy-btn" data-copy="단계별로 작성하면 어렵지 않아요. 함께 시작해 볼까요?" >복사</button></div>
-        <div class="copy-example"><span class="copy-text">기본 정보 입력부터 시작합니다. 약 3분 소요됩니다.</span><button class="copy-btn" data-copy="기본 정보 입력부터 시작합니다. 약 3분 소요됩니다." >복사</button></div>
-      </div>
-      <div class="guideline-card" style="margin-top:12px">
-        <div class="guideline-card-title">빈 상태 문구</div>
-        <div class="copy-example"><span class="copy-text">신청 내역이 없습니다. 지금 바로 신청해 보세요.</span><button class="copy-btn" data-copy="신청 내역이 없습니다. 지금 바로 신청해 보세요." >복사</button></div>
-        <div class="copy-example"><span class="copy-text">저장된 파일이 없습니다. 파일을 업로드해 주세요.</span><button class="copy-btn" data-copy="저장된 파일이 없습니다. 파일을 업로드해 주세요." >복사</button></div>
-        <div class="copy-example"><span class="copy-text">검색 결과가 없습니다. 다른 검색어로 시도해 보세요.</span><button class="copy-btn" data-copy="검색 결과가 없습니다. 다른 검색어로 시도해 보세요." >복사</button></div>
-      </div>
-      </div>
-    </section>
-
-    <!-- 로딩 & 진행 -->
-    <section class="guideline-section reveal" id="loading">
-      <div class="container">
-      <div class="guideline-meta">
-        <span class="guideline-tag">Status Messages</span>
-        <span class="guideline-num">08</span>
-      </div>
-      <h2 class="guideline-title">로딩 &amp; 진행</h2>
-      <p class="guideline-desc">로딩, 성공, 실패 등 처리 상태를 사용자에게 명확하게 전달합니다.</p>
-      <div class="guideline-card">
-        <div class="guideline-card-title">로딩 &amp; 진행</div>
-        <div class="copy-example"><span class="copy-text">잠시 기다려 주세요...</span><button class="copy-btn" data-copy="잠시 기다려 주세요..." >복사</button></div>
-        <div class="copy-example"><span class="copy-text">파일을 업로드하고 있습니다. (85%)</span><button class="copy-btn" data-copy="파일을 업로드하고 있습니다. (85%)" >복사</button></div>
-        <div class="copy-example"><span class="copy-text">정보를 확인 중입니다. 잠시만 기다려 주세요.</span><button class="copy-btn" data-copy="정보를 확인 중입니다. 잠시만 기다려 주세요." >복사</button></div>
-      </div>
-      <div class="guideline-card" style="margin-top:12px">
-        <div class="guideline-card-title">성공 &amp; 완료</div>
-        <div class="copy-example"><span class="copy-text">신청이 완료되었습니다.</span><button class="copy-btn" data-copy="신청이 완료되었습니다." >복사</button></div>
-        <div class="copy-example"><span class="copy-text">파일이 저장되었습니다.</span><button class="copy-btn" data-copy="파일이 저장되었습니다." >복사</button></div>
-        <div class="copy-example"><span class="copy-text">변경 사항이 반영되었습니다.</span><button class="copy-btn" data-copy="변경 사항이 반영되었습니다." >복사</button></div>
-      </div>
-      <div class="guideline-card" style="margin-top:12px">
-        <div class="guideline-card-title">내비게이션 상태</div>
-        <div class="copy-example"><span class="copy-text">1단계 / 4단계 — 기본 정보 입력</span><button class="copy-btn" data-copy="1단계 / 4단계 — 기본 정보 입력" >복사</button></div>
-        <div class="copy-example"><span class="copy-text">다음: 서류 첨부</span><button class="copy-btn" data-copy="다음: 서류 첨부" >복사</button></div>
-        <div class="copy-example"><span class="copy-text">이전: 개인 정보 입력</span><button class="copy-btn" data-copy="이전: 개인 정보 입력" >복사</button></div>
-      </div>
-      </div>
-    </section>
-
-    <!-- 접근성 & 국제화 -->
-    <section class="guideline-section reveal" id="accessibility">
-      <div class="container">
-      <div class="guideline-meta">
-        <span class="guideline-tag">Accessibility &amp; i18n</span>
-        <span class="guideline-num">09</span>
-      </div>
-      <h2 class="guideline-title">접근성 &amp; 국제화</h2>
-      <p class="guideline-desc">KWCAG 2.2 및 WCAG 2.1 AA를 준수해 모든 사용자가 서비스를 이용할 수 있도록 합니다.</p>
-      <div class="guideline-card">
-        <div class="guideline-card-title">aria-label 작성 가이드</div>
-        <ul class="rule-list">
-          <li class="rule-item"><span class="rule-num">1</span><span class="rule-text"><strong>아이콘 버튼</strong> — 시각적 아이콘만 있는 버튼은 aria-label 필수. aria-label="메뉴 열기"</span></li>
-          <li class="rule-item"><span class="rule-num">2</span><span class="rule-text"><strong>이미지</strong> — 정보를 전달하는 이미지는 alt 속성 필수. 장식용 이미지는 alt=""</span></li>
-          <li class="rule-item"><span class="rule-num">3</span><span class="rule-text"><strong>링크</strong> — "여기를 클릭" 대신 목적지를 명확히. "사용 설명서 PDF 다운로드"</span></li>
-          <li class="rule-item"><span class="rule-num">4</span><span class="rule-text"><strong>폼 연결</strong> — label의 for 속성과 input의 id 속성을 반드시 연결</span></li>
-        </ul>
-      </div>
-      <div class="guideline-card" style="margin-top:12px">
-        <div class="guideline-card-title">국제화 고려사항</div>
-        <ul class="rule-list">
-          <li class="rule-item"><span class="rule-num">1</span><span class="rule-text"><strong>문자열 외부화</strong> — 하드코딩 대신 i18n 키로 관리. 텍스트 길이 여유 공간 확보 (+30~40%)</span></li>
-          <li class="rule-item"><span class="rule-num">2</span><span class="rule-text"><strong>날짜·숫자 형식</strong> — 로케일에 맞는 형식 사용. 한국: 2025년 12월 31일 / 영어: Dec 31, 2025</span></li>
-          <li class="rule-item"><span class="rule-num">3</span><span class="rule-text"><strong>문화적 맥락</strong> — 관용어, 속담, 문화 특정 표현 지양. 번역 시 직역보다 의미 전달 중심</span></li>
-        </ul>
-      </div>
-      </div>
-    </section>
-
-</div>
-
-<!-- 체크리스트 섹션 -->
-<section class="checklist-section" id="checklist">
+<!-- ===== 제2장. 맥락별 라이팅 가이드 (placeholder) ===== -->
+<section class="section" id="chapter2" aria-label="제2장 맥락별 라이팅 가이드">
   <div class="container">
-    <div class="checklist-inner reveal">
-      <p class="section-eyebrow" style="margin-bottom:16px">Checklist</p>
-      <h2 class="checklist-title">UX Writing 체크리스트</h2>
-      <p class="checklist-desc">문구 작성 후 배포 전 최종 검토 항목입니다.</p>
-      <div id="checklistItems">
-        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" ><div class="check-box">✓</div><span class="check-text">버튼 레이블은 동사형인가?</span></div>
-        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" ><div class="check-box">✓</div><span class="check-text">오류 메시지에 해결 방법이 포함되어 있는가?</span></div>
-        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" ><div class="check-box">✓</div><span class="check-text">플레이스홀더를 레이블 대체로 사용하지 않았는가?</span></div>
-        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" ><div class="check-box">✓</div><span class="check-text">필수/선택 항목이 명확하게 구분되어 있는가?</span></div>
-        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" ><div class="check-box">✓</div><span class="check-text">모든 아이콘 버튼에 aria-label이 있는가?</span></div>
-        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" ><div class="check-box">✓</div><span class="check-text">용어가 전체 서비스에서 일관되게 사용되는가?</span></div>
-        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" ><div class="check-box">✓</div><span class="check-text">사용자를 탓하는 표현이 없는가?</span></div>
-        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" ><div class="check-box">✓</div><span class="check-text">빈 상태에 다음 행동 유도 문구가 있는가?</span></div>
-      </div>
-      <div class="checklist-complete" id="checklistComplete">모든 항목을 확인했습니다! 배포 준비 완료 🎉</div>
-      <div style="text-align:right;margin-top:12px">
-        <button data-action="reset-checklist" style="background:none;border:none;color:var(--text-secondary);font-size:13px;cursor:pointer;padding:4px 8px;text-decoration:underline;" aria-label="체크리스트 모두 초기화">모두 초기화</button>
-      </div>
+    <div class="chapter-label">
+      <span class="chapter-num">Chapter 02</span>
+    </div>
+    <h2 class="chapter-title">맥락별 라이팅 가이드</h2>
+    <p class="chapter-desc">버튼/CTA, 폼/입력, 에러/알림, 로딩, 도움말 등 주요 UI 패턴에서 3대 원칙을 실제로 적용하는 방법을 안내합니다.</p>
+    <div class="placeholder-banner">
+      <div class="placeholder-icon">✍️</div>
+      <div class="placeholder-title">작성 중입니다</div>
+      <div class="placeholder-desc">버튼·폼·에러·로딩·도움말·접근성 가이드가 순차적으로 추가됩니다.<br>3대 원칙(무번역·정보핵심화·심리적 안전망)과 연결된 실무 예시로 구성됩니다.</div>
     </div>
   </div>
 </section>
 
-<!-- CTA 배너 -->
-<section class="cta-banner" id="cta" aria-label="지금 바로 적용하기">
-  <div class="container cta-banner-inner">
-    <p class="cta-eyebrow">준비되셨나요?</p>
-    <h2 class="cta-title">지금 바로 적용해 보세요</h2>
-    <p class="cta-desc">KRDS UX Writing 가이드라인으로 더 나은 정부 서비스 언어를 만들어보세요</p>
-    <div class="cta-actions">
-      <a href="#principles" class="btn cta-btn-primary">가이드라인 시작하기</a>
-      <a href="#checklist" class="btn cta-btn-ghost">체크리스트 확인하기</a>
+<!-- ===== 제3장. 파생 적용 (placeholder) ===== -->
+<section class="section" id="chapter3" aria-label="제3장 파생 적용" style="background:var(--white)">
+  <div class="container">
+    <div class="chapter-label">
+      <span class="chapter-num">Chapter 03</span>
+    </div>
+    <h2 class="chapter-title">파생 적용</h2>
+    <p class="chapter-desc">KRDS 원칙을 기관별 서비스 맥락에 맞게 적용하는 방법을 안내합니다.</p>
+    <div class="placeholder-banner">
+      <div class="placeholder-icon">🏛️</div>
+      <div class="placeholder-title">작성 중입니다</div>
+      <div class="placeholder-desc">SeMA, 정부24, 복지로 등 기관별 파생 적용 가이드가 추가됩니다.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 체크리스트 ===== -->
+<section class="checklist-section" id="checklist" aria-label="원칙 체크리스트">
+  <div class="container">
+    <div class="section-header" style="text-align:center;max-width:600px;margin:0 auto 48px">
+      <p class="section-eyebrow">Self-Check</p>
+      <h2 class="section-title">발행 전 체크리스트</h2>
+      <p class="section-desc">글을 발행하기 전, 3대 원칙을 지켰는지 확인하세요.</p>
+    </div>
+
+    <div class="checklist-items" role="list">
+
+      <div class="checklist-item" role="listitem">
+        <div class="checklist-group-title">⚖️ 무번역의 원칙</div>
+      </div>
+      <div class="checklist-item" role="listitem">
+        <div class="checklist-checkbox" role="checkbox" aria-checked="false" tabindex="0" aria-label="체크리스트 항목">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="checklist-text">행정 관습어(명일, 내방, 기표 등)를 일상어로 바꿨다</span>
+      </div>
+      <div class="checklist-item" role="listitem">
+        <div class="checklist-checkbox" role="checkbox" aria-checked="false" tabindex="0" aria-label="체크리스트 항목">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="checklist-text">이중 부정을 긍정문으로 바꿨다</span>
+      </div>
+      <div class="checklist-item" role="listitem">
+        <div class="checklist-checkbox" role="checkbox" aria-checked="false" tabindex="0" aria-label="체크리스트 항목">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="checklist-text">14세 중학생도 사전 없이 바로 이해할 수 있다</span>
+      </div>
+
+      <div class="checklist-item" role="listitem" style="margin-top:16px">
+        <div class="checklist-group-title">⚖️ 정보 핵심화의 원칙</div>
+      </div>
+      <div class="checklist-item" role="listitem">
+        <div class="checklist-checkbox" role="checkbox" aria-checked="false" tabindex="0" aria-label="체크리스트 항목">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="checklist-text">핵심 결론이 첫 문장에 있다 (Front-loading)</span>
+      </div>
+      <div class="checklist-item" role="listitem">
+        <div class="checklist-checkbox" role="checkbox" aria-checked="false" tabindex="0" aria-label="체크리스트 항목">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="checklist-text">당연한 인사말이나 수식어를 제거했다</span>
+      </div>
+      <div class="checklist-item" role="listitem">
+        <div class="checklist-checkbox" role="checkbox" aria-checked="false" tabindex="0" aria-label="체크리스트 항목">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="checklist-text">한 문장의 의미 마디가 3개 이하다</span>
+      </div>
+
+      <div class="checklist-item" role="listitem" style="margin-top:16px">
+        <div class="checklist-group-title">⚖️ 심리적 안전망의 원칙</div>
+      </div>
+      <div class="checklist-item" role="listitem">
+        <div class="checklist-checkbox" role="checkbox" aria-checked="false" tabindex="0" aria-label="체크리스트 항목">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="checklist-text">버튼 텍스트가 누른 뒤 일어날 일을 명확히 설명한다</span>
+      </div>
+      <div class="checklist-item" role="listitem">
+        <div class="checklist-checkbox" role="checkbox" aria-checked="false" tabindex="0" aria-label="체크리스트 항목">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="checklist-text">에러 메시지에 원인과 해결책이 함께 있다</span>
+      </div>
+      <div class="checklist-item" role="listitem">
+        <div class="checklist-checkbox" role="checkbox" aria-checked="false" tabindex="0" aria-label="체크리스트 항목">
+          <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="checklist-text">최종 제출 전 확인 경고가 있다</span>
+      </div>
+
+    </div>
+
+    <div style="text-align:center;margin-top:48px">
+      <button style="background:var(--primary-light);border:none;color:var(--primary);font-weight:700;font-size:var(--text-sm);padding:12px 28px;border-radius:var(--radius-btn);cursor:pointer" id="checklistReset">체크리스트 초기화</button>
     </div>
   </div>
 </section>
 
 <!-- Sticky TOC -->
 <aside class="sticky-toc" aria-label="섹션 목차" id="stickyToc">
-  <a href="#principles" class="sticky-toc-item" data-toc="principles">언어 원칙</a>
-  <a href="#voice" class="sticky-toc-item" data-toc="voice">브랜드 보이스</a>
-  <a href="#tone" class="sticky-toc-item" data-toc="tone">톤앤매너</a>
-  <a href="#button" class="sticky-toc-item" data-toc="button">버튼 &amp; CTA</a>
-  <a href="#form" class="sticky-toc-item" data-toc="form">폼 &amp; 입력</a>
-  <a href="#error" class="sticky-toc-item" data-toc="error">에러 &amp; 알림</a>
-  <a href="#help" class="sticky-toc-item" data-toc="help">도움말</a>
-  <a href="#loading" class="sticky-toc-item" data-toc="loading">로딩 &amp; 진행</a>
-  <a href="#accessibility" class="sticky-toc-item" data-toc="accessibility">접근성</a>
+  <a href="#preface"  class="sticky-toc-item" data-toc="preface">서문</a>
+  <a href="#chapter1" class="sticky-toc-item" data-toc="chapter1">1장. 파운데이션</a>
+  <a href="#chapter2" class="sticky-toc-item" data-toc="chapter2">2장. 가이드</a>
+  <a href="#chapter3" class="sticky-toc-item" data-toc="chapter3">3장. 파생 적용</a>
   <a href="#checklist" class="sticky-toc-item" data-toc="checklist">체크리스트</a>
 </aside>
 
@@ -1985,26 +2372,22 @@ img { max-width: 100%; }
   <div class="container footer-inner">
     <div class="footer-col footer-brand">
       <p class="footer-logo">KRDS UX Writing<span class="footer-logo-dot"></span></p>
-      <p class="footer-tagline">정부 서비스의 언어 기준을 만듭니다</p>
+      <p class="footer-tagline">누구나 포기하지 않고 끝까지 쓸 수 있게</p>
       <p class="footer-copy">&copy; 2026 KRDS UX Writing Guide</p>
     </div>
     <div class="footer-col">
-      <h3 class="footer-heading">가이드라인</h3>
+      <h3 class="footer-heading">파운데이션</h3>
       <ul class="footer-links">
-        <li><a href="#principles">언어 원칙</a></li>
-        <li><a href="#voice">브랜드 보이스</a></li>
-        <li><a href="#tone">톤앤매너</a></li>
+        <li><a href="#ch1-1">주권자 이해</a></li>
+        <li><a href="#ch1-2">3대 원칙</a></li>
+        <li><a href="#ch1-3">보이스·톤</a></li>
       </ul>
     </div>
     <div class="footer-col">
-      <h3 class="footer-heading">패턴 라이브러리</h3>
+      <h3 class="footer-heading">가이드</h3>
       <ul class="footer-links">
-        <li><a href="#button">버튼 &amp; CTA</a></li>
-        <li><a href="#form">폼 &amp; 입력</a></li>
-        <li><a href="#error">에러 &amp; 알림</a></li>
-        <li><a href="#help">도움말 &amp; 온보딩</a></li>
-        <li><a href="#loading">로딩 &amp; 진행</a></li>
-        <li><a href="#accessibility">접근성</a></li>
+        <li><a href="#chapter2">맥락별 라이팅</a></li>
+        <li><a href="#chapter3">파생 적용</a></li>
         <li><a href="#checklist">체크리스트</a></li>
       </ul>
     </div>
@@ -2012,10 +2395,9 @@ img { max-width: 100%; }
       <h3 class="footer-heading">준수 기준</h3>
       <ul class="footer-links">
         <li><a href="https://www.krds.go.kr" target="_blank" rel="noopener">KRDS 디자인 시스템</a></li>
-        <li><a href="#accessibility">KWCAG 2.2</a></li>
         <li><a href="https://thenisaid.github.io/krds-ux-writing/" target="_blank" rel="noopener">서비스 바로가기</a></li>
       </ul>
-      <p class="footer-version">v2.0 · 2025년 기준</p>
+      <p class="footer-version">v3.0 · 2026</p>
     </div>
   </div>
 </footer>
