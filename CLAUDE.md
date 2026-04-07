@@ -3,7 +3,7 @@
 ## 프로젝트 개요
 
 - **서비스**: KRDS UX Writing 가이드 (공공기관 UX 라이팅 원칙 문서)
-- **파일**: `index.html` 단일 파일 (HTML + CSS + JS 통합, 100KB+)
+- **파일**: `index.html` 단일 파일 (HTML + CSS + JS 통합, 106KB)
 - **배포**: GitHub Pages → `git push origin main` 으로 자동 배포
 - **URL**: https://thenisaid.github.io/krds-ux-writing/
 
@@ -75,6 +75,14 @@ lsof -ti:8300 | xargs kill -9 2>/dev/null
 | 카드 | 12px | 22px 26px ~ 28px 32px |
 | 배지 | 4px | 4px 12px |
 
+### CSS 아키텍처 (2026-04-07 Mintlify 리디자인)
+- **배경**: `body { background: #f8f7f5 }` — 웜 오프화이트 (Mintlify 스타일)
+- **GNB**: `rgba(248,247,245,.92)` + `backdrop-filter: blur(12px)`, height 60px, sticky
+- **Hero**: `linear-gradient(160deg, #eef4ff 0%, #f8f7f5 55%)` 라이트 그라디언트
+- **카드 depth**: border 기반 (`border: 1px solid var(--border)`) — shadow 최소화
+- **CSS 교체 전략**: `:root` 변수 블록 보존, `/* ===== RESET & BASE ===== */` 마커 기준으로 Python `re.sub(DOTALL)` 교체
+- **다크 모드**: `[data-theme="dark"]` 오버라이드 유지 (JS가 시스템 다크모드 자동 감지)
+
 ---
 
 ## 접근성 (WCAG 2.1)
@@ -133,7 +141,7 @@ lsof -ti:8300 | xargs kill -9 2>/dev/null
 
 ---
 
-## 현재 상태 (2026-03-31)
+## 현재 상태 (2026-04-07)
 
 ### 완료
 - US-001~010 구현
@@ -147,6 +155,8 @@ lsof -ti:8300 | xargs kill -9 2>/dev/null
 - P3 CSS 중복 제거 (393줄 감소), 변수명 KRDS 전환
 - H4-2: GNB 구조 개선, H6-1: Sticky TOC
 - 크롬 확장 프로그램 v1.0.0 (`krds-extension/`, Manifest V3)
+- SeMA 강연 자료 P1~P4 + index.html GitHub Pages 배포 완료 (https://thenisaid.github.io/sema-lecture/)
+- **Mintlify 스타일 CSS 전체 리디자인** (127KB→106KB, 1,309삭제+734추가, 2026-04-07)
 
 ### 남은 작업 (기존 site 유지보수)
 - 없음 (모든 계획 항목 완료)
@@ -154,5 +164,4 @@ lsof -ti:8300 | xargs kill -9 2>/dev/null
 ### 다음 단계 — 가이드라인 전체 재구성 (2026-04~)
 - KRDS UX Writing 원칙 전면 재설계 (사용자 주도 / 어시스턴트는 구조화·문서화·슬라이드 변환 담당)
 - 워크플로우: KRDS 원칙 설계 → SeMA(서울시립미술관) 파생 적용 → 슬라이드 제작
-- SeMA 납품 슬라이드: UX Writing 진단·개선안 + 실습 워크샵 자료 (금요일 납품)
-- index.html 전면 재작성 (데드라인 이후)
+- index.html 전면 재작성 (SeMA 납품 완료 이후)
