@@ -2,6 +2,14 @@
 
 const GUIDE_URL = 'https://thenisaid.github.io/krds-ux-writing/';
 
+const VALID_SECTIONS = new Set([
+  'voice', 'buttons', 'forms', 'errors', 'onboarding', 'navigation',
+  'labels', 'notifications', 'loading', 'empty-states', 'tables',
+  'search', 'modals', 'tooltips', 'accessibility', 'principles',
+  // also allow the ids present in searchData
+  'tone', 'button', 'form', 'error', 'help', 'checklist',
+]);
+
 // ===== Search Data =====
 const searchData = [
   {
@@ -95,6 +103,9 @@ function highlight(text, query) {
 }
 
 function openGuide(sectionId) {
+  if (sectionId && !VALID_SECTIONS.has(sectionId)) {
+    sectionId = null;
+  }
   const url = sectionId ? `${GUIDE_URL}#${sectionId}` : GUIDE_URL;
   chrome.tabs.create({ url });
 }
@@ -123,24 +134,53 @@ function doSearch(query) {
     );
   });
 
+  resultsList.textContent = '';
+
   if (!hits.length) {
-    resultsList.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🔍</div>
-        <div class="empty-text">"${escapeHtml(query)}"에 대한 결과가 없습니다.</div>
-      </div>`;
+    const emptyState = document.createElement('div');
+    emptyState.className = 'empty-state';
+    const emptyIcon = document.createElement('div');
+    emptyIcon.className = 'empty-icon';
+    emptyIcon.textContent = '🔍';
+    const emptyText = document.createElement('div');
+    emptyText.className = 'empty-text';
+    emptyText.textContent = `"${query}"에 대한 결과가 없습니다.`;
+    emptyState.appendChild(emptyIcon);
+    emptyState.appendChild(emptyText);
+    resultsList.appendChild(emptyState);
     return;
   }
 
-  resultsList.innerHTML = hits.map(h => `
-    <div class="result-item" role="option" tabindex="0" data-section="${h.id}"
-         title="${escapeHtml(h.tag)} 섹션 열기">
-      <div class="result-icon" aria-hidden="true">${h.icon}</div>
-      <div class="result-body">
-        <div class="result-tag">${highlight(h.tag, q)}</div>
-        <div class="result-preview">${highlight(h.preview, q)}</div>
-      </div>
-    </div>`).join('');
+  hits.forEach(h => {
+    const item = document.createElement('div');
+    item.className = 'result-item';
+    item.setAttribute('role', 'option');
+    item.setAttribute('tabindex', '0');
+    item.dataset.section = h.id;
+    item.title = `${h.tag} 섹션 열기`;
+
+    const iconEl = document.createElement('div');
+    iconEl.className = 'result-icon';
+    iconEl.setAttribute('aria-hidden', 'true');
+    iconEl.textContent = h.icon;
+
+    const body = document.createElement('div');
+    body.className = 'result-body';
+
+    const tagEl = document.createElement('div');
+    tagEl.className = 'result-tag';
+    tagEl.innerHTML = highlight(h.tag, q); // highlight() only produces <mark> tags around escaped text
+
+    const previewEl = document.createElement('div');
+    previewEl.className = 'result-preview';
+    previewEl.innerHTML = highlight(h.preview, q); // same — safe escaped output with <mark>
+
+    body.appendChild(tagEl);
+    body.appendChild(previewEl);
+    item.appendChild(iconEl);
+    item.appendChild(body);
+    resultsList.appendChild(item);
+  });
 
   // Bind result click/keyboard
   resultsList.querySelectorAll('.result-item').forEach(item => {

@@ -2,6 +2,7 @@
 <html lang="ko" data-theme="light">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-v/cuj//HOqH5xv1Hiz5v/fyEPlwcz2JPTVokYL/AUr8='; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com; font-src https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'none';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="KRDS 기반 UX Writing 가이드라인 — 정부 디지털 서비스의 언어 기준. 버튼, 폼, 오류, 온보딩 등 16개 영역의 UX 라이팅 원칙과 예시를 제공합니다.">
 <meta name="keywords" content="KRDS, UX 라이팅, UX Writing, 정부디지털서비스, 디자인시스템, 마이크로카피, 오류메시지, 접근성, 한국어 가이드라인">
@@ -16,10 +17,11 @@
 <link rel="canonical" href="https://thenisaid.github.io/krds-ux-writing/">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%231251A1'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
 <title>KRDS UX Writing 가이드라인</title>
-<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link rel="stylesheet" as="style" crossorigin
-  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css">
+<link rel="stylesheet" as="style" crossorigin="anonymous"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
+  integrity="sha384-o2ZrV2/pmy/zDV8dhdJIibaM1s+TlS8+7JwrtshqmiTJGTczb1GcwzkjzZ80EUyy">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ===== KRDS v1.0.0 디자인 토큰 ===== */
@@ -1435,7 +1437,7 @@ img { max-width: 100%; }
     <div class="search-input-row">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="color:var(--text-muted);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input class="search-input" id="searchInput" type="search" placeholder="섹션 검색... (예: 에러, 버튼)" autocomplete="off" aria-label="검색어 입력">
-      <button onclick="closeSearch()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:20px;padding:0;line-height:1" aria-label="검색 닫기">×</button>
+      <button style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:20px;padding:0;line-height:1" aria-label="검색 닫기">×</button>
     </div>
     <div id="searchResults" role="listbox"></div>
     <div class="search-footer">
@@ -1488,14 +1490,14 @@ img { max-width: 100%; }
       </ul>
     </nav>
     <div class="gnb-utils">
-      <button class="gnb-util-btn" id="searchBtn" aria-label="검색 열기 (⌘K)" onclick="openSearch()">
+      <button class="gnb-util-btn" id="searchBtn" aria-label="검색 열기 (⌘K)" >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       </button>
-      <button class="gnb-util-btn gnb-theme-toggle" id="themeToggle" aria-label="다크모드 전환" onclick="toggleTheme()">
+      <button class="gnb-util-btn gnb-theme-toggle" id="themeToggle" aria-label="다크모드 전환" >
         <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
-      <button class="gnb-util-btn mobile-menu-btn" id="mobileMenuBtn" aria-label="메뉴 열기" aria-expanded="false" onclick="toggleMobileMenu()">
+      <button class="gnb-util-btn mobile-menu-btn" id="mobileMenuBtn" aria-label="메뉴 열기" aria-expanded="false" >
         <svg class="icon-hamburger" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
@@ -1505,17 +1507,17 @@ img { max-width: 100%; }
   <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
     <nav aria-label="모바일 메뉴">
       <ul class="mobile-menu-list">
-        <li><a href="#persona" class="mobile-menu-item" onclick="closeMobileMenu()">시작하기</a></li>
-        <li><a href="#principles" class="mobile-menu-item" onclick="closeMobileMenu()">언어 원칙</a></li>
-        <li><a href="#voice" class="mobile-menu-item" onclick="closeMobileMenu()">브랜드 보이스</a></li>
-        <li><a href="#tone" class="mobile-menu-item" onclick="closeMobileMenu()">톤앤매너</a></li>
-        <li><a href="#button" class="mobile-menu-item" onclick="closeMobileMenu()">버튼 &amp; CTA</a></li>
-        <li><a href="#form" class="mobile-menu-item" onclick="closeMobileMenu()">폼 &amp; 입력</a></li>
-        <li><a href="#error" class="mobile-menu-item" onclick="closeMobileMenu()">에러 &amp; 알림</a></li>
-        <li><a href="#help" class="mobile-menu-item" onclick="closeMobileMenu()">도움말 &amp; 온보딩</a></li>
-        <li><a href="#loading" class="mobile-menu-item" onclick="closeMobileMenu()">로딩 &amp; 진행</a></li>
-        <li><a href="#accessibility" class="mobile-menu-item" onclick="closeMobileMenu()">접근성 &amp; 국제화</a></li>
-        <li><a href="#checklist" class="mobile-menu-item" onclick="closeMobileMenu()">체크리스트</a></li>
+        <li><a href="#persona" class="mobile-menu-item" >시작하기</a></li>
+        <li><a href="#principles" class="mobile-menu-item" >언어 원칙</a></li>
+        <li><a href="#voice" class="mobile-menu-item" >브랜드 보이스</a></li>
+        <li><a href="#tone" class="mobile-menu-item" >톤앤매너</a></li>
+        <li><a href="#button" class="mobile-menu-item" >버튼 &amp; CTA</a></li>
+        <li><a href="#form" class="mobile-menu-item" >폼 &amp; 입력</a></li>
+        <li><a href="#error" class="mobile-menu-item" >에러 &amp; 알림</a></li>
+        <li><a href="#help" class="mobile-menu-item" >도움말 &amp; 온보딩</a></li>
+        <li><a href="#loading" class="mobile-menu-item" >로딩 &amp; 진행</a></li>
+        <li><a href="#accessibility" class="mobile-menu-item" >접근성 &amp; 국제화</a></li>
+        <li><a href="#checklist" class="mobile-menu-item" >체크리스트</a></li>
       </ul>
     </nav>
   </div>
@@ -1584,9 +1586,9 @@ img { max-width: 100%; }
       <p class="section-desc">역할에 맞는 가이드라인을 선택해 바로 시작하세요.</p>
     </div>
     <div class="persona-tabs" role="tablist" aria-label="역할 선택">
-      <button class="persona-tab active" role="tab" aria-selected="true" aria-controls="tab-writer" id="tab-btn-writer" onclick="switchPersonaTab('writer')">UX 라이터</button>
-      <button class="persona-tab" role="tab" aria-selected="false" aria-controls="tab-designer" id="tab-btn-designer" onclick="switchPersonaTab('designer')">디자이너</button>
-      <button class="persona-tab" role="tab" aria-selected="false" aria-controls="tab-developer" id="tab-btn-developer" onclick="switchPersonaTab('developer')">개발자</button>
+      <button class="persona-tab active" role="tab" aria-selected="true" aria-controls="tab-writer" id="tab-btn-writer" >UX 라이터</button>
+      <button class="persona-tab" role="tab" aria-selected="false" aria-controls="tab-designer" id="tab-btn-designer" >디자이너</button>
+      <button class="persona-tab" role="tab" aria-selected="false" aria-controls="tab-developer" id="tab-btn-developer" >개발자</button>
     </div>
     <div class="persona-panel active" id="tab-writer" role="tabpanel" aria-labelledby="tab-btn-writer">
       <div class="persona-panel-inner">
@@ -1701,25 +1703,25 @@ img { max-width: 100%; }
         <div class="guideline-card">
           <div class="guideline-card-title">신뢰감 있고 전문적</div>
           <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">정확한 정보와 명확한 안내로 신뢰를 구축합니다.</p>
-          <div class="copy-example"><span class="copy-text">"본인 확인이 완료되었습니다."</span><button class="copy-btn" onclick="cp(this,'본인 확인이 완료되었습니다.')">복사</button></div>
-          <div class="copy-example"><span class="copy-text">"서류를 검토 중입니다. 영업일 기준 3일 내 안내드립니다."</span><button class="copy-btn" onclick="cp(this,'서류를 검토 중입니다. 영업일 기준 3일 내 안내드립니다.')">복사</button></div>
+          <div class="copy-example"><span class="copy-text">"본인 확인이 완료되었습니다."</span><button class="copy-btn" data-copy="본인 확인이 완료되었습니다." >복사</button></div>
+          <div class="copy-example"><span class="copy-text">"서류를 검토 중입니다. 영업일 기준 3일 내 안내드립니다."</span><button class="copy-btn" data-copy="서류를 검토 중입니다. 영업일 기준 3일 내 안내드립니다." >복사</button></div>
         </div>
         <div class="guideline-card">
           <div class="guideline-card-title">친근하고 배려 있게</div>
           <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">딱딱하지 않고, 사용자를 존중하는 말투를 사용합니다.</p>
-          <div class="copy-example"><span class="copy-text">"잠깐이면 됩니다. 정보를 확인해 주세요."</span><button class="copy-btn" onclick="cp(this,'잠깐이면 됩니다. 정보를 확인해 주세요.')">복사</button></div>
-          <div class="copy-example"><span class="copy-text">"처음 사용하시나요? 단계별로 안내해 드릴게요."</span><button class="copy-btn" onclick="cp(this,'처음 사용하시나요? 단계별로 안내해 드릴게요.')">복사</button></div>
+          <div class="copy-example"><span class="copy-text">"잠깐이면 됩니다. 정보를 확인해 주세요."</span><button class="copy-btn" data-copy="잠깐이면 됩니다. 정보를 확인해 주세요." >복사</button></div>
+          <div class="copy-example"><span class="copy-text">"처음 사용하시나요? 단계별로 안내해 드릴게요."</span><button class="copy-btn" data-copy="처음 사용하시나요? 단계별로 안내해 드릴게요." >복사</button></div>
         </div>
         <div class="guideline-card">
           <div class="guideline-card-title">명확하고 직접적</div>
           <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">돌려 말하지 않고 핵심을 바로 전달합니다.</p>
-          <div class="copy-example"><span class="copy-text">"신청 기간이 종료되었습니다. (마감일: 2025. 12. 31)"</span><button class="copy-btn" onclick="cp(this,'신청 기간이 종료되었습니다. (마감일: 2025. 12. 31)')">복사</button></div>
-          <div class="copy-example"><span class="copy-text">"이미 신청한 내역이 있습니다."</span><button class="copy-btn" onclick="cp(this,'이미 신청한 내역이 있습니다.')">복사</button></div>
+          <div class="copy-example"><span class="copy-text">"신청 기간이 종료되었습니다. (마감일: 2025. 12. 31)"</span><button class="copy-btn" data-copy="신청 기간이 종료되었습니다. (마감일: 2025. 12. 31)" >복사</button></div>
+          <div class="copy-example"><span class="copy-text">"이미 신청한 내역이 있습니다."</span><button class="copy-btn" data-copy="이미 신청한 내역이 있습니다." >복사</button></div>
         </div>
         <div class="guideline-card">
           <div class="guideline-card-title">해결 중심적</div>
           <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">문제를 알리는 것에 그치지 않고 해결책을 함께 안내합니다.</p>
-          <div class="copy-example"><span class="copy-text">"파일 크기가 초과되었습니다. 10MB 이하로 다시 업로드해 주세요."</span><button class="copy-btn" onclick="cp(this,'파일 크기가 초과되었습니다. 10MB 이하로 다시 업로드해 주세요.')">복사</button></div>
+          <div class="copy-example"><span class="copy-text">"파일 크기가 초과되었습니다. 10MB 이하로 다시 업로드해 주세요."</span><button class="copy-btn" data-copy="파일 크기가 초과되었습니다. 10MB 이하로 다시 업로드해 주세요." >복사</button></div>
         </div>
       </div>
       </div>
@@ -1764,20 +1766,20 @@ img { max-width: 100%; }
       <div class="guideline-card">
         <div class="guideline-card-title">용도별 버튼 레이블</div>
         <div class="example-label">기본 동작</div>
-        <div class="copy-example"><span class="copy-text">저장하기</span><button class="copy-btn" onclick="cp(this,'저장하기')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">제출하기</span><button class="copy-btn" onclick="cp(this,'제출하기')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">다음 단계로</span><button class="copy-btn" onclick="cp(this,'다음 단계로')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">이전으로</span><button class="copy-btn" onclick="cp(this,'이전으로')">복사</button></div>
+        <div class="copy-example"><span class="copy-text">저장하기</span><button class="copy-btn" data-copy="저장하기" >복사</button></div>
+        <div class="copy-example"><span class="copy-text">제출하기</span><button class="copy-btn" data-copy="제출하기" >복사</button></div>
+        <div class="copy-example"><span class="copy-text">다음 단계로</span><button class="copy-btn" data-copy="다음 단계로" >복사</button></div>
+        <div class="copy-example"><span class="copy-text">이전으로</span><button class="copy-btn" data-copy="이전으로" >복사</button></div>
         <div class="example-label">결제 / 신청</div>
-        <div class="copy-example"><span class="copy-text">신청하기</span><button class="copy-btn" onclick="cp(this,'신청하기')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">결제하기</span><button class="copy-btn" onclick="cp(this,'결제하기')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">예약하기</span><button class="copy-btn" onclick="cp(this,'예약하기')">복사</button></div>
+        <div class="copy-example"><span class="copy-text">신청하기</span><button class="copy-btn" data-copy="신청하기" >복사</button></div>
+        <div class="copy-example"><span class="copy-text">결제하기</span><button class="copy-btn" data-copy="결제하기" >복사</button></div>
+        <div class="copy-example"><span class="copy-text">예약하기</span><button class="copy-btn" data-copy="예약하기" >복사</button></div>
         <div class="example-label">삭제 / 위험 동작</div>
-        <div class="copy-example"><span class="copy-text">파일 삭제</span><button class="copy-btn" onclick="cp(this,'파일 삭제')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">계정 탈퇴하기</span><button class="copy-btn" onclick="cp(this,'계정 탈퇴하기')">복사</button></div>
+        <div class="copy-example"><span class="copy-text">파일 삭제</span><button class="copy-btn" data-copy="파일 삭제" >복사</button></div>
+        <div class="copy-example"><span class="copy-text">계정 탈퇴하기</span><button class="copy-btn" data-copy="계정 탈퇴하기" >복사</button></div>
         <div class="example-label">로딩 중 상태</div>
-        <div class="copy-example"><span class="copy-text">저장 중...</span><button class="copy-btn" onclick="cp(this,'저장 중...')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">처리 중... 잠시 기다려 주세요</span><button class="copy-btn" onclick="cp(this,'처리 중... 잠시 기다려 주세요')">복사</button></div>
+        <div class="copy-example"><span class="copy-text">저장 중...</span><button class="copy-btn" data-copy="저장 중..." >복사</button></div>
+        <div class="copy-example"><span class="copy-text">처리 중... 잠시 기다려 주세요</span><button class="copy-btn" data-copy="처리 중... 잠시 기다려 주세요" >복사</button></div>
       </div>
       </div>
     </section>
@@ -1802,13 +1804,13 @@ img { max-width: 100%; }
       <div class="guideline-card" style="margin-top:12px">
         <div class="guideline-card-title">레이블 작성 예시</div>
         <div class="example-label">이름 / 연락처</div>
-        <div class="copy-example"><span class="copy-text">이름 (필수)</span><button class="copy-btn" onclick="cp(this,'이름 (필수)')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">휴대폰 번호 — 예) 010-1234-5678</span><button class="copy-btn" onclick="cp(this,'휴대폰 번호 — 예) 010-1234-5678')">복사</button></div>
+        <div class="copy-example"><span class="copy-text">이름 (필수)</span><button class="copy-btn" data-copy="이름 (필수)" >복사</button></div>
+        <div class="copy-example"><span class="copy-text">휴대폰 번호 — 예) 010-1234-5678</span><button class="copy-btn" data-copy="휴대폰 번호 — 예) 010-1234-5678" >복사</button></div>
         <div class="example-label">이메일 / 비밀번호</div>
-        <div class="copy-example"><span class="copy-text">이메일 주소 — 예) hong@email.com</span><button class="copy-btn" onclick="cp(this,'이메일 주소 — 예) hong@email.com')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">비밀번호 — 영문·숫자 조합 8자 이상</span><button class="copy-btn" onclick="cp(this,'비밀번호 — 영문·숫자 조합 8자 이상')">복사</button></div>
+        <div class="copy-example"><span class="copy-text">이메일 주소 — 예) hong@email.com</span><button class="copy-btn" data-copy="이메일 주소 — 예) hong@email.com" >복사</button></div>
+        <div class="copy-example"><span class="copy-text">비밀번호 — 영문·숫자 조합 8자 이상</span><button class="copy-btn" data-copy="비밀번호 — 영문·숫자 조합 8자 이상" >복사</button></div>
         <div class="example-label">개인 식별 정보</div>
-        <div class="copy-example"><span class="copy-text">주민등록번호 앞 6자리 — 이 정보는 본인 확인 목적으로만 사용됩니다.</span><button class="copy-btn" onclick="cp(this,'주민등록번호 앞 6자리 — 이 정보는 본인 확인 목적으로만 사용됩니다.')">복사</button></div>
+        <div class="copy-example"><span class="copy-text">주민등록번호 앞 6자리 — 이 정보는 본인 확인 목적으로만 사용됩니다.</span><button class="copy-btn" data-copy="주민등록번호 앞 6자리 — 이 정보는 본인 확인 목적으로만 사용됩니다." >복사</button></div>
       </div>
       </div>
     </section>
@@ -1824,17 +1826,17 @@ img { max-width: 100%; }
       <p class="guideline-desc">오류 메시지는 사용자가 문제를 빠르게 인지하고 해결할 수 있도록 작성합니다.</p>
       <div class="guideline-card">
         <div class="guideline-card-title">폼 유효성 오류</div>
-        <div class="copy-example"><span class="copy-text">이메일 주소 형식이 올바르지 않습니다. 예) hong@email.com</span><button class="copy-btn" onclick="cp(this,'이메일 주소 형식이 올바르지 않습니다. 예) hong@email.com')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">비밀번호는 영문·숫자 조합 8자 이상이어야 합니다.</span><button class="copy-btn" onclick="cp(this,'비밀번호는 영문·숫자 조합 8자 이상이어야 합니다.')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">이미 사용 중인 이메일 주소입니다. 다른 이메일로 시도해 주세요.</span><button class="copy-btn" onclick="cp(this,'이미 사용 중인 이메일 주소입니다. 다른 이메일로 시도해 주세요.')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">필수 항목을 입력해 주세요.</span><button class="copy-btn" onclick="cp(this,'필수 항목을 입력해 주세요.')">복사</button></div>
+        <div class="copy-example"><span class="copy-text">이메일 주소 형식이 올바르지 않습니다. 예) hong@email.com</span><button class="copy-btn" data-copy="이메일 주소 형식이 올바르지 않습니다. 예) hong@email.com" >복사</button></div>
+        <div class="copy-example"><span class="copy-text">비밀번호는 영문·숫자 조합 8자 이상이어야 합니다.</span><button class="copy-btn" data-copy="비밀번호는 영문·숫자 조합 8자 이상이어야 합니다." >복사</button></div>
+        <div class="copy-example"><span class="copy-text">이미 사용 중인 이메일 주소입니다. 다른 이메일로 시도해 주세요.</span><button class="copy-btn" data-copy="이미 사용 중인 이메일 주소입니다. 다른 이메일로 시도해 주세요." >복사</button></div>
+        <div class="copy-example"><span class="copy-text">필수 항목을 입력해 주세요.</span><button class="copy-btn" data-copy="필수 항목을 입력해 주세요." >복사</button></div>
       </div>
       <div class="guideline-card" style="margin-top:12px">
         <div class="guideline-card-title">네트워크 &amp; 시스템 오류</div>
-        <div class="copy-example"><span class="copy-text">인터넷 연결을 확인하고 다시 시도해 주세요.</span><button class="copy-btn" onclick="cp(this,'인터넷 연결을 확인하고 다시 시도해 주세요.')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</span><button class="copy-btn" onclick="cp(this,'일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">페이지를 찾을 수 없습니다. 주소를 확인하거나 홈으로 이동해 주세요.</span><button class="copy-btn" onclick="cp(this,'페이지를 찾을 수 없습니다. 주소를 확인하거나 홈으로 이동해 주세요.')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">세션이 만료되었습니다. 다시 로그인해 주세요.</span><button class="copy-btn" onclick="cp(this,'세션이 만료되었습니다. 다시 로그인해 주세요.')">복사</button></div>
+        <div class="copy-example"><span class="copy-text">인터넷 연결을 확인하고 다시 시도해 주세요.</span><button class="copy-btn" data-copy="인터넷 연결을 확인하고 다시 시도해 주세요." >복사</button></div>
+        <div class="copy-example"><span class="copy-text">일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</span><button class="copy-btn" data-copy="일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요." >복사</button></div>
+        <div class="copy-example"><span class="copy-text">페이지를 찾을 수 없습니다. 주소를 확인하거나 홈으로 이동해 주세요.</span><button class="copy-btn" data-copy="페이지를 찾을 수 없습니다. 주소를 확인하거나 홈으로 이동해 주세요." >복사</button></div>
+        <div class="copy-example"><span class="copy-text">세션이 만료되었습니다. 다시 로그인해 주세요.</span><button class="copy-btn" data-copy="세션이 만료되었습니다. 다시 로그인해 주세요." >복사</button></div>
       </div>
       </div>
     </section>
@@ -1850,15 +1852,15 @@ img { max-width: 100%; }
       <p class="guideline-desc">사용자가 서비스를 처음 접할 때부터 익숙해질 때까지 단계별로 안내합니다.</p>
       <div class="guideline-card">
         <div class="guideline-card-title">온보딩 문구</div>
-        <div class="copy-example"><span class="copy-text">처음 오셨군요! KRDS 서비스 사용 방법을 안내해 드릴게요.</span><button class="copy-btn" onclick="cp(this,'처음 오셨군요! KRDS 서비스 사용 방법을 안내해 드릴게요.')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">단계별로 작성하면 어렵지 않아요. 함께 시작해 볼까요?</span><button class="copy-btn" onclick="cp(this,'단계별로 작성하면 어렵지 않아요. 함께 시작해 볼까요?')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">기본 정보 입력부터 시작합니다. 약 3분 소요됩니다.</span><button class="copy-btn" onclick="cp(this,'기본 정보 입력부터 시작합니다. 약 3분 소요됩니다.')">복사</button></div>
+        <div class="copy-example"><span class="copy-text">처음 오셨군요! KRDS 서비스 사용 방법을 안내해 드릴게요.</span><button class="copy-btn" data-copy="처음 오셨군요! KRDS 서비스 사용 방법을 안내해 드릴게요." >복사</button></div>
+        <div class="copy-example"><span class="copy-text">단계별로 작성하면 어렵지 않아요. 함께 시작해 볼까요?</span><button class="copy-btn" data-copy="단계별로 작성하면 어렵지 않아요. 함께 시작해 볼까요?" >복사</button></div>
+        <div class="copy-example"><span class="copy-text">기본 정보 입력부터 시작합니다. 약 3분 소요됩니다.</span><button class="copy-btn" data-copy="기본 정보 입력부터 시작합니다. 약 3분 소요됩니다." >복사</button></div>
       </div>
       <div class="guideline-card" style="margin-top:12px">
         <div class="guideline-card-title">빈 상태 문구</div>
-        <div class="copy-example"><span class="copy-text">신청 내역이 없습니다. 지금 바로 신청해 보세요.</span><button class="copy-btn" onclick="cp(this,'신청 내역이 없습니다. 지금 바로 신청해 보세요.')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">저장된 파일이 없습니다. 파일을 업로드해 주세요.</span><button class="copy-btn" onclick="cp(this,'저장된 파일이 없습니다. 파일을 업로드해 주세요.')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">검색 결과가 없습니다. 다른 검색어로 시도해 보세요.</span><button class="copy-btn" onclick="cp(this,'검색 결과가 없습니다. 다른 검색어로 시도해 보세요.')">복사</button></div>
+        <div class="copy-example"><span class="copy-text">신청 내역이 없습니다. 지금 바로 신청해 보세요.</span><button class="copy-btn" data-copy="신청 내역이 없습니다. 지금 바로 신청해 보세요." >복사</button></div>
+        <div class="copy-example"><span class="copy-text">저장된 파일이 없습니다. 파일을 업로드해 주세요.</span><button class="copy-btn" data-copy="저장된 파일이 없습니다. 파일을 업로드해 주세요." >복사</button></div>
+        <div class="copy-example"><span class="copy-text">검색 결과가 없습니다. 다른 검색어로 시도해 보세요.</span><button class="copy-btn" data-copy="검색 결과가 없습니다. 다른 검색어로 시도해 보세요." >복사</button></div>
       </div>
       </div>
     </section>
@@ -1874,21 +1876,21 @@ img { max-width: 100%; }
       <p class="guideline-desc">로딩, 성공, 실패 등 처리 상태를 사용자에게 명확하게 전달합니다.</p>
       <div class="guideline-card">
         <div class="guideline-card-title">로딩 &amp; 진행</div>
-        <div class="copy-example"><span class="copy-text">잠시 기다려 주세요...</span><button class="copy-btn" onclick="cp(this,'잠시 기다려 주세요...')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">파일을 업로드하고 있습니다. (85%)</span><button class="copy-btn" onclick="cp(this,'파일을 업로드하고 있습니다. (85%)')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">정보를 확인 중입니다. 잠시만 기다려 주세요.</span><button class="copy-btn" onclick="cp(this,'정보를 확인 중입니다. 잠시만 기다려 주세요.')">복사</button></div>
+        <div class="copy-example"><span class="copy-text">잠시 기다려 주세요...</span><button class="copy-btn" data-copy="잠시 기다려 주세요..." >복사</button></div>
+        <div class="copy-example"><span class="copy-text">파일을 업로드하고 있습니다. (85%)</span><button class="copy-btn" data-copy="파일을 업로드하고 있습니다. (85%)" >복사</button></div>
+        <div class="copy-example"><span class="copy-text">정보를 확인 중입니다. 잠시만 기다려 주세요.</span><button class="copy-btn" data-copy="정보를 확인 중입니다. 잠시만 기다려 주세요." >복사</button></div>
       </div>
       <div class="guideline-card" style="margin-top:12px">
         <div class="guideline-card-title">성공 &amp; 완료</div>
-        <div class="copy-example"><span class="copy-text">신청이 완료되었습니다.</span><button class="copy-btn" onclick="cp(this,'신청이 완료되었습니다.')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">파일이 저장되었습니다.</span><button class="copy-btn" onclick="cp(this,'파일이 저장되었습니다.')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">변경 사항이 반영되었습니다.</span><button class="copy-btn" onclick="cp(this,'변경 사항이 반영되었습니다.')">복사</button></div>
+        <div class="copy-example"><span class="copy-text">신청이 완료되었습니다.</span><button class="copy-btn" data-copy="신청이 완료되었습니다." >복사</button></div>
+        <div class="copy-example"><span class="copy-text">파일이 저장되었습니다.</span><button class="copy-btn" data-copy="파일이 저장되었습니다." >복사</button></div>
+        <div class="copy-example"><span class="copy-text">변경 사항이 반영되었습니다.</span><button class="copy-btn" data-copy="변경 사항이 반영되었습니다." >복사</button></div>
       </div>
       <div class="guideline-card" style="margin-top:12px">
         <div class="guideline-card-title">내비게이션 상태</div>
-        <div class="copy-example"><span class="copy-text">1단계 / 4단계 — 기본 정보 입력</span><button class="copy-btn" onclick="cp(this,'1단계 / 4단계 — 기본 정보 입력')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">다음: 서류 첨부</span><button class="copy-btn" onclick="cp(this,'다음: 서류 첨부')">복사</button></div>
-        <div class="copy-example"><span class="copy-text">이전: 개인 정보 입력</span><button class="copy-btn" onclick="cp(this,'이전: 개인 정보 입력')">복사</button></div>
+        <div class="copy-example"><span class="copy-text">1단계 / 4단계 — 기본 정보 입력</span><button class="copy-btn" data-copy="1단계 / 4단계 — 기본 정보 입력" >복사</button></div>
+        <div class="copy-example"><span class="copy-text">다음: 서류 첨부</span><button class="copy-btn" data-copy="다음: 서류 첨부" >복사</button></div>
+        <div class="copy-example"><span class="copy-text">이전: 개인 정보 입력</span><button class="copy-btn" data-copy="이전: 개인 정보 입력" >복사</button></div>
       </div>
       </div>
     </section>
@@ -1932,18 +1934,18 @@ img { max-width: 100%; }
       <h2 class="checklist-title">UX Writing 체크리스트</h2>
       <p class="checklist-desc">문구 작성 후 배포 전 최종 검토 항목입니다.</p>
       <div id="checklistItems">
-        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheck(this);}"><div class="check-box">✓</div><span class="check-text">버튼 레이블은 동사형인가?</span></div>
-        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheck(this);}"><div class="check-box">✓</div><span class="check-text">오류 메시지에 해결 방법이 포함되어 있는가?</span></div>
-        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheck(this);}"><div class="check-box">✓</div><span class="check-text">플레이스홀더를 레이블 대체로 사용하지 않았는가?</span></div>
-        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheck(this);}"><div class="check-box">✓</div><span class="check-text">필수/선택 항목이 명확하게 구분되어 있는가?</span></div>
-        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheck(this);}"><div class="check-box">✓</div><span class="check-text">모든 아이콘 버튼에 aria-label이 있는가?</span></div>
-        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheck(this);}"><div class="check-box">✓</div><span class="check-text">용어가 전체 서비스에서 일관되게 사용되는가?</span></div>
-        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheck(this);}"><div class="check-box">✓</div><span class="check-text">사용자를 탓하는 표현이 없는가?</span></div>
-        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheck(this);}"><div class="check-box">✓</div><span class="check-text">빈 상태에 다음 행동 유도 문구가 있는가?</span></div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" ><div class="check-box">✓</div><span class="check-text">버튼 레이블은 동사형인가?</span></div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" ><div class="check-box">✓</div><span class="check-text">오류 메시지에 해결 방법이 포함되어 있는가?</span></div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" ><div class="check-box">✓</div><span class="check-text">플레이스홀더를 레이블 대체로 사용하지 않았는가?</span></div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" ><div class="check-box">✓</div><span class="check-text">필수/선택 항목이 명확하게 구분되어 있는가?</span></div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" ><div class="check-box">✓</div><span class="check-text">모든 아이콘 버튼에 aria-label이 있는가?</span></div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" ><div class="check-box">✓</div><span class="check-text">용어가 전체 서비스에서 일관되게 사용되는가?</span></div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" ><div class="check-box">✓</div><span class="check-text">사용자를 탓하는 표현이 없는가?</span></div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0" ><div class="check-box">✓</div><span class="check-text">빈 상태에 다음 행동 유도 문구가 있는가?</span></div>
       </div>
       <div class="checklist-complete" id="checklistComplete">모든 항목을 확인했습니다! 배포 준비 완료 🎉</div>
       <div style="text-align:right;margin-top:12px">
-        <button onclick="resetChecklist()" style="background:none;border:none;color:var(--text-secondary);font-size:13px;cursor:pointer;padding:4px 8px;text-decoration:underline;" aria-label="체크리스트 모두 초기화">모두 초기화</button>
+        <button data-action="reset-checklist" style="background:none;border:none;color:var(--text-secondary);font-size:13px;cursor:pointer;padding:4px 8px;text-decoration:underline;" aria-label="체크리스트 모두 초기화">모두 초기화</button>
       </div>
     </div>
   </div>
@@ -2018,675 +2020,6 @@ img { max-width: 100%; }
   </div>
 </footer>
 
-<script>
-// ===== SEARCH DATA & FUNCTIONS =====
-const searchData = [
-  {id:'principles', tag:'언어 원칙', text:'6가지 핵심 원칙 사용자 중심 간결 능동태 일관된 용어 긍정적 표현 명확성', preview:'사용자 중심·간결성·능동태·일관된 용어·긍정적 표현·명확성 6원칙'},
-  {id:'voice', tag:'브랜드 보이스', text:'신뢰감 있고 전문적 친근하고 배려 해결 중심 명확 배려 톤 보이스', preview:'신뢰감 있고 전문적이되, 친근하고 배려하는 해결 중심 보이스'},
-  {id:'tone', tag:'톤앤매너', text:'상황별 톤 오류 상황 경고 주의 성공 완료 온보딩 빈 상태 경어 사용', preview:'오류·경고·성공·온보딩 등 상황별 톤 가이드 및 경어 사용 원칙'},
-  {id:'button', tag:'버튼 & CTA', text:'동사형 레이블 신청하기 결제하기 저장하기 제출하기 삭제 CTA 버튼', preview:'동사형 레이블 원칙 — "신청하기", "저장하기" 등 CTA 작성법'},
-  {id:'form', tag:'폼 & 입력', text:'레이블 플레이스홀더 필수 선택 이메일 비밀번호 개인정보 생년월일 성별 입력 제한 폼 유효성', preview:'레이블·플레이스홀더·필수/선택 표시, 유효성 검사 메시지 작성법'},
-  {id:'error', tag:'에러 & 알림', text:'오류 메시지 4대 원칙 네트워크 오류 시스템 권한 접근 유효성 폼 유효성 세션 만료', preview:'오류 메시지 4원칙 — 원인·영향·해결책·긍정적 마무리'},
-  {id:'help', tag:'도움말 & 온보딩', text:'온보딩 문구 빈 상태 안내 영역 인라인 텍스트 툴팁 코치마크 맥락적 내비게이션 메뉴 레이블 브레드크럼', preview:'온보딩 문구·빈 상태 안내·인라인 텍스트·툴팁·코치마크 패턴'},
-  {id:'loading', tag:'로딩 & 진행', text:'로딩 불러오는 중 처리 중 성공 완료 업로드 대기 진행 내비게이션 상태', preview:'"불러오는 중…" 등 진행 상태별 메시지와 성공/실패 피드백'},
-  {id:'error', tag:'성공 & 실패 메시지', text:'완료 저장 비밀번호 결제 실패 삭제 확인 오류', preview:'저장 완료·결제 실패·삭제 확인 등 결과 상태 메시지 패턴'},
-  {id:'accessibility', tag:'접근성 & 국제화', text:'KWCAG WCAG aria-label alt 속성 스크린리더 색상 대비 초점 국제화 다국어 i18n 날짜 형식 화폐 전화번호', preview:'aria-label·alt 속성·스크린리더 대응, 날짜·화폐·전화번호 국제화'},
-  {id:'checklist', tag:'체크리스트', text:'동사형 해결 방법 일관성 필수 권장 버튼 레이블 오류 aria 빈 상태', preview:'UX 라이팅 필수·권장 체크리스트 — 배포 전 점검 항목'},
-];
-
-function trapFocus(modalEl) {
-  const focusable = modalEl.querySelectorAll(
-    'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])'
-  );
-  const first = focusable[0];
-  const last = focusable[focusable.length - 1];
-  modalEl._trapHandler = function(e) {
-    if (e.key !== 'Tab') return;
-    if (e.shiftKey) {
-      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
-    } else {
-      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
-    }
-  };
-  modalEl.addEventListener('keydown', modalEl._trapHandler);
-}
-
-function releaseFocus(modalEl) {
-  if (modalEl._trapHandler) {
-    modalEl.removeEventListener('keydown', modalEl._trapHandler);
-    modalEl._trapHandler = null;
-  }
-}
-
-function openSearch() {
-  const modal = document.getElementById('searchModal');
-  modal.classList.add('open');
-  setTimeout(() => {
-    document.getElementById('searchInput').focus();
-    trapFocus(modal);
-  }, 50);
-}
-
-function closeSearch() {
-  const modal = document.getElementById('searchModal');
-  modal.classList.remove('open');
-  releaseFocus(modal);
-  document.getElementById('searchInput').value = '';
-  document.getElementById('searchResults').innerHTML = '';
-}
-
-// ===== PERSONA TAB SWITCHING =====
-function switchPersonaTab(name) {
-  // 모든 탭 버튼 비활성화
-  document.querySelectorAll('.persona-tab').forEach(b => {
-    b.classList.remove('active');
-    b.setAttribute('aria-selected', 'false');
-  });
-  // 모든 패널 숨기기
-  document.querySelectorAll('.persona-panel').forEach(p => {
-    p.classList.remove('active');
-    p.hidden = true;
-  });
-  // 선택된 탭 활성화
-  const activeBtn = document.getElementById('tab-btn-' + name);
-  if (activeBtn) {
-    activeBtn.classList.add('active');
-    activeBtn.setAttribute('aria-selected', 'true');
-  }
-  // 선택된 패널 표시
-  const activePanel = document.getElementById('tab-' + name);
-  if (activePanel) {
-    activePanel.classList.add('active');
-    activePanel.hidden = false;
-  }
-}
-
-// ===== SCROLL NAVIGATION =====
-function scrollToSection(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const top = el.getBoundingClientRect().top + window.scrollY - 86;
-  window.scrollTo({ top, behavior: 'smooth' });
-}
-
-// ===== GNB SCROLL EFFECT =====
-function initGnbScroll() {
-  const gnb = document.getElementById('gnb');
-  if (!gnb) return;
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 10) {
-      gnb.classList.add('scrolled');
-    } else {
-      gnb.classList.remove('scrolled');
-    }
-  }, { passive: true });
-}
-
-// ===== SCROLL PROGRESS BAR =====
-function initScrollProgress() {
-  const fill = document.getElementById('scrollFill');
-  if (!fill) return;
-  window.addEventListener('scroll', () => {
-    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
-    fill.style.width = Math.min(pct, 100) + '%';
-  }, { passive: true });
-}
-
-// ===== INTERSECTION OBSERVER (REVEAL + STAGGER) =====
-function initReveal() {
-  const revealObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        revealObs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0, rootMargin: '0px 0px 120px 0px' });
-
-  const staggerObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        const items = e.target.querySelectorAll('.stagger-item');
-        items.forEach((item, i) => {
-          setTimeout(() => item.classList.add('visible'), i * 80);
-        });
-        staggerObs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.08 });
-
-  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
-  const grid = document.querySelector('.composition-grid');
-  if (grid) staggerObs.observe(grid);
-
-  // 뷰포트 위(이미 지나친)와 뷰포트 안(현재 보이는) 요소를 즉시 visible 처리
-  function revealInAndAbove() {
-    const vh = window.innerHeight;
-    document.querySelectorAll('.reveal:not(.visible)').forEach(el => {
-      const top = el.getBoundingClientRect().top;
-      // 뷰포트 위(bottom<0) 또는 뷰포트 안(top < vh)인 요소
-      if (top < vh) el.classList.add('visible');
-    });
-    const g = document.querySelector('.composition-grid');
-    if (g) {
-      const top = g.getBoundingClientRect().top;
-      if (top < vh) {
-        g.querySelectorAll('.stagger-item:not(.visible)').forEach((item, i) => {
-          setTimeout(() => item.classList.add('visible'), i * 80);
-        });
-      }
-    }
-  }
-
-  // 앵커 이동 후 스크롤 완료 시점에 실행
-  // hashchange: 앵커 클릭 → 스크롤 완료 후 100ms 대기
-  window.addEventListener('hashchange', () => {
-    setTimeout(revealInAndAbove, 100);
-  });
-  // 초기 앵커(URL에 이미 #hash 있는 경우): load 후 실행
-  window.addEventListener('load', revealInAndAbove, { once: true });
-}
-
-// ===== CHECKLIST =====
-function toggleCheck(item) {
-  const isChecked = item.classList.toggle('checked');
-  item.setAttribute('aria-checked', isChecked ? 'true' : 'false');
-  const box = item.querySelector('.check-box');
-  if (isChecked) {
-    box.style.background = 'var(--success)';
-    box.style.borderColor = 'var(--success)';
-    box.style.color = 'white';
-  } else {
-    box.style.background = 'transparent';
-    box.style.borderColor = 'var(--border)';
-    box.style.color = 'transparent';
-  }
-  const all = document.querySelectorAll('.check-item');
-  const checked = document.querySelectorAll('.check-item.checked');
-  const complete = document.getElementById('checklistComplete');
-  if (complete) {
-    if (all.length === checked.length && checked.length > 0) {
-      complete.classList.add('show');
-    } else {
-      complete.classList.remove('show');
-    }
-  }
-  // Save state to localStorage
-  all.forEach((el, idx) => {
-    localStorage.setItem('krds-checklist-' + idx, el.classList.contains('checked') ? 'checked' : '');
-  });
-}
-
-function resetChecklist() {
-  const all = document.querySelectorAll('.check-item');
-  all.forEach((item, idx) => {
-    item.classList.remove('checked');
-    item.setAttribute('aria-checked', 'false');
-    const box = item.querySelector('.check-box');
-    if (box) {
-      box.style.background = 'transparent';
-      box.style.borderColor = 'var(--border)';
-      box.style.color = 'transparent';
-    }
-    localStorage.removeItem('krds-checklist-' + idx);
-  });
-  const complete = document.getElementById('checklistComplete');
-  if (complete) complete.classList.remove('show');
-}
-
-function initChecklist() {
-  const all = document.querySelectorAll('.check-item');
-  let checkedCount = 0;
-  all.forEach((item, idx) => {
-    const saved = localStorage.getItem('krds-checklist-' + idx);
-    if (saved === 'checked') {
-      item.classList.add('checked');
-      const box = item.querySelector('.check-box');
-      if (box) {
-        box.style.background = 'var(--success)';
-        box.style.borderColor = 'var(--success)';
-        box.style.color = 'white';
-      }
-      checkedCount++;
-    }
-  });
-  const complete = document.getElementById('checklistComplete');
-  if (complete && all.length > 0 && checkedCount === all.length) {
-    complete.classList.add('show');
-  }
-}
-
-// ===== COPY FUNCTION =====
-// ===== ANCHOR LINK COPY =====
-function copyAnchorLink(sectionId) {
-  const url = window.location.href.split('#')[0] + '#' + sectionId;
-  navigator.clipboard.writeText(url).then(() => {
-    let toast = document.getElementById('anchor-toast');
-    toast.classList.add('show');
-    clearTimeout(toast._timer);
-    toast._timer = setTimeout(() => { toast.classList.remove('show'); }, 2500);
-  });
-}
-
-function initAnchorButtons() {
-  const toast = document.createElement('div');
-  toast.id = 'anchor-toast';
-  toast.textContent = '🔗 링크 복사됨';
-  document.body.appendChild(toast);
-
-  document.querySelectorAll('.guideline-section[id]').forEach(section => {
-    const h2 = section.querySelector('h2.guideline-title');
-    if (!h2) return;
-    const btn = document.createElement('button');
-    btn.className = 'anchor-btn';
-    btn.setAttribute('aria-label', '섹션 링크 복사');
-    btn.setAttribute('title', '섹션 링크 복사');
-    btn.innerHTML = '🔗';
-    btn.addEventListener('click', () => copyAnchorLink(section.id));
-    h2.appendChild(btn);
-  });
-}
-
-function cp(btn, text) {
-  function onSuccess() {
-    const prev = btn.textContent;
-    btn.textContent = '✓ 복사됨';
-    btn.classList.add('copied');
-    btn.animate([
-      { transform: 'scale(1)' },
-      { transform: 'scale(1.1)' },
-      { transform: 'scale(0.97)' },
-      { transform: 'scale(1)' }
-    ], { duration: 300, easing: 'ease-out' });
-    setTimeout(() => {
-      btn.textContent = prev;
-      btn.classList.remove('copied');
-    }, 1500);
-  }
-  function onFail() {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;';
-    document.body.appendChild(ta);
-    ta.select();
-    const ok = document.execCommand('copy');
-    document.body.removeChild(ta);
-    if (ok) { onSuccess(); }
-    else { alert('복사에 실패했습니다. 텍스트를 직접 선택하여 복사해 주세요.'); }
-  }
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(onSuccess).catch(onFail);
-  } else {
-    onFail();
-  }
-}
-
-// ===== DARK MODE =====
-function updateThemeIcon(theme) {
-  const sun = document.querySelector('.icon-sun');
-  const moon = document.querySelector('.icon-moon');
-  if (!sun || !moon) return;
-  if (theme === 'dark') {
-    sun.style.display = 'none';
-    moon.style.display = 'block';
-  } else {
-    sun.style.display = 'block';
-    moon.style.display = 'none';
-  }
-  const btn = document.getElementById('themeToggle');
-  if (btn) btn.setAttribute('aria-label', theme === 'dark' ? '라이트모드로 전환' : '다크모드로 전환');
-}
-
-function toggleTheme() {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const next = isDark ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('krds-theme', next);
-  updateThemeIcon(next);
-}
-
-(function initTheme() {
-  const saved = localStorage.getItem('krds-theme') ||
-    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  document.documentElement.setAttribute('data-theme', saved);
-  document.addEventListener('DOMContentLoaded', () => {
-    updateThemeIcon(saved);
-  });
-})();
-
-// ===== OS 단축키 감지 =====
-(function initSearchShortcutHint() {
-  const isMac = navigator.platform.includes('Mac') || navigator.userAgent.includes('Mac');
-  const shortcutKey = isMac ? '⌘K' : 'Ctrl+K';
-  document.addEventListener('DOMContentLoaded', function() {
-    const hint = document.getElementById('searchShortcutHint');
-    if (hint) hint.textContent = shortcutKey + ' 열기';
-    const searchBtn = document.getElementById('searchBtn');
-    if (searchBtn) searchBtn.setAttribute('aria-label', '검색 열기 (' + shortcutKey + ')');
-  });
-})();
-
-// ===== DOMCONTENTLOADED: SEARCH MODAL =====
-document.addEventListener('DOMContentLoaded', function() {
-  const modal = document.getElementById('searchModal');
-  if (modal) modal.addEventListener('click', e => { if (e.target === e.currentTarget) closeSearch(); });
-  const input = document.getElementById('searchInput');
-  if (!input) return;
-
-  const escapeHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const highlight = (text, query) => {
-    const escaped = escapeHtml(text);
-    const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-    return escaped.replace(regex, m => `<mark>${m}</mark>`);
-  };
-
-  function renderResults(q) {
-    const res = document.getElementById('searchResults');
-    if (!q) { res.innerHTML = ''; return; }
-    const hits = searchData.filter(d => d.text.toLowerCase().includes(q) || d.tag.toLowerCase().includes(q));
-    if (!hits.length) {
-      res.innerHTML = '<div style="padding:20px 24px;color:var(--text-muted);font-size:14px">검색 결과가 없습니다.</div>';
-      return;
-    }
-    res.innerHTML = hits.map((h, i) => `
-      <div class="search-result-item" role="option" tabindex="-1" data-section="${h.id}"
-           onclick="scrollToSection('${h.id}');closeSearch()"
-           onkeydown="handleResultKey(event,this)">
-        <div class="search-result-tag">${highlight(h.tag, q)}</div>
-        <div class="search-result-text">${highlight(h.preview || h.tag, q)}</div>
-      </div>`).join('');
-  }
-
-  input.addEventListener('input', function() {
-    renderResults(this.value.trim().toLowerCase());
-  });
-
-  // 검색 입력창에서 ArrowDown → 첫 번째 결과로 포커스
-  input.addEventListener('keydown', function(e) {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      const first = document.querySelector('#searchResults .search-result-item');
-      if (first) first.focus();
-    }
-  });
-});
-
-// ===== 검색 결과 키보드 내비게이션 =====
-function handleResultKey(e, el) {
-  const items = Array.from(document.querySelectorAll('#searchResults .search-result-item'));
-  const idx = items.indexOf(el);
-  if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    if (idx < items.length - 1) items[idx + 1].focus();
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    if (idx > 0) items[idx - 1].focus();
-    else document.getElementById('searchInput').focus();
-  } else if (e.key === 'Enter') {
-    e.preventDefault();
-    el.click();
-  }
-}
-
-// ===== KEYBOARD SHORTCUTS =====
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
-  if (e.key === 'Escape') { closeSearch(); closeMobileMenu(); }
-});
-
-// ===== MOBILE MENU =====
-function toggleMobileMenu() {
-  const menu = document.getElementById('mobileMenu');
-  const btn = document.getElementById('mobileMenuBtn');
-  if (!menu) return;
-  const isOpen = menu.classList.contains('open');
-  if (isOpen) {
-    closeMobileMenu();
-  } else {
-    menu.classList.add('open');
-    menu.setAttribute('aria-hidden', 'false');
-    btn.setAttribute('aria-expanded', 'true');
-    btn.querySelector('.icon-hamburger').style.display = 'none';
-    btn.querySelector('.icon-close').style.display = 'block';
-    document.body.style.overflow = 'hidden';
-  }
-}
-
-function closeMobileMenu() {
-  const menu = document.getElementById('mobileMenu');
-  const btn = document.getElementById('mobileMenuBtn');
-  if (!menu || !menu.classList.contains('open')) return;
-  menu.classList.remove('open');
-  menu.setAttribute('aria-hidden', 'true');
-  if (btn) {
-    btn.setAttribute('aria-expanded', 'false');
-    btn.querySelector('.icon-hamburger').style.display = 'block';
-    btn.querySelector('.icon-close').style.display = 'none';
-  }
-  document.body.style.overflow = '';
-}
-
-// ===== DOMCONTENTLOADED: ANCHOR LINKS =====
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      const id = a.getAttribute('href').slice(1);
-      if (!id) return;
-      const el = document.getElementById(id);
-      if (el) {
-        e.preventDefault();
-        const top = el.getBoundingClientRect().top + window.scrollY - 86;
-        window.scrollTo({ top, behavior: 'smooth' });
-      }
-    });
-  });
-});
-
-// ===== DOMCONTENTLOADED: INIT =====
-document.addEventListener('DOMContentLoaded', function() {
-  initGnbScroll();
-  initScrollProgress();
-  initReveal();
-  initChecklist();
-});
-
-// ===== GNB DROPDOWN TOGGLE =====
-function closeAllGnbDropdowns() {
-  document.querySelectorAll('.gnb-item.has-dropdown').forEach(i => {
-    i.classList.remove('open');
-    const b = i.querySelector('.gnb-link');
-    if (b) b.setAttribute('aria-expanded', 'false');
-  });
-}
-
-function openGnbDropdown(item, btn) {
-  closeAllGnbDropdowns();
-  item.classList.add('open');
-  btn.setAttribute('aria-expanded', 'true');
-}
-
-function initGnbDropdowns() {
-  document.querySelectorAll('.gnb-item.has-dropdown .gnb-link').forEach(btn => {
-    const item = btn.closest('.gnb-item');
-    const dropItems = () => Array.from(item.querySelectorAll('.gnb-dropdown-item'));
-
-    // 클릭 토글
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isOpen = item.classList.contains('open');
-      if (isOpen) { closeAllGnbDropdowns(); } else { openGnbDropdown(item, btn); }
-    });
-
-    // 키보드: ArrowDown/Up → 드롭다운 열고 포커스
-    btn.addEventListener('keydown', (e) => {
-      const isOpen = item.classList.contains('open');
-      const items = dropItems();
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        if (!isOpen) openGnbDropdown(item, btn);
-        if (items.length) items[0].focus();
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        if (!isOpen) openGnbDropdown(item, btn);
-        if (items.length) items[items.length - 1].focus();
-      } else if (e.key === 'Escape') {
-        closeAllGnbDropdowns();
-      }
-    });
-
-    // 드롭다운 아이템 키보드 내비게이션
-    item.querySelectorAll('.gnb-dropdown-item').forEach(link => {
-      link.addEventListener('keydown', (e) => {
-        const items = dropItems();
-        const idx = items.indexOf(link);
-        if (e.key === 'ArrowDown') {
-          e.preventDefault();
-          if (idx < items.length - 1) items[idx + 1].focus();
-        } else if (e.key === 'ArrowUp') {
-          e.preventDefault();
-          if (idx > 0) items[idx - 1].focus(); else btn.focus();
-        } else if (e.key === 'Escape') {
-          e.preventDefault();
-          closeAllGnbDropdowns();
-          btn.focus();
-        } else if (e.key === 'Tab') {
-          // Tab/Shift+Tab으로 드롭다운 벗어날 때 닫기
-          const leaving = (e.shiftKey && idx === 0) || (!e.shiftKey && idx === items.length - 1);
-          if (leaving) closeAllGnbDropdowns();
-        }
-      });
-    });
-  });
-
-  document.addEventListener('click', closeAllGnbDropdowns);
-}
-
-// ===== SCROLL SPY =====
-function initScrollSpy() {
-  // Map section id → dropdown item href
-  const sectionToDropdownMap = {
-    principles: '#principles',
-    voice: '#voice',
-    tone: '#tone',
-    button: '#button',
-    form: '#form',
-    error: '#error',
-    help: '#help',
-    loading: '#loading',
-    accessibility: '#accessibility',
-    checklist: '#checklist'
-  };
-
-  function clearActiveStates() {
-    document.querySelectorAll('.gnb-item.active').forEach(i => i.classList.remove('active'));
-    document.querySelectorAll('.gnb-dropdown-item.active').forEach(a => a.classList.remove('active'));
-  }
-
-  function setActiveSection(sectionId) {
-    clearActiveStates();
-    const href = sectionToDropdownMap[sectionId];
-    if (!href) return;
-
-    // Find the dropdown item with matching href
-    const dropdownItem = document.querySelector('.gnb-dropdown-item[href="' + href + '"]');
-    if (dropdownItem) {
-      dropdownItem.classList.add('active');
-      // Also activate the parent gnb-item
-      const parentItem = dropdownItem.closest('.gnb-item');
-      if (parentItem) parentItem.classList.add('active');
-    } else {
-      // Non-dropdown link (e.g. accessibility)
-      const directLink = document.querySelector('.gnb-link[href="' + href + '"]');
-      if (directLink) {
-        const parentItem = directLink.closest('.gnb-item');
-        if (parentItem) parentItem.classList.add('active');
-      }
-    }
-  }
-
-  const sections = document.querySelectorAll('.guideline-section[id], .checklist-section[id]');
-  if (!sections.length) return;
-
-  // Track which section is most visible
-  const visibleSections = new Map();
-
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        visibleSections.set(e.target.id, e.intersectionRatio);
-      } else {
-        visibleSections.delete(e.target.id);
-      }
-    });
-
-    if (visibleSections.size === 0) return;
-
-    // Pick the section with highest intersection ratio
-    let topId = null;
-    let topRatio = 0;
-    visibleSections.forEach((ratio, id) => {
-      if (ratio > topRatio) { topRatio = ratio; topId = id; }
-    });
-    if (topId) {
-      setActiveSection(topId);
-      history.replaceState(null, '', '#' + topId);
-    }
-  }, { threshold: [0, 0.1, 0.25, 0.5], rootMargin: '-60px 0px -30% 0px' });
-
-  sections.forEach(s => observer.observe(s));
-}
-
-// ===== GNB DROPDOWNS INIT =====
-// ===== STICKY TOC =====
-function initStickyToc() {
-  const toc = document.getElementById('stickyToc');
-  if (!toc) return;
-  const sections = ['principles','voice','tone','button','form','error','help','loading','accessibility','checklist'];
-  const tocItems = {};
-  sections.forEach(id => {
-    tocItems[id] = toc.querySelector('[data-toc="' + id + '"]');
-  });
-  let activeId = null;
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      const id = entry.target.id;
-      if (entry.isIntersecting) {
-        if (activeId && tocItems[activeId]) tocItems[activeId].classList.remove('active');
-        activeId = id;
-        if (tocItems[id]) tocItems[id].classList.add('active');
-      }
-    });
-  }, { rootMargin: '-10% 0px -70% 0px', threshold: 0 });
-  sections.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) observer.observe(el);
-  });
-  // TOC 링크 클릭 시 즉시 활성화
-  toc.querySelectorAll('.sticky-toc-item').forEach(a => {
-    a.addEventListener('click', function() {
-      const id = this.dataset.toc;
-      if (activeId && tocItems[activeId]) tocItems[activeId].classList.remove('active');
-      activeId = id;
-      if (tocItems[id]) tocItems[id].classList.add('active');
-    });
-  });
-  // 히어로/상단일 때 TOC 숨기기
-  const hero = document.getElementById('hero');
-  if (hero) {
-    const heroObserver = new IntersectionObserver(([entry]) => {
-      toc.style.opacity = entry.isIntersecting ? '0' : '1';
-      toc.style.pointerEvents = entry.isIntersecting ? 'none' : '';
-    }, { threshold: 0.1 });
-    heroObserver.observe(hero);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  initGnbDropdowns();
-  initAnchorButtons();
-  initScrollSpy();
-  initStickyToc();
-});
-</script>
+<script src="script.js" defer></script>
 </body>
 </html>

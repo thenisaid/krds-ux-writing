@@ -18,5 +18,8 @@
     "128": "icons/icon128.png"
   },
   "permissions": [],
-  "host_permissions": []
+  "host_permissions": [],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none';"
+  }
 }
