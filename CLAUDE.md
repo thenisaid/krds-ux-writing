@@ -3,7 +3,7 @@
 ## 프로젝트 개요
 
 - **서비스**: KRDS UX Writing 가이드 (공공기관 UX 라이팅 원칙 문서)
-- **파일**: `index.html` 단일 파일 (HTML + CSS + JS 통합, 106KB)
+- **파일**: `index.html` (HTML + CSS, ~75KB) + `script.js` (JS 로직, 743줄) — 2026-04-07 분리
 - **배포**: GitHub Pages → `git push origin main` 으로 자동 배포
 - **URL**: https://thenisaid.github.io/krds-ux-writing/
 
@@ -22,12 +22,8 @@ HTMLEOF
 ### JS 수정 후 문법 검사 (필수)
 JS SyntaxError 발생 시 전체 스크립트 실행 불가 → 화면 콘텐츠 미표시
 ```bash
-node -e "
-const fs = require('fs');
-const html = fs.readFileSync('/Users/7457948/KRDS/index.html', 'utf8');
-const match = html.match(/<script>([\s\S]*?)<\/script>/);
-if (match) { new (require('vm').Script)(match[1]); console.log('✅ JS 문법 OK'); }
-"
+# script.js 직접 검사 (2026-04-07 이후 분리됨)
+node --check /Users/7457948/KRDS/script.js && echo "✅ JS 문법 OK"
 ```
 
 ### 흔한 JS 버그 패턴
@@ -157,9 +153,29 @@ lsof -ti:8300 | xargs kill -9 2>/dev/null
 - 크롬 확장 프로그램 v1.0.0 (`krds-extension/`, Manifest V3)
 - SeMA 강연 자료 P1~P4 + index.html GitHub Pages 배포 완료 (https://thenisaid.github.io/sema-lecture/)
 - **Mintlify 스타일 CSS 전체 리디자인** (127KB→106KB, 1,309삭제+734추가, 2026-04-07)
+- **보안 감사 + CSP 강화** (2026-04-07, commit d20aad0)
+  - CSP meta tag 추가 + `script-src 'unsafe-inline'` 완전 제거
+  - `script.js` 분리 (743줄) — inline `<script>` 블록 외부화
+  - `onclick` 73개 → `addEventListener` / 이벤트 위임 교체
+  - Pretendard CDN SRI(`sha384-...`) + localStorage whitelist 추가
+  - Chrome Extension: manifest CSP 명시, innerHTML→DOM API, 섹션 allowlist
 
 ### 남은 작업 (기존 site 유지보수)
 - 없음 (모든 계획 항목 완료)
+
+### CSP 준수 규칙 (2026-04-07 이후 필수)
+- `onclick=` 인라인 핸들러 금지 → `addEventListener` 사용
+- `innerHTML` 동적 콘텐츠 금지 → `createElement`/`textContent` 사용
+- 새 인라인 `<script>` 추가 시 SHA256 해시 재계산 후 CSP 업데이트 필수:
+```bash
+python3 -c "
+import hashlib, base64, re
+c = open('/Users/7457948/KRDS/index.html').read()
+s = re.findall(r'<script(?!\s+src)>([\s\S]*?)</script>', c)[0]
+h = base64.b64encode(hashlib.sha256(s.encode()).digest()).decode()
+print(f\"sha256-{h}\")
+"
+```
 
 ### 다음 단계 — 가이드라인 전체 재구성 (2026-04~)
 - KRDS UX Writing 원칙 전면 재설계 (사용자 주도 / 어시스턴트는 구조화·문서화·슬라이드 변환 담당)
