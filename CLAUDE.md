@@ -31,6 +31,12 @@ node --check /Users/7457948/KRDS/script.js && echo "✅ JS 문법 OK"
 - `getElementById('class-name')` → null (class는 querySelector 사용)
 - IntersectionObserver 앵커 이동 후 `.visible` 미추가 → revealInAndAbove() 패턴 사용
 
+### pre-commit hook (principles-lint)
+`.git/hooks/pre-commit` — principles.md 마크다운 테이블 lint 자동 실행
+- **macOS 주의**: `grep -P` (PCRE) 미지원 → `grep -E` 또는 Python으로 대체
+- **빈 셀 컬럼 카운팅**: `c.strip()` 필터링 방식은 빈 셀을 제거해 카운트 오류 → `len(parts)-2` (양끝 파이프 제거) 방식 사용
+- chmod +x 필수: `chmod +x .git/hooks/pre-commit`
+
 ---
 
 ## 로컬 테스트
@@ -134,6 +140,9 @@ lsof -ti:8300 | xargs kill -9 2>/dev/null
 | `ux-improvement-plan.md` | 타이포그래피·레이아웃 개선 계획 |
 | `/tmp/krds_unification_report.md` | KRDS 디자인 통일화 분석 |
 | `/tmp/krds_product_ux_review.md` | Product & UX/UI 종합 코드 리뷰 (P1~P3) |
+| `principles.md` | KRDS UX Writing 3대 원칙 (무번역·정보핵심화·심리적안전망) 가이드라인 본문 |
+| `krds-site-analysis.md` | KRDS 공식 사이트 UX Writing 관점 분석 보고서 (2026-04-08) |
+| `response-strategy.md` | KRDS 대응 방안 전략 (Depth Extension 프레임, 10개 공백 매핑) |
 
 ---
 
@@ -181,3 +190,10 @@ print(f\"sha256-{h}\")
 - KRDS UX Writing 원칙 전면 재설계 (사용자 주도 / 어시스턴트는 구조화·문서화·슬라이드 변환 담당)
 - 워크플로우: KRDS 원칙 설계 → SeMA(서울시립미술관) 파생 적용 → 슬라이드 제작
 - index.html 전면 재작성 (SeMA 납품 완료 이후)
+
+**진행 현황 (2026-04-08~14)**:
+- ✅ KRDS 사이트 분석 완료 (`krds-site-analysis.md`) — 46개 컴포넌트, 10개 UX Writing 공백 확인
+- ✅ 대응 전략 수립 완료 (`response-strategy.md`) — Depth Extension 프레임, DECISION A/B 확정
+- ✅ principles.md P1 완성 — 1장(파운데이션) + 2.1(행정어 사전 150개) + 4.1(에러 3단 구조)
+- ✅ 부록 B 자가진단 체크리스트 완성 — 23개 항목, 5개 섹션 (무번역·정보핵심화·심리적안전망·보이스톤·접근성)
+- 🔲 다음: 2.2 폼 레이블·플레이스홀더 → 3장 정보핵심화 순서로 진행
