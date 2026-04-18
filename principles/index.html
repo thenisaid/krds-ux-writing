@@ -10,57 +10,14 @@
 <link rel="stylesheet" as="style" crossorigin="anonymous"
   href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
   integrity="sha384-o2ZrV2/pmy/zDV8dhdJIibaM1s+TlS8+7JwrtshqmiTJGTczb1GcwzkjzZ80EUyy">
+<link rel="stylesheet" href="../shared/style.css">
 <style>
-:root {
-  --font-sans: 'Pretendard GOV Variable','Pretendard Variable',system-ui,sans-serif;
-  --accent: #256ef4;
-  --bg: #ffffff; --bg-subtle: #f4f5f6;
-  --border: #e6e8ea; --border-mid: #cdd1d5;
-  --text: #1e2124; --text-mid: #464c53; --text-muted: #6d7882;
-  --sidebar-w: 260px;
-}
-[data-theme="dark"] {
-  --bg: #131416; --bg-subtle: #1e2124;
-  --border: #33363d; --border-mid: #464c53;
-  --text: #ffffff; --text-mid: #cdd1d5; --text-muted: #8a949e;
-}
-*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font-sans); background: var(--bg); color: var(--text); line-height: 1.7; -webkit-font-smoothing: antialiased; }
-a { color: var(--accent); text-decoration: none; }
-
-/* GNB */
-.gnb { position: sticky; top: 0; z-index: 100; height: 56px; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 32px; gap: 16px; }
-.gnb-logo { font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
-.gnb-logo-mark { width: 24px; height: 24px; border-radius: 5px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
-.gnb-breadcrumb { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
-.gnb-breadcrumb-sep { color: var(--border-mid); }
-.gnb-breadcrumb-current { color: var(--text-mid); font-weight: 600; }
-
-/* Layout */
-.page-layout { display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: calc(100vh - 56px); }
-
-/* Sidebar */
-.sidebar { border-right: 1px solid var(--border); padding: 32px 0; position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto; }
-.sidebar-section { margin-bottom: 8px; }
-.sidebar-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); padding: 8px 24px 4px; }
-.sidebar-link { display: flex; align-items: center; gap: 8px; padding: 8px 24px; font-size: 13px; font-weight: 500; color: var(--text-mid); text-decoration: none; border-right: 2px solid transparent; transition: all 0.15s; border-radius: 0; }
-.sidebar-link:hover { color: var(--text); background: var(--bg-subtle); }
-.sidebar-link.active { color: var(--accent); border-right-color: var(--accent); background: rgba(37,110,244,0.04); font-weight: 600; }
-.sidebar-link-badge { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 3px; background: var(--bg-subtle); color: var(--text-muted); border: 1px solid var(--border); margin-left: auto; }
-
-/* Content */
-.content { padding: 48px 64px 80px; max-width: 800px; }
-.content-header { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
-.content-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
-.content-title { font-size: 36px; font-weight: 800; letter-spacing: -0.03em; color: var(--text); line-height: 1.2; margin-bottom: 16px; }
-.content-desc { font-size: 16px; color: var(--text-muted); line-height: 1.8; max-width: 56ch; }
-
-/* Article Cards */
+/* Page-specific: article cards */
 .article-section { margin-bottom: 48px; }
 .article-section-title { font-size: 13px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
 .article-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 .article-cards { display: flex; flex-direction: column; gap: 12px; }
-.article-card { display: flex; align-items: flex-start; gap: 20px; padding: 24px; border: 1px solid var(--border); border-radius: 8px; text-decoration: none; transition: border-color 0.15s, box-shadow 0.15s; background: var(--bg); }
+.article-card { display: flex; align-items: flex-start; gap: 20px; padding: 24px; border: 1px solid var(--border); border-radius: 8px; text-decoration: none; transition: border-color 0.15s, box-shadow 0.15s; background: var(--bg); color: inherit; }
 .article-card:hover { border-color: var(--accent); box-shadow: 0 2px 12px rgba(37,110,244,0.07); text-decoration: none; }
 .article-card-num { font-size: 28px; font-weight: 800; color: var(--border-mid); line-height: 1; flex-shrink: 0; width: 40px; font-variant-numeric: tabular-nums; letter-spacing: -0.04em; }
 .article-card-body { flex: 1; }
@@ -72,36 +29,37 @@ a { color: var(--accent); text-decoration: none; }
 .article-card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
 .article-card-arrow { flex-shrink: 0; color: var(--text-muted); font-size: 16px; margin-top: 2px; transition: transform 0.15s; }
 .article-card:hover .article-card-arrow { color: var(--accent); transform: translateX(4px); }
-
-/* Coming soon state */
 .coming-soon { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); padding: 20px 24px; border: 1px dashed var(--border); border-radius: 8px; }
 .coming-soon::before { content: '⧖'; font-size: 16px; }
-
-@media (max-width: 900px) {
-  .page-layout { grid-template-columns: 1fr; }
-  .sidebar { display: none; }
-  .content { padding: 32px 24px 64px; }
-}
 </style>
 </head>
 <body>
-<a href="#content" style="position:absolute;top:-100%;left:0;background:var(--accent);color:#fff;padding:8px 16px;font-size:14px;font-weight:600;z-index:9999" onfocus="this.style.top='0'" onblur="this.style.top='-100%'">본문 바로가기</a>
+<a class="skip-nav" href="#content">본문 바로가기</a>
+<div class="sidebar-backdrop"></div>
 
 <header class="gnb">
+  <button class="gnb-icon-btn gnb-hamburger" id="gnbHamburger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mainSidebar">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+  </button>
   <a href="/" class="gnb-logo">
     <span class="gnb-logo-mark">K</span>
     <span>UX Writing</span>
   </a>
-  <nav class="gnb-breadcrumb" aria-label="현재 위치">
-    <a href="/" style="color:var(--text-muted);font-size:12px;font-weight:500">홈</a>
-    <span class="gnb-breadcrumb-sep" aria-hidden="true">/</span>
-    <span class="gnb-breadcrumb-current" aria-current="page">원칙</span>
+  <nav class="gnb-nav" aria-label="섹션 내비게이션">
+    <a href="/principles/" class="gnb-nav-link" data-section="principles">원칙</a>
+    <a href="/dictionary/" class="gnb-nav-link" data-section="dictionary">사전</a>
+    <a href="/case-studies/" class="gnb-nav-link" data-section="case-studies">사례</a>
   </nav>
+  <div class="gnb-actions">
+    <span class="gnb-badge">v1.0</span>
+    <button class="gnb-icon-btn" id="themeToggle" aria-label="다크 모드로 전환" type="button"></button>
+  </div>
 </header>
 
 <div class="page-layout">
-  <!-- Sidebar -->
-  <aside class="sidebar" aria-label="원칙 섹션 내비게이션">
+  <aside class="sidebar" id="mainSidebar" aria-label="원칙 섹션 내비게이션">
     <div class="sidebar-section">
       <div class="sidebar-label">기초 원칙</div>
       <a href="#no-translation" class="sidebar-link active">번역 금지</a>
@@ -128,18 +86,18 @@ a { color: var(--accent); text-decoration: none; }
     </div>
   </aside>
 
-  <!-- Content -->
+  <div style="display:flex;flex-direction:column;min-height:0">
   <main class="content" id="content">
     <div class="content-header">
       <div class="content-eyebrow">Principles</div>
       <h1 class="content-title">원칙</h1>
+      <p class="content-headline">왜 이렇게 써야 할까</p>
       <p class="content-desc">
-        KRDS UX Writing의 핵심 원칙들. 번역 금지, 핵심 정보 먼저, 안전망 원칙을
-        기초로 하며, 보이스·톤과 컴포넌트별 라이팅 기준으로 확장됩니다.
+        글쓰기 기술은 나중입니다. 먼저 '누구를 위한 글인가'를 알아야 합니다. 공공 서비스의 글은 행정 정확성보다 주권자의 즉각적인 이해가 우선입니다. 3가지 라이팅 원칙은 그 철학에서 출발합니다.
       </p>
+      <a class="content-cta" href="#no-translation">원칙 살펴보기 →</a>
     </div>
 
-    <!-- Foundation Principles -->
     <section class="article-section" id="foundation" aria-labelledby="foundation-title">
       <h2 class="article-section-title" id="foundation-title">기초 원칙</h2>
       <div class="article-cards">
@@ -152,7 +110,6 @@ a { color: var(--accent); text-decoration: none; }
           </div>
           <span class="article-card-arrow" aria-hidden="true">→</span>
         </a>
-
         <a href="/principles/core-info/" class="article-card" id="core-info">
           <div class="article-card-num">02</div>
           <div class="article-card-body">
@@ -162,7 +119,6 @@ a { color: var(--accent); text-decoration: none; }
           </div>
           <span class="article-card-arrow" aria-hidden="true">→</span>
         </a>
-
         <a href="/principles/safety-net/" class="article-card" id="safety-net">
           <div class="article-card-num">03</div>
           <div class="article-card-body">
@@ -175,7 +131,6 @@ a { color: var(--accent); text-decoration: none; }
       </div>
     </section>
 
-    <!-- Voice & Tone -->
     <section class="article-section" aria-labelledby="voice-section-title">
       <h2 class="article-section-title" id="voice-section-title">보이스 · 톤</h2>
       <div class="article-cards">
@@ -188,7 +143,6 @@ a { color: var(--accent); text-decoration: none; }
           </div>
           <span class="article-card-arrow" aria-hidden="true">→</span>
         </a>
-
         <a href="/principles/formality/" class="article-card" id="formality">
           <div class="article-card-num" style="font-size:22px">격식</div>
           <div class="article-card-body">
@@ -201,7 +155,6 @@ a { color: var(--accent); text-decoration: none; }
       </div>
     </section>
 
-    <!-- Component Writing -->
     <section class="article-section" aria-labelledby="component-section-title">
       <h2 class="article-section-title" id="component-section-title">컴포넌트별 라이팅</h2>
       <div class="article-cards">
@@ -214,7 +167,6 @@ a { color: var(--accent); text-decoration: none; }
           </div>
           <span class="article-card-arrow" aria-hidden="true">→</span>
         </a>
-
         <a href="/principles/forms/" class="article-card" id="forms">
           <div class="article-card-num" style="font-size:20px">폼</div>
           <div class="article-card-body">
@@ -224,7 +176,6 @@ a { color: var(--accent); text-decoration: none; }
           </div>
           <span class="article-card-arrow" aria-hidden="true">→</span>
         </a>
-
         <a href="/principles/error-messages/" class="article-card" id="error-messages">
           <div class="article-card-num" style="font-size:20px">오류</div>
           <div class="article-card-body">
@@ -234,7 +185,6 @@ a { color: var(--accent); text-decoration: none; }
           </div>
           <span class="article-card-arrow" aria-hidden="true">→</span>
         </a>
-
         <a href="/principles/system-feedback/" class="article-card" id="system-feedback">
           <div class="article-card-num" style="font-size:20px">피드백</div>
           <div class="article-card-body">
@@ -244,7 +194,6 @@ a { color: var(--accent); text-decoration: none; }
           </div>
           <span class="article-card-arrow" aria-hidden="true">→</span>
         </a>
-
         <a href="/principles/onboarding/" class="article-card" id="onboarding">
           <div class="article-card-num" style="font-size:20px">온보딩</div>
           <div class="article-card-body">
@@ -254,7 +203,6 @@ a { color: var(--accent); text-decoration: none; }
           </div>
           <span class="article-card-arrow" aria-hidden="true">→</span>
         </a>
-
         <a href="/principles/mobile-writing/" class="article-card" id="mobile-writing">
           <div class="article-card-num" style="font-size:20px">모바일</div>
           <div class="article-card-body">
@@ -267,7 +215,6 @@ a { color: var(--accent); text-decoration: none; }
       </div>
     </section>
 
-    <!-- Checklist -->
     <section class="article-section" aria-labelledby="tools-section-title">
       <h2 class="article-section-title" id="tools-section-title">도구</h2>
       <div class="article-cards">
@@ -283,15 +230,17 @@ a { color: var(--accent); text-decoration: none; }
       </div>
     </section>
   </main>
+  <footer class="page-footer">
+    <span>KRDS UX Writing 가이드라인 v1.0</span>
+    <div class="footer-links">
+      <a href="https://www.koreads.go.kr/" target="_blank" rel="noopener">KRDS 공식 사이트</a>
+      <a href="https://github.com/thenisaid/krds-ux-writing" target="_blank" rel="noopener">GitHub</a>
+      <a href="/">홈으로</a>
+    </div>
+  </footer>
+  </div>
 </div>
 
-<script>
-(function(){
-  var themeKey = 'krds-theme';
-  /* Sidebar active link on scroll — basic impl */
-  var links = document.querySelectorAll('.sidebar-link');
-  links.forEach(function(l){ l.addEventListener('click', function(){ links.forEach(function(x){x.classList.remove('active');}); l.classList.add('active'); }); });
-})();
-</script>
+<script src="../shared/nav.js"></script>
 </body>
 </html>
