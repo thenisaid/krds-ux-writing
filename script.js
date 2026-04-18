@@ -1,18 +1,48 @@
 
 // ===== SEARCH DATA & FUNCTIONS =====
-const searchData = [
-  {id:'principles', tag:'언어 원칙', text:'6가지 핵심 원칙 사용자 중심 간결 능동태 일관된 용어 긍정적 표현 명확성', preview:'사용자 중심·간결성·능동태·일관된 용어·긍정적 표현·명확성 6원칙'},
-  {id:'voice', tag:'브랜드 보이스', text:'신뢰감 있고 전문적 친근하고 배려 해결 중심 명확 배려 톤 보이스', preview:'신뢰감 있고 전문적이되, 친근하고 배려하는 해결 중심 보이스'},
-  {id:'tone', tag:'톤앤매너', text:'상황별 톤 오류 상황 경고 주의 성공 완료 온보딩 빈 상태 경어 사용', preview:'오류·경고·성공·온보딩 등 상황별 톤 가이드 및 경어 사용 원칙'},
-  {id:'button', tag:'버튼 & CTA', text:'동사형 레이블 신청하기 결제하기 저장하기 제출하기 삭제 CTA 버튼', preview:'동사형 레이블 원칙 — "신청하기", "저장하기" 등 CTA 작성법'},
-  {id:'form', tag:'폼 & 입력', text:'레이블 플레이스홀더 필수 선택 이메일 비밀번호 개인정보 생년월일 성별 입력 제한 폼 유효성', preview:'레이블·플레이스홀더·필수/선택 표시, 유효성 검사 메시지 작성법'},
-  {id:'error', tag:'에러 & 알림', text:'오류 메시지 4대 원칙 네트워크 오류 시스템 권한 접근 유효성 폼 유효성 세션 만료', preview:'오류 메시지 4원칙 — 원인·영향·해결책·긍정적 마무리'},
-  {id:'help', tag:'도움말 & 온보딩', text:'온보딩 문구 빈 상태 안내 영역 인라인 텍스트 툴팁 코치마크 맥락적 내비게이션 메뉴 레이블 브레드크럼', preview:'온보딩 문구·빈 상태 안내·인라인 텍스트·툴팁·코치마크 패턴'},
-  {id:'loading', tag:'로딩 & 진행', text:'로딩 불러오는 중 처리 중 성공 완료 업로드 대기 진행 내비게이션 상태', preview:'"불러오는 중…" 등 진행 상태별 메시지와 성공/실패 피드백'},
-  {id:'error', tag:'성공 & 실패 메시지', text:'완료 저장 비밀번호 결제 실패 삭제 확인 오류', preview:'저장 완료·결제 실패·삭제 확인 등 결과 상태 메시지 패턴'},
-  {id:'accessibility', tag:'접근성 & 국제화', text:'KWCAG WCAG aria-label alt 속성 스크린리더 색상 대비 초점 국제화 다국어 i18n 날짜 형식 화폐 전화번호', preview:'aria-label·alt 속성·스크린리더 대응, 날짜·화폐·전화번호 국제화'},
-  {id:'checklist', tag:'체크리스트', text:'동사형 해결 방법 일관성 필수 권장 버튼 레이블 오류 aria 빈 상태', preview:'UX 라이팅 필수·권장 체크리스트 — 배포 전 점검 항목'},
-];
+let searchData = [];
+
+function buildSearchIndex() {
+  const results = [];
+  // 섹션 ID → 태그 이름 매핑
+  const sectionLabels = {
+    preface: '서문',
+    chapter1: '1장. 파운데이션',
+    chapter2: '2장. 맥락별 가이드',
+    chapter3: '3장. 파생 적용',
+    checklist: '체크리스트'
+  };
+
+  const sections = ['preface','chapter1','chapter2','chapter3','checklist'];
+  sections.forEach(sectionId => {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    const sectionTag = sectionLabels[sectionId] || sectionId;
+
+    // h2, h3, h4 헤딩 인덱싱
+    section.querySelectorAll('h2, h3, h4').forEach(heading => {
+      const text = heading.textContent.trim();
+      if (!text) return;
+      results.push({ id: sectionId, tag: sectionTag, text: text, preview: text });
+    });
+
+    // 행정어 사전 테이블 셀 인덱싱
+    section.querySelectorAll('.word-table td, .word-table th').forEach(cell => {
+      const text = cell.textContent.trim();
+      if (text.length < 2) return;
+      results.push({ id: sectionId, tag: sectionTag + ' · 행정어 사전', text: text, preview: text.slice(0, 60) });
+    });
+
+    // 원칙 카드 본문 인덱싱
+    section.querySelectorAll('.principle-body, .principle-card p, .subsection p').forEach(p => {
+      const text = p.textContent.trim();
+      if (text.length < 10) return;
+      results.push({ id: sectionId, tag: sectionTag, text: text, preview: text.slice(0, 80) });
+    });
+  });
+
+  searchData = results;
+}
 
 function trapFocus(modalEl) {
   const focusable = modalEl.querySelectorAll(
@@ -620,19 +650,24 @@ function initScrollSpy() {
 function initStickyToc() {
   const toc = document.getElementById('stickyToc');
   if (!toc) return;
-  const sections = ['principles','voice','tone','button','form','error','help','loading','accessibility','checklist'];
+  const sections = ['preface','chapter1','chapter2','chapter3','checklist'];
   const tocItems = {};
   sections.forEach(id => {
     tocItems[id] = toc.querySelector('[data-toc="' + id + '"]');
   });
   let activeId = null;
+
+  function setTocActive(id) {
+    if (activeId && tocItems[activeId]) tocItems[activeId].classList.remove('active');
+    activeId = id;
+    if (tocItems[id]) tocItems[id].classList.add('active');
+  }
+
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       const id = entry.target.id;
       if (entry.isIntersecting) {
-        if (activeId && tocItems[activeId]) tocItems[activeId].classList.remove('active');
-        activeId = id;
-        if (tocItems[id]) tocItems[id].classList.add('active');
+        setTocActive(id);
       }
     });
   }, { rootMargin: '-10% 0px -70% 0px', threshold: 0 });
@@ -640,13 +675,17 @@ function initStickyToc() {
     const el = document.getElementById(id);
     if (el) observer.observe(el);
   });
+
+  // 초기 URL hash 기반 TOC 활성화
+  if (location.hash) {
+    const hashId = location.hash.slice(1);
+    if (tocItems[hashId]) setTocActive(hashId);
+  }
+
   // TOC 링크 클릭 시 즉시 활성화
   toc.querySelectorAll('.sticky-toc-item').forEach(a => {
     a.addEventListener('click', function() {
-      const id = this.dataset.toc;
-      if (activeId && tocItems[activeId]) tocItems[activeId].classList.remove('active');
-      activeId = id;
-      if (tocItems[id]) tocItems[id].classList.add('active');
+      setTocActive(this.dataset.toc);
     });
   });
   // 히어로/상단일 때 TOC 숨기기
@@ -661,6 +700,7 @@ function initStickyToc() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  buildSearchIndex();
   initGnbDropdowns();
   initAnchorButtons();
   initScrollSpy();
