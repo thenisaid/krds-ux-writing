@@ -217,8 +217,8 @@ function initReveal() {
 // ===== CHECKLIST =====
 function toggleCheck(item) {
   const isChecked = item.classList.toggle('checked');
-  item.setAttribute('aria-checked', isChecked ? 'true' : 'false');
   const box = item.querySelector('.check-box');
+  if (box) box.setAttribute('aria-checked', isChecked ? 'true' : 'false');
   if (isChecked) {
     box.style.background = 'var(--success)';
     box.style.borderColor = 'var(--success)';
@@ -248,8 +248,8 @@ function resetChecklist() {
   const all = document.querySelectorAll('.check-item');
   all.forEach((item, idx) => {
     item.classList.remove('checked');
-    item.setAttribute('aria-checked', 'false');
     const box = item.querySelector('.check-box');
+    if (box) box.setAttribute('aria-checked', 'false');
     if (box) {
       box.style.background = 'transparent';
       box.style.borderColor = 'var(--border)';
@@ -270,6 +270,7 @@ function initChecklist() {
       item.classList.add('checked');
       const box = item.querySelector('.check-box');
       if (box) {
+        box.setAttribute('aria-checked', 'true');
         box.style.background = 'var(--success)';
         box.style.borderColor = 'var(--success)';
         box.style.color = 'white';
