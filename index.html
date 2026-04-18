@@ -283,6 +283,9 @@
   --text-base: 17px;  /* KRDS body-medium 1.7rem */
   --text-sm:   15px;  /* KRDS body-small 1.5rem */
   --text-xs:   13px;  /* KRDS body-xsmall 1.3rem */
+  --text-h2:   1.75rem;  /* 28px = heading-h2 */
+  --text-h3:   1.375rem; /* 22px = heading-h3 */
+  --text-h4:   1.125rem; /* 18px = heading-h4 */
 
   /* 간격 & 레이아웃 */
   --container: 1200px;
@@ -400,7 +403,7 @@ img { max-width: 100%; }
   margin-bottom: 12px;
 }
 .section-title {
-  font-size: clamp(24px, 3vw, 32px);
+  font-size: var(--text-h2);
   font-weight: 700;
   letter-spacing: -.02em;
   color: var(--text-primary);
@@ -788,7 +791,7 @@ img { max-width: 100%; }
   margin-bottom: 24px;
 }
 .hero-title {
-  font-size: clamp(36px, 5vw, 52px);
+  font-size: var(--text-xl);
   font-weight: 800;
   letter-spacing: -.03em;
   line-height: 1.15;
@@ -1009,7 +1012,7 @@ img { max-width: 100%; }
   font-weight: 500;
 }
 .guideline-title {
-  font-size: clamp(22px, 2.5vw, 28px);
+  font-size: var(--text-h2);
   font-weight: 700;
   letter-spacing: -.02em;
   margin-bottom: 10px;
@@ -1136,7 +1139,7 @@ img { max-width: 100%; }
 [data-theme="dark"] .checklist-section { background: var(--white); }
 .checklist-inner { max-width: 680px; margin: 0 auto; }
 .checklist-title {
-  font-size: clamp(24px, 3vw, 32px);
+  font-size: var(--text-lg);
   font-weight: 700;
   letter-spacing: -.02em;
   margin-bottom: 12px;
@@ -1202,7 +1205,7 @@ img { max-width: 100%; }
   margin-bottom: 12px;
 }
 .cta-title {
-  font-size: clamp(28px, 4vw, 40px);
+  font-size: var(--text-xl);
   font-weight: 800;
   letter-spacing: -.03em;
   color: #fff;
@@ -1376,6 +1379,19 @@ img { max-width: 100%; }
   .sticky-toc { display: none; }
 }
 
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* 태블릿: 2칼럼 — 사이드 TOC 280px + 콘텐츠 */
+  .layout { display: grid; grid-template-columns: 280px 1fr; gap: 0 40px; align-items: start; }
+  .sticky-toc { display: block; position: sticky; top: 72px; }
+  .composition-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero-visual { display: none; }
+  .footer-inner { grid-template-columns: 1fr 1fr; row-gap: 40px; }
+  .section-title { font-size: 26px; }
+  .chapter-title { font-size: 28px; }
+  .hero-title { font-size: 36px; }
+}
+
 @media (max-width: 1024px) {
   .composition-grid { grid-template-columns: repeat(2, 1fr); }
   .hero-inner { grid-template-columns: 1fr; }
@@ -1418,11 +1434,26 @@ img { max-width: 100%; }
   #gnb, .gnb, .search-modal, .mobile-menu-btn, .gnb-util-btn,
   .hero-section, .persona-section, .composition-section,
   .cta-section, .cta-banner, footer,
-  .anchor-btn, #anchor-toast, .scroll-progress { display: none !important; }
-  body { color: #000 !important; background: #fff !important; }
+  .anchor-btn, #anchor-toast, .scroll-progress,
+  .sticky-toc, .theme-toggle, .search-btn,
+  .hero-rule-grid, .hero-cta-group, .hero-stats { display: none !important; }
+  /* 단일 칼럼 */
+  body { color: #000 !important; background: #fff !important; font-size: 12pt; }
+  * { box-shadow: none !important; text-shadow: none !important; }
+  .container { max-width: 100%; padding: 0 16px; }
+  .layout { display: block !important; }
+  /* 페이지 나누기 방지 */
   .guideline-section, .checklist-section { border: none; background: #fff !important; page-break-inside: avoid; }
-  .do-dont, .example-block { page-break-inside: avoid; }
+  .do-dont, .example-block, .principle-block, .check-item { page-break-inside: avoid; }
+  h1, h2, h3, h4 { page-break-after: avoid; }
+  /* 링크 URL 표시 */
+  a[href]::after { content: " (" attr(href) ")"; font-size: 10pt; color: #555; }
+  a[href^="#"]::after { content: ""; } /* 내부 앵커 URL 숨김 */
   a { color: #000; text-decoration: underline; }
+  /* border/background 최소화 */
+  .section, .guideline-section { background: #fff !important; border: none !important; }
+  .compare-table, .mapping-table { border: 1px solid #ccc; }
+  .compare-table th, .mapping-table th { background: #f5f5f5 !important; color: #000 !important; }
 }
 
 
@@ -1446,7 +1477,7 @@ img { max-width: 100%; }
   border-radius: var(--radius-tag);
 }
 .chapter-title {
-  font-size: clamp(28px, 4vw, 40px);
+  font-size: var(--text-lg);
   font-weight: 700;
   letter-spacing: -.025em;
   color: var(--text-primary);
@@ -1477,7 +1508,7 @@ img { max-width: 100%; }
   margin-bottom: 8px;
 }
 .subsection-title {
-  font-size: clamp(20px, 2.5vw, 26px);
+  font-size: var(--text-h3);
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 12px;
@@ -1826,6 +1857,40 @@ img { max-width: 100%; }
   .example-pair { grid-template-columns: 1fr; }
 }
 
+/* ===== 행정어 사전 실시간 검색 ===== */
+.admin-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.admin-search-wrap svg { color: var(--text-muted); flex-shrink: 0; }
+#admin-search {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-family: var(--font-main);
+  color: var(--text-primary);
+  outline: none;
+}
+#admin-search::placeholder { color: var(--text-muted); }
+.admin-search-empty {
+  display: none;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text-muted);
+  text-align: center;
+  border: 1px dashed var(--border-light);
+  border-radius: 6px;
+  margin-top: 8px;
+}
+.admin-search-empty.visible { display: block; }
+
 </style>
 </head>
 <body>
@@ -1866,6 +1931,7 @@ img { max-width: 100%; }
       </ul>
     </nav>
     <div class="gnb-utils">
+      <a href="https://www.krds.go.kr/" target="_blank" rel="noopener" class="gnb-util-btn gnb-krds-link" aria-label="KRDS 공식 사이트 (새 탭에서 열기)" style="font-size:12px;font-weight:600;letter-spacing:-.01em;color:var(--primary);text-decoration:none;padding:0 8px">KRDS</a>
       <button class="gnb-util-btn" id="searchBtn" aria-label="검색 열기 (⌘K)">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       </button>
@@ -1903,6 +1969,10 @@ img { max-width: 100%; }
   <div class="container hero-inner">
     <div class="hero-content reveal hero-preface">
       <p class="hero-eyebrow">Korea Design System · UX Writing 2026</p>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <span style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--primary-light);color:var(--primary);padding:3px 10px;border-radius:4px">v3.0 · 2026-04</span>
+        <span style="font-size:13px;color:var(--text-muted)">기반: <a href="https://www.krds.go.kr/" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:none;font-weight:600">KRDS 한국 디지털 정부 디자인 시스템</a></span>
+      </div>
       <h1 class="hero-title">누구나 포기하지 않고<br>끝까지 쓸 수 있게</h1>
       <p class="hero-desc">공공 서비스의 글은 멋있거나 유려할 필요가 없습니다.<br>국민이 헷갈리지 않고, 제때 세금을 내고, 필요한 지원금을 무사히 받게 돕는<br><strong>친절한 표지판</strong>이어야 합니다.</p>
       <div class="hero-rule-grid">
@@ -2039,7 +2109,11 @@ img { max-width: 100%; }
 
         <div class="principle-rule">
           <div class="rule-title">행정 관습어 폐기 — 1:1 치환</div>
-          <table class="compare-table">
+          <div class="admin-search-wrap">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" id="admin-search" placeholder="행정어 검색... (예: 명일, 내방)" autocomplete="off" aria-label="행정 관습어 검색">
+          </div>
+          <table class="compare-table word-table">
             <thead>
               <tr>
                 <th class="th-dont">쓰지 마세요</th>
@@ -2052,8 +2126,14 @@ img { max-width: 100%; }
               <tr><td class="td-dont">기표 완료</td><td class="td-do">등록 완료</td></tr>
               <tr><td class="td-dont">상기 사항</td><td class="td-do">위 내용</td></tr>
               <tr><td class="td-dont">동 기간 내</td><td class="td-do">같은 기간 안에</td></tr>
+              <tr><td class="td-dont">금일 중</td><td class="td-do">오늘 안에</td></tr>
+              <tr><td class="td-dont">귀하의 신청은</td><td class="td-do">신청하신 내용은</td></tr>
+              <tr><td class="td-dont">불원간</td><td class="td-do">곧</td></tr>
+              <tr><td class="td-dont">차후 도래 시</td><td class="td-do">나중에 해당되면</td></tr>
+              <tr><td class="td-dont">별첨 서류</td><td class="td-do">첨부 서류</td></tr>
             </tbody>
           </table>
+          <p class="admin-search-empty" id="adminSearchEmpty">검색 결과가 없습니다</p>
         </div>
 
         <div class="principle-rule">
@@ -2394,10 +2474,11 @@ img { max-width: 100%; }
     <div class="footer-col">
       <h3 class="footer-heading">준수 기준</h3>
       <ul class="footer-links">
-        <li><a href="https://www.krds.go.kr" target="_blank" rel="noopener">KRDS 디자인 시스템</a></li>
+        <li><a href="https://www.krds.go.kr" target="_blank" rel="noopener">KRDS 공식 디자인 시스템</a></li>
+        <li><a href="https://www.krds.go.kr/krds/reference/guide.do" target="_blank" rel="noopener">KRDS UX 가이드라인</a></li>
         <li><a href="https://thenisaid.github.io/krds-ux-writing/" target="_blank" rel="noopener">서비스 바로가기</a></li>
       </ul>
-      <p class="footer-version">v3.0 · 2026</p>
+      <p class="footer-version">v3.0 · 2026-04 · KRDS 기반</p>
     </div>
   </div>
 </footer>

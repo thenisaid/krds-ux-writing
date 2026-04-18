@@ -780,4 +780,46 @@ function initInlineHandlers() {
       if (item) handleResultKey(e, item);
     });
   }
+
+  // 행정어 사전 실시간 필터링 (debounce 300ms)
+  initAdminSearch();
+}
+
+function initAdminSearch() {
+  const input = document.getElementById('admin-search');
+  if (!input) return;
+
+  const table = document.querySelector('.word-table');
+  const emptyMsg = document.getElementById('adminSearchEmpty');
+  if (!table || !emptyMsg) return;
+
+  let timer = null;
+
+  function filterTable(q) {
+    const rows = table.querySelectorAll('tbody tr');
+    const keyword = q.trim().toLowerCase();
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      const match = !keyword || text.includes(keyword);
+      row.style.display = match ? '' : 'none';
+      if (match) visibleCount++;
+    });
+
+    emptyMsg.classList.toggle('visible', keyword.length > 0 && visibleCount === 0);
+  }
+
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => filterTable(input.value), 300);
+  });
+
+  // ESC 키로 검색 초기화
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      input.value = '';
+      filterTable('');
+    }
+  });
 }
