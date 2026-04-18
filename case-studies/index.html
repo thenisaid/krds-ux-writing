@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="KRDS UX Writing 사례 연구 — 공공 서비스 UX 라이팅 실제 적용 before/after 사례.">
+<title>사례 연구 (Case Studies) — KRDS UX Writing 가이드라인</title>
+<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" as="style" crossorigin="anonymous"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
+  integrity="sha384-o2ZrV2/pmy/zDV8dhdJIibaM1s+TlS8+7JwrtshqmiTJGTczb1GcwzkjzZ80EUyy">
+<style>
+:root {
+  --font-sans: 'Pretendard GOV Variable','Pretendard Variable',system-ui,sans-serif;
+  --accent: #256ef4;
+  --bg: #ffffff; --bg-subtle: #f4f5f6;
+  --border: #e6e8ea; --border-mid: #cdd1d5;
+  --text: #1e2124; --text-mid: #464c53; --text-muted: #6d7882;
+}
+[data-theme="dark"] {
+  --bg: #131416; --bg-subtle: #1e2124;
+  --border: #33363d; --border-mid: #464c53;
+  --text: #ffffff; --text-mid: #cdd1d5; --text-muted: #8a949e;
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); background: var(--bg); color: var(--text); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); text-decoration: none; }
+
+.gnb { position: sticky; top: 0; z-index: 100; height: 56px; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 32px; gap: 16px; }
+.gnb-logo { font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.gnb-logo-mark { width: 24px; height: 24px; border-radius: 5px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.breadcrumb { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+.breadcrumb-current { color: var(--text-mid); font-weight: 600; }
+
+.page-layout { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 56px); }
+
+.sidebar { border-right: 1px solid var(--border); padding: 32px 0; position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto; }
+.sidebar-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); padding: 8px 24px 4px; }
+.sidebar-link { display: block; padding: 8px 24px; font-size: 13px; font-weight: 500; color: var(--text-mid); border-right: 2px solid transparent; transition: all 0.15s; }
+.sidebar-link:hover { color: var(--text); background: var(--bg-subtle); text-decoration: none; }
+.sidebar-link.active { color: var(--accent); border-right-color: var(--accent); font-weight: 600; background: rgba(37,110,244,0.04); }
+.sidebar-tag { font-size: 10px; font-weight: 600; padding: 1px 5px; border-radius: 3px; background: var(--bg-subtle); border: 1px solid var(--border); color: var(--text-muted); margin-left: auto; float: right; }
+
+.content { padding: 48px 64px 80px; }
+.content-header { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+.content-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+.content-title { font-size: 36px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 16px; }
+.content-desc { font-size: 15px; color: var(--text-muted); line-height: 1.8; max-width: 56ch; }
+
+/* Filter Bar */
+.filter-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; }
+.filter-btn { font-family: var(--font-sans); font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg); color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
+.filter-btn:hover { border-color: var(--border-mid); color: var(--text-mid); }
+.filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* Case Grid */
+.case-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+
+.case-card { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; text-decoration: none; transition: border-color 0.15s, box-shadow 0.15s; background: var(--bg); }
+.case-card:hover { border-color: var(--accent); box-shadow: 0 2px 16px rgba(37,110,244,0.08); text-decoration: none; }
+
+.case-card-visual {
+  height: 140px;
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.case-card-before-after {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  height: 100%;
+}
+.case-ba-before {
+  padding: 16px;
+  background: rgba(222,52,18,0.03);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.case-ba-after {
+  padding: 16px;
+  background: rgba(34,135,56,0.03);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.case-ba-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.case-ba-label.before { color: #de3412; }
+.case-ba-label.after { color: #228738; }
+.case-ba-text {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-mid);
+}
+.case-ba-text.after { color: var(--text); font-weight: 600; }
+
+.case-card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.case-card-org { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+.case-card-title { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; line-height: 1.4; }
+.case-card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; flex: 1; }
+.case-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.case-card-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.case-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 3px; border: 1px solid var(--border); color: var(--text-muted); background: var(--bg-subtle); }
+.case-card-link { font-size: 12px; font-weight: 700; color: var(--accent); }
+
+/* Coming Soon Card */
+.case-card-coming { opacity: 0.55; pointer-events: none; cursor: default; }
+.case-coming-visual { background: var(--bg-subtle); height: 140px; display: flex; align-items: center; justify-content: center; }
+.coming-label { font-size: 11px; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+
+@media (max-width: 900px) {
+  .page-layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .content { padding: 32px 20px 64px; }
+  .case-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<a href="#content" style="position:absolute;top:-100%;left:0;background:var(--accent);color:#fff;padding:8px 16px;font-size:14px;font-weight:600;z-index:9999" onfocus="this.style.top='0'" onblur="this.style.top='-100%'">본문 바로가기</a>
+
+<header class="gnb">
+  <a href="/" class="gnb-logo">
+    <span class="gnb-logo-mark">K</span>
+    <span>UX Writing</span>
+  </a>
+  <nav class="breadcrumb" aria-label="현재 위치">
+    <a href="/" style="color:var(--text-muted)">홈</a>
+    <span aria-hidden="true">/</span>
+    <span class="breadcrumb-current" aria-current="page">사례 연구</span>
+  </nav>
+</header>
+
+<div class="page-layout">
+  <aside class="sidebar" aria-label="사례 연구 내비게이션">
+    <div class="sidebar-label">기관 유형</div>
+    <a href="#culture" class="sidebar-link active">문화·예술 기관 <span class="sidebar-tag">1</span></a>
+    <a href="#local-gov" class="sidebar-link">지방자치단체 <span class="sidebar-tag">예정</span></a>
+    <a href="#central-gov" class="sidebar-link">중앙행정기관 <span class="sidebar-tag">예정</span></a>
+    <a href="#public-corp" class="sidebar-link">공공기관 <span class="sidebar-tag">예정</span></a>
+
+    <div class="sidebar-label" style="margin-top:16px">UX 라이팅 영역</div>
+    <a href="#error-case" class="sidebar-link">오류 메시지</a>
+    <a href="#forms-case" class="sidebar-link">폼·입력</a>
+    <a href="#onboarding-case" class="sidebar-link">온보딩</a>
+    <a href="#notifications-case" class="sidebar-link">알림·안내</a>
+  </aside>
+
+  <main class="content" id="content">
+    <div class="content-header">
+      <div class="content-eyebrow">Case Studies</div>
+      <h1 class="content-title">공공 서비스 UX 라이팅<br>사례 연구</h1>
+      <p class="content-desc">
+        실제 공공 서비스에서 UX 라이팅 원칙을 적용한 before/after 사례입니다.
+        기관명, 적용 영역, 성과를 함께 정리했습니다.
+      </p>
+    </div>
+
+    <!-- Filter -->
+    <div class="filter-bar" role="group" aria-label="사례 필터">
+      <button class="filter-btn active" type="button">전체</button>
+      <button class="filter-btn" type="button">오류 메시지</button>
+      <button class="filter-btn" type="button">폼·입력</button>
+      <button class="filter-btn" type="button">온보딩</button>
+      <button class="filter-btn" type="button">알림·안내</button>
+    </div>
+
+    <!-- Case Grid -->
+    <div class="case-grid" id="culture">
+      <!-- SeMA Case (live) -->
+      <a href="/case-studies/sema/" class="case-card" aria-label="서울시립미술관 온라인 예매 서비스 사례">
+        <div class="case-card-visual">
+          <div class="case-card-before-after">
+            <div class="case-ba-before">
+              <div class="case-ba-label before">BEFORE</div>
+              <p class="case-ba-text">관람권 구매 신청서 작성 화면으로 이동합니다. 아래 서류를 준비하시기 바랍니다.</p>
+            </div>
+            <div class="case-ba-after">
+              <div class="case-ba-label after">AFTER</div>
+              <p class="case-ba-text after">티켓을 구매할 수 있어요. 신분증을 미리 준비해 주세요.</p>
+            </div>
+          </div>
+        </div>
+        <div class="case-card-body">
+          <div class="case-card-org">서울시립미술관 (SeMA)</div>
+          <div class="case-card-title">온라인 예매 서비스 UX 라이팅 개선</div>
+          <p class="case-card-desc">관람권 예매 플로우 전반에 걸쳐 행정 용어를 시민 언어로 교체하고, 오류 메시지에 안전망 원칙을 적용했습니다.</p>
+          <div class="case-card-footer">
+            <div class="case-card-tags">
+              <span class="case-tag">버튼</span>
+              <span class="case-tag">폼</span>
+              <span class="case-tag">오류</span>
+              <span class="case-tag">온보딩</span>
+            </div>
+            <span class="case-card-link">읽기 →</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Placeholder: 지자체 민원 -->
+      <div class="case-card case-card-coming" aria-label="준비 중인 사례 - 지방자치단체 민원 처리 안내" aria-disabled="true">
+        <div class="case-coming-visual">
+          <span class="coming-label">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M8 5v4M8 11v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            작성 중
+          </span>
+        </div>
+        <div class="case-card-body">
+          <div class="case-card-org">지방자치단체</div>
+          <div class="case-card-title">민원 처리 상태 안내 문구 개선</div>
+          <p class="case-card-desc">민원 진행 상태를 시민이 이해할 수 있는 언어로 바꾼 사례. 처리 중·접수·완료 상태 메시지 전면 개선.</p>
+          <div class="case-card-footer">
+            <div class="case-card-tags">
+              <span class="case-tag">상태 메시지</span>
+              <span class="case-tag">알림</span>
+            </div>
+            <span class="case-card-link" style="color:var(--text-muted)">준비 중</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Placeholder: 공공기관 앱 -->
+      <div class="case-card case-card-coming" aria-label="준비 중인 사례 - 공공기관 모바일 앱" aria-disabled="true">
+        <div class="case-coming-visual">
+          <span class="coming-label">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M8 5v4M8 11v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            작성 중
+          </span>
+        </div>
+        <div class="case-card-body">
+          <div class="case-card-org">공공기관</div>
+          <div class="case-card-title">모바일 앱 온보딩 문구 전면 개선</div>
+          <p class="case-card-desc">앱 최초 실행 시 사용자 이탈률을 낮추기 위해 온보딩 문구를 간결하고 친근하게 바꾼 사례.</p>
+          <div class="case-card-footer">
+            <div class="case-card-tags">
+              <span class="case-tag">온보딩</span>
+              <span class="case-tag">모바일</span>
+            </div>
+            <span class="case-card-link" style="color:var(--text-muted)">준비 중</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Placeholder: 오류 메시지 개선 -->
+      <div class="case-card case-card-coming" aria-label="준비 중인 사례 - 오류 메시지 패턴" aria-disabled="true">
+        <div class="case-coming-visual">
+          <span class="coming-label">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M8 5v4M8 11v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            작성 중
+          </span>
+        </div>
+        <div class="case-card-body">
+          <div class="case-card-org">중앙행정기관</div>
+          <div class="case-card-title">오류 메시지 패턴 통일 — 전자정부 서비스</div>
+          <p class="case-card-desc">기술 오류, 입력 오류, 권한 오류 등 유형별 오류 메시지를 안전망 원칙에 따라 전면 재작성한 사례.</p>
+          <div class="case-card-footer">
+            <div class="case-card-tags">
+              <span class="case-tag">오류 메시지</span>
+              <span class="case-tag">패턴</span>
+            </div>
+            <span class="case-card-link" style="color:var(--text-muted)">준비 중</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  var filterBtns = document.querySelectorAll('.filter-btn');
+  filterBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      filterBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+    });
+  });
+})();
+</script>
+</body>
+</html>
