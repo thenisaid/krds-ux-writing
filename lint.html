@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KRDS UX 라이팅 린터</title>
+<meta name="description" content="KRDS 3대 원칙 기반 UX 라이팅 자동 검사 도구 — 행정어, 이중 피동형, 주관적 부사, 에러 메시지 패턴 검사">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self';">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<style>
+  /* ── 디자인 토큰 ── */
+  :root {
+    --color-primary-50: #256ef4;
+    --color-primary-30: #86aff9;
+    --color-primary-05: #eef4ff;
+    --color-success-50: #228738;
+    --color-success-10: #e6f4ea;
+    --color-danger-50: #d43a2f;
+    --color-danger-10: #fdecea;
+    --color-warning-50: #c07000;
+    --color-warning-10: #fdf3dc;
+    --color-info-50: #1565c0;
+    --color-info-10: #e3f2fd;
+    --color-surface: #ffffff;
+    --color-surface-sub: #f8f7f5;
+    --color-border: #e4e2df;
+    --color-border-emphasis: #cdd1d5;
+    --color-text: #1e2124;
+    --color-text-sub: #5a6270;
+    --color-text-disabled: #9ea8b3;
+    --color-surface-inverse: #1e2124;
+    --radius-card: 12px;
+    --radius-btn: 8px;
+    --radius-badge: 4px;
+    --font-sans: 'Pretendard GOV Variable', Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
+    --shadow-card: 0 1px 4px rgba(0,0,0,.06), 0 0 0 1px var(--color-border);
+  }
+
+  [data-theme="dark"] {
+    --color-surface: #1e2124;
+    --color-surface-sub: #262b30;
+    --color-border: #333a42;
+    --color-border-emphasis: #3e4855;
+    --color-text: #f0f2f5;
+    --color-text-sub: #9ea8b3;
+    --color-primary-05: #1a2e54;
+    --color-success-10: #0f2a18;
+    --color-danger-10: #2e1215;
+    --color-warning-10: #2a1e06;
+    --color-info-10: #0d1e38;
+    --shadow-card: 0 1px 4px rgba(0,0,0,.3), 0 0 0 1px var(--color-border);
+  }
+
+  /* ── 리셋 & 기본 ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-surface-sub);
+    color: var(--color-text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── GNB ── */
+  .gnb {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(248,247,245,.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+    height: 60px;
+    display: flex; align-items: center;
+    padding: 0 24px;
+    gap: 12px;
+  }
+  [data-theme="dark"] .gnb { background: rgba(30,33,36,.92); }
+  .gnb-logo {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 15px; font-weight: 700; color: var(--color-primary-50);
+    text-decoration: none;
+    letter-spacing: -0.3px;
+  }
+  .gnb-logo-icon {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: var(--color-primary-50);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 14px; font-weight: 800;
+  }
+  .gnb-subtitle { font-size: 13px; color: var(--color-text-sub); font-weight: 400; }
+  .gnb-spacer { flex: 1; }
+  .gnb-theme-btn {
+    border: none; background: transparent; cursor: pointer;
+    color: var(--color-text-sub); font-size: 18px; padding: 6px;
+    border-radius: 6px; transition: background .15s;
+    display: flex; align-items: center;
+  }
+  .gnb-theme-btn:hover { background: var(--color-border); }
+
+  /* ── Hero ── */
+  .hero {
+    background: linear-gradient(160deg, #eef4ff 0%, #f8f7f5 55%);
+    padding: 40px 24px 32px;
+    text-align: center;
+  }
+  [data-theme="dark"] .hero { background: linear-gradient(160deg, #1a2e54 0%, #1e2124 55%); }
+  .hero-badge {
+    display: inline-block;
+    background: var(--color-primary-05);
+    color: var(--color-primary-50);
+    font-size: 12px; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(37,110,244,.2);
+  }
+  .hero h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.3; margin-bottom: 8px; }
+  .hero p { font-size: 15px; color: var(--color-text-sub); max-width: 500px; margin: 0 auto; }
+
+  /* ── 레이아웃 ── */
+  .container { max-width: 960px; margin: 0 auto; padding: 24px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 680px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* ── 카드 ── */
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    padding: 20px;
+    box-shadow: var(--shadow-card);
+  }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--color-text); margin-bottom: 12px; }
+
+  /* ── 텍스트 에리어 ── */
+  .textarea-wrap { position: relative; }
+  textarea {
+    width: 100%; min-height: 200px;
+    border: 1px solid var(--color-border-emphasis);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--color-text);
+    background: var(--color-surface);
+    resize: vertical;
+    transition: border-color .15s, box-shadow .15s;
+    outline: none;
+  }
+  textarea:focus {
+    border-color: var(--color-primary-50);
+    box-shadow: 0 0 0 3px rgba(37,110,244,.12);
+  }
+  textarea::placeholder { color: var(--color-text-disabled); }
+  .char-count { font-size: 12px; color: var(--color-text-sub); text-align: right; margin-top: 4px; }
+
+  /* ── 버튼 ── */
+  .btn-group { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: none; cursor: pointer; font-family: var(--font-sans);
+    font-size: 14px; font-weight: 600; border-radius: var(--radius-btn);
+    padding: 10px 20px; transition: all .15s;
+    text-decoration: none; line-height: 1;
+  }
+  .btn-primary {
+    background: var(--color-primary-50); color: #fff;
+    box-shadow: 0 2px 8px rgba(37,110,244,.3);
+  }
+  .btn-primary:hover { background: #1e5fd8; box-shadow: 0 4px 12px rgba(37,110,244,.4); }
+  .btn-secondary {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: 1px solid var(--color-border-emphasis);
+  }
+  .btn-secondary:hover { background: var(--color-surface-sub); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ── 옵션 체크박스 ── */
+  .options-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .opt-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 500;
+    padding: 4px 10px; border-radius: 20px;
+    border: 1px solid var(--color-border-emphasis);
+    cursor: pointer; user-select: none;
+    background: var(--color-surface);
+    color: var(--color-text-sub);
+    transition: all .12s;
+  }
+  .opt-chip.active {
+    background: var(--color-primary-05);
+    border-color: var(--color-primary-50);
+    color: var(--color-primary-50);
+  }
+
+  /* ── 점수 링 ── */
+  .score-section { text-align: center; padding: 16px; }
+  .score-ring {
+    position: relative; display: inline-block;
+    width: 100px; height: 100px; margin-bottom: 8px;
+  }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring circle { fill: none; stroke-width: 8; }
+  .score-ring .track { stroke: var(--color-border); }
+  .score-ring .fill { stroke: var(--color-primary-50); stroke-linecap: round; transition: stroke-dashoffset .6s ease; }
+  .score-ring .fill.score-danger { stroke: var(--color-danger-50); }
+  .score-ring .fill.score-warning { stroke: var(--color-warning-50); }
+  .score-ring .fill.score-good { stroke: var(--color-success-50); }
+  .score-num {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 22px; font-weight: 800; color: var(--color-text);
+  }
+  .score-label { font-size: 13px; color: var(--color-text-sub); }
+  .score-desc { font-size: 12px; font-weight: 600; margin-top: 4px; }
+
+  /* ── 통계 배지 ── */
+  .stat-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+  .stat-badge {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 8px 14px; border-radius: 8px;
+    border: 1px solid var(--color-border);
+  }
+  .stat-badge .num { font-size: 18px; font-weight: 800; }
+  .stat-badge .lbl { font-size: 11px; color: var(--color-text-sub); }
+  .stat-error .num { color: var(--color-danger-50); }
+  .stat-warning .num { color: var(--color-warning-50); }
+  .stat-info .num { color: var(--color-info-50); }
+
+  /* ── 이슈 목록 ── */
+  .issues-section { margin-top: 16px; }
+  .issues-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .issues-title { font-size: 14px; font-weight: 700; }
+  .filter-tabs { display: flex; gap: 4px; }
+  .filter-tab {
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-sub);
+    font-size: 12px; font-weight: 500;
+    padding: 4px 10px; border-radius: 20px; cursor: pointer;
+    transition: all .12s;
+  }
+  .filter-tab.active {
+    background: var(--color-primary-50); color: #fff; border-color: var(--color-primary-50);
+  }
+
+  .issue-item {
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    background: var(--color-surface);
+    transition: box-shadow .12s;
+    cursor: pointer;
+  }
+  .issue-item:hover { box-shadow: var(--shadow-card); }
+  .issue-item.sev-error { border-left: 3px solid var(--color-danger-50); }
+  .issue-item.sev-warning { border-left: 3px solid var(--color-warning-50); }
+  .issue-item.sev-info { border-left: 3px solid var(--color-info-50); }
+
+  .issue-row1 { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .issue-sev {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 2px 7px; border-radius: var(--radius-badge);
+    text-transform: uppercase; letter-spacing: .3px;
+  }
+  .sev-error .issue-sev { background: var(--color-danger-10); color: var(--color-danger-50); }
+  .sev-warning .issue-sev { background: var(--color-warning-10); color: var(--color-warning-50); }
+  .sev-info .issue-sev { background: var(--color-info-10); color: var(--color-info-50); }
+  .issue-cat { font-size: 12px; font-weight: 600; color: var(--color-text-sub); }
+  .issue-pos { font-size: 11px; color: var(--color-text-disabled); margin-left: auto; }
+  .issue-msg { font-size: 13px; margin-top: 4px; color: var(--color-text); }
+  .issue-match {
+    display: inline-block; font-size: 12px; font-weight: 700;
+    padding: 1px 6px; border-radius: 4px; margin: 0 2px;
+    background: var(--color-danger-10); color: var(--color-danger-50);
+    font-family: monospace;
+  }
+  .issue-suggest { font-size: 12px; color: var(--color-success-50); margin-top: 4px; }
+
+  /* ── 빈 상태 ── */
+  .empty-state { text-align: center; padding: 32px 16px; color: var(--color-text-sub); }
+  .empty-icon { font-size: 32px; margin-bottom: 8px; }
+  .empty-title { font-size: 15px; font-weight: 700; color: var(--color-text); margin-bottom: 4px; }
+  .empty-desc { font-size: 13px; }
+  .empty-success .empty-icon { font-size: 40px; }
+
+  /* ── 샘플 텍스트 버튼 ── */
+  .sample-btn {
+    font-size: 12px; color: var(--color-primary-50); cursor: pointer;
+    text-decoration: underline; text-decoration-color: transparent;
+    background: none; border: none; padding: 0; font-family: inherit;
+    transition: text-decoration-color .12s;
+  }
+  .sample-btn:hover { text-decoration-color: var(--color-primary-50); }
+
+  /* ── 내보내기 ── */
+  .export-bar {
+    display: flex; gap: 8px; align-items: center;
+    padding: 10px 0 0; border-top: 1px solid var(--color-border);
+    margin-top: 12px; flex-wrap: wrap;
+  }
+  .export-label { font-size: 12px; color: var(--color-text-sub); flex: 1; }
+
+  /* ── 푸터 ── */
+  .footer {
+    background: var(--color-surface-inverse);
+    color: #9ea8b3;
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    margin-top: 40px;
+  }
+  .footer a { color: var(--color-primary-30); text-decoration: none; }
+
+  /* ── 하이라이트 텍스트 ── */
+  .highlighted-text {
+    font-size: 13px; line-height: 1.8; white-space: pre-wrap;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px; padding: 12px 14px;
+    max-height: 300px; overflow-y: auto;
+  }
+  mark.hl-error   { background: rgba(212,58,47,.18); color: inherit; border-bottom: 2px solid var(--color-danger-50); border-radius: 2px; }
+  mark.hl-warning { background: rgba(192,112,0,.14); color: inherit; border-bottom: 2px solid var(--color-warning-50); border-radius: 2px; }
+  mark.hl-info    { background: rgba(21,101,192,.12); color: inherit; border-bottom: 2px solid var(--color-info-50); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- GNB -->
+<nav class="gnb" aria-label="주 내비게이션">
+  <a class="gnb-logo" href="./index.html">
+    <span class="gnb-logo-icon" aria-hidden="true">K</span>
+    KRDS
+  </a>
+  <span class="gnb-subtitle">UX 라이팅 린터</span>
+  <div class="gnb-spacer"></div>
+  <button class="gnb-theme-btn" id="themeToggle" aria-label="다크모드 전환">🌙</button>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">거버넌스 조건 5 · 린팅 자동화</div>
+  <h1>KRDS UX 라이팅 자동 검사기</h1>
+  <p>화면에 들어갈 텍스트를 붙여넣으면 행정어·이중 피동·주관적 표현을 자동으로 찾아드립니다</p>
+</section>
+
+<!-- 메인 -->
+<main class="container" id="main">
+  <div class="grid-2">
+
+    <!-- 입력 패널 -->
+    <div class="card">
+      <div class="card-title">
+        텍스트 입력
+        <button class="sample-btn" id="sampleBtn" style="margin-left:8px;">샘플 텍스트 불러오기</button>
+      </div>
+
+      <div class="textarea-wrap">
+        <textarea id="inputText" placeholder="검사할 UX 텍스트를 여기에 입력하거나 붙여넣으세요.&#10;&#10;예: 귀하의 소득 및 재산 현황을 검토한 결과, 지원 대상에 해당되지 않음을 알려드립니다."
+          aria-label="검사할 텍스트 입력"></textarea>
+      </div>
+      <div class="char-count"><span id="charCount">0</span>자</div>
+
+      <div class="options-row" role="group" aria-label="검사 옵션">
+        <button class="opt-chip active" data-opt="checkAdminJargon" role="checkbox" aria-checked="true" tabindex="0">
+          행정어 검사
+        </button>
+        <button class="opt-chip active" data-opt="checkPatterns" role="checkbox" aria-checked="true" tabindex="0">
+          패턴 규칙 검사
+        </button>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" id="lintBtn">
+          <span aria-hidden="true">🔍</span> 검사 시작
+        </button>
+        <button class="btn btn-secondary" id="clearBtn">초기화</button>
+      </div>
+    </div>
+
+    <!-- 점수 패널 -->
+    <div class="card" id="scoreCard">
+      <div class="card-title">품질 점수</div>
+      <div class="score-section" id="scoreSection">
+        <div class="empty-state">
+          <div class="empty-icon" aria-hidden="true">📋</div>
+          <div class="empty-title">텍스트를 입력하고 검사해 주세요</div>
+          <div class="empty-desc">품질 점수와 이슈 목록이 여기에 표시됩니다</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 하이라이트 결과 -->
+  <div class="card" id="highlightCard" style="margin-top:16px; display:none;">
+    <div class="card-title">텍스트 하이라이트</div>
+    <div class="highlighted-text" id="highlightedText" aria-live="polite"></div>
+    <div style="margin-top:8px; font-size:12px; color:var(--color-text-sub);">
+      <span style="background:rgba(212,58,47,.18); border-bottom:2px solid #d43a2f; padding:1px 6px; border-radius:2px;">■</span> 오류
+      &nbsp;
+      <span style="background:rgba(192,112,0,.14); border-bottom:2px solid #c07000; padding:1px 6px; border-radius:2px;">■</span> 경고
+      &nbsp;
+      <span style="background:rgba(21,101,192,.12); border-bottom:2px solid #1565c0; padding:1px 6px; border-radius:2px;">■</span> 안내
+    </div>
+  </div>
+
+  <!-- 이슈 목록 -->
+  <div class="card" id="issuesCard" style="margin-top:16px; display:none;">
+    <div class="issues-header">
+      <div class="issues-title" id="issuesTitle">이슈 목록</div>
+      <div class="filter-tabs" role="tablist" aria-label="심각도 필터">
+        <button class="filter-tab active" data-filter="all" role="tab" aria-selected="true">전체</button>
+        <button class="filter-tab" data-filter="error" role="tab" aria-selected="false">오류</button>
+        <button class="filter-tab" data-filter="warning" role="tab" aria-selected="false">경고</button>
+        <button class="filter-tab" data-filter="info" role="tab" aria-selected="false">안내</button>
+      </div>
+    </div>
+    <div id="issuesList" role="list" aria-live="polite"></div>
+
+    <div class="export-bar">
+      <span class="export-label">검사 결과를 내보낼 수 있습니다</span>
+      <button class="btn btn-secondary" id="copyBtn" style="font-size:12px; padding:6px 12px;">
+        <span aria-hidden="true">📋</span> 결과 복사
+      </button>
+      <button class="btn btn-secondary" id="downloadBtn" style="font-size:12px; padding:6px 12px;">
+        <span aria-hidden="true">⬇️</span> CSV 내보내기
+      </button>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  KRDS UX Writing Linter v1.0.0 &nbsp;|&nbsp;
+  <a href="./index.html">가이드라인</a> &nbsp;|&nbsp;
+  <a href="./principles.md" target="_blank" rel="noopener noreferrer">Principles</a>
+  <br>
+  <span style="margin-top:4px; display:block;">거버넌스 조건 5 · 라이팅 자동화 도입</span>
+</footer>
+
+<script src="./krds-lint.js"></script>
+<script src="./lint-ui.js"></script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+name: KRDS UX 라이팅 린팅 (조건 5)
+
+on:
+  push:
+    paths:
+      - '**.md'
+      - '**.txt'
+      - '**.html'
+  pull_request:
+    paths:
+      - '**.md'
+      - '**.txt'
+      - '**.html'
+  workflow_dispatch:
+    inputs:
+      target_file:
+        description: '검사할 파일 경로 (기본: principles.md)'
+        required: false
+        default: 'principles.md'
+
+jobs:
+  krds-lint:
+    name: KRDS UX 라이팅 자동 검사
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: KRDS 린팅 실행
+        id: lint
+        run: |
+          node << 'JSEOF'
+          const fs = require('fs');
+          const path = require('path');
+          const KRDSLint = require('./krds-lint.js');
+
+          // 검사 대상 파일 수집
+          const targetExtensions = ['.md', '.txt', '.html'];
+          const ignore = ['node_modules', '.git', 'lint.html'];
+
+          function collectFiles(dir) {
+            const results = [];
+            if (!fs.existsSync(dir)) return results;
+            for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+              if (ignore.some(i => entry.name.includes(i))) continue;
+              const fullPath = path.join(dir, entry.name);
+              if (entry.isDirectory()) {
+                results.push(...collectFiles(fullPath));
+              } else if (targetExtensions.includes(path.extname(entry.name))) {
+                results.push(fullPath);
+              }
+            }
+            return results;
+          }
+
+          const files = collectFiles('.');
+          let totalErrors = 0;
+          let totalWarnings = 0;
+          const summary = [];
+
+          for (const file of files) {
+            try {
+              const text = fs.readFileSync(file, 'utf8');
+              // HTML 파일은 태그 제거 후 텍스트만 검사
+              const plainText = text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+              const result = KRDSLint.lint(plainText);
+
+              if (result.summary.total > 0) {
+                summary.push({ file, result });
+                totalErrors += result.summary.errors;
+                totalWarnings += result.summary.warnings;
+                console.log(`\n📄 ${file} — 점수: ${result.score}/100 (오류 ${result.summary.errors}, 경고 ${result.summary.warnings})`);
+                result.issues.slice(0, 10).forEach(issue => {
+                  const icon = { error: '❌', warning: '⚠️', info: 'ℹ️' }[issue.severity];
+                  console.log(`  ${icon} [${issue.line}줄] [${issue.category}] "${issue.match}" → ${issue.suggestion}`);
+                });
+                if (result.issues.length > 10) {
+                  console.log(`  ... 외 ${result.issues.length - 10}건`);
+                }
+              }
+            } catch (e) {
+              // 바이너리 파일 등 스킵
+            }
+          }
+
+          console.log('\n' + '═'.repeat(60));
+          console.log(`KRDS UX 라이팅 린팅 완료`);
+          console.log(`검사 파일: ${files.length}개`);
+          console.log(`이슈 발생 파일: ${summary.length}개`);
+          console.log(`총 오류: ${totalErrors}건 / 총 경고: ${totalWarnings}건`);
+
+          // GitHub Actions 출력 변수 설정
+          const output = `total_errors=${totalErrors}\ntotal_warnings=${totalWarnings}\nissue_files=${summary.length}`;
+          if (process.env.GITHUB_OUTPUT) {
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, output + '\n');
+          }
+
+          // 오류가 일정 수 이상이면 실패
+          if (totalErrors > 50) {
+            console.error(`\n❌ 오류 ${totalErrors}건 초과 (임계값: 50). 검사를 실패로 처리합니다.`);
+            process.exit(1);
+          }
+          JSEOF
+
+      - name: 린팅 결과 요약 출력
+        if: always()
+        run: |
+          echo "## KRDS UX 라이팅 린팅 결과" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| 항목 | 결과 |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 총 오류 | ${{ steps.lint.outputs.total_errors }}건 |" >> $GITHUB_STEP_SUMMARY
+          echo "| 총 경고 | ${{ steps.lint.outputs.total_warnings }}건 |" >> $GITHUB_STEP_SUMMARY
+          echo "| 이슈 파일 | ${{ steps.lint.outputs.issue_files }}개 |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📖 [KRDS UX 라이팅 린터](https://thenisaid.github.io/krds-ux-writing/lint.html)" >> $GITHUB_STEP_SUMMARY
