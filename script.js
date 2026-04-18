@@ -216,9 +216,10 @@ function initReveal() {
 
 // ===== CHECKLIST =====
 function toggleCheck(item) {
-  const isChecked = item.classList.toggle('checked');
   const box = item.querySelector('.check-box');
-  if (box) box.setAttribute('aria-checked', isChecked ? 'true' : 'false');
+  if (!box) return; // Skip group title items (no .check-box inside)
+  const isChecked = item.classList.toggle('checked');
+  box.setAttribute('aria-checked', isChecked ? 'true' : 'false');
   if (isChecked) {
     box.style.background = 'var(--success)';
     box.style.borderColor = 'var(--success)';
@@ -229,10 +230,11 @@ function toggleCheck(item) {
     box.style.color = 'transparent';
   }
   const all = document.querySelectorAll('.check-item');
-  const checked = document.querySelectorAll('.check-item.checked');
+  const actual = document.querySelectorAll('.check-box').length;
+  const checkedActual = document.querySelectorAll('.check-item.checked .check-box').length;
   const complete = document.getElementById('checklistComplete');
   if (complete) {
-    if (all.length === checked.length && checked.length > 0) {
+    if (checkedActual === actual && checkedActual > 0) {
       complete.classList.add('show');
     } else {
       complete.classList.remove('show');
@@ -263,23 +265,23 @@ function resetChecklist() {
 
 function initChecklist() {
   const all = document.querySelectorAll('.check-item');
+  const actual = document.querySelectorAll('.check-box').length;
   let checkedCount = 0;
   all.forEach((item, idx) => {
+    const box = item.querySelector('.check-box');
+    if (!box) return; // Skip group title items
     const saved = localStorage.getItem('krds-checklist-' + idx);
     if (saved === 'checked') {
       item.classList.add('checked');
-      const box = item.querySelector('.check-box');
-      if (box) {
-        box.setAttribute('aria-checked', 'true');
-        box.style.background = 'var(--success)';
-        box.style.borderColor = 'var(--success)';
-        box.style.color = 'white';
-      }
+      box.setAttribute('aria-checked', 'true');
+      box.style.background = 'var(--success)';
+      box.style.borderColor = 'var(--success)';
+      box.style.color = 'white';
       checkedCount++;
     }
   });
   const complete = document.getElementById('checklistComplete');
-  if (complete && all.length > 0 && checkedCount === all.length) {
+  if (complete && actual > 0 && checkedCount === actual) {
     complete.classList.add('show');
   }
 }
