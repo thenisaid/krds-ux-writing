@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="KRDS UX Writing 사전 — 행정 용어를 시민 언어로 바꾸는 기준 사전.">
+<title>사전 (Dictionary) — KRDS UX Writing 가이드라인</title>
+<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" as="style" crossorigin="anonymous"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
+  integrity="sha384-o2ZrV2/pmy/zDV8dhdJIibaM1s+TlS8+7JwrtshqmiTJGTczb1GcwzkjzZ80EUyy">
+<style>
+:root {
+  --font-sans: 'Pretendard GOV Variable','Pretendard Variable',system-ui,sans-serif;
+  --accent: #256ef4;
+  --bg: #ffffff; --bg-subtle: #f4f5f6;
+  --border: #e6e8ea; --border-mid: #cdd1d5;
+  --text: #1e2124; --text-mid: #464c53; --text-muted: #6d7882;
+}
+[data-theme="dark"] {
+  --bg: #131416; --bg-subtle: #1e2124;
+  --border: #33363d; --border-mid: #464c53;
+  --text: #ffffff; --text-mid: #cdd1d5; --text-muted: #8a949e;
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); background: var(--bg); color: var(--text); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); text-decoration: none; }
+
+.gnb { position: sticky; top: 0; z-index: 100; height: 56px; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 32px; gap: 16px; }
+.gnb-logo { font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.gnb-logo-mark { width: 24px; height: 24px; border-radius: 5px; background: var(--accent); color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.breadcrumb { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+.breadcrumb-current { color: var(--text-mid); font-weight: 600; }
+
+.page-layout { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 56px); }
+
+.sidebar { border-right: 1px solid var(--border); padding: 32px 0; position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto; }
+.sidebar-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); padding: 8px 24px 4px; }
+.sidebar-link { display: block; padding: 8px 24px; font-size: 13px; font-weight: 500; color: var(--text-mid); border-right: 2px solid transparent; transition: all 0.15s; }
+.sidebar-link:hover { color: var(--text); background: var(--bg-subtle); text-decoration: none; }
+.sidebar-link.active { color: var(--accent); border-right-color: var(--accent); font-weight: 600; background: rgba(37,110,244,0.04); }
+
+.content { padding: 48px 64px 80px; }
+.content-header { margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+.content-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+.content-title { font-size: 36px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 16px; }
+.content-desc { font-size: 15px; color: var(--text-muted); line-height: 1.8; max-width: 56ch; }
+
+/* Search */
+.search-box { display: flex; align-items: center; gap: 12px; border: 1.5px solid var(--border-mid); border-radius: 8px; padding: 12px 16px; margin-bottom: 40px; background: var(--bg); transition: border-color 0.15s; }
+.search-box:focus-within { border-color: var(--accent); }
+.search-box svg { color: var(--text-muted); flex-shrink: 0; }
+.search-input { flex: 1; border: none; background: transparent; font-family: var(--font-sans); font-size: 15px; color: var(--text); outline: none; }
+.search-input::placeholder { color: var(--text-muted); }
+.search-hint { font-size: 11px; color: var(--text-muted); flex-shrink: 0; font-variant-numeric: tabular-nums; }
+
+/* Dictionary Table */
+.dict-section { margin-bottom: 48px; }
+.dict-section-title { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+.dict-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.dict-table { width: 100%; border-collapse: collapse; }
+.dict-table thead th { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); padding: 10px 16px; border-bottom: 2px solid var(--border); text-align: left; background: var(--bg-subtle); }
+.dict-table tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+.dict-table tbody tr:hover { background: var(--bg-subtle); }
+.dict-table td { padding: 14px 16px; font-size: 14px; vertical-align: top; }
+.term-before { color: var(--text-muted); font-weight: 500; }
+.term-arrow { color: var(--border-mid); font-size: 12px; }
+.term-after { color: var(--text); font-weight: 700; color: var(--accent); }
+.term-context { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+.term-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px; border: 1px solid var(--border); color: var(--text-muted); }
+.term-badge.high { border-color: rgba(222,52,18,0.3); color: #de3412; background: rgba(222,52,18,0.04); }
+.term-badge.mid { border-color: rgba(138,92,0,0.3); color: #8a5c00; background: rgba(255,179,0,0.04); }
+.term-badge.low { border-color: rgba(34,135,56,0.3); color: #228738; background: rgba(34,135,56,0.04); }
+
+@media (max-width: 900px) {
+  .page-layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .content { padding: 32px 20px 64px; }
+}
+</style>
+</head>
+<body>
+<a href="#content" style="position:absolute;top:-100%;left:0;background:var(--accent);color:#fff;padding:8px 16px;font-size:14px;font-weight:600;z-index:9999" onfocus="this.style.top='0'" onblur="this.style.top='-100%'">본문 바로가기</a>
+
+<header class="gnb">
+  <a href="/" class="gnb-logo">
+    <span class="gnb-logo-mark">K</span>
+    <span>UX Writing</span>
+  </a>
+  <nav class="breadcrumb" aria-label="현재 위치">
+    <a href="/" style="color:var(--text-muted)">홈</a>
+    <span aria-hidden="true">/</span>
+    <span class="breadcrumb-current" aria-current="page">사전</span>
+  </nav>
+</header>
+
+<div class="page-layout">
+  <aside class="sidebar" aria-label="사전 카테고리">
+    <div class="sidebar-label">카테고리</div>
+    <a href="#administrative" class="sidebar-link active">행정·공문서 용어</a>
+    <a href="#digital" class="sidebar-link">디지털 서비스 용어</a>
+    <a href="#forms-labels" class="sidebar-link">폼 레이블</a>
+    <a href="#error-terms" class="sidebar-link">오류·상태 메시지</a>
+    <a href="#buttons-actions" class="sidebar-link">버튼·액션 레이블</a>
+    <a href="#notifications" class="sidebar-link">알림·안내 문구</a>
+    <a href="#technical-terms" class="sidebar-link">기술 용어</a>
+  </aside>
+
+  <main class="content" id="content">
+    <div class="content-header">
+      <div class="content-eyebrow">Dictionary</div>
+      <h1 class="content-title">행정 용어 → 시민 언어 사전</h1>
+      <p class="content-desc">
+        공공 서비스에서 자주 쓰이는 행정 용어와 그에 대응하는 시민 친화적 표현을 정리했습니다.
+        난이도 태그(높음/중간/낮음)는 일반 시민이 이해하기 어려운 정도를 나타냅니다.
+      </p>
+    </div>
+
+    <!-- Search -->
+    <div class="search-box" role="search">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input type="search" class="search-input" id="dictSearch" placeholder="용어 검색... (예: 접수, 제출, 처리)" aria-label="사전 검색">
+      <span class="search-hint" id="searchCount">준비 중</span>
+    </div>
+
+    <!-- Section: 행정·공문서 -->
+    <section class="dict-section" id="administrative" aria-labelledby="admin-title">
+      <h2 class="dict-section-title" id="admin-title">행정·공문서 용어</h2>
+      <table class="dict-table" aria-label="행정 용어 변환 사전">
+        <thead>
+          <tr>
+            <th style="width:22%">행정 용어</th>
+            <th style="width:5%"></th>
+            <th style="width:25%">시민 언어</th>
+            <th style="width:35%">사용 맥락 · 참고</th>
+            <th style="width:13%">난이도</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="term-before">신청서 제출 완료</td>
+            <td class="term-arrow">→</td>
+            <td class="term-after">신청이 접수됐어요</td>
+            <td class="term-context">제출 후 성공 메시지. "접수됐습니다" 보다 구어체 "접수됐어요"가 부담 없음.</td>
+            <td><span class="term-badge high">높음</span></td>
+          </tr>
+          <tr>
+            <td class="term-before">처리 기한</td>
+            <td class="term-arrow">→</td>
+            <td class="term-after">처리까지 걸리는 시간</td>
+            <td class="term-context">기간 안내 레이블. 구체적 날짜가 있으면 "3월 15일까지 처리됩니다"로.</td>
+            <td><span class="term-badge mid">중간</span></td>
+          </tr>
+          <tr>
+            <td class="term-before">구비서류</td>
+            <td class="term-arrow">→</td>
+            <td class="term-after">필요한 서류</td>
+            <td class="term-context">서류 목록 안내 헤딩에 사용.</td>
+            <td><span class="term-badge high">높음</span></td>
+          </tr>
+          <tr>
+            <td class="term-before">민원 접수번호</td>
+            <td class="term-arrow">→</td>
+            <td class="term-after">접수 번호</td>
+            <td class="term-context">접수 완료 화면에서. "민원"이 중복 맥락인 경우 생략.</td>
+            <td><span class="term-badge low">낮음</span></td>
+          </tr>
+          <tr>
+            <td class="term-before">귀하의 신청은 결재 중입니다</td>
+            <td class="term-arrow">→</td>
+            <td class="term-after">검토 중입니다</td>
+            <td class="term-context">진행 상태 안내. "결재"는 내부 업무용. 외부에는 "검토/확인" 사용.</td>
+            <td><span class="term-badge high">높음</span></td>
+          </tr>
+          <tr>
+            <td class="term-before">서류 미비</td>
+            <td class="term-arrow">→</td>
+            <td class="term-after">필요한 서류가 빠져 있어요</td>
+            <td class="term-context">오류 메시지. 어떤 서류가 빠졌는지 구체적으로 명시할 것.</td>
+            <td><span class="term-badge high">높음</span></td>
+          </tr>
+          <tr>
+            <td class="term-before">반려</td>
+            <td class="term-arrow">→</td>
+            <td class="term-after">신청이 받아들여지지 않았습니다</td>
+            <td class="term-context">부결 통지. 이유와 다음 단계를 반드시 함께 안내.</td>
+            <td><span class="term-badge high">높음</span></td>
+          </tr>
+          <tr>
+            <td class="term-before">보완 요청</td>
+            <td class="term-arrow">→</td>
+            <td class="term-after">추가 정보가 필요합니다</td>
+            <td class="term-context">어떤 정보가 왜 필요한지 구체적으로 설명 필요.</td>
+            <td><span class="term-badge mid">중간</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section: 디지털 서비스 -->
+    <section class="dict-section" id="digital" aria-labelledby="digital-title">
+      <h2 class="dict-section-title" id="digital-title">디지털 서비스 용어</h2>
+      <table class="dict-table">
+        <thead>
+          <tr>
+            <th style="width:22%">기존 표현</th>
+            <th style="width:5%"></th>
+            <th style="width:25%">권장 표현</th>
+            <th style="width:35%">사용 맥락 · 참고</th>
+            <th style="width:13%">난이도</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="term-before">로그인</td>
+            <td class="term-arrow">→</td>
+            <td class="term-after">로그인 / 접속</td>
+            <td class="term-context">일반적으로 "로그인" 유지. 연령대 높은 사용자 대상이면 "접속"도 병기.</td>
+            <td><span class="term-badge low">낮음</span></td>
+          </tr>
+          <tr>
+            <td class="term-before">팝업 차단됨</td>
+            <td class="term-arrow">→</td>
+            <td class="term-after">새 창이 열리지 않았어요</td>
+            <td class="term-context">오류 안내. 원인과 해결 방법(팝업 허용 방법) 함께 안내.</td>
+            <td><span class="term-badge mid">중간</span></td>
+          </tr>
+          <tr>
+            <td class="term-before">세션이 만료되었습니다</td>
+            <td class="term-arrow">→</td>
+            <td class="term-after">로그인이 만료됐어요. 다시 로그인해 주세요.</td>
+            <td class="term-context">"세션"은 기술 용어. 사용자 행동 안내(다시 로그인)로 마무리.</td>
+            <td><span class="term-badge high">높음</span></td>
+          </tr>
+          <tr>
+            <td class="term-before">파일 업로드</td>
+            <td class="term-arrow">→</td>
+            <td class="term-after">파일 첨부</td>
+            <td class="term-context">버튼·레이블. "업로드"는 기술적 표현. "첨부"가 더 자연스러움.</td>
+            <td><span class="term-badge mid">중간</span></td>
+          </tr>
+          <tr>
+            <td class="term-before">인증서 오류</td>
+            <td class="term-arrow">→</td>
+            <td class="term-after">보안 연결에 문제가 있어요</td>
+            <td class="term-context">SSL/TLS 오류. 브라우저 설정 확인 링크 제공.</td>
+            <td><span class="term-badge high">높음</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section: 버튼 액션 -->
+    <section class="dict-section" id="buttons-actions" aria-labelledby="btn-title">
+      <h2 class="dict-section-title" id="btn-title">버튼·액션 레이블</h2>
+      <table class="dict-table">
+        <thead>
+          <tr>
+            <th style="width:22%">피해야 할 표현</th>
+            <th style="width:5%"></th>
+            <th style="width:25%">권장 표현</th>
+            <th style="width:35%">이유</th>
+            <th style="width:13%">우선순위</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="term-before">확인</td>
+            <td class="term-arrow">→</td>
+            <td class="term-after">신청하기 / 저장하기</td>
+            <td class="term-context">결과를 명시하는 동사로 바꿔야 합니다. "확인"은 무엇을 하는지 알 수 없습니다.</td>
+            <td><span class="term-badge high">높음</span></td>
+          </tr>
+          <tr>
+            <td class="term-before">취소</td>
+            <td class="term-arrow">→</td>
+            <td class="term-after">뒤로 / 계속 수정</td>
+            <td class="term-context">맥락에 따라 다름. 파기 확인 다이얼로그에서는 "신청 취소" 등 구체적 표현 사용.</td>
+            <td><span class="term-badge mid">중간</span></td>
+          </tr>
+          <tr>
+            <td class="term-before">제출</td>
+            <td class="term-arrow">→</td>
+            <td class="term-after">신청 완료하기</td>
+            <td class="term-context">마지막 CTA 버튼. 사용자가 무엇을 완료하는지 명시.</td>
+            <td><span class="term-badge high">높음</span></td>
+          </tr>
+          <tr>
+            <td class="term-before">삭제</td>
+            <td class="term-arrow">→</td>
+            <td class="term-after">삭제 / [내용] 삭제하기</td>
+            <td class="term-context">삭제 행위는 유지 가능. 확인 다이얼로그 내 버튼은 "이 글 삭제하기"처럼 대상 명시.</td>
+            <td><span class="term-badge low">낮음</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  var input = document.getElementById('dictSearch');
+  if(!input) return;
+  input.addEventListener('input', function(){
+    var q = this.value.toLowerCase().trim();
+    var rows = document.querySelectorAll('.dict-table tbody tr');
+    var visible = 0;
+    rows.forEach(function(r){
+      var text = r.textContent.toLowerCase();
+      var show = !q || text.includes(q);
+      r.style.display = show ? '' : 'none';
+      if(show) visible++;
+    });
+    var hint = document.getElementById('searchCount');
+    if(hint) hint.textContent = q ? visible + '개 결과' : '';
+  });
+})();
+</script>
+</body>
+</html>
