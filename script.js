@@ -33,6 +33,13 @@ function buildSearchIndex() {
       results.push({ id: sectionId, tag: sectionTag + ' · 행정어 사전', text: text, preview: text.slice(0, 60) });
     });
 
+    // 원칙 카드 제목 인덱싱 (principle-title)
+    section.querySelectorAll('.principle-title').forEach(el => {
+      const text = el.textContent.trim();
+      if (!text) return;
+      results.push({ id: sectionId, tag: sectionTag, text: text, preview: text });
+    });
+
     // 원칙 카드 본문 인덱싱
     section.querySelectorAll('.principle-body, .principle-card p, .subsection p').forEach(p => {
       const text = p.textContent.trim();
@@ -40,6 +47,16 @@ function buildSearchIndex() {
       results.push({ id: sectionId, tag: sectionTag, text: text, preview: text.slice(0, 80) });
     });
   });
+
+  // 히어로 섹션 원칙 카드 제목 인덱싱 (I-1: 3대 원칙명 검색 포함)
+  const heroEl = document.getElementById('hero');
+  if (heroEl) {
+    heroEl.querySelectorAll('.hero-rule-card .hero-rule-new').forEach(el => {
+      const text = el.textContent.trim();
+      if (!text) return;
+      results.push({ id: 'chapter1', tag: '3대 원칙', text: text, preview: text });
+    });
+  }
 
   searchData = results;
 }
