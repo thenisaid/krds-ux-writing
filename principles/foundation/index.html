@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="1장 파운데이션 — 시민이 읽는 글, 국가가 쓰는 말. KRDS UX 라이팅 3대 원칙의 철학적 배경과 보이스·톤 기준.">
+<title>1장. 파운데이션 — KRDS UX Writing 가이드라인</title>
+<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" as="style" crossorigin="anonymous"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
+  integrity="sha384-o2ZrV2/pmy/zDV8dhdJIibaM1s+TlS8+7JwrtshqmiTJGTczb1GcwzkjzZ80EUyy">
+<link rel="stylesheet" href="../../shared/style.css">
+<style>
+.breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 32px; }
+.breadcrumb a { color: var(--text-muted); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb-sep { color: var(--border-mid); }
+
+.chapter-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; padding: 3px 10px; border-radius: 4px; background: rgba(37,110,244,0.07); color: var(--accent); border: 1px solid rgba(37,110,244,0.2); margin-bottom: 14px; }
+
+.article-section { margin-bottom: 56px; }
+.article-section-heading { font-size: 22px; font-weight: 800; letter-spacing: -0.025em; color: var(--text); margin-bottom: 8px; padding-top: 16px; }
+.article-section-lead { font-size: 15px; color: var(--text-muted); line-height: 1.8; margin-bottom: 28px; max-width: 64ch; }
+.article-divider { height: 1px; background: var(--border); margin: 40px 0; }
+
+.sub-h3 { font-size: 16px; font-weight: 700; color: var(--text); margin: 28px 0 10px; letter-spacing: -0.015em; }
+.sub-h4 { font-size: 13px; font-weight: 700; color: var(--text-mid); margin: 20px 0 8px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+.data-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 20px 0; }
+.data-table th { background: var(--bg-subtle); font-weight: 700; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+.data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); line-height: 1.6; vertical-align: top; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--bg-subtle); }
+.data-table .strike { color: var(--text-muted); text-decoration: line-through; }
+.data-table .ok { color: #228738; font-weight: 600; }
+
+.do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+.do-dont-box { padding: 16px 18px; border-radius: 8px; font-size: 13.5px; line-height: 1.7; }
+.do-dont-box.do { background: rgba(34,135,56,0.06); border: 1px solid rgba(34,135,56,0.25); }
+.do-dont-box.dont { background: rgba(231,72,72,0.04); border: 1px solid rgba(231,72,72,0.2); }
+.do-dont-label { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; margin-bottom: 10px; }
+.do-dont-label.do { color: #228738; }
+.do-dont-label.dont { color: #c0392b; }
+
+.info-box { background: rgba(37,110,244,0.05); border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; padding: 14px 18px; font-size: 13.5px; color: var(--text-mid); line-height: 1.7; margin: 20px 0; }
+
+.principle-card { display: flex; align-items: flex-start; gap: 16px; padding: 20px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; }
+.principle-card-icon { font-size: 24px; flex-shrink: 0; }
+.principle-card-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; letter-spacing: -0.01em; }
+.principle-card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+.principle-card-link { display: inline-block; margin-top: 10px; font-size: 12px; font-weight: 600; color: var(--accent); text-decoration: none; }
+.principle-card-link:hover { text-decoration: underline; }
+
+.tone-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 20px 0; }
+.tone-card { padding: 16px 18px; border: 1px solid var(--border); border-radius: 8px; }
+.tone-card-status { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; }
+.tone-card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.tone-card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 10px; }
+.tone-card-example { font-size: 13px; color: var(--text-mid); line-height: 1.6; background: var(--bg-subtle); border-radius: 4px; padding: 8px 12px; font-style: italic; }
+
+.voice-attr { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+.voice-attr-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 13.5px; line-height: 1.6; }
+.voice-attr-num { font-size: 20px; font-weight: 800; color: var(--border-mid); flex-shrink: 0; line-height: 1; }
+.voice-attr-title { font-weight: 700; color: var(--text); }
+.voice-attr-desc { color: var(--text-muted); }
+
+.chapter-nav { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 48px; }
+.chapter-nav-card { padding: 16px 18px; border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: inherit; transition: border-color 0.15s, box-shadow 0.15s; }
+.chapter-nav-card:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(37,110,244,0.08); text-decoration: none; }
+.chapter-nav-num { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; }
+.chapter-nav-name { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+
+@media (max-width: 600px) {
+  .do-dont, .tone-grid, .chapter-nav { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<a class="skip-nav" href="#content">본문 바로가기</a>
+<div class="sidebar-backdrop"></div>
+
+<header class="gnb">
+  <button class="gnb-icon-btn gnb-hamburger" id="gnbHamburger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mainSidebar">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+  </button>
+  <a href="/krds-ux-writing/" class="gnb-logo">
+    <span class="gnb-logo-mark">K</span>
+    <span>UX Writing</span>
+  </a>
+  <nav class="gnb-nav" aria-label="섹션 내비게이션">
+    <a href="/krds-ux-writing/principles/" class="gnb-nav-link" data-section="principles">원칙</a>
+    <a href="/krds-ux-writing/dictionary/" class="gnb-nav-link" data-section="dictionary">사전</a>
+    <a href="/krds-ux-writing/case-studies/" class="gnb-nav-link" data-section="case-studies">사례</a>
+  </nav>
+  <div class="gnb-actions">
+    <span class="gnb-badge">v2.0</span>
+    <button class="gnb-icon-btn" id="themeToggle" aria-label="다크 모드로 전환" type="button"></button>
+  </div>
+</header>
+
+<div class="page-layout">
+  <aside class="sidebar" id="mainSidebar" aria-label="원칙 섹션 내비게이션">
+    <div class="sidebar-section">
+      <div class="sidebar-label">제1장 — Foundation</div>
+      <a href="/krds-ux-writing/principles/foundation/" class="sidebar-link active" aria-current="page">파운데이션</a>
+      <a href="/krds-ux-writing/principles/foundation/#vision" class="sidebar-link sidebar-link--sub">비전</a>
+      <a href="/krds-ux-writing/principles/foundation/#sovereign" class="sidebar-link sidebar-link--sub">주권자</a>
+      <a href="/krds-ux-writing/principles/foundation/#principles-overview" class="sidebar-link sidebar-link--sub">3대 원칙 개요</a>
+      <a href="/krds-ux-writing/principles/foundation/#voice-tone" class="sidebar-link sidebar-link--sub">보이스·톤 기준</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">제2장 — No Translation</div>
+      <a href="/krds-ux-writing/principles/no-translation/" class="sidebar-link">무번역의 원칙</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">제3장 — Core Info</div>
+      <a href="/krds-ux-writing/principles/core-info/" class="sidebar-link">정보핵심화의 원칙</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">제4장 — Safety Net</div>
+      <a href="/krds-ux-writing/principles/safety-net/" class="sidebar-link">심리적안전망의 원칙</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">제5장 — Derivative</div>
+      <a href="/krds-ux-writing/principles/derivative/" class="sidebar-link">기관별 파생 가이드</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">참조</div>
+      <a href="/krds-ux-writing/dictionary/" class="sidebar-link">행정어 사전</a>
+      <a href="/krds-ux-writing/case-studies/" class="sidebar-link">적용 사례</a>
+    </div>
+  </aside>
+
+  <div style="display:flex;flex-direction:column;min-height:0">
+  <main class="content" id="content">
+    <nav class="breadcrumb" aria-label="현재 위치">
+      <a href="/krds-ux-writing/">홈</a>
+      <span class="breadcrumb-sep" aria-hidden="true">›</span>
+      <a href="/krds-ux-writing/principles/">원칙</a>
+      <span class="breadcrumb-sep" aria-hidden="true">›</span>
+      <span>1장. 파운데이션</span>
+    </nav>
+
+    <div class="content-header">
+      <span class="chapter-badge">제1장 · Foundation</span>
+      <h1 class="content-title">파운데이션</h1>
+      <p class="content-headline">왜 이 가이드라인이 필요한가</p>
+      <p class="content-desc">
+        공공 서비스의 언어는 국가가 시민에게 보내는 가장 직접적인 신호입니다.
+        3대 원칙의 철학적 배경, 주권자 이해, 보이스·톤 기준을 담습니다.
+      </p>
+    </div>
+
+    <!-- 1.1 비전 -->
+    <section class="article-section" id="vision" aria-labelledby="vision-title">
+      <h2 class="article-section-heading" id="vision-title">1.1 비전: 시민이 읽는 글, 국가가 쓰는 말</h2>
+      <p class="article-section-lead">공공 서비스의 언어는 국가가 시민에게 보내는 가장 직접적인 신호입니다.</p>
+
+      <p style="font-size:14px;line-height:1.9;color:var(--text-mid);margin-bottom:20px;">
+        '수급', '교부', '귀하'처럼 어려운 말은 시민을 배제하는 신호입니다.
+        '혜택', '발급', '고객님'처럼 쉬운 말은 국가가 시민의 편임을 증명하는 신호입니다.
+      </p>
+
+      <div class="info-box">
+        이 가이드라인의 목표는 단 하나입니다.<br>
+        <strong>누구나 포기하지 않고 끝까지 쓸 수 있게 만드는 것.</strong>
+      </div>
+
+      <p style="font-size:14px;line-height:1.9;color:var(--text-mid);">
+        어디서나 쉽고, 어디서나 일관되고, 어디서나 안심할 수 있는 공공 언어 —
+        <strong>시민이 읽는 글, 국가가 쓰는 말</strong>을 만드는 것이 우리의 비전입니다.
+      </p>
+
+      <div class="article-divider"></div>
+
+      <h3 class="sub-h3">모호한 기준에서 구체적인 행동 규칙으로</h3>
+      <p style="font-size:14px;line-height:1.9;color:var(--text-mid);margin-bottom:16px;">
+        우리는 그동안 글을 쓸 때 '명확하게, 간결하게, 유용하게, 일관되게' 쓰라는 말을 수없이 들어왔습니다.
+        하지만 이 모호한 형용사들은 현장에서 아무런 도움이 되지 않았습니다.
+        KRDS는 이 4가지 기준을 실무자가 당장 모니터 앞에서 쓸 수 있는 <strong>'구체적인 행동 규칙'</strong>으로 바꿨습니다.
+      </p>
+
+      <table class="data-table" role="table" aria-label="기존 기준과 KRDS 행동 규칙 비교">
+        <thead>
+          <tr><th>기존 기준</th><th>KRDS 행동 규칙</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>명확하게</td><td>무번역의 원칙 — 14세 중학생이 사전 없이 이해하는 일상어</td></tr>
+          <tr><td>간결하게</td><td>정보 핵심화의 원칙 — 결론과 다음 버튼을 맨 위에</td></tr>
+          <tr><td>유용하게</td><td>심리적 안전망의 원칙 — 실수했을 때 원인+해결책 함께</td></tr>
+          <tr><td>일관되게</td><td>세 원칙을 예외 없이 지킬 때 쌓이는 신뢰</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 1.2 주권자 -->
+    <section class="article-section" id="sovereign" aria-labelledby="sovereign-title">
+      <h2 class="article-section-heading" id="sovereign-title">1.2 주권자: 이 가이드를 쓰는 사람 / 읽는 사람</h2>
+      <p class="article-section-lead">공공 서비스 UX 라이팅의 주체와 대상을 정확히 이해해야 올바른 언어를 선택할 수 있습니다.</p>
+
+      <div class="do-dont" style="grid-template-columns:1fr 1fr;">
+        <div class="do-dont-box do">
+          <div class="do-dont-label do">이 가이드를 읽는 사람</div>
+          UX 라이터, 콘텐츠 기획자, 디자이너, 개발자, 정부 관계자.<br>
+          화면에 들어갈 문장을 최종 결정하는 모든 사람.
+        </div>
+        <div class="do-dont-box" style="background:rgba(37,110,244,0.04);border:1px solid rgba(37,110,244,0.2);">
+          <div class="do-dont-label" style="color:var(--accent);">이 가이드가 지키려는 사람</div>
+          공공 서비스를 이용하는 <strong>시민(주권자)</strong>.<br>
+          낯선 시스템 앞에서 목적을 달성하고 일상으로 돌아가길 원하는 사람.
+        </div>
+      </div>
+
+      <h3 class="sub-h3">주권자의 3가지 정당한 기대</h3>
+
+      <div class="voice-attr">
+        <div class="voice-attr-item">
+          <div class="voice-attr-num">①</div>
+          <div>
+            <div class="voice-attr-title">정보의 효율성에 대한 기대 — 목적 지향적 스캐닝</div>
+            <div class="voice-attr-desc">주권자는 화면을 꼼꼼히 정독하지 않고, 자신이 달성해야 할 목적(버튼, 핵심 결과)만 빠르게 훑어봅니다. 가장 중요한 결론과 다음 행동 지시를 화면 최상단과 버튼에 배치해야 합니다.</div>
+          </div>
+        </div>
+        <div class="voice-attr-item">
+          <div class="voice-attr-num">②</div>
+          <div>
+            <div class="voice-attr-title">보편적 이해에 대한 권리 — 14세 기준 무장벽 언어</div>
+            <div class="voice-attr-desc">공공의 언어는 특정 계층의 전유물인 '한자어'나 '행정 관습어'의 장벽을 두어서는 안 됩니다. 누구도 정보에서 배제하지 않도록 문장의 수준을 중학교 2학년(14세) 독해력에 맞춥니다.</div>
+          </div>
+        </div>
+        <div class="voice-attr-item">
+          <div class="voice-attr-num">③</div>
+          <div>
+            <div class="voice-attr-title">심리적 안전망에 대한 요구 — 실수 복구의 권리</div>
+            <div class="voice-attr-desc">공공 서비스에서의 클릭은 무겁습니다. 사용자의 실수를 시스템이 탓하지 않아야 하며, 오류가 발생했을 때 '실패 통보'로 끝내지 않고 '어떻게 궤도를 수정할 수 있는지' 명확한 대안을 제시해야 합니다.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1.3 3대 원칙 개요 -->
+    <section class="article-section" id="principles-overview" aria-labelledby="principles-overview-title">
+      <h2 class="article-section-heading" id="principles-overview-title">1.3 3대 원칙 개요</h2>
+      <p class="article-section-lead">주권자의 시간을 아끼는 3가지 실행 기준. 공공 서비스의 글은 주권자가 단어의 뜻을 유추하느라 멈춰 서지 않고, 안심하며 다음 버튼을 누를 수 있도록 돕는 실용적인 표지판이어야 합니다.</p>
+
+      <div class="principle-card">
+        <div class="principle-card-icon">⚖️</div>
+        <div>
+          <div class="principle-card-title">원칙 1. 무번역의 원칙 (No-Translation)</div>
+          <div class="principle-card-desc">공급자의 행정적 정확성보다 주권자의 즉각적인 이해가 우선입니다. 뇌가 일상어로 다시 '번역'해야 하는 단어는 철저히 배제합니다. 행정 관습어 폐기, 이중 부정 금지, 외래어 한글 표기 기준을 따릅니다.</div>
+          <a class="principle-card-link" href="/krds-ux-writing/principles/no-translation/">2장 무번역 원칙 읽기 →</a>
+        </div>
+      </div>
+
+      <div class="principle-card">
+        <div class="principle-card-icon">⚖️</div>
+        <div>
+          <div class="principle-card-title">원칙 2. 정보 핵심화의 원칙 (Essentialism)</div>
+          <div class="principle-card-desc">무작정 글자 수를 줄이는 것이 아니라, 주권자가 핵심에 도달하는 생각의 거리를 물리적으로 줄여주는 '노이즈 제거' 과정입니다. 결론 우선(Front-loading), 당연한 말 생략, 시각적 청킹으로 구현합니다.</div>
+          <a class="principle-card-link" href="/krds-ux-writing/principles/core-info/">3장 정보핵심화 원칙 읽기 →</a>
+        </div>
+      </div>
+
+      <div class="principle-card">
+        <div class="principle-card-icon">⚖️</div>
+        <div>
+          <div class="principle-card-title">원칙 3. 심리적 안전망의 원칙 (Psychological Safety)</div>
+          <div class="principle-card-desc">실수해도 언제든 궤도를 수정할 수 있다는 확신을 주어 비가역적 공포를 없앱니다. 100% 예측 가능한 버튼, 비난 없는 오류 복구, 비가역 행동 앞의 제동으로 구현합니다.</div>
+          <a class="principle-card-link" href="/krds-ux-writing/principles/safety-net/">4장 심리적안전망 원칙 읽기 →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1.4 보이스·톤 기준 -->
+    <section class="article-section" id="voice-tone" aria-labelledby="voice-tone-title">
+      <h2 class="article-section-heading" id="voice-tone-title">1.4 보이스·톤 기준: 주권자를 대하는 정부의 일관된 인격</h2>
+      <p class="article-section-lead">공공 서비스의 인격은 상황에 따라 오락가락해서는 안 됩니다. 흔들리지 않는 하나의 보이스(Voice)를 유지하되, 주권자의 감정 곡선에 맞춰 말투(Tone)를 4단계로 유연하게 변주합니다.</p>
+
+      <h3 class="sub-h3">🏛️ 우리의 보이스 (Voice): '권위를 뺀 든든한 조력자'</h3>
+      <p style="font-size:14px;line-height:1.9;color:var(--text-mid);margin-bottom:16px;">
+        우리는 가르치거나 통제하지 않으며, 다음 3가지 성격을 항상 유지합니다.
+      </p>
+
+      <div class="voice-attr">
+        <div class="voice-attr-item">
+          <div class="voice-attr-num">1</div>
+          <div>
+            <div class="voice-attr-title">객관적이고 투명한 (Transparent)</div>
+            <div class="voice-attr-desc">제한 사항을 숨기지 않고 명확히 밝힙니다.</div>
+          </div>
+        </div>
+        <div class="voice-attr-item">
+          <div class="voice-attr-num">2</div>
+          <div>
+            <div class="voice-attr-title">단호하지만 책임을 지는 (Accountable)</div>
+            <div class="voice-attr-desc">안 되는 것은 선을 긋되, 대안을 책임지고 안내합니다.</div>
+          </div>
+        </div>
+        <div class="voice-attr-item">
+          <div class="voice-attr-num">3</div>
+          <div>
+            <div class="voice-attr-title">담백하게 정중한 (Respectful)</div>
+            <div class="voice-attr-desc">불필요한 감정 표현(이모지)이나 과도한 극존칭을 빼고 존중의 의미만 남깁니다.</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="sub-h3">🎛️ 상황별 톤 매트릭스 (Tone Matrix)</h3>
+
+      <table class="data-table" role="table" aria-label="상황별 톤 매트릭스">
+        <thead>
+          <tr><th>상태</th><th>톤</th><th>주권자 감정</th><th>원칙</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>🟢 탐색과 안내</td><td>길잡이</td><td>안정</td><td>군더더기 없이 객관적·명확</td></tr>
+          <tr><td>🟡 대기와 로딩</td><td>중계자</td><td>초조·의심</td><td>현재 상황과 예상 시간 투명 공개</td></tr>
+          <tr><td>🔴 오류와 실패</td><td>해결사</td><td>당황·분노</td><td>원인+해결책만 건조하게, 이모지 금지</td></tr>
+          <tr><td>🔵 완료와 성공</td><td>마침표</td><td>안도</td><td>과업 완료 확인 + 다음 일정 안내</td></tr>
+        </tbody>
+      </table>
+
+      <div class="tone-grid">
+        <div class="tone-card">
+          <div class="tone-card-status" style="color:#228738;">🟢 탐색과 안내 (안정)</div>
+          <div class="tone-card-title">길잡이 톤</div>
+          <div class="tone-card-desc">목적을 향해 가는 주권자를 위해 군더더기 없이 객관적이고 명확한 길잡이 역할을 합니다.</div>
+          <div class="tone-card-example">어떤 서비스가 필요하신가요? 아래에서 선택해 주세요.</div>
+        </div>
+        <div class="tone-card">
+          <div class="tone-card-status" style="color:#c07000;">🟡 대기와 로딩 (초조)</div>
+          <div class="tone-card-title">중계자 톤</div>
+          <div class="tone-card-desc">막연히 기다리게 하지 않고, 시스템이 현재 무엇을 하고 있는지, 얼마나 걸리는지 투명하게 중계합니다.</div>
+          <div class="tone-card-example">국세청에서 소득 정보를 불러오고 있습니다. (약 10초 소요)</div>
+        </div>
+        <div class="tone-card">
+          <div class="tone-card-status" style="color:#c0392b;">🔴 오류와 실패 (당황)</div>
+          <div class="tone-card-title">해결사 톤</div>
+          <div class="tone-card-desc">감정을 철저히 배제하고 가장 건조한 톤으로 '원인'과 '해결책'만 단호하게 짚어줍니다. 이모지·느낌표 금지.</div>
+          <div class="tone-card-example">인증 번호가 일치하지 않습니다. 문자로 받은 6자리 숫자를 다시 입력해 주세요.</div>
+        </div>
+        <div class="tone-card">
+          <div class="tone-card-status" style="color:#256ef4;">🔵 완료와 성공 (안도)</div>
+          <div class="tone-card-title">마침표 톤</div>
+          <div class="tone-card-desc">과도하게 텐션을 높여 축하하지 않고, 과업이 확실히 끝났다는 마침표를 찍어주며 다음 일정을 안내합니다.</div>
+          <div class="tone-card-example">지원금 신청이 끝났습니다. 심사 결과는 3일 뒤 카카오톡으로 알려드릴게요.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chapter Navigation -->
+    <section aria-labelledby="chapter-nav-title">
+      <h2 class="article-section-heading" id="chapter-nav-title">다음 장으로</h2>
+      <div class="chapter-nav">
+        <a href="/krds-ux-writing/principles/no-translation/" class="chapter-nav-card">
+          <div class="chapter-nav-num">제2장 — No Translation</div>
+          <div class="chapter-nav-name">무번역의 원칙</div>
+        </a>
+        <a href="/krds-ux-writing/principles/core-info/" class="chapter-nav-card">
+          <div class="chapter-nav-num">제3장 — Core Info</div>
+          <div class="chapter-nav-name">정보핵심화의 원칙</div>
+        </a>
+        <a href="/krds-ux-writing/principles/safety-net/" class="chapter-nav-card">
+          <div class="chapter-nav-num">제4장 — Safety Net</div>
+          <div class="chapter-nav-name">심리적안전망의 원칙</div>
+        </a>
+        <a href="/krds-ux-writing/principles/derivative/" class="chapter-nav-card">
+          <div class="chapter-nav-num">제5장 — Derivative</div>
+          <div class="chapter-nav-name">기관별 파생 가이드 템플릿</div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="page-footer">
+    <span>KRDS UX Writing 가이드라인 v2.0</span>
+    <div class="footer-links">
+      <a href="https://www.krds.go.kr/" target="_blank" rel="noopener">KRDS 공식 사이트</a>
+      <a href="https://github.com/thenisaid/krds-ux-writing" target="_blank" rel="noopener">GitHub</a>
+      <a href="/krds-ux-writing/">홈으로</a>
+    </div>
+  </footer>
+  </div>
+</div>
+
+<script src="../../shared/nav.js"></script>
+</body>
+</html>
