@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="거버넌스 — 이 가이드라인을 조직에서 운영하려면. 단일 진실 공급원·Living Glossary·QA 의무화·라이팅 자동화. KRDS UX Writing 가이드라인.">
+<title>거버넌스 — KRDS UX Writing 가이드라인</title>
+<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" as="style" crossorigin="anonymous"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
+  integrity="sha384-o2ZrV2/pmy/zDV8dhdJIibaM1s+TlS8+7JwrtshqmiTJGTczb1GcwzkjzZ80EUyy">
+<link rel="stylesheet" href="../../shared/style.css">
+<style>
+.breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 32px; }
+.breadcrumb a { color: var(--text-muted); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb-sep { color: var(--border-mid); }
+.principle-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; padding: 3px 10px; border-radius: 4px; background: rgba(100,60,160,0.07); color: #6c3eb5; border: 1px solid rgba(100,60,160,0.2); margin-bottom: 14px; }
+.article-section { margin-bottom: 56px; }
+.article-section-heading { font-size: 22px; font-weight: 800; letter-spacing: -0.025em; color: var(--text); margin-bottom: 8px; padding-top: 16px; }
+.article-section-lead { font-size: 15px; color: var(--text-muted); line-height: 1.8; margin-bottom: 28px; max-width: 64ch; }
+.article-divider { height: 1px; background: var(--border); margin: 40px 0; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 20px 0; }
+.data-table th { background: var(--bg-subtle); font-weight: 700; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+.data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); line-height: 1.6; vertical-align: top; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--bg-subtle); }
+.data-table .strike { color: var(--text-muted); text-decoration: line-through; }
+.data-table .ok { color: #228738; font-weight: 600; }
+.do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+.do-dont-box { padding: 16px 18px; border-radius: 8px; font-size: 13.5px; line-height: 1.7; }
+.do-dont-box.do { background: rgba(34,135,56,0.06); border: 1px solid rgba(34,135,56,0.25); }
+.do-dont-box.dont { background: rgba(231,72,72,0.04); border: 1px solid rgba(231,72,72,0.2); }
+.do-dont-label { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; margin-bottom: 10px; }
+.do-dont-label.do { color: #228738; }
+.do-dont-label.dont { color: #c0392b; }
+.info-box { background: rgba(37,110,244,0.05); border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; padding: 14px 18px; font-size: 13.5px; color: var(--text-mid); line-height: 1.7; margin: 20px 0; }
+.warn-box { background: rgba(255,153,0,0.06); border-left: 3px solid #f90; border-radius: 0 6px 6px 0; padding: 14px 18px; font-size: 13.5px; color: var(--text-mid); line-height: 1.7; margin: 20px 0; }
+.gov-card { border: 1px solid var(--border); border-radius: 10px; padding: 22px 26px; margin: 16px 0; }
+.gov-card-num { font-size: 11px; font-weight: 800; color: #6c3eb5; letter-spacing: 0.08em; margin-bottom: 6px; }
+.gov-card-title { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; margin-bottom: 8px; }
+.gov-card-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.8; }
+.checklist { list-style: none; padding: 0; margin: 16px 0; }
+.checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13.5px; color: var(--text); line-height: 1.6; }
+.checklist li:last-child { border-bottom: none; }
+.checklist-icon { flex-shrink: 0; width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 4px; margin-top: 2px; display: flex; align-items: center; justify-content: center; }
+.sub-h3 { font-size: 16px; font-weight: 700; color: var(--text); margin: 28px 0 10px; letter-spacing: -0.015em; }
+.sub-h4 { font-size: 13.5px; font-weight: 700; color: var(--text-mid); margin: 20px 0 8px; letter-spacing: 0.02em; text-transform: uppercase; }
+.role-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin: 0 3px; }
+.role-writer { background: rgba(37,110,244,0.08); color: var(--accent); border: 1px solid rgba(37,110,244,0.2); }
+.role-dev { background: rgba(34,135,56,0.07); color: #1a6e2e; border: 1px solid rgba(34,135,56,0.2); }
+.role-design { background: rgba(138,92,0,0.07); color: #8a5c00; border: 1px solid rgba(138,92,0,0.2); }
+.role-pm { background: rgba(100,60,160,0.07); color: #6c3eb5; border: 1px solid rgba(100,60,160,0.2); }
+.other-principles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+.other-principle-card { padding: 16px 18px; border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: inherit; transition: border-color 0.15s, box-shadow 0.15s; }
+.other-principle-card:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(37,110,244,0.08); text-decoration: none; }
+.other-principle-num { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; }
+.other-principle-name { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+@media (max-width: 600px) {
+  .do-dont { grid-template-columns: 1fr; }
+  .other-principles { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<a class="skip-nav" href="#content">본문 바로가기</a>
+<div class="sidebar-backdrop"></div>
+
+<header class="gnb">
+  <button class="gnb-icon-btn gnb-hamburger" id="gnbHamburger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mainSidebar">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+  </button>
+  <a href="/krds-ux-writing/" class="gnb-logo">
+    <span class="gnb-logo-mark">K</span>
+    <span>UX Writing</span>
+  </a>
+  <nav class="gnb-nav" aria-label="섹션 내비게이션">
+    <a href="/krds-ux-writing/principles/" class="gnb-nav-link" data-section="principles">가이드라인</a>
+    <a href="/krds-ux-writing/dictionary/" class="gnb-nav-link" data-section="dictionary">사전</a>
+    <a href="/krds-ux-writing/case-studies/" class="gnb-nav-link" data-section="case-studies">사례</a>
+  </nav>
+  <div class="gnb-actions">
+    <span class="gnb-badge">v2.0</span>
+    <button class="gnb-icon-btn" id="themeToggle" aria-label="다크 모드로 전환" type="button"></button>
+  </div>
+</header>
+
+<div class="page-layout">
+  <aside class="sidebar" id="mainSidebar" aria-label="가이드라인 내비게이션">
+    <div class="sidebar-section">
+      <div class="sidebar-label">이 페이지</div>
+      <a href="#overview" class="sidebar-link">개요</a>
+      <a href="#single-source" class="sidebar-link">① 단일 진실 공급원</a>
+      <a href="#figma" class="sidebar-link">② Figma 컴포넌트 결합</a>
+      <a href="#glossary" class="sidebar-link">③ Living Glossary</a>
+      <a href="#qa" class="sidebar-link">④ UX Writing QA 의무화</a>
+      <a href="#lint" class="sidebar-link">⑤ 라이팅 자동화</a>
+      <a href="#education" class="sidebar-link">⑥ 철학 내재화 교육</a>
+      <a href="#checklist" class="sidebar-link">도입 체크리스트</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">1장. 파운데이션</div>
+      <a href="/krds-ux-writing/principles/foundation/" class="sidebar-link">파운데이션 개요</a>
+      <a href="/krds-ux-writing/principles/no-translation/" class="sidebar-link">무번역의 원칙</a>
+      <a href="/krds-ux-writing/principles/core-info/" class="sidebar-link">정보핵심화</a>
+      <a href="/krds-ux-writing/principles/safety-net/" class="sidebar-link">심리적안전망</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">심화 가이드</div>
+      <a href="/krds-ux-writing/principles/structure/" class="sidebar-link">2장. 텍스트 구조화</a>
+      <a href="/krds-ux-writing/principles/notation/" class="sidebar-link">3장. 표기법</a>
+      <a href="/krds-ux-writing/principles/components/" class="sidebar-link">4장. UI 컴포넌트</a>
+      <a href="/krds-ux-writing/principles/governance/" class="sidebar-link" style="color:var(--accent);font-weight:700">거버넌스 ▸</a>
+      <a href="/krds-ux-writing/principles/derivative/" class="sidebar-link">기관별 파생 가이드</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">목록으로</div>
+      <a href="/krds-ux-writing/principles/" class="sidebar-link">← 가이드라인 목록</a>
+    </div>
+  </aside>
+
+  <div style="display:flex;flex-direction:column;min-height:0">
+  <main class="content" id="content">
+
+    <div class="breadcrumb">
+      <a href="/krds-ux-writing/">홈</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="/krds-ux-writing/principles/">가이드라인</a>
+      <span class="breadcrumb-sep">›</span>
+      <span>거버넌스</span>
+    </div>
+
+    <div class="content-header">
+      <div class="principle-badge">거버넌스 — 조직 운영 체계</div>
+      <h1 class="content-title">이 가이드라인을<br>조직에서 운영하려면</h1>
+      <p class="content-headline">규칙만으로는 부족하다 — 체계가 일관성을 만든다</p>
+      <p class="content-desc">
+        좋은 글쓰기 원칙은 문서 속에 머물러서는 안 됩니다. 조직의 도구·프로세스·문화에 내재화되어야 비로소 일관된 시민 경험이 만들어집니다. 6가지 운영 조건이 그 체계입니다.
+      </p>
+    </div>
+
+    <!-- 개요 -->
+    <section class="article-section" id="overview" aria-labelledby="overview-title">
+      <h2 class="article-section-heading" id="overview-title">개요</h2>
+      <p class="article-section-lead">UX Writing 거버넌스는 "좋은 글쓰기를 위한 조직적 인프라"입니다. 개인의 노력이 아니라 시스템이 일관성을 보장합니다.</p>
+
+      <table class="data-table">
+        <thead><tr><th>#</th><th>조건</th><th>핵심 목표</th><th>주요 담당</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>①</td>
+            <td><strong>단일 진실 공급원</strong></td>
+            <td>마스터 문서 1개 — 부서별 사본 금지</td>
+            <td><span class="role-tag role-writer">UX Writer</span> <span class="role-tag role-pm">PM</span></td>
+          </tr>
+          <tr>
+            <td>②</td>
+            <td><strong>Figma 컴포넌트 결합</strong></td>
+            <td>버튼·폼 기본 텍스트를 규칙 예시로 세팅</td>
+            <td><span class="role-tag role-design">디자이너</span> <span class="role-tag role-writer">UX Writer</span></td>
+          </tr>
+          <tr>
+            <td>③</td>
+            <td><strong>Living Glossary</strong></td>
+            <td>금지어·대체어 DB화, 개발 상태값 동기화</td>
+            <td><span class="role-tag role-writer">UX Writer</span> <span class="role-tag role-dev">개발</span></td>
+          </tr>
+          <tr>
+            <td>④</td>
+            <td><strong>UX Writing QA 의무화</strong></td>
+            <td>배포 전 텍스트 검수 프로세스 강제화</td>
+            <td><span class="role-tag role-pm">PM</span> <span class="role-tag role-writer">UX Writer</span></td>
+          </tr>
+          <tr>
+            <td>⑤</td>
+            <td><strong>라이팅 자동화 (Linting)</strong></td>
+            <td>주관 부사·이중 피동 자동 경고 도구</td>
+            <td><span class="role-tag role-dev">개발</span> <span class="role-tag role-writer">UX Writer</span></td>
+          </tr>
+          <tr>
+            <td>⑥</td>
+            <td><strong>철학 내재화 교육</strong></td>
+            <td>규칙 암기 전 "왜" 먼저 — 정기 교육</td>
+            <td><span class="role-tag role-pm">PM</span> <span class="role-tag role-writer">UX Writer</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>왜 6가지 조건인가?</strong> UX Writing 실패의 90%는 나쁜 글쓰기가 아니라 나쁜 운영 구조에서 비롯됩니다. 가이드라인이 문서로만 존재하면, 담당자가 바뀌는 순간 규칙도 사라집니다. 6가지 조건은 사람이 아닌 시스템이 일관성을 유지하도록 만듭니다.
+      </div>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- ① 단일 진실 공급원 -->
+    <section class="article-section" id="single-source" aria-labelledby="single-source-title">
+      <h2 class="article-section-heading" id="single-source-title">① 단일 진실 공급원 (Single Source of Truth)</h2>
+      <p class="article-section-lead">UX Writing 기준은 반드시 한 곳에만 존재해야 합니다. 부서마다 "우리 버전"의 가이드라인이 생기면, 조직 전체가 다른 기준으로 글을 씁니다.</p>
+
+      <div class="do-dont">
+        <div class="do-dont-box dont">
+          <div class="do-dont-label dont">🚫 분산 구조 (현실의 함정)</div>
+          기획팀 가이드라인.xlsx (2023년 버전)<br>
+          개발팀 UX Writing 정리.notion<br>
+          디자인팀 Figma 코멘트 모음<br>
+          마케팅팀 캐치카피 규칙.pptx
+        </div>
+        <div class="do-dont-box do">
+          <div class="do-dont-label do">✅ 단일 진실 공급원</div>
+          <strong>KRDS UX Writing 가이드라인</strong> (이 사이트)<br>
+          → 모든 팀이 이 URL을 기준으로 참조<br>
+          → 변경은 이 사이트에만 반영<br>
+          → 각 팀은 사본 없이 링크만 공유
+        </div>
+      </div>
+
+      <div class="sub-h3">운영 규칙</div>
+      <table class="data-table">
+        <thead><tr><th>항목</th><th>규칙</th></tr></thead>
+        <tbody>
+          <tr><td><strong>마스터 문서</strong></td><td>이 가이드라인 사이트 1개 — 버전 관리는 GitHub</td></tr>
+          <tr><td><strong>부서별 사본 금지</strong></td><td>팀 내부 문서에 규칙을 복사하지 않음. 필요하면 URL을 링크</td></tr>
+          <tr><td><strong>변경 권한</strong></td><td>UX Writer(초안) → UX Researcher·디자이너 검토 → 배포</td></tr>
+          <tr><td><strong>변경 이력</strong></td><td>git commit 메시지로 추적 — 날짜·이유·담당자 명시</td></tr>
+          <tr><td><strong>주기적 검토</strong></td><td>분기 1회 — 실제 서비스와 가이드라인 간 간극 점검</td></tr>
+        </tbody>
+      </table>
+
+      <div class="warn-box">
+        <strong>사본이 생기는 신호</strong>: "우리 서비스는 조금 달라서요"라는 말이 나오면 파생 가이드 문제입니다. <a href="/krds-ux-writing/principles/derivative/" style="color:var(--accent)">기관별 파생 가이드</a>를 참고하여 오버라이드 방식으로 처리하고, 사본은 만들지 않습니다.
+      </div>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- ② Figma 컴포넌트 결합 -->
+    <section class="article-section" id="figma" aria-labelledby="figma-title">
+      <h2 class="article-section-heading" id="figma-title">② Figma 컴포넌트 결합</h2>
+      <p class="article-section-lead">디자이너가 버튼 컴포넌트를 가져다 쓰는 순간, 올바른 기본 텍스트가 자동으로 따라와야 합니다. 규칙을 읽지 않아도 규칙이 적용됩니다.</p>
+
+      <div class="sub-h3">컴포넌트 기본값 세팅 원칙</div>
+      <table class="data-table">
+        <thead><tr><th>컴포넌트</th><th>🚫 나쁜 기본값</th><th>✅ 올바른 기본값</th></tr></thead>
+        <tbody>
+          <tr><td><strong>주요 버튼</strong></td><td class="strike">확인 / Button</td><td class="ok">[대상 + 동사] 예: 지원금 신청하기</td></tr>
+          <tr><td><strong>취소 버튼</strong></td><td class="strike">취소 / Cancel</td><td class="ok">작성 내용 삭제하기</td></tr>
+          <tr><td><strong>입력 레이블</strong></td><td class="strike">이름 / Label</td><td class="ok">성명 (가장 보편적 명사)</td></tr>
+          <tr><td><strong>플레이스홀더</strong></td><td class="strike">입력하세요 / Enter here</td><td class="ok">하이픈(-) 제외, 숫자만 입력 (예: 01012345678)</td></tr>
+          <tr><td><strong>오류 메시지</strong></td><td class="strike">오류가 발생했습니다</td><td class="ok">[원인] + [해결 방법] 구조</td></tr>
+          <tr><td><strong>빈 화면</strong></td><td class="strike">데이터 없음</td><td class="ok">아직 신청한 [대상]이 없습니다. → [행동] 버튼</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h3">Figma 운영 가이드</div>
+      <div class="gov-card">
+        <div class="gov-card-num">FIGMA LIBRARY 규칙</div>
+        <div class="gov-card-title">컴포넌트 Description 필드 = UX Writing 규칙</div>
+        <div class="gov-card-desc">
+          Figma 컴포넌트의 Description에 해당 컴포넌트의 UX Writing 규칙 요약과 이 가이드라인 URL을 기재합니다.<br>
+          디자이너가 컴포넌트를 선택하면 규칙이 바로 보입니다. 별도 문서를 열 필요가 없습니다.
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>기본값의 힘</strong>: 사람은 기본값을 바꾸지 않는 경향이 있습니다 (기본값 편향). 올바른 기본값을 설정하면, 규칙을 가르치지 않아도 대부분의 경우 올바른 텍스트가 나옵니다.
+      </div>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- ③ Living Glossary -->
+    <section class="article-section" id="glossary" aria-labelledby="glossary-title">
+      <h2 class="article-section-heading" id="glossary-title">③ Living Glossary (살아있는 용어집)</h2>
+      <p class="article-section-lead">용어는 살아있습니다. 새로운 행정 용어가 생기고, 금지어가 추가되고, 개발 상태값이 바뀝니다. 용어집은 '문서'가 아니라 '데이터베이스'여야 합니다.</p>
+
+      <div class="sub-h3">용어집 4대 항목</div>
+      <table class="data-table">
+        <thead><tr><th>항목</th><th>내용</th><th>업데이트 주기</th></tr></thead>
+        <tbody>
+          <tr><td><strong>금지어</strong></td><td>주관 부사, 과도한 행정어, 이중 피동형 등 사용하면 안 되는 단어</td><td>수시 (새 오류 발견 시)</td></tr>
+          <tr><td><strong>대체어</strong></td><td>금지어에 대한 올바른 표현 1~3가지</td><td>금지어 등록 시 동시</td></tr>
+          <tr><td><strong>행정 용어 번역</strong></td><td>행정 전문어 → 일상어 매핑 (예: 과오납 → 잘못 낸 돈)</td><td>월 1회 또는 신규 용어 등장 시</td></tr>
+          <tr><td><strong>개발 상태값</strong></td><td>API·DB의 status 코드 → 사용자 표시 텍스트 매핑</td><td>개발 스프린트마다</td></tr>
+        </tbody>
+      </table>
+
+      <div class="do-dont">
+        <div class="do-dont-box dont">
+          <div class="do-dont-label dont">🚫 고정된 용어 목록 (죽은 문서)</div>
+          UX Writing 금지어 목록.xlsx<br>
+          최종수정: 2024-03-15<br>
+          <small style="color:var(--text-muted)">담당자가 바뀌면 아무도 업데이트 안 함</small>
+        </div>
+        <div class="do-dont-box do">
+          <div class="do-dont-label do">✅ 살아있는 용어 DB</div>
+          GitHub 저장소 또는 Notion 데이터베이스<br>
+          → PR로 변경 이력 추적<br>
+          → 개발 상태값 코드와 연동<br>
+          → 린터 도구가 이 DB를 참조
+        </div>
+      </div>
+
+      <div class="sub-h3">개발 상태값 연동 예시</div>
+      <table class="data-table">
+        <thead><tr><th>API status 값</th><th>🚫 나쁜 표시 텍스트</th><th>✅ UX Writing 표시 텍스트</th></tr></thead>
+        <tbody>
+          <tr><td><code>PENDING</code></td><td class="strike">PENDING / 대기중</td><td class="ok">접수됨 — 담당자가 확인 중입니다</td></tr>
+          <tr><td><code>IN_REVIEW</code></td><td class="strike">검토중</td><td class="ok">심사 중 (영업일 기준 3~5일 소요)</td></tr>
+          <tr><td><code>SUPPLEMENTAL_REQUIRED</code></td><td class="strike">보완 필요</td><td class="ok">서류 보완 필요 — [보완 내용 확인하기]</td></tr>
+          <tr><td><code>APPROVED</code></td><td class="strike">승인됨</td><td class="ok">승인 완료 — [결과 확인하기]</td></tr>
+          <tr><td><code>REJECTED</code></td><td class="strike">반려</td><td class="ok">반려됨 — 이유를 확인하고 재신청할 수 있습니다</td></tr>
+        </tbody>
+      </table>
+
+      <div class="warn-box">
+        <strong>Living Glossary 실패 패턴</strong>: 용어집이 특정 담당자의 개인 파일에 있으면 그 사람이 퇴사하는 순간 사라집니다. 반드시 조직이 소유하는 공용 저장소에 관리합니다.
+      </div>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- ④ UX Writing QA 의무화 -->
+    <section class="article-section" id="qa" aria-labelledby="qa-title">
+      <h2 class="article-section-heading" id="qa-title">④ UX Writing QA 의무화</h2>
+      <p class="article-section-lead">개발 QA는 당연하게 여기면서 UX Writing QA는 생략합니다. 배포 전 텍스트 검수는 선택이 아닙니다.</p>
+
+      <div class="sub-h3">UX Writing QA 체크포인트</div>
+      <table class="data-table">
+        <thead><tr><th>시점</th><th>검수 항목</th><th>담당</th></tr></thead>
+        <tbody>
+          <tr><td><strong>디자인 완료 시</strong></td><td>버튼 레이블, 폼 레이블, 오류 메시지, 빈 화면 텍스트 — 가이드라인 준수 여부</td><td><span class="role-tag role-writer">UX Writer</span></td></tr>
+          <tr><td><strong>개발 완료 시</strong></td><td>실제 구현된 텍스트가 디자인과 일치하는지, 동적 변수 [대괄호] 표시 정상 여부</td><td><span class="role-tag role-dev">개발</span> <span class="role-tag role-writer">UX Writer</span></td></tr>
+          <tr><td><strong>배포 직전</strong></td><td>최종 스테이징 환경에서 금지어·오타·일관성 체크</td><td><span class="role-tag role-pm">PM</span> <span class="role-tag role-writer">UX Writer</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h3">QA 체크리스트 항목</div>
+      <ul class="checklist" role="list">
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>버튼 레이블이 [목적어+동사형] 구조인가? (예: 신청서 제출하기)</span>
+        </li>
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>모든 오류 메시지가 [원인 + 해결 방법] 구조인가?</span>
+        </li>
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>행정 전문어가 일상어로 번역되었는가? (Living Glossary 대조)</span>
+        </li>
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>주관 부사(빠르게, 이미, 지금, 너무)가 없는가?</span>
+        </li>
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>이중 피동(~되어졌습니다)이 없는가?</span>
+        </li>
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>동적 변수가 [대괄호]로 시각 분리되었는가?</span>
+        </li>
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>빈 화면에 원인과 대안 행동이 있는가?</span>
+        </li>
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>선택지(체크박스·라디오)가 긍정문인가?</span>
+        </li>
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>스크린 리더 오독 기호(★ ◆ →)가 없는가?</span>
+        </li>
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>숫자 단위가 밀착 표기(15,000원, 30일)인가?</span>
+        </li>
+      </ul>
+
+      <div class="info-box">
+        <strong>QA를 티켓으로 만들어라</strong>: UX Writing QA를 "담당자가 알아서"가 아니라 Jira/GitHub 이슈로 트래킹합니다. 배포 전 해결되지 않은 UX Writing 이슈는 P1 버그와 동등하게 취급합니다.
+      </div>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- ⑤ 라이팅 자동화 -->
+    <section class="article-section" id="lint" aria-labelledby="lint-title">
+      <h2 class="article-section-heading" id="lint-title">⑤ 라이팅 자동화 (Writing Linter)</h2>
+      <p class="article-section-lead">코드는 린터가 검사합니다. 텍스트도 같은 원칙을 적용합니다. 사람이 매번 확인하는 것보다 자동화 도구가 더 일관성 있게 오류를 잡습니다.</p>
+
+      <div class="sub-h3">자동 감지 대상 패턴</div>
+      <table class="data-table">
+        <thead><tr><th>오류 유형</th><th>감지 패턴 예시</th><th>심각도</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>이중 피동</strong></td>
+            <td>~되어졌습니다, ~되어집니다, ~하여지다</td>
+            <td><span style="color:#c0392b;font-weight:700">ERROR</span></td>
+          </tr>
+          <tr>
+            <td><strong>주관 부사</strong></td>
+            <td>빠르게, 신속히, 이미, 지금 바로, 너무, 매우, 간편하게</td>
+            <td><span style="color:#c0392b;font-weight:700">ERROR</span></td>
+          </tr>
+          <tr>
+            <td><strong>과도한 존칭</strong></td>
+            <td>~하시기 바랍니다, ~하여 주시기 바랍니다, 양지하시기 바랍니다</td>
+            <td><span style="color:#a06000;font-weight:700">WARN</span></td>
+          </tr>
+          <tr>
+            <td><strong>금지 기호</strong></td>
+            <td>★, ◆, ●, !!, →→</td>
+            <td><span style="color:#a06000;font-weight:700">WARN</span></td>
+          </tr>
+          <tr>
+            <td><strong>단위 분리</strong></td>
+            <td>15,000 원, 30 일, 10 MB (숫자와 단위 사이 공백)</td>
+            <td><span style="color:#a06000;font-weight:700">WARN</span></td>
+          </tr>
+          <tr>
+            <td><strong>행정 전문어</strong></td>
+            <td>Living Glossary 금지어 목록과 대조</td>
+            <td><span style="color:#a06000;font-weight:700">WARN</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h3">자동화 도입 방법</div>
+      <div class="gov-card">
+        <div class="gov-card-num">옵션 A — 간이 린터 (즉시 시작 가능)</div>
+        <div class="gov-card-title">정규식 기반 스크립트</div>
+        <div class="gov-card-desc">
+          Living Glossary의 금지어 목록을 정규식으로 변환하여, 배포 전 CI/CD 파이프라인에 텍스트 스캔 단계를 추가합니다.<br>
+          구현 시간: 1~2일. 한국어 형태소 분석 없이도 대부분의 패턴을 감지합니다.
+        </div>
+      </div>
+      <div class="gov-card">
+        <div class="gov-card-num">옵션 B — 형태소 분석 기반 (정밀 검사)</div>
+        <div class="gov-card-title">KoNLPy 또는 Kiwi 기반 분석</div>
+        <div class="gov-card-desc">
+          한국어 형태소 분석기를 사용해 더 정밀하게 이중 피동·존칭 패턴을 감지합니다.<br>
+          구현 시간: 1~2주. 오탐률이 낮고 복잡한 패턴도 감지 가능합니다.
+        </div>
+      </div>
+
+      <div class="warn-box">
+        <strong>자동화의 한계</strong>: 린터는 "확실히 나쁜 것"만 잡습니다. 맥락에 따른 판단(어떤 피동형이 자연스러운지)은 여전히 UX Writer의 몫입니다. 자동화는 사람을 대체하는 것이 아니라, 반복 검수 부담을 줄이는 도구입니다.
+      </div>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- ⑥ 철학 내재화 교육 -->
+    <section class="article-section" id="education" aria-labelledby="education-title">
+      <h2 class="article-section-heading" id="education-title">⑥ 철학 내재화 교육</h2>
+      <p class="article-section-lead">규칙을 외우게 하는 교육은 실패합니다. "왜 이렇게 써야 하는가?"를 먼저 이해해야 규칙을 스스로 확장할 수 있습니다.</p>
+
+      <div class="sub-h3">교육 설계 원칙</div>
+      <div class="do-dont">
+        <div class="do-dont-box dont">
+          <div class="do-dont-label dont">🚫 규칙 전달 중심 교육</div>
+          "버튼에는 목적어+동사 구조를 써야 합니다."<br>
+          "이중 피동은 금지입니다."<br>
+          "주관 부사를 쓰지 마세요."<br>
+          <small style="color:var(--text-muted)">→ 기억에 남지 않고, 새 상황에 적용 불가</small>
+        </div>
+        <div class="do-dont-box do">
+          <div class="do-dont-label do">✅ 철학 이해 중심 교육</div>
+          "시민은 버튼을 읽지 않고 클릭합니다.<br>
+          그렇기 때문에 무엇을 하는지 즉각 알 수 있어야 합니다."<br>
+          <small style="color:var(--text-muted)">→ 원리를 이해하면 새 컴포넌트에도 스스로 적용</small>
+        </div>
+      </div>
+
+      <div class="sub-h3">교육 프로그램 구조</div>
+      <table class="data-table">
+        <thead><tr><th>구분</th><th>대상</th><th>내용</th><th>주기</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>온보딩</strong></td>
+            <td>신규 입사자 전원</td>
+            <td>KRDS UX Writing 3대 원칙 (왜 이렇게 쓰는가) + 실습 30분</td>
+            <td>입사 첫 주</td>
+          </tr>
+          <tr>
+            <td><strong>정기 세션</strong></td>
+            <td>개발·디자인·기획 팀</td>
+            <td>실제 서비스의 Before/After 사례 리뷰 — 월 1회 30분</td>
+            <td>월 1회</td>
+          </tr>
+          <tr>
+            <td><strong>가이드라인 업데이트</strong></td>
+            <td>전체 팀</td>
+            <td>규칙이 바뀌거나 추가될 때 변경 이유 공유</td>
+            <td>변경 시</td>
+          </tr>
+          <tr>
+            <td><strong>심층 워크숍</strong></td>
+            <td>UX Writing 관련 직군</td>
+            <td>어려운 케이스 토론 — 판단 기준 내재화</td>
+            <td>분기 1회</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="gov-card">
+        <div class="gov-card-num">교육 효과 측정</div>
+        <div class="gov-card-title">Before/After 비율로 측정</div>
+        <div class="gov-card-desc">
+          교육 전후 실제 서비스의 금지어 밀도, UX Writing QA 이슈 수, 린터 경고 수를 비교합니다.<br>
+          "얼마나 잘 쓰는가"보다 "금지된 패턴이 얼마나 줄었는가"가 실질적 지표입니다.
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>최소 교육 단위</strong>: 조직의 상황이 어렵다면, 최소한 이것만 합니다. 월 1회 30분, 실제 서비스에서 발견한 나쁜 예시와 개선 사례를 팀 전체가 함께 봅니다. 이것만으로도 인식이 달라집니다.
+      </div>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- 도입 체크리스트 -->
+    <section class="article-section" id="checklist" aria-labelledby="checklist-title">
+      <h2 class="article-section-heading" id="checklist-title">도입 체크리스트 — 우선순위 순</h2>
+      <p class="article-section-lead">한 번에 6가지를 모두 할 필요는 없습니다. 영향력이 큰 것부터 순서대로 도입합니다.</p>
+
+      <table class="data-table">
+        <thead><tr><th>우선순위</th><th>조건</th><th>도입 난이도</th><th>영향 범위</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span style="color:var(--accent);font-weight:800">1순위</span></td>
+            <td>③ Living Glossary 구축</td>
+            <td>낮음 (스프레드시트로 시작 가능)</td>
+            <td>즉시 전 팀에 영향</td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--accent);font-weight:800">2순위</span></td>
+            <td>④ UX Writing QA 의무화</td>
+            <td>중간 (프로세스 합의 필요)</td>
+            <td>배포 품질 직접 개선</td>
+          </tr>
+          <tr>
+            <td><span style="color:#228738;font-weight:700">3순위</span></td>
+            <td>① 단일 진실 공급원</td>
+            <td>낮음 (기존 문서 정리)</td>
+            <td>장기적 일관성 기반</td>
+          </tr>
+          <tr>
+            <td><span style="color:#228738;font-weight:700">4순위</span></td>
+            <td>② Figma 컴포넌트 결합</td>
+            <td>중간 (디자이너 협업 필요)</td>
+            <td>디자인 단계에서 오류 예방</td>
+          </tr>
+          <tr>
+            <td><span style="color:#a06000;font-weight:700">5순위</span></td>
+            <td>⑥ 철학 내재화 교육</td>
+            <td>중간 (콘텐츠 준비 필요)</td>
+            <td>장기적 조직 역량</td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--text-muted);font-weight:700">6순위</span></td>
+            <td>⑤ 라이팅 자동화 (Linting)</td>
+            <td>높음 (개발 리소스 필요)</td>
+            <td>반복 검수 비용 절감</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="warn-box">
+        <strong>완벽주의 함정</strong>: "다 준비되면 시작하자"는 생각으로 미루다 보면 아무것도 안 됩니다. Living Glossary 하나만 만들어도 팀의 UX Writing 수준이 달라집니다. 오늘 시작할 수 있는 가장 작은 단계부터 시작합니다.
+      </div>
+
+      <div class="sub-h3">다른 챕터 보기</div>
+      <div class="other-principles">
+        <a href="/krds-ux-writing/principles/components/" class="other-principle-card">
+          <div class="other-principle-num">4장</div>
+          <div class="other-principle-name">UI 컴포넌트 라이팅 →</div>
+        </a>
+        <a href="/krds-ux-writing/principles/derivative/" class="other-principle-card">
+          <div class="other-principle-num">파생 가이드</div>
+          <div class="other-principle-name">기관별 파생 →</div>
+        </a>
+        <a href="/krds-ux-writing/principles/foundation/" class="other-principle-card">
+          <div class="other-principle-num">1장</div>
+          <div class="other-principle-name">파운데이션 →</div>
+        </a>
+        <a href="/krds-ux-writing/principles/" class="other-principle-card">
+          <div class="other-principle-num">목록</div>
+          <div class="other-principle-name">← 가이드라인 전체</div>
+        </a>
+      </div>
+    </section>
+
+  </main>
+  <footer class="page-footer">
+    <span>KRDS UX Writing 가이드라인 v2.0</span>
+    <div class="footer-links">
+      <a href="https://www.koreads.go.kr/" target="_blank" rel="noopener">KRDS 공식 사이트</a>
+      <a href="https://github.com/thenisaid/krds-ux-writing" target="_blank" rel="noopener">GitHub</a>
+      <a href="/krds-ux-writing/">홈으로</a>
+    </div>
+  </footer>
+  </div>
+</div>
+
+<script src="../../shared/nav.js"></script>
+</body>
+</html>
