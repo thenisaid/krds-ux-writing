@@ -109,6 +109,8 @@
       <a href="#forty-rule" class="sidebar-link">40자 규칙</a>
       <a href="#priority-design" class="sidebar-link">중요도 순서 설계</a>
       <a href="#examples" class="sidebar-link">변환 예시</a>
+      <a href="#chunking" class="sidebar-link">청킹·단어 수 제한</a>
+      <a href="#notification" class="sidebar-link">알림·토스트 기준</a>
       <a href="#quick-check" class="sidebar-link">빠른 점검</a>
     </div>
     <div class="sidebar-section">
@@ -361,7 +363,139 @@
 
     <div class="article-divider"></div>
 
-    <!-- 6. 빠른 점검 -->
+    <!-- 6. 청킹·단어 수 제한 -->
+    <section class="article-section" id="chunking" aria-labelledby="chunking-title">
+      <h2 class="article-section-heading" id="chunking-title">정보 구조 원칙 — 단어 수 제한과 청킹</h2>
+      <p class="article-section-lead">단어를 줄이는 것만으로는 부족합니다. <strong>어떻게 배치하느냐</strong>가 주권자의 이해 속도를 결정합니다. 청킹(Chunking)은 관련된 정보를 의미 단위로 묶어 인지 부하를 줄이는 구조화 기술입니다.</p>
+
+      <div class="sub-h3">청킹의 3원칙</div>
+
+      <div class="sub-h4">원칙 1 — 한 문장 한 메시지</div>
+      <p style="font-size:13px;color:var(--text-muted);line-height:1.7;margin-bottom:12px;">한 문장에 하나의 의미만 담습니다. 의미의 마디(청크)가 3개를 넘으면 문장을 분리합니다.</p>
+      <table class="data-table">
+        <thead><tr><th>🚫 과부하 문장</th><th>✅ 분리 후</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="strike">신청서 작성이 완료되면 제출 버튼을 눌러 주시고, 접수가 완료된 후에는 문자로 안내드릴 예정이오니 참고하여 주시기 바랍니다</td>
+            <td class="ok">신청서를 작성한 후 [제출하기]를 눌러 주세요.<br>접수가 완료되면 문자로 알려드립니다.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h4">원칙 2 — 단계별 그룹핑</div>
+      <p style="font-size:13px;color:var(--text-muted);line-height:1.7;margin-bottom:12px;">긴 절차는 <strong>단계(Step)</strong> 단위로 명확히 분리합니다. 각 단계는 하나의 행동만 요청합니다.</p>
+      <div class="code-block"><span class="code-ok">✅ 신청 방법 (3단계)
+
+Step 1. [본인 인증] 버튼을 눌러 주세요.
+Step 2. 신청서를 작성하고 서류를 첨부해 주세요.
+Step 3. [제출하기]를 눌러 신청을 완료해 주세요.</span></div>
+
+      <div class="sub-h4">원칙 3 — 조건과 결과의 분리</div>
+      <p style="font-size:13px;color:var(--text-muted);line-height:1.7;margin-bottom:12px;">조건문은 결과를 먼저, 조건을 다음에 배치합니다. (결론 우선 원칙 연계)</p>
+      <table class="data-table">
+        <thead><tr><th>🚫 조건 우선</th><th>✅ 결론 우선</th></tr></thead>
+        <tbody>
+          <tr><td class="strike">소득 기준 중위소득 80% 이하에 해당하는 경우 신청하실 수 있습니다</td><td class="ok">신청 가능합니다. 소득이 기준 중위소득 80% 이하여야 합니다.</td></tr>
+          <tr><td class="strike">서류가 미비한 경우 신청이 반려될 수 있습니다</td><td class="ok">서류가 부족하면 신청이 반려됩니다. 아래 서류를 모두 준비해 주세요.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h3">단어 수 제한 가이드</div>
+      <table class="data-table">
+        <thead><tr><th>텍스트 유형</th><th>권장 단어 수</th><th>기준</th></tr></thead>
+        <tbody>
+          <tr><td>버튼 레이블</td><td><strong>4어절 이내</strong></td><td>"지원금 신청하기" (3어절)</td></tr>
+          <tr><td>레이블</td><td><strong>3어절 이내</strong></td><td>"휴대전화 번호" (2어절)</td></tr>
+          <tr><td>제목·헤더</td><td><strong>6어절 이내</strong></td><td>한눈에 파악 가능한 분량</td></tr>
+          <tr><td>안내 문구 (1문장)</td><td><strong>40자 이내</strong></td><td>약 15–20어절</td></tr>
+          <tr><td>오류 메시지 (전체)</td><td><strong>3문장 이내</strong></td><td>1단+2단+3단 구조</td></tr>
+          <tr><td>툴팁</td><td><strong>2문장 이내</strong></td><td>핵심 설명만</td></tr>
+          <tr><td>토스트 알림</td><td><strong>1–2문장</strong></td><td>서술어 생략 가능</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h3">목록과 표의 병렬성</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">동일 위계의 항목은 품사와 구조를 통일합니다. 목록 안에서 명사형·동사형이 섞이면 안 됩니다.</p>
+      <table class="data-table">
+        <thead><tr><th>🚫 품사 혼합</th><th>✅ 품사 통일</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="strike">• 신청서 작성<br>• 서류를 제출하세요<br>• 접수 확인 방법</td>
+            <td class="ok">• 신청서 작성<br>• 서류 제출<br>• 접수 확인</td>
+          </tr>
+          <tr>
+            <td class="strike">1. 로그인하기<br>2. 개인정보 동의<br>3. 신청서를 작성해야 함</td>
+            <td class="ok">1. 로그인하기<br>2. 개인정보 동의하기<br>3. 신청서 작성하기</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- 7. 알림·토스트·모바일 메시지 기준 -->
+    <section class="article-section" id="notification" aria-labelledby="notification-title">
+      <h2 class="article-section-heading" id="notification-title">알림·토스트·모바일 메시지 기준</h2>
+      <p class="article-section-lead">화면 밖에서 도달하는 알림(푸시·SMS·이메일)과 화면 안의 즉시 피드백(토스트)은 정보 핵심화 원칙의 가장 극단적인 적용 영역입니다. 공간과 주의 시간이 가장 짧기 때문에, 불필요한 말은 단 한 글자도 허용하지 않습니다.</p>
+
+      <div class="sub-h3">모달 팝업 (치명적 오류·경고)</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">느낌표(!)를 쓰지 않고, 건조한 톤으로 <strong>[원인 + 해결책]</strong>을 가장 짧은 청크로 끊어 던집니다.</p>
+      <table class="data-table">
+        <thead><tr><th>🚫 잘못된 모달</th><th>✅ 올바른 모달</th></tr></thead>
+        <tbody>
+          <tr><td class="strike">입력하신 정보가 잘못되었습니다! 다시 확인해주세요.</td><td class="ok">인증 번호가 틀렸습니다.<br>문자로 받은 6자리 숫자를 다시 입력해 주세요.</td></tr>
+          <tr><td class="strike">오류가 발생했습니다. 죄송합니다.</td><td class="ok">처리할 수 없습니다.<br>잠시 후 다시 시도해 주세요.</td></tr>
+        </tbody>
+      </table>
+      <div class="code-block">제목: [상황 요약 — 한 줄, 명사형]
+본문: [원인 or 상세 설명 — 최대 2문장]
+버튼: [주 행동] + [보조 행동 — 선택]</div>
+
+      <div class="sub-h3">토스트 알림 (가벼운 상태 피드백)</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">주권자의 행동이 정상적으로 접수됐음을 <strong>1–2초 내</strong>에 알립니다. 서술어를 생략한 <strong>명사형</strong>으로 짧게 칩니다.</p>
+      <table class="data-table">
+        <thead><tr><th>🚫 너무 긴 토스트</th><th>✅ 간결한 토스트</th></tr></thead>
+        <tbody>
+          <tr><td class="strike">클립보드에 계좌번호가 성공적으로 복사되었습니다</td><td class="ok">계좌번호를 복사했습니다</td></tr>
+          <tr><td class="strike">변경 사항이 저장되었습니다</td><td class="ok">저장 완료</td></tr>
+          <tr><td class="strike">신청이 완료되어 접수번호가 발급되었습니다</td><td class="ok">신청 완료. 접수번호: 2026-04-18-0042</td></tr>
+        </tbody>
+      </table>
+      <table class="data-table" style="margin-top:0">
+        <thead><tr><th>상황</th><th>최대 글자 수</th><th>예시</th></tr></thead>
+        <tbody>
+          <tr><td>단순 성공</td><td><strong>10자 이내</strong></td><td>저장 완료</td></tr>
+          <tr><td>접수 확인</td><td><strong>20자 이내</strong></td><td>신청 완료. 접수번호: {N}</td></tr>
+          <tr><td>오류 피드백</td><td><strong>30자 이내</strong></td><td>업로드 실패. 파일 크기 초과</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h3">푸시 알림·SMS 기준</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">모바일 알림은 잠금 화면에서 맥락 없이 노출됩니다. <strong>서비스명 + 핵심 정보 + 행동 버튼</strong> 구조를 따릅니다.</p>
+      <div class="code-block">[서비스명] 핵심 내용 (25자 이내)
+상세 설명 (선택, 50자 이내)
+[행동 버튼]</div>
+      <table class="data-table">
+        <thead><tr><th>🚫 맥락 없는 알림</th><th>✅ 명확한 알림</th></tr></thead>
+        <tbody>
+          <tr><td class="strike">새로운 알림이 있습니다</td><td class="ok">[복지로] 기초생활 지원금 신청 결과가 나왔습니다</td></tr>
+          <tr><td class="strike">마감이 다가오고 있습니다</td><td class="ok">[홈택스] 종합소득세 신고 마감 3일 전 — 5월 31일까지</td></tr>
+        </tbody>
+      </table>
+      <table class="data-table" style="margin-top:0">
+        <thead><tr><th>SMS 항목</th><th>기준</th></tr></thead>
+        <tbody>
+          <tr><td>발신자 표시</td><td><code>[기관명]</code> 또는 공식 번호 — 스팸 의심 방지</td></tr>
+          <tr><td>첫 문장</td><td>수신자에게 관련된 핵심 정보 (결론 우선)</td></tr>
+          <tr><td>링크</td><td>단축 URL 사용 시 도메인 명시 (<code>go.kr</code>, <code>gov.kr</code>)</td></tr>
+          <tr><td>길이</td><td>90바이트 이내 권장 (1건 처리)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- 8. 빠른 점검 -->
     <section class="article-section" id="quick-check" aria-labelledby="check-title">
       <h2 class="article-section-heading" id="check-title">빠른 점검 — 핵심 정보 먼저 원칙</h2>
       <p class="article-section-lead">화면 텍스트를 확정하기 전, 5가지 항목을 점검하세요.</p>
