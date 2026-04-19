@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="4장 UI 컴포넌트 라이팅 — 버튼·폼·모달·빈화면 등 14개 컴포넌트별 마이크로카피 공식. KRDS UX Writing 가이드라인.">
+<title>4장 UI 컴포넌트 라이팅 — KRDS UX Writing 가이드라인</title>
+<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" as="style" crossorigin="anonymous"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
+  integrity="sha384-o2ZrV2/pmy/zDV8dhdJIibaM1s+TlS8+7JwrtshqmiTJGTczb1GcwzkjzZ80EUyy">
+<link rel="stylesheet" href="../../shared/style.css">
+<style>
+.breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-bottom: 32px; }
+.breadcrumb a { color: var(--text-muted); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb-sep { color: var(--border-mid); }
+.principle-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; padding: 3px 10px; border-radius: 4px; background: rgba(138,92,0,0.07); color: #8a5c00; border: 1px solid rgba(138,92,0,0.2); margin-bottom: 14px; }
+.article-section { margin-bottom: 56px; }
+.article-section-heading { font-size: 22px; font-weight: 800; letter-spacing: -0.025em; color: var(--text); margin-bottom: 8px; padding-top: 16px; }
+.article-section-lead { font-size: 15px; color: var(--text-muted); line-height: 1.8; margin-bottom: 28px; max-width: 64ch; }
+.article-divider { height: 1px; background: var(--border); margin: 40px 0; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 20px 0; }
+.data-table th { background: var(--bg-subtle); font-weight: 700; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+.data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); line-height: 1.6; vertical-align: top; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--bg-subtle); }
+.data-table .strike { color: var(--text-muted); text-decoration: line-through; }
+.data-table .ok { color: #228738; font-weight: 600; }
+.do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+.do-dont-box { padding: 16px 18px; border-radius: 8px; font-size: 13.5px; line-height: 1.7; }
+.do-dont-box.do { background: rgba(34,135,56,0.06); border: 1px solid rgba(34,135,56,0.25); }
+.do-dont-box.dont { background: rgba(231,72,72,0.04); border: 1px solid rgba(231,72,72,0.2); }
+.do-dont-label { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; margin-bottom: 10px; }
+.do-dont-label.do { color: #228738; }
+.do-dont-label.dont { color: #c0392b; }
+.info-box { background: rgba(37,110,244,0.05); border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; padding: 14px 18px; font-size: 13.5px; color: var(--text-mid); line-height: 1.7; margin: 20px 0; }
+.warn-box { background: rgba(255,153,0,0.06); border-left: 3px solid #f90; border-radius: 0 6px 6px 0; padding: 14px 18px; font-size: 13.5px; color: var(--text-mid); line-height: 1.7; margin: 20px 0; }
+.callout-box { background: rgba(37,110,244,0.04); border: 1px solid rgba(37,110,244,0.18); border-radius: 8px; padding: 18px 22px; font-size: 13.5px; color: var(--text-mid); line-height: 1.8; margin: 24px 0; }
+.callout-box strong { color: var(--accent); }
+.sub-h3 { font-size: 16px; font-weight: 700; color: var(--text); margin: 28px 0 10px; letter-spacing: -0.015em; }
+.sub-h4 { font-size: 13.5px; font-weight: 700; color: var(--text-mid); margin: 20px 0 8px; letter-spacing: 0.02em; text-transform: uppercase; }
+.status-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin: 2px; }
+.status-접수 { background: rgba(37,110,244,0.08); color: var(--accent); border: 1px solid rgba(37,110,244,0.2); }
+.status-심사 { background: rgba(255,153,0,0.08); color: #a06000; border: 1px solid rgba(255,153,0,0.25); }
+.status-보완 { background: rgba(231,72,72,0.07); color: #c0392b; border: 1px solid rgba(231,72,72,0.2); }
+.status-승인 { background: rgba(34,135,56,0.07); color: #1a6e2e; border: 1px solid rgba(34,135,56,0.22); }
+.status-반려 { background: rgba(100,100,100,0.07); color: var(--text-mid); border: 1px solid var(--border); }
+.formula-box { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; font-size: 14px; font-weight: 600; color: var(--text); text-align: center; margin: 16px 0; letter-spacing: -0.01em; }
+.other-principles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+.other-principle-card { padding: 16px 18px; border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: inherit; transition: border-color 0.15s, box-shadow 0.15s; }
+.other-principle-card:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(37,110,244,0.08); text-decoration: none; }
+.other-principle-num { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; }
+.other-principle-name { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+@media (max-width: 600px) {
+  .do-dont { grid-template-columns: 1fr; }
+  .other-principles { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<a class="skip-nav" href="#content">본문 바로가기</a>
+<div class="sidebar-backdrop"></div>
+
+<header class="gnb">
+  <button class="gnb-icon-btn gnb-hamburger" id="gnbHamburger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mainSidebar">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+  </button>
+  <a href="/krds-ux-writing/" class="gnb-logo">
+    <span class="gnb-logo-mark">K</span>
+    <span>UX Writing</span>
+  </a>
+  <nav class="gnb-nav" aria-label="섹션 내비게이션">
+    <a href="/krds-ux-writing/principles/" class="gnb-nav-link" data-section="principles">가이드라인</a>
+    <a href="/krds-ux-writing/dictionary/" class="gnb-nav-link" data-section="dictionary">사전</a>
+    <a href="/krds-ux-writing/case-studies/" class="gnb-nav-link" data-section="case-studies">사례</a>
+  </nav>
+  <div class="gnb-actions">
+    <span class="gnb-badge">v2.0</span>
+    <button class="gnb-icon-btn" id="themeToggle" aria-label="다크 모드로 전환" type="button"></button>
+  </div>
+</header>
+
+<div class="page-layout">
+  <aside class="sidebar" id="mainSidebar" aria-label="가이드라인 내비게이션">
+    <div class="sidebar-section">
+      <div class="sidebar-label">이 페이지</div>
+      <a href="#overview" class="sidebar-link">챕터 개요</a>
+      <a href="#button" class="sidebar-link">4.1 버튼</a>
+      <a href="#form" class="sidebar-link">4.2 입력 폼</a>
+      <a href="#select" class="sidebar-link">4.3 선택지</a>
+      <a href="#modal" class="sidebar-link">4.4 모달·토스트</a>
+      <a href="#accordion" class="sidebar-link">4.5 아코디언·툴팁</a>
+      <a href="#empty" class="sidebar-link">4.6 빈 화면</a>
+      <a href="#step" class="sidebar-link">4.7 단계 표시기</a>
+      <a href="#tag" class="sidebar-link">4.8 태그·배지</a>
+      <a href="#search" class="sidebar-link">4.9 검색창</a>
+      <a href="#tab" class="sidebar-link">4.10 탭</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">1장. 파운데이션</div>
+      <a href="/krds-ux-writing/principles/foundation/" class="sidebar-link">파운데이션 개요</a>
+      <a href="/krds-ux-writing/principles/no-translation/" class="sidebar-link">무번역의 원칙</a>
+      <a href="/krds-ux-writing/principles/core-info/" class="sidebar-link">정보핵심화</a>
+      <a href="/krds-ux-writing/principles/safety-net/" class="sidebar-link">심리적안전망</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">심화 가이드</div>
+      <a href="/krds-ux-writing/principles/structure/" class="sidebar-link">2장. 텍스트 구조화</a>
+      <a href="/krds-ux-writing/principles/notation/" class="sidebar-link">3장. 표기법</a>
+      <a href="/krds-ux-writing/principles/components/" class="sidebar-link" style="color:var(--accent);font-weight:700">4장. UI 컴포넌트 ▸</a>
+      <a href="/krds-ux-writing/principles/governance/" class="sidebar-link">거버넌스</a>
+      <a href="/krds-ux-writing/principles/derivative/" class="sidebar-link">기관별 파생 가이드</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">목록으로</div>
+      <a href="/krds-ux-writing/principles/" class="sidebar-link">← 가이드라인 목록</a>
+    </div>
+  </aside>
+
+  <div style="display:flex;flex-direction:column;min-height:0">
+  <main class="content" id="content">
+
+    <div class="breadcrumb">
+      <a href="/krds-ux-writing/">홈</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="/krds-ux-writing/principles/">가이드라인</a>
+      <span class="breadcrumb-sep">›</span>
+      <span>4장 UI 컴포넌트</span>
+    </div>
+
+    <div class="content-header">
+      <div class="principle-badge">4장 — UI 컴포넌트 라이팅</div>
+      <h1 class="content-title">UI 컴포넌트 라이팅<br><span style="font-size:0.55em;color:var(--text-muted);font-weight:600">(Component Microcopy)</span></h1>
+      <p class="content-headline">컴포넌트마다 공식이 있다</p>
+      <p class="content-desc">
+        버튼 하나의 텍스트가 신청률을 결정합니다. 10개 UI 컴포넌트에 대한 마이크로카피 공식과 Do/Don't를 제공합니다. 맥락 없는 레이블은 없어야 합니다.
+      </p>
+    </div>
+
+    <!-- 개요 -->
+    <section class="article-section" id="overview" aria-labelledby="overview-title">
+      <h2 class="article-section-heading" id="overview-title">챕터 개요</h2>
+      <p class="article-section-lead">UI 컴포넌트는 시민이 공공 서비스와 직접 상호작용하는 접점입니다. 각 컴포넌트에 최적화된 마이크로카피 공식을 적용하면 오조작·이탈을 줄이고 완료율을 높입니다.</p>
+      <table class="data-table">
+        <thead><tr><th>컴포넌트</th><th>핵심 원칙</th></tr></thead>
+        <tbody>
+          <tr><td><strong>4.1 버튼</strong></td><td>[목적어+동사명사] 공식 — 행위를 명시하라</td></tr>
+          <tr><td><strong>4.2 입력 폼</strong></td><td>레이블+플레이스홀더+안내문 3중 구조</td></tr>
+          <tr><td><strong>4.3 선택지</strong></td><td>이중부정 금지, MECE 배타성</td></tr>
+          <tr><td><strong>4.4 모달·토스트</strong></td><td>[원인+해결책] 최단 청크</td></tr>
+          <tr><td><strong>4.5 아코디언·툴팁</strong></td><td>맥락 유지 인라인 헬프</td></tr>
+          <tr><td><strong>4.6 빈 화면</strong></td><td>원인+대안버튼 필수, "내역 없음" 금지</td></tr>
+          <tr><td><strong>4.7 단계 표시기</strong></td><td>"Step N/총N. 섹션명" 형식</td></tr>
+          <tr><td><strong>4.8 태그·배지</strong></td><td>4음절 이내, 상태값 위계 준수</td></tr>
+          <tr><td><strong>4.9 검색창</strong></td><td>구체적 예시 플레이스홀더</td></tr>
+          <tr><td><strong>4.10 탭</strong></td><td>MECE 분류 원칙</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- 4.1 버튼 -->
+    <section class="article-section" id="button" aria-labelledby="button-title">
+      <h2 class="article-section-heading" id="button-title">4.1 버튼 레이블</h2>
+      <p class="article-section-lead">버튼은 행위를 명시해야 합니다. "확인"처럼 맥락 없는 레이블은 시민이 다음에 무슨 일이 일어날지 예측할 수 없게 만듭니다.</p>
+
+      <div class="formula-box">공식: [목적어 + 동사명사] — 예: 지원금 신청하기 / 서류 다운로드 / 신청 취소</div>
+
+      <div class="do-dont">
+        <div class="do-dont-box dont">
+          <div class="do-dont-label dont">🚫 맥락 없는 레이블</div>
+          확인<br>
+          다음<br>
+          제출<br>
+          OK
+        </div>
+        <div class="do-dont-box do">
+          <div class="do-dont-label do">✅ 행위를 명시한 레이블</div>
+          지원금 신청하기<br>
+          개인정보 동의 후 다음 단계로<br>
+          신청서 제출<br>
+          신청 완료
+        </div>
+      </div>
+
+      <div class="sub-h3">버튼 레이블 작성 규칙</div>
+      <table class="data-table">
+        <thead><tr><th>규칙</th><th>🚫 금지</th><th>✅ 권장</th></tr></thead>
+        <tbody>
+          <tr><td>동사명사형 종결</td><td class="strike">확인 버튼을 눌러 주세요</td><td class="ok">확인</td></tr>
+          <tr><td>목적어 포함</td><td class="strike">신청</td><td class="ok">지원금 신청</td></tr>
+          <tr><td>조사 없음</td><td class="strike">서류를 제출</td><td class="ok">서류 제출</td></tr>
+          <tr><td>단어 수 2~4개</td><td class="strike">이 양식을 작성하고 제출하기</td><td class="ok">양식 제출</td></tr>
+          <tr><td>비가역 행위 경고</td><td class="strike">삭제</td><td class="ok">신청 취소 (되돌릴 수 없습니다)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>비가역 행위</strong>: 삭제·취소·지급처리 등 되돌릴 수 없는 행위의 버튼에는 항상 "(되돌릴 수 없습니다)" 문구를 버튼 아래 또는 모달 내에 병기합니다.
+      </div>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- 4.2 입력 폼 -->
+    <section class="article-section" id="form" aria-labelledby="form-title">
+      <h2 class="article-section-heading" id="form-title">4.2 입력 폼</h2>
+      <p class="article-section-lead">폼은 레이블·플레이스홀더·안내문 3중 구조로 시민이 무엇을, 어떻게, 왜 입력해야 하는지 인지 부하 없이 전달합니다.</p>
+
+      <div class="formula-box">레이블(무엇) + 플레이스홀더(예시) + 안내문(이유·형식)</div>
+
+      <div class="sub-h3">3중 구조 역할 분담</div>
+      <table class="data-table">
+        <thead><tr><th>요소</th><th>역할</th><th>예시</th></tr></thead>
+        <tbody>
+          <tr><td><strong>레이블</strong></td><td>명사형, 무엇을 입력하는지</td><td>생년월일</td></tr>
+          <tr><td><strong>플레이스홀더</strong></td><td>형식 예시 (입력 후 사라짐)</td><td>예: 19900101</td></tr>
+          <tr><td><strong>안내문</strong></td><td>왜 필요한지, 제약 조건</td><td>주민등록증과 동일하게 입력해 주세요</td></tr>
+        </tbody>
+      </table>
+
+      <div class="do-dont">
+        <div class="do-dont-box dont">
+          <div class="do-dont-label dont">🚫 안내 없는 폼</div>
+          이름 *<br>
+          <small style="color:var(--text-muted)">홍길동</small><br><br>
+          연락처 *<br>
+          <small style="color:var(--text-muted)">전화번호</small>
+        </div>
+        <div class="do-dont-box do">
+          <div class="do-dont-label do">✅ 3중 구조 폼</div>
+          이름 (필수) *<br>
+          <small style="color:var(--text-muted)">예: 홍길동</small><br>
+          <small style="color:var(--accent)">주민등록증과 동일하게 입력해 주세요</small><br><br>
+          휴대전화 번호 *<br>
+          <small style="color:var(--text-muted)">예: 01012345678</small><br>
+          <small style="color:var(--accent)">인증 문자가 발송됩니다</small>
+        </div>
+      </div>
+
+      <div class="warn-box">
+        <strong>플레이스홀더 주의</strong>: 플레이스홀더는 입력 후 사라지므로 필수 안내를 담지 마세요. "이름을 입력해 주세요"처럼 레이블 역할을 하는 플레이스홀더는 접근성 위반입니다.
+      </div>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- 4.3 선택지 -->
+    <section class="article-section" id="select" aria-labelledby="select-title">
+      <h2 class="article-section-heading" id="select-title">4.3 선택지 (라디오·드롭다운·체크박스)</h2>
+      <p class="article-section-lead">선택지는 서로 겹치지 않고(MECE), 이중부정을 포함하지 않아야 합니다. 시민이 한 번에 올바른 선택지를 고를 수 있어야 합니다.</p>
+
+      <div class="sub-h3">MECE 배타성 원칙</div>
+      <div class="do-dont">
+        <div class="do-dont-box dont">
+          <div class="do-dont-label dont">🚫 겹치는 선택지</div>
+          ○ 20대<br>
+          ○ 30대<br>
+          ○ 20~30대<br>
+          ○ 40대 이상
+        </div>
+        <div class="do-dont-box do">
+          <div class="do-dont-label do">✅ 배타적 선택지</div>
+          ○ 20~29세<br>
+          ○ 30~39세<br>
+          ○ 40~49세<br>
+          ○ 50세 이상
+        </div>
+      </div>
+
+      <div class="sub-h3">이중부정 금지</div>
+      <table class="data-table">
+        <thead><tr><th>🚫 이중부정 선택지</th><th>✅ 긍정 전환</th></tr></thead>
+        <tbody>
+          <tr><td class="strike">동의하지 않지 않음</td><td class="ok">동의함</td></tr>
+          <tr><td class="strike">수신 거부 안 함</td><td class="ok">수신 동의함</td></tr>
+          <tr><td class="strike">비해당 없음</td><td class="ok">해당 없음</td></tr>
+          <tr><td class="strike">미선택</td><td class="ok">선택 안 함</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- 4.4 모달·토스트 -->
+    <section class="article-section" id="modal" aria-labelledby="modal-title">
+      <h2 class="article-section-heading" id="modal-title">4.4 모달 · 토스트</h2>
+      <p class="article-section-lead">모달과 토스트는 시민의 흐름을 끊습니다. 메시지는 [원인 + 해결책] 최단 청크로 구성합니다.</p>
+
+      <div class="formula-box">모달 제목: [상황 요약] | 본문: [원인] + [해결책 또는 선택지]</div>
+
+      <div class="do-dont">
+        <div class="do-dont-box dont">
+          <div class="do-dont-label dont">🚫 맥락 없는 모달</div>
+          <strong>오류</strong><br>
+          오류가 발생했습니다. 다시 시도해 주세요.<br><br>
+          [확인]
+        </div>
+        <div class="do-dont-box do">
+          <div class="do-dont-label do">✅ 원인+해결책 모달</div>
+          <strong>파일 크기 초과</strong><br>
+          첨부 파일은 10MB 이하만 올릴 수 있습니다. 파일 크기를 줄이거나 다른 파일을 선택해 주세요.<br><br>
+          [다른 파일 선택] [취소]
+        </div>
+      </div>
+
+      <div class="sub-h3">토스트 작성 기준</div>
+      <table class="data-table">
+        <thead><tr><th>상황</th><th>🚫 금지</th><th>✅ 권장</th></tr></thead>
+        <tbody>
+          <tr><td>성공</td><td class="strike">처리됐습니다</td><td class="ok">신청서가 제출됐습니다</td></tr>
+          <tr><td>저장</td><td class="strike">저장됨</td><td class="ok">임시 저장됐습니다</td></tr>
+          <tr><td>복사</td><td class="strike">Copy</td><td class="ok">링크가 복사됐습니다</td></tr>
+          <tr><td>오류</td><td class="strike">오류</td><td class="ok">저장하지 못했습니다. 다시 시도해 주세요</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- 4.5 아코디언·툴팁 -->
+    <section class="article-section" id="accordion" aria-labelledby="accordion-title">
+      <h2 class="article-section-heading" id="accordion-title">4.5 아코디언 · 툴팁</h2>
+      <p class="article-section-lead">인라인 헬프는 시민이 페이지를 벗어나지 않고 도움을 받을 수 있게 합니다. 맥락에 맞는 도구를 선택합니다.</p>
+
+      <table class="data-table">
+        <thead><tr><th>도구</th><th>적합한 상황</th><th>레이블 예시</th></tr></thead>
+        <tbody>
+          <tr><td><strong>힌트 텍스트</strong></td><td>입력 형식이 특수하거나 오류 가능성 높음</td><td>주민등록번호 앞 6자리만 입력</td></tr>
+          <tr><td><strong>툴팁 (i 아이콘)</strong></td><td>용어 설명, 간단한 보충 정보</td><td>기준 중위소득이란?</td></tr>
+          <tr><td><strong>아코디언</strong></td><td>선택적 상세 정보, FAQ</td><td>Q. 서류를 분실했어요</td></tr>
+          <tr><td><strong>바닥창(Bottom Sheet)</strong></td><td>모바일에서 긴 설명, 확인 절차</td><td>서류 제출 전 확인 사항</td></tr>
+        </tbody>
+      </table>
+
+      <div class="do-dont">
+        <div class="do-dont-box dont">
+          <div class="do-dont-label dont">🚫 맥락 없는 툴팁</div>
+          ? 도움말
+        </div>
+        <div class="do-dont-box do">
+          <div class="do-dont-label do">✅ 질문형 툴팁 레이블</div>
+          기준 중위소득이란? ⓘ<br>
+          어떤 서류가 필요한가요? ⓘ
+        </div>
+      </div>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- 4.6 빈 화면 -->
+    <section class="article-section" id="empty" aria-labelledby="empty-title">
+      <h2 class="article-section-heading" id="empty-title">4.6 빈 화면 (Empty State)</h2>
+      <p class="article-section-lead">빈 화면은 시민이 막다른 길에 부딪힌 순간입니다. 원인을 설명하고 다음 행동을 안내해야 합니다. "내역 없음"은 설명이 아닙니다.</p>
+
+      <div class="formula-box">빈 화면 = [왜 비어있는지] + [무엇을 해야 하는지] + [대안 버튼]</div>
+
+      <div class="do-dont">
+        <div class="do-dont-box dont">
+          <div class="do-dont-label dont">🚫 불친절한 빈 화면</div>
+          내역 없음<br><br>
+          <small style="color:var(--text-muted)">(아무 안내 없음)</small>
+        </div>
+        <div class="do-dont-box do">
+          <div class="do-dont-label do">✅ 안내하는 빈 화면</div>
+          아직 신청 내역이 없습니다<br>
+          <small style="color:var(--text-muted)">지원금을 신청하면 처리 현황을 이곳에서 확인할 수 있습니다</small><br><br>
+          [지원금 신청하기 →]
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>상황</th><th>✅ 권장 문구</th></tr></thead>
+        <tbody>
+          <tr><td>검색 결과 없음</td><td class="ok">'청년수당'으로 검색한 결과가 없습니다. 다른 검색어를 시도해 보세요.</td></tr>
+          <tr><td>알림 없음</td><td class="ok">새 알림이 없습니다. 신청 현황이 바뀌면 알려드리겠습니다.</td></tr>
+          <tr><td>즐겨찾기 없음</td><td class="ok">즐겨찾기한 서비스가 없습니다. 자주 이용하는 서비스를 추가해 보세요.</td></tr>
+          <tr><td>권한 없는 화면</td><td class="ok">이 페이지는 로그인 후 이용할 수 있습니다. [로그인하기]</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- 4.7 단계 표시기 -->
+    <section class="article-section" id="step" aria-labelledby="step-title">
+      <h2 class="article-section-heading" id="step-title">4.7 단계 표시기 (Step Indicator)</h2>
+      <p class="article-section-lead">단계 표시기는 시민이 전체 여정에서 자신의 위치를 인식하게 합니다. 단계 번호와 섹션 이름을 함께 표시합니다.</p>
+
+      <div class="formula-box">Step N/총N. [섹션명] — 예: Step 2/4. 기본 정보 입력</div>
+
+      <div class="do-dont">
+        <div class="do-dont-box dont">
+          <div class="do-dont-label dont">🚫 번호만 있는 단계</div>
+          1 → 2 → 3 → 4<br><br>
+          <small style="color:var(--text-muted)">현재 어느 단계인지, 무엇을 하는지 알 수 없음</small>
+        </div>
+        <div class="do-dont-box do">
+          <div class="do-dont-label do">✅ 맥락 있는 단계</div>
+          Step 1/4. 신청 자격 확인<br>
+          <strong>Step 2/4. 기본 정보 입력</strong> ← 현재<br>
+          Step 3/4. 서류 제출<br>
+          Step 4/4. 신청 완료
+        </div>
+      </div>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- 4.8 태그·배지 -->
+    <section class="article-section" id="tag" aria-labelledby="tag-title">
+      <h2 class="article-section-heading" id="tag-title">4.8 태그 · 배지</h2>
+      <p class="article-section-lead">태그와 배지는 상태·분류를 한눈에 전달합니다. 4음절 이내, 상태값은 정해진 위계를 따릅니다.</p>
+
+      <div class="callout-box">
+        <strong>상태값 위계 (공공 서비스 신청 흐름)</strong><br>
+        <span class="status-badge status-접수">접수 완료</span>
+        <span style="color:var(--text-muted);margin:0 4px">→</span>
+        <span class="status-badge status-심사">심사 중</span>
+        <span style="color:var(--text-muted);margin:0 4px">→</span>
+        <span class="status-badge status-보완">보완 요청</span>
+        <span style="color:var(--text-muted);margin:0 4px">또는</span>
+        <span class="status-badge status-승인">승인</span>
+        <span style="color:var(--text-muted);margin:0 4px">또는</span>
+        <span class="status-badge status-반려">반려</span>
+      </div>
+
+      <div class="do-dont">
+        <div class="do-dont-box dont">
+          <div class="do-dont-label dont">🚫 불명확한 상태값</div>
+          처리 중<br>
+          확인 필요<br>
+          완료됨<br>
+          N/A
+        </div>
+        <div class="do-dont-box do">
+          <div class="do-dont-label do">✅ 위계 준수 상태값</div>
+          심사 중<br>
+          보완 요청<br>
+          승인<br>
+          반려
+        </div>
+      </div>
+
+      <div class="info-box">태그 텍스트는 4음절 이내를 원칙으로 합니다. 긴 상태명은 요약하거나 툴팁으로 보완합니다.</div>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- 4.9 검색창 -->
+    <section class="article-section" id="search" aria-labelledby="search-title">
+      <h2 class="article-section-heading" id="search-title">4.9 검색창</h2>
+      <p class="article-section-lead">검색창 플레이스홀더는 시민이 무엇을 검색할 수 있는지 구체적인 예시로 안내합니다. 추상적 안내는 혼란을 만듭니다.</p>
+
+      <div class="do-dont">
+        <div class="do-dont-box dont">
+          <div class="do-dont-label dont">🚫 추상적 플레이스홀더</div>
+          검색어를 입력하세요<br><br>
+          <small style="color:var(--text-muted)">무엇을 검색할 수 있는지 알 수 없음</small>
+        </div>
+        <div class="do-dont-box do">
+          <div class="do-dont-label do">✅ 구체적 예시 제공</div>
+          질병명 또는 병원 이름으로 검색<br>
+          서비스명, 지원금 이름으로 검색<br>
+          예: 청년수당, 기초연금
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>서비스 유형</th><th>✅ 권장 플레이스홀더</th></tr></thead>
+        <tbody>
+          <tr><td>복지 서비스</td><td class="ok">지원금 이름 또는 대상으로 검색 (예: 청년, 장애인)</td></tr>
+          <tr><td>의료·병원</td><td class="ok">질병명 또는 병원 이름으로 검색</td></tr>
+          <tr><td>민원·서류</td><td class="ok">서류명 또는 업무명으로 검색 (예: 주민등록등본)</td></tr>
+          <tr><td>FAQ</td><td class="ok">궁금한 내용을 입력하세요 (예: 서류 분실)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- 4.10 탭 -->
+    <section class="article-section" id="tab" aria-labelledby="tab-title">
+      <h2 class="article-section-heading" id="tab-title">4.10 탭 (Tab)</h2>
+      <p class="article-section-lead">탭은 동일 계층의 정보를 분류합니다. MECE 원칙(상호 배타·전체 포괄)을 지켜야 시민이 올바른 탭을 선택할 수 있습니다.</p>
+
+      <div class="do-dont">
+        <div class="do-dont-box dont">
+          <div class="do-dont-label dont">🚫 겹치는 탭 분류</div>
+          전체 | 진행 중 | 완료 | 신청완료 | 기타
+        </div>
+        <div class="do-dont-box do">
+          <div class="do-dont-label do">✅ MECE 탭 분류</div>
+          전체 | 심사 중 | 승인 | 반려
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>규칙</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td><strong>상호 배타</strong></td><td>각 탭의 항목이 다른 탭에 포함되지 않아야 함</td></tr>
+          <tr><td><strong>전체 포괄</strong></td><td>모든 항목이 적어도 하나의 탭에 속해야 함</td></tr>
+          <tr><td><strong>탭 수 제한</strong></td><td>5개 이하 권장; 그 이상은 드롭다운·필터 검토</td></tr>
+          <tr><td><strong>레이블 길이</strong></td><td>4음절 이내; 긴 레이블은 줄임말 또는 재분류</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h3">다른 챕터 보기</div>
+      <div class="other-principles">
+        <a href="/krds-ux-writing/principles/structure/" class="other-principle-card">
+          <div class="other-principle-num">2장</div>
+          <div class="other-principle-name">텍스트 구조화 →</div>
+        </a>
+        <a href="/krds-ux-writing/principles/notation/" class="other-principle-card">
+          <div class="other-principle-num">3장</div>
+          <div class="other-principle-name">표기법과 맞춤법 →</div>
+        </a>
+        <a href="/krds-ux-writing/principles/governance/" class="other-principle-card">
+          <div class="other-principle-num">거버넌스</div>
+          <div class="other-principle-name">일관성 유지 체계 →</div>
+        </a>
+        <a href="/krds-ux-writing/principles/" class="other-principle-card">
+          <div class="other-principle-num">목록</div>
+          <div class="other-principle-name">← 가이드라인 전체</div>
+        </a>
+      </div>
+    </section>
+
+  </main>
+  <footer class="page-footer">
+    <span>KRDS UX Writing 가이드라인 v2.0</span>
+    <div class="footer-links">
+      <a href="https://www.koreads.go.kr/" target="_blank" rel="noopener">KRDS 공식 사이트</a>
+      <a href="https://github.com/thenisaid/krds-ux-writing" target="_blank" rel="noopener">GitHub</a>
+      <a href="/krds-ux-writing/">홈으로</a>
+    </div>
+  </footer>
+  </div>
+</div>
+
+<script src="../../shared/nav.js"></script>
+</body>
+</html>
