@@ -115,6 +115,7 @@
       <a href="#dictionary" class="sidebar-link">행정어 사전</a>
       <a href="#form-labels" class="sidebar-link">폼 레이블</a>
       <a href="#button-labels" class="sidebar-link">버튼 레이블</a>
+      <a href="#notation" class="sidebar-link">표기법·맞춤법</a>
       <a href="#quick-check" class="sidebar-link">빠른 점검</a>
     </div>
     <div class="sidebar-section">
@@ -394,7 +395,123 @@
 
     <div class="article-divider"></div>
 
-    <!-- 5. 빠른 점검 -->
+    <!-- 5. 표기법·맞춤법 실무 기준 -->
+    <section class="article-section" id="notation" aria-labelledby="notation-title">
+      <h2 class="article-section-heading" id="notation-title">표기법·맞춤법 실무 기준</h2>
+      <p class="article-section-lead">공공 서비스의 텍스트는 친절을 빙자한 과도한 꾸밈이나, 책임을 회피하기 위한 모호한 표현을 철저히 배제해야 합니다. 문장의 군더더기를 도려내는 기계적이고 단호한 표기 규칙을 적용합니다.</p>
+
+      <div class="sub-h3">2.4.1 과잉 존칭·피동형의 해체 — 권위를 뺀 조력자</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">정부 서비스의 고질병인 '책임 회피성 피동형'과 '과잉 의전'을 규칙으로 원천 차단합니다. 존중은 유지하되 텍스트는 압축합니다.</p>
+
+      <div class="sub-h4">선어말 어미 <code>-시-</code> 의 전략적 제거</div>
+      <p style="font-size:13px;color:var(--text-muted);line-height:1.7;margin-bottom:12px;">행위의 주체가 주권자 본인일 때는 <code>-시-</code>를 과감히 덜어내어 담백하게 안내합니다.</p>
+      <table class="data-table">
+        <thead><tr><th>🚫 과잉 존칭</th><th>✅ 간결한 안내</th></tr></thead>
+        <tbody>
+          <tr><td class="strike">증명서를 발급 받으신 후 가입하실 수 있습니다</td><td class="ok">증명서를 발급받은 후 가입할 수 있습니다</td></tr>
+          <tr><td class="strike">신청서를 제출하시기 바랍니다</td><td class="ok">신청서를 제출해 주세요</td></tr>
+          <tr><td class="strike">확인하시어 처리해 주시기 바랍니다</td><td class="ok">확인 후 처리해 주세요</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h4">행정 주체의 명확화 — 피동형 금지</div>
+      <p style="font-size:13px;color:var(--text-muted);line-height:1.7;margin-bottom:12px;"><code>~되어지다</code>, <code>~처리되다</code> 같은 피동형은 책임을 피하려는 인상을 줍니다. 시스템이나 정부가 처리한 일은 능동형으로 명확히 선언합니다.</p>
+      <table class="data-table">
+        <thead><tr><th>🚫 피동형 (책임 회피)</th><th>✅ 능동형 (책임 있는 선언)</th></tr></thead>
+        <tbody>
+          <tr><td class="strike">신청이 완료되었습니다</td><td class="ok">신청을 완료했습니다</td></tr>
+          <tr><td class="strike">처리가 진행되고 있습니다</td><td class="ok">처리 중입니다</td></tr>
+          <tr><td class="strike">서류가 접수되었습니다</td><td class="ok">서류를 접수했습니다</td></tr>
+        </tbody>
+      </table>
+      <div class="warn-box"><strong>예외</strong>: 주권자에게 불이익이 가는 오류나 제한 상황에서만 피동형을 제한적으로 씁니다.<br>예: <em>시스템 오류로 서비스 이용이 제한됩니다.</em></div>
+
+      <div class="sub-h3">2.4.2 행정 부사·주관적 표현의 통제 — 객관적 길잡이</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">정부는 주권자의 상황을 평가하거나 감정을 섞어 안내하지 않습니다. 의미 없이 문장만 길어지게 만드는 주관적 부사를 엄격히 통제합니다.</p>
+
+      <div class="sub-h4">감정·속도 부사 금지</div>
+      <table class="data-table">
+        <thead><tr><th>🚫 주관적 부사</th><th>✅ 객관적 사실</th></tr></thead>
+        <tbody>
+          <tr><td class="strike">신청 기한이 너무 많이 남지 않았습니다. 빠르게 제출해 주세요</td><td class="ok">신청 기한이 3일 남았습니다. 기한 내에 제출해 주세요</td></tr>
+          <tr><td class="strike">해당 민원은 이미 처리된 민원입니다</td><td class="ok">처리된 민원입니다</td></tr>
+          <tr><td class="strike">지금 바로 신청하세요</td><td class="ok">신청 기한: {날짜}까지</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h4">금지 부사 목록</div>
+      <table class="data-table">
+        <thead><tr><th>금지 단어</th><th>금지 이유</th><th>대체 표현</th></tr></thead>
+        <tbody>
+          <tr><td>빠르게, 신속히</td><td>주관적 속도 기준</td><td>기한(날짜) 명시</td></tr>
+          <tr><td>이미, 벌써</td><td>중복 표현, 주관적</td><td>삭제 또는 상태값으로 대체</td></tr>
+          <tr><td>너무, 매우, 상당히</td><td>정도 기준 불명확</td><td>수치로 대체</td></tr>
+          <tr><td>간단히, 쉽게</td><td>주권자 경험에 따라 다름</td><td>단계 수로 대체</td></tr>
+          <tr><td>즉시, 곧</td><td>시간 불명확</td><td>예상 시간 명시</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h3">2.4.3 숫자·행정 변수 표기 — 시각적 결속력 확보</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">숫자와 단위, 변수(이름, 날짜, 금액)가 텍스트 안에서 어떻게 결합하는지는 시각적 가독성과 직결됩니다.</p>
+
+      <div class="sub-h4">숫자와 단위의 밀착 표기</div>
+      <table class="data-table">
+        <thead><tr><th>🚫 띄어쓰기 (분리)</th><th>✅ 밀착 표기</th></tr></thead>
+        <tbody>
+          <tr><td class="strike">결제 금액: 15,000 원</td><td class="ok">결제 금액: 15,000원</td></tr>
+          <tr><td class="strike">기한: 30 일</td><td class="ok">기한: 30일</td></tr>
+          <tr><td class="strike">용량 제한: 10 MB</td><td class="ok">용량 제한: 10MB</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h4">행정 변수 표기 규칙</div>
+      <table class="data-table">
+        <thead><tr><th>🚫 변수 위상 모호</th><th>✅ 시각적 대비 명확</th></tr></thead>
+        <tbody>
+          <tr><td class="strike">%s님이 %s원을 납부하셨습니다</td><td class="ok">[홍길동] 님이 [15,000]원을 납부했습니다</td></tr>
+          <tr><td class="strike">{이름}이 신청했습니다</td><td class="ok">[{이름}]이(가) 신청했습니다</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box">시스템에서 불러오는 동적 데이터는 <code>[대괄호]</code>로 감싸 정적 텍스트와 시각적으로 구분합니다. 조사는 동적 값에 맞게 자동 처리하거나 <code>이(가)</code>, <code>을(를)</code> 형태로 병기합니다.</div>
+
+      <div class="sub-h4">보조 용언 띄어쓰기 통일</div>
+      <p style="font-size:13px;color:var(--text-muted);line-height:1.7;margin-bottom:12px;">공공기관 안내 문구에서 가장 많이 등장하는 보조 동사 <code>-주-</code>는 반드시 띄어 씁니다.</p>
+      <table class="data-table">
+        <thead><tr><th>🚫 붙여 쓰기</th><th>✅ 띄어 쓰기</th></tr></thead>
+        <tbody>
+          <tr><td class="strike">버튼을 눌러주세요</td><td class="ok">버튼을 눌러 주세요</td></tr>
+          <tr><td class="strike">확인해주세요</td><td class="ok">확인해 주세요</td></tr>
+          <tr><td class="strike">제출해주시기 바랍니다</td><td class="ok">제출해 주세요</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h3">2.4.4 KRDS 맥락별 기호 위계 — 의미 있는 부호만 허용</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">장식용 특수문자를 남발하는 구시대적 문화를 버리고, 문장 부호에 명확한 '역할'을 부여합니다.</p>
+      <table class="data-table">
+        <thead><tr><th>기호</th><th>역할</th><th>예시</th></tr></thead>
+        <tbody>
+          <tr><td><code>[ ]</code> 대괄호</td><td>주권자가 직접 눌러야 하는 버튼·메뉴 경로</td><td>[인증서 발급] 버튼을 눌러 주세요</td></tr>
+          <tr><td><code>' '</code> 작은따옴표</td><td>정부가 판정한 행정 상태·심사 결과</td><td>심사 상태가 '승인 대기'로 변경됩니다</td></tr>
+          <tr><td><code>( )</code> 소괄호</td><td>부가 설명·예시·선택 항목</td><td>숫자만 입력 (예: 01012345678)</td></tr>
+          <tr><td><code>※</code></td><td>법적 필수 고지·중요 예외 사항 (최소화)</td><td>※ 만 14세 미만은 법정대리인 동의 필요</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h4">금지 기호 패턴</div>
+      <table class="data-table">
+        <thead><tr><th>🚫 금지</th><th>이유</th><th>✅ 대체</th></tr></thead>
+        <tbody>
+          <tr><td>★, ◆, ● (장식 기호)</td><td>시각적 노이즈, 스크린 리더 오독</td><td>제목 계층 구조 또는 볼드 사용</td></tr>
+          <tr><td>→ (화살표 남용)</td><td>논리 관계 불분명 시 혼란</td><td>자연어로 연결 관계 명시</td></tr>
+          <tr><td>!! 느낌표 연속</td><td>강조 목적이나 오히려 공격적</td><td>단일 느낌표도 오류 맥락에서 금지</td></tr>
+          <tr><td>취소선 (일반 안내)</td><td>내용 삭제 의미로 혼동</td><td>텍스트 직접 제거</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="article-divider"></div>
+
+    <!-- 6. 빠른 점검 -->
     <section class="article-section" id="quick-check" aria-labelledby="quick-check-title">
       <h2 class="article-section-heading" id="quick-check-title">빠른 점검 — 번역 금지 원칙</h2>
       <p class="article-section-lead">화면 텍스트를 확정하기 전, 6가지 항목을 점검하세요. 모두 통과하면 번역 금지 원칙을 준수한 것입니다.</p>
