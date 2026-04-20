@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="KRDS UX Writing 원칙을 실전에 적용한 에러 메시지 Before/After 사례 모음.">
+  <meta name="description" content="KRDS UX Writing 3대 원칙 — 무번역·정보핵심화·심리적안전망을 공공 서비스에 적용한 Before/After 실전 사례.">
   <title>실전 사례 | KRDS UX Writing</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css" rel="stylesheet">
@@ -197,7 +197,6 @@
       border: 1px solid rgba(34,135,56,.2);
       color: var(--color-text);
     }
-
     .msg-bad {
       text-decoration: line-through;
       color: var(--color-danger);
@@ -207,6 +206,7 @@
     }
     .msg-bad + .msg-bad { margin-top: 0; }
 
+    /* 3-STEP STRUCTURE (Card 1) */
     .step { margin-bottom: 4px; }
     .step-label {
       display: inline-block;
@@ -218,9 +218,71 @@
     .step-1 { background: rgba(37,110,244,.12); color: var(--color-primary); }
     .step-2 { background: rgba(34,135,56,.12); color: var(--color-success); }
     .step-3 { background: rgba(126,34,206,.12); color: #7e22ce; }
-
     .step-indent { margin-left: 32px; font-size: 13px; color: var(--color-text-muted); }
 
+    /* WORD SUBSTITUTIONS (Card 2) */
+    .word-sub-wrap {
+      padding: 14px 28px 20px;
+      border-top: 1px solid var(--color-border-light);
+      display: flex; flex-wrap: wrap; gap: 8px;
+      align-items: center;
+    }
+    .word-sub-label {
+      font-size: 11px; font-weight: 700; letter-spacing: .06em;
+      color: var(--color-text-subtle);
+      margin-right: 4px;
+      flex-basis: 100%;
+      margin-bottom: 4px;
+    }
+    .word-sub {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(37,110,244,.05);
+      border: 1px solid rgba(37,110,244,.15);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+    .w-before {
+      color: var(--color-danger);
+      font-weight: 600;
+      text-decoration: line-through;
+    }
+    .w-arrow { color: var(--color-text-subtle); font-size: 11px; }
+    .w-after {
+      color: var(--color-success);
+      font-weight: 700;
+    }
+
+    /* RESULT-FIRST LEVELS (Card 3) */
+    .level-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-bottom: 8px;
+    }
+    .level-badge {
+      flex-shrink: 0;
+      min-width: 54px;
+      font-size: 11px; font-weight: 700;
+      padding: 2px 7px; border-radius: 4px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .lv-1 { background: rgba(37,110,244,.12); color: var(--color-primary); }
+    .lv-2 { background: rgba(34,135,56,.12); color: var(--color-success); }
+    .lv-3 { background: rgba(150,150,150,.12); color: var(--color-text-muted); font-size: 10px; }
+    .level-text { font-size: 14px; line-height: 1.5; }
+    .level-text.subtle { font-size: 13px; color: var(--color-text-muted); }
+
+    /* PYRAMID NOTE */
+    .pyramid-note {
+      margin-top: 10px;
+      padding: 10px 14px;
+      background: rgba(34,135,56,.06);
+      border-radius: 6px;
+      font-size: 12px; color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+
+    /* CARD EXPLAIN */
     .card-explain {
       padding: 16px 28px 24px;
       border-top: 1px solid var(--color-border-light);
@@ -274,11 +336,11 @@
       <rect x="2" y="3" width="12" height="10" rx="1"/>
       <path d="M5 7h6M5 10h4"/>
     </svg>
-    4.1절 — 에러 메시지 3단 구조
+    3대 원칙 실전 적용
   </div>
   <h1>실전 Before / After 사례</h1>
-  <p>공공 서비스 오류 메시지를 3단 구조로 바꾼 실례 3건.<br>
-     각 사례가 적용한 KRDS 원칙을 태그로 확인하세요.</p>
+  <p>무번역·정보핵심화·심리적안전망 — KRDS UX Writing 3대 원칙을 공공 서비스에 적용한 실례 각 1건.<br>
+     각 사례가 적용한 원칙을 태그로 확인하세요.</p>
 </section>
 
 <div class="legend">
@@ -288,7 +350,7 @@
   </div>
   <div class="legend-item">
     <span class="legend-dot" style="background:#22c55e"></span>
-    정보핵심화 — 구체적 정보 우선
+    정보핵심화 — 결론 우선
   </div>
   <div class="legend-item">
     <span class="legend-dot" style="background:#a855f7"></span>
@@ -299,144 +361,24 @@
 <main class="main">
 
   <div class="section-note">
-    <strong>3단 구조 공식:</strong>
-    &nbsp;1단 상황(What) — 무슨 일이 있었는지 &nbsp;|&nbsp;
-    2단 원인(Why) — 왜 그런지 &nbsp;|&nbsp;
-    3단 행동(How) — 지금 무엇을 하면 되는지.
-    단, <strong>1단(상황)</strong>은 항상 필수. 2·3단은 맥락에 따라 축약 가능.
+    각 카드는 <strong>원칙 하나를 집중 적용한 사례</strong>입니다.
+    Before 텍스트의 구체적인 문제점을 확인하고, After에서 어떤 변화가 생겼는지 비교해 보세요.
+    실제 공공 서비스에서 수집한 표현 패턴을 바탕으로 구성했습니다.
   </div>
 
   <div class="case-grid">
 
-    <!-- CASE 1 -->
+    <!-- ==============================
+         CASE 1: 심리적안전망 — 에러 메시지 3단 구조
+         출처: principles.md 4.1절
+    ============================== -->
     <article class="case-card">
       <div class="card-header">
         <div class="card-num" aria-hidden="true">1</div>
         <div class="card-title-wrap">
-          <h2 class="card-title">인증 번호 불일치</h2>
+          <h2 class="card-title">세션 만료 에러 메시지</h2>
           <div class="principle-tags">
             <span class="ptag ptag-a">무번역의 원칙</span>
-            <span class="ptag ptag-c">심리적안전망</span>
-          </div>
-        </div>
-      </div>
-      <div class="card-panels">
-        <div class="panel panel-before">
-          <div class="panel-label panel-label-before">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="8" cy="8" r="6"/>
-              <path d="M5 5l6 6M11 5l-6 6"/>
-            </svg>
-            BEFORE — 기존 메시지
-          </div>
-          <div class="msg-box msg-box-before">
-            <span class="msg-bad">ERROR 4023: 인증 실패</span>
-            <span class="msg-bad">인증에 실패했습니다. 다시 시도해 주세요.</span>
-          </div>
-        </div>
-        <div class="panel panel-after">
-          <div class="panel-label panel-label-after">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="8" cy="8" r="6"/>
-              <path d="M5 8l2.5 2.5L11 5.5"/>
-            </svg>
-            AFTER — 3단 구조 적용
-          </div>
-          <div class="msg-box msg-box-after">
-            <div class="step">
-              <span class="step-label step-1">1단 상황</span>
-              인증 번호가 일치하지 않습니다.
-            </div>
-            <div class="step">
-              <span class="step-label step-2">2단 원인</span>
-              문자로 받은 6자리 숫자와 다르게 입력됐습니다.
-            </div>
-            <div class="step">
-              <span class="step-label step-3">3단 행동</span>
-              문자를 다시 확인하고 숫자를 입력해 주세요.
-            </div>
-            <div class="step-indent">번호가 만료됐다면 [인증 번호 다시 받기]를 눌러 주세요.</div>
-          </div>
-        </div>
-      </div>
-      <div class="card-explain">
-        <strong>왜 바꿔야 하나?</strong>
-        "ERROR 4023"은 시민에게 의미 없는 기술 코드입니다. "인증 실패 + 다시 시도"만으로는
-        무엇이 틀렸는지, 어떻게 해야 하는지 알 수 없습니다.
-        3단 구조는 <strong>원인(6자리 불일치)</strong>과 <strong>대안(번호 재발송)</strong>을 동시에 제공해
-        사용자가 스스로 해결할 수 있게 합니다.
-      </div>
-    </article>
-
-    <!-- CASE 2 -->
-    <article class="case-card">
-      <div class="card-header">
-        <div class="card-num" aria-hidden="true">2</div>
-        <div class="card-title-wrap">
-          <h2 class="card-title">파일 업로드 실패</h2>
-          <div class="principle-tags">
-            <span class="ptag ptag-b">정보핵심화</span>
-            <span class="ptag ptag-c">심리적안전망</span>
-          </div>
-        </div>
-      </div>
-      <div class="card-panels">
-        <div class="panel panel-before">
-          <div class="panel-label panel-label-before">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="8" cy="8" r="6"/>
-              <path d="M5 5l6 6M11 5l-6 6"/>
-            </svg>
-            BEFORE — 기존 메시지
-          </div>
-          <div class="msg-box msg-box-before">
-            <span class="msg-bad">파일 업로드에 실패했습니다.</span>
-            <span class="msg-bad">오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</span>
-          </div>
-        </div>
-        <div class="panel panel-after">
-          <div class="panel-label panel-label-after">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="8" cy="8" r="6"/>
-              <path d="M5 8l2.5 2.5L11 5.5"/>
-            </svg>
-            AFTER — 3단 구조 적용
-          </div>
-          <div class="msg-box msg-box-after">
-            <div class="step">
-              <span class="step-label step-1">1단 상황</span>
-              파일을 올리지 못했습니다.
-            </div>
-            <div class="step">
-              <span class="step-label step-2">2단 원인</span>
-              파일 크기가 10MB를 넘으면 올릴 수 없습니다.
-            </div>
-            <div class="step">
-              <span class="step-label step-3">3단 행동</span>
-              파일 크기를 줄이거나, 여러 개로 나눠 올려 주세요.
-            </div>
-            <div class="step-indent">지원 형식: PDF, JPG, PNG / 최대 10MB</div>
-          </div>
-        </div>
-      </div>
-      <div class="card-explain">
-        <strong>왜 바꿔야 하나?</strong>
-        "오류가 발생했습니다"는 빈 메시지입니다. 원인도 해결책도 없어 사용자가
-        할 수 있는 것이 없습니다. 개선된 메시지는 <strong>10MB 제한</strong>이라는
-        핵심 정보를 2단에 배치해 사용자가 즉시 행동을 결정할 수 있게 합니다.
-        지원 형식까지 병기해 동일 오류 재발을 방지합니다.
-      </div>
-    </article>
-
-    <!-- CASE 3 -->
-    <article class="case-card">
-      <div class="card-header">
-        <div class="card-num" aria-hidden="true">3</div>
-        <div class="card-title-wrap">
-          <h2 class="card-title">세션 만료</h2>
-          <div class="principle-tags">
-            <span class="ptag ptag-a">무번역의 원칙</span>
-            <span class="ptag ptag-b">정보핵심화</span>
             <span class="ptag ptag-c">심리적안전망</span>
           </div>
         </div>
@@ -481,46 +423,192 @@
       </div>
       <div class="card-explain">
         <strong>왜 바꿔야 하나?</strong>
-        "세션 만료"는 IT 용어입니다. 시민은 "세션"이 무엇인지 모릅니다.
-        개선된 메시지는 <strong>일상어("로그인이 끊겼습니다")</strong>로 상황을 설명하고,
+        "세션 만료"는 IT 전문용어입니다. 시민에게 "세션"이 무엇인지 설명 없이 던지면 혼란만 줍니다.
+        개선된 메시지는 일상어("로그인이 끊겼습니다")로 상황을 설명하고,
         보안 정책(30분 자동 로그아웃)을 원인으로 명시합니다.
-        핵심은 <strong>임시 저장 안내</strong> — 사용자가 가장 두려워하는 데이터 손실을
-        3단에서 먼저 해소해 심리적 안전망을 형성합니다.
+        핵심은 <strong>임시 저장 안내</strong> — 사용자가 가장 두려워하는 데이터 손실을 3단에서 해소해 심리적 안전망을 형성합니다.
+        출처: principles.md 4.1절 — 에러 메시지 3단 구조.
+      </div>
+    </article>
+
+    <!-- ==============================
+         CASE 2: 무번역의 원칙 — 행정어를 일상어로
+         출처: principles.md 2장 (카테고리 1, 3)
+    ============================== -->
+    <article class="case-card">
+      <div class="card-header">
+        <div class="card-num" aria-hidden="true">2</div>
+        <div class="card-title-wrap">
+          <h2 class="card-title">복지 혜택 자격 안내 — 행정어를 일상어로</h2>
+          <div class="principle-tags">
+            <span class="ptag ptag-a">무번역의 원칙</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-panels">
+        <div class="panel panel-before">
+          <div class="panel-label panel-label-before">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="8" cy="8" r="6"/>
+              <path d="M5 5l6 6M11 5l-6 6"/>
+            </svg>
+            BEFORE — 기존 안내 문구
+          </div>
+          <div class="msg-box msg-box-before">
+            <span class="msg-bad">기초생활수급자의 피부양자이며 소득인정액이 기준 중위소득 40% 이하인 경우 의료급여 혜택을 받으실 수 있습니다.</span>
+          </div>
+        </div>
+        <div class="panel panel-after">
+          <div class="panel-label panel-label-after">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="8" cy="8" r="6"/>
+              <path d="M5 8l2.5 2.5L11 5.5"/>
+            </svg>
+            AFTER — 일상어 전환
+          </div>
+          <div class="msg-box msg-box-after">
+            기초생활 지원을 받는 분의 부양가족이라면,
+            가구 소득이 중위 소득 기준 40% 이하일 때
+            의료비 지원을 받을 수 있습니다.
+          </div>
+        </div>
+      </div>
+      <!-- 단어 대체 주석 -->
+      <div class="word-sub-wrap" aria-label="바뀐 단어 목록">
+        <span class="word-sub-label">바뀐 단어</span>
+        <span class="word-sub">
+          <span class="w-before">피부양자</span>
+          <span class="w-arrow">→</span>
+          <span class="w-after">부양가족</span>
+        </span>
+        <span class="word-sub">
+          <span class="w-before">소득인정액</span>
+          <span class="w-arrow">→</span>
+          <span class="w-after">가구 소득</span>
+        </span>
+        <span class="word-sub">
+          <span class="w-before">기준 중위소득</span>
+          <span class="w-arrow">→</span>
+          <span class="w-after">중위 소득 기준</span>
+        </span>
+        <span class="word-sub">
+          <span class="w-before">의료급여</span>
+          <span class="w-arrow">→</span>
+          <span class="w-after">의료비 지원</span>
+        </span>
+        <span class="word-sub">
+          <span class="w-before">받으실 수 있습니다</span>
+          <span class="w-arrow">→</span>
+          <span class="w-after">받을 수 있습니다</span>
+        </span>
+      </div>
+      <div class="card-explain">
+        <strong>왜 바꿔야 하나?</strong>
+        "피부양자", "소득인정액", "의료급여"는 행정·복지 전문어입니다.
+        정작 혜택이 필요한 시민은 이 단어들을 모르기 때문에 자신이 해당되는지조차 판단하지 못합니다.
+        <strong>무번역의 원칙</strong>은 전문어를 풀어쓰거나 일상어로 바꿔 14세 수준의 독해력으로 이해할 수 있도록 합니다.
+        불필요한 극존칭("받으실 수 있습니다")은 문장을 늘리는 대신 자연스러운 경어("받을 수 있습니다")로 전환합니다.
+        출처: principles.md 2장 — 카테고리 1(행정 관습어), 카테고리 5(과도한 경어).
+      </div>
+    </article>
+
+    <!-- ==============================
+         CASE 3: 정보핵심화 — 결론 우선(역피라미드) 구조
+         출처: principles.md 3.1절
+    ============================== -->
+    <article class="case-card">
+      <div class="card-header">
+        <div class="card-num" aria-hidden="true">3</div>
+        <div class="card-title-wrap">
+          <h2 class="card-title">신청 결과 안내 — 결론 우선 구조</h2>
+          <div class="principle-tags">
+            <span class="ptag ptag-b">정보핵심화</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-panels">
+        <div class="panel panel-before">
+          <div class="panel-label panel-label-before">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="8" cy="8" r="6"/>
+              <path d="M5 5l6 6M11 5l-6 6"/>
+            </svg>
+            BEFORE — 결론 후치 구조
+          </div>
+          <div class="msg-box msg-box-before">
+            <span class="msg-bad" style="font-size:14px;line-height:1.65">안녕하세요. 귀하께서 신청하신 ○○ 지원사업의 신청 결과를 검토한 결과, 귀하의 신청 건이 접수 처리되었음을 알려드립니다. 향후 심사 진행 결과는 별도 문자 메시지로 안내해 드릴 예정이오니 참고하시어 불편함이 없으시길 바랍니다.</span>
+          </div>
+        </div>
+        <div class="panel panel-after">
+          <div class="panel-label panel-label-after">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="8" cy="8" r="6"/>
+              <path d="M5 8l2.5 2.5L11 5.5"/>
+            </svg>
+            AFTER — 결론 우선 구조
+          </div>
+          <div class="msg-box msg-box-after">
+            <div class="level-row">
+              <span class="level-badge lv-1">결론</span>
+              <span class="level-text"><strong>신청이 완료됐습니다.</strong></span>
+            </div>
+            <div class="level-row">
+              <span class="level-badge lv-2">접수 정보</span>
+              <span class="level-text">접수번호: 2026-04-18-0042</span>
+            </div>
+            <div class="level-row">
+              <span class="level-badge lv-3">다음 일정</span>
+              <span class="level-text subtle">심사 결과는 3영업일 안에 문자로 알려드립니다.</span>
+            </div>
+            <div class="pyramid-note">
+              핵심 정보를 2문장 읽기 전에 파악할 수 있습니다.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-explain">
+        <strong>왜 바꿔야 하나?</strong>
+        Before 문장은 104자입니다. 가장 중요한 정보("신청이 됐다")는 문장 중간에 숨어 있습니다.
+        시민은 전체를 읽어야 핵심을 파악할 수 있고, 읽다가 지쳐 포기하기도 합니다.
+        <strong>역피라미드 구조</strong>는 결론을 첫 문장에 배치합니다. 시민이 2문장 이상 읽기 전에 핵심을 전달해야 합니다.
+        인사말("안녕하세요"), 불필요한 경어("불편함이 없으시길 바랍니다")는 삭제하고,
+        접수번호·처리 일정처럼 사용자가 실제로 필요로 하는 정보만 남깁니다.
+        출처: principles.md 3.1절 — 안내문·설명문 결론 우선 구조(역피라미드).
       </div>
     </article>
 
   </div>
 
   <!-- PRINCIPLE SUMMARY -->
-  <section class="principle-box" aria-label="핵심 원칙 요약">
-    <h2>에러 메시지 작성 핵심 원칙</h2>
+  <section class="principle-box" aria-label="3대 원칙 핵심 정리">
+    <h2>3대 원칙 핵심 정리</h2>
     <div class="rule-list">
       <div class="rule-item">
-        <span class="rule-icon">❌</span>
+        <span class="rule-icon" aria-hidden="true">🔵</span>
         <div class="rule-text">
-          <strong>금지:</strong>
-          <span>"잘못 입력하셨습니다" · "올바르지 않은 정보입니다" · "오류가 발생했습니다(단독)" · "잠시 후 다시 시도해 주세요(단독)" · "ERROR [코드]" · "죄송합니다(오류 맥락)"</span>
+          <strong>무번역의 원칙:</strong>
+          <span>행정어·전문어를 일상어로 바꿉니다. 기준: 14세 독해력으로 사전 없이 이해 가능한 단어. "피부양자 → 부양가족", "의료급여 → 의료비 지원"</span>
         </div>
       </div>
       <div class="rule-item">
-        <span class="rule-icon">✅</span>
+        <span class="rule-icon" aria-hidden="true">🟢</span>
         <div class="rule-text">
-          <strong>필수:</strong>
-          <span>1단 상황은 항상 포함. 사용자 탓 언어 대신 "일치하지 않습니다 / 확인이 필요합니다"로 중립 표현. 오류 메시지에 이모지·느낌표 금지.</span>
+          <strong>정보핵심화:</strong>
+          <span>결론을 맨 앞에 배치합니다. 시민이 2문장 이상 읽기 전에 핵심을 파악해야 합니다. 40자를 넘는 문장은 분리합니다.</span>
         </div>
       </div>
       <div class="rule-item">
-        <span class="rule-icon">💡</span>
+        <span class="rule-icon" aria-hidden="true">🟣</span>
         <div class="rule-text">
-          <strong>팁:</strong>
-          <span>원인 불명 시 억지 이유 만들지 않기 — "일시적인 문제가 생겼습니다. 문제가 계속되면 고객센터(☎ 1234-5678)에 문의해 주세요."로 솔직하게.</span>
+          <strong>심리적안전망:</strong>
+          <span>오류 메시지에 상황(What)·원인(Why)·행동(How) 3단 구조를 적용합니다. 사용자를 탓하는 표현을 금지합니다. ERROR 코드, "잘못 입력하셨습니다" 사용 금지.</span>
         </div>
       </div>
     </div>
   </section>
 
   <p class="page-footer">
-    출처: principles.md 4.1절 — 에러 메시지 3단 구조 |
+    출처: principles.md 2장(무번역) · 3.1절(역피라미드) · 4.1절(에러 3단 구조) |
     <a href="https://thenisaid.github.io/krds-ux-writing/">KRDS UX Writing 가이드</a>
   </p>
 </main>
