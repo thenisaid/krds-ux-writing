@@ -113,3 +113,135 @@
   }
 
 })();
+
+/* ============================================================
+   LNB Accordion — principles pages only
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var tree = document.querySelector('.lnb-tree');
+  if (!tree) return;
+
+  var cleanPath = window.location.pathname.replace(/\/krds-ux-writing/, '');
+  var items = Array.from(tree.querySelectorAll('.lnb-item'));
+
+  function expand(item) {
+    item.setAttribute('aria-expanded', 'true');
+    var sub = item.querySelector('.lnb-sub');
+    if (sub) sub.removeAttribute('hidden');
+  }
+
+  function collapse(item) {
+    item.setAttribute('aria-expanded', 'false');
+    var sub = item.querySelector('.lnb-sub');
+    if (sub) sub.setAttribute('hidden', '');
+  }
+
+  /* Auto-expand active chapter based on URL */
+  items.forEach(function (item) {
+    var p = item.getAttribute('data-path') || '';
+    if (p && cleanPath.indexOf(p) === 0) {
+      expand(item);
+      var link = item.querySelector('.lnb-item-a');
+      if (link) link.classList.add('active');
+    }
+  });
+
+  /* Toggle on chevron button click */
+  items.forEach(function (item) {
+    var tog = item.querySelector('.lnb-tog');
+    var link = item.querySelector('.lnb-item-a');
+
+    if (tog) {
+      tog.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var open = item.getAttribute('aria-expanded') === 'true';
+        if (open) { collapse(item); } else { expand(item); }
+      });
+    }
+
+    /* Expand when chapter link is clicked */
+    if (link) {
+      link.addEventListener('click', function () {
+        expand(item);
+      });
+    }
+
+    /* Close sidebar on mobile when a link inside is clicked */
+    var allLinks = item.querySelectorAll('.lnb-item-a, .lnb-sub-a');
+    allLinks.forEach(function (a) {
+      a.addEventListener('click', function () {
+        if (window.innerWidth <= 900) {
+          var sidebar = document.querySelector('.sidebar');
+          var backdrop = document.querySelector('.sidebar-backdrop');
+          var hamburger = document.getElementById('gnbHamburger');
+          if (sidebar) sidebar.classList.remove('open');
+          if (backdrop) backdrop.classList.remove('open');
+          if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
+          document.body.style.overflow = '';
+        }
+      });
+    });
+  });
+
+  /* Keyboard navigation: ArrowDown/Up on tree, Enter/Space on toggle */
+  tree.addEventListener('keydown', function (e) {
+    if (['ArrowDown', 'ArrowUp', 'Enter', ' '].indexOf(e.key) === -1) return;
+
+    /* Build list of currently visible focusable elements */
+    var focusable = Array.from(
+      tree.querySelectorAll('.lnb-item-a, .lnb-tog, .lnb-sub-a')
+    ).filter(function (el) {
+      var sub = el.closest('.lnb-sub');
+      return !sub || !sub.hasAttribute('hidden');
+    });
+
+    var idx = focusable.indexOf(document.activeElement);
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (idx < focusable.length - 1) focusable[idx + 1].focus();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (idx > 0) focusable[idx - 1].focus();
+    } else if ((e.key === 'Enter' || e.key === ' ') &&
+               document.activeElement.classList.contains('lnb-tog')) {
+      e.preventDefault();
+      document.activeElement.click();
+    }
+  });
+
+  /* Sub-link active state tracking on scroll */
+  var subLinks = Array.from(tree.querySelectorAll('.lnb-sub-a'));
+  if (subLinks.length > 0) {
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var id = entry.target.id;
+        subLinks.forEach(function (a) {
+          var href = a.getAttribute('href') || '';
+          a.classList.toggle('active', href.split('#')[1] === id);
+        });
+      });
+    }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+
+    subLinks.forEach(function (a) {
+      var href = a.getAttribute('href') || '';
+      var hash = href.split('#')[1];
+      if (hash) {
+        var target = document.getElementById(hash);
+        if (target) obs.observe(target);
+      }
+    });
+  }
+
+  /* Reference footer link active state */
+  document.querySelectorAll('.lnb-footer-a').forEach(function (a) {
+    var href = a.getAttribute('href') || '';
+    var refPath = href.replace(/\/krds-ux-writing/, '').replace(/\/$/, '');
+    var curPath = cleanPath.replace(/\/$/, '');
+    if (refPath && curPath.indexOf(refPath) === 0) a.classList.add('active');
+  });
+
+})();

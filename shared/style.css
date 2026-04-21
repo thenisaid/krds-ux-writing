@@ -197,3 +197,66 @@ a:hover { text-decoration: underline; }
 @media (max-width: 480px) {
   .gnb-nav { display: none; }
 }
+
+/* ---- LNB Accordion — principles pages ---- */
+.lnb-tree { padding: 16px 0; }
+
+.lnb-item-hd {
+  display: flex; align-items: center;
+  padding: 0 12px 0 16px; gap: 2px;
+}
+.lnb-item-a {
+  display: flex; align-items: center; gap: 8px;
+  flex: 1; padding: 7px 4px 7px 0;
+  font-size: 13px; font-weight: 500; color: var(--text-mid);
+  text-decoration: none; transition: color 0.15s; line-height: 1.3;
+}
+.lnb-item-a:hover { color: var(--text); text-decoration: none; }
+.lnb-item-a.active { color: var(--accent); font-weight: 700; }
+
+.lnb-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 4px; flex-shrink: 0;
+  font-size: 9px; font-weight: 800; letter-spacing: 0.02em;
+  background: var(--bg-subtle); color: var(--text-muted);
+  transition: background 0.15s, color 0.15s;
+}
+.lnb-item[aria-expanded="true"] > .lnb-item-hd > .lnb-item-a .lnb-num {
+  background: rgba(37,110,244,0.1); color: var(--accent);
+}
+
+.lnb-tog {
+  background: none; border: none; cursor: pointer;
+  color: var(--text-muted); padding: 5px; border-radius: 4px;
+  line-height: 0; flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.lnb-tog:hover { background: var(--bg-subtle); color: var(--text); }
+.lnb-tog svg { transition: transform 0.2s ease; display: block; }
+.lnb-item[aria-expanded="true"] > .lnb-item-hd > .lnb-tog svg { transform: rotate(90deg); }
+
+.lnb-sub { padding: 2px 12px 6px 44px; }
+.lnb-sub[hidden] { display: none; }
+.lnb-sub-a {
+  display: block; padding: 5px 8px;
+  font-size: 12px; color: var(--text-muted);
+  text-decoration: none; border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+.lnb-sub-a:hover { color: var(--text); background: var(--bg-subtle); text-decoration: none; }
+.lnb-sub-a.active { color: var(--accent); font-weight: 600; }
+
+.lnb-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.lnb-footer-a {
+  display: block; padding: 6px 0;
+  font-size: 12px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  text-decoration: none; transition: color 0.15s;
+}
+.lnb-footer-a:hover { color: var(--accent); text-decoration: none; }
+.lnb-footer-a.active { color: var(--accent); }

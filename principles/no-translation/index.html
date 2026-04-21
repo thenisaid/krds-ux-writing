@@ -108,33 +108,100 @@
 </header>
 
 <div class="page-layout">
-  <aside class="sidebar" id="mainSidebar" aria-label="원칙 내비게이션">
-    <div class="sidebar-section">
-      <div class="sidebar-label">이 페이지</div>
-      <a href="#overview" class="sidebar-link">원칙 개요</a>
-      <a href="#dictionary" class="sidebar-link">행정어 사전</a>
-      <a href="#form-labels" class="sidebar-link">폼 레이블</a>
-      <a href="#button-labels" class="sidebar-link">버튼 레이블</a>
-      <a href="#notation" class="sidebar-link">표기법·맞춤법</a>
-      <a href="#quick-check" class="sidebar-link">빠른 점검</a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-label">기초 원칙</div>
-      <a href="/krds-ux-writing/principles/no-translation/" class="sidebar-link" style="color:var(--accent);font-weight:700">01 번역 금지</a>
-      <a href="/krds-ux-writing/principles/core-info/" class="sidebar-link">02 핵심 정보 먼저</a>
-      <a href="/krds-ux-writing/principles/safety-net/" class="sidebar-link">03 안전망 원칙</a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-label">심화 가이드</div>
-      <a href="/krds-ux-writing/principles/structure/" class="sidebar-link">2장. 텍스트 구조화</a>
-      <a href="/krds-ux-writing/principles/notation/" class="sidebar-link">3장. 표기법</a>
-      <a href="/krds-ux-writing/principles/components/" class="sidebar-link">4장. UI 컴포넌트</a>
-      <a href="/krds-ux-writing/principles/governance/" class="sidebar-link">거버넌스</a>
-      <a href="/krds-ux-writing/principles/derivative/" class="sidebar-link">기관별 파생 가이드</a>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-label">목록으로</div>
-      <a href="/krds-ux-writing/principles/" class="sidebar-link">← 원칙 목록</a>
+    <aside class="sidebar" id="mainSidebar" aria-label="원칙 섹션 내비게이션">
+    <nav class="lnb-tree" role="tree" aria-label="원칙 장별 내비게이션">
+
+      <!-- 1장 파운데이션 -->
+      <div class="lnb-item" role="treeitem" aria-expanded="false" data-path="/principles/foundation/">
+        <div class="lnb-item-hd">
+          <a href="/krds-ux-writing/principles/foundation/" class="lnb-item-a">
+            <span class="lnb-num">1장</span>파운데이션
+          </a>
+          <button class="lnb-tog" aria-label="1장 펼치기/접기" tabindex="0">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="lnb-sub" role="group" hidden>
+          <a href="/krds-ux-writing/principles/foundation/#vision" class="lnb-sub-a">비전</a>
+          <a href="/krds-ux-writing/principles/foundation/#sovereign" class="lnb-sub-a">주권자</a>
+          <a href="/krds-ux-writing/principles/foundation/#principles-overview" class="lnb-sub-a">3대 원칙 개요</a>
+          <a href="/krds-ux-writing/principles/foundation/#voice-tone" class="lnb-sub-a">보이스·톤 기준</a>
+        </div>
+      </div>
+
+      <!-- 2장 무번역의 원칙 -->
+      <div class="lnb-item" role="treeitem" aria-expanded="false" data-path="/principles/no-translation/">
+        <div class="lnb-item-hd">
+          <a href="/krds-ux-writing/principles/no-translation/" class="lnb-item-a">
+            <span class="lnb-num">2장</span>무번역의 원칙
+          </a>
+          <button class="lnb-tog" aria-label="2장 펼치기/접기" tabindex="0">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="lnb-sub" role="group" hidden>
+          <a href="/krds-ux-writing/principles/no-translation/#overview" class="lnb-sub-a">원칙 개요</a>
+          <a href="/krds-ux-writing/principles/no-translation/#dictionary" class="lnb-sub-a">행정어 사전</a>
+          <a href="/krds-ux-writing/principles/no-translation/#form-labels" class="lnb-sub-a">폼 레이블</a>
+          <a href="/krds-ux-writing/principles/no-translation/#button-labels" class="lnb-sub-a">버튼 레이블</a>
+        </div>
+      </div>
+
+      <!-- 3장 정보핵심화의 원칙 -->
+      <div class="lnb-item" role="treeitem" aria-expanded="false" data-path="/principles/core-info/">
+        <div class="lnb-item-hd">
+          <a href="/krds-ux-writing/principles/core-info/" class="lnb-item-a">
+            <span class="lnb-num">3장</span>정보핵심화의 원칙
+          </a>
+          <button class="lnb-tog" aria-label="3장 펼치기/접기" tabindex="0">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="lnb-sub" role="group" hidden>
+          <a href="/krds-ux-writing/principles/core-info/#overview" class="lnb-sub-a">원칙 개요</a>
+          <a href="/krds-ux-writing/principles/core-info/#inverted-pyramid" class="lnb-sub-a">역피라미드 원칙</a>
+          <a href="/krds-ux-writing/principles/core-info/#forty-rule" class="lnb-sub-a">40자 규칙</a>
+        </div>
+      </div>
+
+      <!-- 4장 심리적안전망의 원칙 -->
+      <div class="lnb-item" role="treeitem" aria-expanded="false" data-path="/principles/safety-net/">
+        <div class="lnb-item-hd">
+          <a href="/krds-ux-writing/principles/safety-net/" class="lnb-item-a">
+            <span class="lnb-num">4장</span>심리적안전망의 원칙
+          </a>
+          <button class="lnb-tog" aria-label="4장 펼치기/접기" tabindex="0">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="lnb-sub" role="group" hidden>
+          <a href="/krds-ux-writing/principles/safety-net/#overview" class="lnb-sub-a">원칙 개요</a>
+          <a href="/krds-ux-writing/principles/safety-net/#error-structure" class="lnb-sub-a">3단 구조 정의</a>
+          <a href="/krds-ux-writing/principles/safety-net/#examples" class="lnb-sub-a">유형별 적용 예시</a>
+        </div>
+      </div>
+
+      <!-- 5장 기관별 파생 가이드 -->
+      <div class="lnb-item" role="treeitem" aria-expanded="false" data-path="/principles/derivative/">
+        <div class="lnb-item-hd">
+          <a href="/krds-ux-writing/principles/derivative/" class="lnb-item-a">
+            <span class="lnb-num">5장</span>기관별 파생 가이드
+          </a>
+          <button class="lnb-tog" aria-label="5장 펼치기/접기" tabindex="0">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="lnb-sub" role="group" hidden>
+          <a href="/krds-ux-writing/principles/derivative/#what-is" class="lnb-sub-a">파생 가이드란</a>
+          <a href="/krds-ux-writing/principles/derivative/#checklist" class="lnb-sub-a">제작 체크리스트</a>
+          <a href="/krds-ux-writing/principles/derivative/#templates" class="lnb-sub-a">빈 양식 템플릿</a>
+        </div>
+      </div>
+
+    </nav>
+    <div class="lnb-footer">
+      <a href="/krds-ux-writing/dictionary/" class="lnb-footer-a">사전</a>
+      <a href="/krds-ux-writing/case-studies/" class="lnb-footer-a">사례</a>
     </div>
   </aside>
 
