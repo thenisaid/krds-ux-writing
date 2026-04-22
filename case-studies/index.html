@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="KRDS UX Writing 3대 원칙 — 무번역·정보핵심화·심리적안전망을 공공 서비스에 적용한 Before/After 실전 사례.">
   <title>실전 사례 | KRDS UX Writing</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
+  <script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css" rel="stylesheet">
   <style>
@@ -44,7 +46,7 @@
       color: var(--color-text);
     }
 
-    /* NAV */
+    /* NAV — standard GNB */
     .gnb {
       position: sticky; top: 0; z-index: 100;
       background: rgba(248,247,245,.92);
@@ -52,24 +54,47 @@
       border-bottom: 1px solid var(--color-border);
       height: 60px;
       display: flex; align-items: center;
+      padding: 0 24px; gap: 0;
     }
     [data-theme="dark"] .gnb { background: rgba(15,17,23,.92); }
-    .gnb-inner {
-      max-width: 1100px; width: 100%; margin: 0 auto;
-      padding: 0 24px;
-      display: flex; align-items: center; gap: 16px;
+    .gnb-logo {
+      font-size: 13px; font-weight: 700; color: var(--color-text);
+      display: flex; align-items: center; gap: 8px;
+      flex-shrink: 0; text-decoration: none;
+      margin-right: 24px;
     }
-    .gnb-back {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 14px; font-weight: 500;
-      color: var(--color-text-muted);
-      text-decoration: none;
-      transition: color 0.15s;
+    .gnb-logo:hover { text-decoration: none; }
+    .gnb-logo-mark {
+      width: 24px; height: 24px; border-radius: 5px;
+      background: var(--color-primary); color: #fff;
+      font-size: 11px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
     }
-    .gnb-back:hover { color: var(--color-primary); }
-    .gnb-back svg { width: 16px; height: 16px; }
-    .gnb-sep { color: var(--color-border); font-size: 18px; }
-    .gnb-title { font-size: 15px; font-weight: 600; color: var(--color-text); }
+    .gnb-nav { display: flex; align-items: center; gap: 2px; flex: 1; }
+    .gnb-nav-link {
+      font-size: 13px; font-weight: 500; color: var(--color-text-muted);
+      padding: 6px 12px; border-radius: 6px;
+      text-decoration: none; transition: color 0.15s, background 0.15s;
+      white-space: nowrap;
+    }
+    .gnb-nav-link:hover { color: var(--color-text); text-decoration: none; }
+    .gnb-nav-link.active { color: var(--color-primary); font-weight: 700; background: rgba(37,110,244,0.06); }
+    .gnb-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
+    .gnb-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+      padding: 2px 8px; border-radius: 3px;
+      border: 1px solid var(--color-border); color: var(--color-text-muted);
+    }
+    .gnb-icon-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--color-text-muted); display: flex; align-items: center;
+      padding: 6px; border-radius: 6px; transition: background 0.15s, color 0.15s;
+    }
+    .gnb-icon-btn:hover { color: var(--color-text); }
+    @media (max-width: 640px) {
+      .gnb-nav { display: none; }
+      .gnb-badge { display: none; }
+    }
 
     /* HERO */
     .hero {
@@ -317,18 +342,21 @@
 </head>
 <body>
 
-<nav class="gnb">
-  <div class="gnb-inner">
-    <a href="../" class="gnb-back" aria-label="메인으로 돌아가기">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
-        <path d="M10 12L6 8l4-4"/>
-      </svg>
-      KRDS UX Writing
-    </a>
-    <span class="gnb-sep">/</span>
-    <span class="gnb-title">실전 사례</span>
+<header class="gnb">
+  <a href="/krds-ux-writing/" class="gnb-logo" aria-label="KRDS UX Writing 가이드라인 홈">
+    <span class="gnb-logo-mark" aria-hidden="true">K</span>
+    <span>UX Writing</span>
+  </a>
+  <nav class="gnb-nav" aria-label="섹션 내비게이션">
+    <a href="/krds-ux-writing/principles/" class="gnb-nav-link" data-section="principles">원칙</a>
+    <a href="/krds-ux-writing/dictionary/" class="gnb-nav-link" data-section="dictionary">사전</a>
+    <a href="/krds-ux-writing/case-studies/" class="gnb-nav-link" data-section="case-studies">사례</a>
+  </nav>
+  <div class="gnb-actions">
+    <span class="gnb-badge">v2.0</span>
+    <button class="gnb-icon-btn" id="themeToggle" aria-label="다크 모드로 전환" type="button"></button>
   </div>
-</nav>
+</header>
 
 <section class="hero">
   <div class="hero-tag">
@@ -614,5 +642,6 @@
 </main>
 
 <script src="cases.js"></script>
+<script src="../shared/nav.js"></script>
 </body>
 </html>

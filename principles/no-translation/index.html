@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="번역 금지 원칙 — 행정어를 시민의 언어로. 행정 관습어, 이중 부정, 과도한 경어 제거 기준과 150개 대체어 사전.">
 <title>2장 무번역의 원칙 — KRDS UX Writing 가이드라인</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
 <script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" as="style" crossorigin="anonymous"
@@ -442,7 +443,34 @@
       <h2 class="article-section-heading" id="form-labels-title">폼 레이블 · 플레이스홀더 기준</h2>
       <p class="article-section-lead">폼은 시민이 공공 서비스와 직접 소통하는 접점입니다. 레이블과 플레이스홀더는 "무엇을, 어떻게, 왜 입력해야 하는지"를 인지 부하 없이 전달해야 합니다.</p>
 
-      <div class="sub-h3">레이블 작성 원칙</div>
+      <div class="sub-h3">LID 작성 순서 원칙</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">폼 필드의 세 요소는 반드시 <strong>L → D → I</strong> 순서로 작성합니다.</p>
+      <div class="code-block">L — Label        레이블: 이 필드가 무엇인지 (명사형, 필수)
+D — Description  설명·도움말: 어떻게 입력해야 하는지 (선택적)
+I — Input hint   플레이스홀더: 입력 예시 (선택적, 마지막)</div>
+      <table class="data-table">
+        <thead><tr><th>근거</th><th>내용</th></tr></thead>
+        <tbody>
+          <tr><td><strong>KWCAG 2.1 SC 1.3.2</strong></td><td>스크린리더는 DOM 순서대로 읽음 → L이 먼저 없으면 필드 목적 전달 실패</td></tr>
+          <tr><td><strong>WCAG 2.1 SC 1.3.5</strong></td><td>플레이스홀더 단독 사용은 접근성 위반 — 반드시 Label이 선행 필요</td></tr>
+          <tr><td><strong>NNG (2023)</strong></td><td>플레이스홀더는 입력 즉시 사라져 기억에서 소실 → 중요 정보 전달 수단 부적합</td></tr>
+          <tr><td><strong>행안부 공공기관 사용성 테스트 (2022)</strong></td><td>플레이스홀더에 필수 정보를 담은 경우 오류율 2.3배 증가</td></tr>
+        </tbody>
+      </table>
+      <div class="code-block"><span class="code-ok">✅ 올바른 순서 (LDI 모두 사용)</span>
+L: 전화번호 (필수)
+D: 숫자와 하이픈(-)만 입력해 주세요
+I: 예: 010-1234-5678
+
+<span class="code-ok">✅ 올바른 순서 (L만 사용 — D·I 생략 가능)</span>
+L: 이름 (필수)
+   [입력 필드]
+
+<span class="code-bad">🚫 잘못된 패턴</span>
+I: 전화번호를 입력하세요   ← 레이블 없이 플레이스홀더만 사용, 접근성 위반</div>
+      <div class="info-box"><strong>L은 항상 필수입니다.</strong> D와 I는 필드의 복잡도에 따라 선택적으로 사용합니다. 단순 필드는 L만으로 충분합니다.</div>
+
+      <div class="sub-h3" style="margin-top:32px">레이블 작성 원칙</div>
 
       <div class="sub-h4">원칙 1 — 명사형 우선</div>
       <div class="do-dont">
