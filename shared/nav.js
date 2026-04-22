@@ -128,15 +128,25 @@
 
   function expand(item) {
     item.setAttribute('aria-expanded', 'true');
+    var tog = item.querySelector('.lnb-tog');
+    if (tog) tog.setAttribute('aria-expanded', 'true');
     var sub = item.querySelector('.lnb-sub');
     if (sub) sub.removeAttribute('hidden');
   }
 
   function collapse(item) {
     item.setAttribute('aria-expanded', 'false');
+    var tog = item.querySelector('.lnb-tog');
+    if (tog) tog.setAttribute('aria-expanded', 'false');
     var sub = item.querySelector('.lnb-sub');
     if (sub) sub.setAttribute('hidden', '');
   }
+
+  /* Initialize aria-expanded on toggle buttons */
+  items.forEach(function (item) {
+    var tog = item.querySelector('.lnb-tog');
+    if (tog) tog.setAttribute('aria-expanded', item.getAttribute('aria-expanded') || 'false');
+  });
 
   /* Auto-expand active chapter based on URL */
   items.forEach(function (item) {
