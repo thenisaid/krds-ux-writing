@@ -239,7 +239,8 @@ a:hover { text-decoration: underline; }
   background: var(--bg-subtle); color: var(--text-muted);
   transition: background 0.15s, color 0.15s;
 }
-.lnb-item[aria-expanded="true"] > .lnb-item-hd > .lnb-item-a .lnb-num {
+.lnb-item[aria-expanded="true"] > .lnb-item-hd > .lnb-item-a .lnb-num,
+.lnb-item-a.active .lnb-num {
   background: rgba(37,110,244,0.1); color: var(--accent);
 }
 
