@@ -225,10 +225,13 @@
   });
 
   /* Auto-expand active chapter based on URL */
+  /* [A1] WAI-ARIA treeitem: aria-selected 초기화 */
+  items.forEach(function (item) { item.setAttribute('aria-selected', 'false'); });
   items.forEach(function (item) {
     var p = item.getAttribute('data-path') || '';
     if (p && cleanPath.indexOf(p) === 0) {
       expand(item);
+      item.setAttribute('aria-selected', 'true');
       var link = item.querySelector('.lnb-item-a');
       if (link) {
         link.classList.add('active');
