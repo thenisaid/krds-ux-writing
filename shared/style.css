@@ -235,12 +235,14 @@ a:hover { text-decoration: underline; }
   display: inline-flex; align-items: center; justify-content: center;
   width: 20px; height: 20px; border-radius: 4px; flex-shrink: 0;
   font-size: 9px; font-weight: 800; letter-spacing: 0.02em;
-  background: var(--bg-subtle); color: var(--text-muted);
-  transition: background 0.15s, color 0.15s;
+  background: var(--bg-subtle); color: var(--text-mid);
+  border: 1px solid var(--border);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .lnb-item[aria-expanded="true"] > .lnb-item-hd > .lnb-item-a .lnb-num,
 .lnb-item-a.active .lnb-num {
   background: rgba(37,110,244,0.1); color: var(--accent);
+  border-color: rgba(37,110,244,0.3);
 }
 
 .lnb-tog {
