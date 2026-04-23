@@ -292,6 +292,12 @@ a:hover { text-decoration: underline; }
   vertical-align: middle;
   margin-bottom: 1px;
 }
+/* 이터레이션 18: 섹션별 dot 색상 — data-label-section 기반 */
+.lnb-section-label[data-label-section="principle"]::before { background: var(--accent); opacity: 0.7; }
+.lnb-section-label[data-label-section="application"]::before { background: #8a5c00; opacity: 0.7; }
+.lnb-section-label[data-label-section="governance"]::before { background: #6b3fa0; opacity: 0.7; }
+[data-theme="dark"] .lnb-section-label[data-label-section="application"]::before { background: #c49c00; }
+[data-theme="dark"] .lnb-section-label[data-label-section="governance"]::before { background: #a87ed6; }
 
 /* ── LNB 섹션별 배지 색상 시스템 (UX Designer Phase 2) ── */
 /* foundation: 1장 파운데이션 — Blue (정책 기초 레이어) */
