@@ -238,6 +238,28 @@
   });
 
 
+  /* sessionStorage accordion state persistence */
+  var SS_KEY = 'krds-lnb-open';
+  function saveState() {
+    var open = items.filter(function (it) {
+      return it.getAttribute('aria-expanded') === 'true';
+    }).map(function (it) {
+      return it.getAttribute('data-path') || '';
+    }).filter(Boolean);
+    try { sessionStorage.setItem(SS_KEY, JSON.stringify(open)); } catch (e) {}
+  }
+  function restoreState() {
+    var saved;
+    try { saved = JSON.parse(sessionStorage.getItem(SS_KEY) || '[]'); } catch (e) { return; }
+    items.forEach(function (item) {
+      var dp = item.getAttribute('data-path') || '';
+      if (saved.indexOf(dp) !== -1 && item.getAttribute('aria-expanded') !== 'true') {
+        expand(item);
+      }
+    });
+  }
+  restoreState();
+
   /* Toggle on chevron button click */
   items.forEach(function (item) {
     var tog = item.querySelector('.lnb-tog');
@@ -248,6 +270,7 @@
         e.stopPropagation();
         var open = item.getAttribute('aria-expanded') === 'true';
         if (open) { collapse(item); } else { expand(item); }
+        saveState();
       });
     }
 
