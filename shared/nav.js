@@ -164,10 +164,19 @@
   var cleanPath = window.location.pathname.replace(/\/krds-ux-writing/, '');
   var items = Array.from(tree.querySelectorAll('.lnb-item'));
 
+  function getTogLabel(tog, action) {
+    var base = (tog.getAttribute('aria-label') || '')
+      .replace(/\s*(펼치기\/접기|펼치기|접기)$/, '').trim();
+    return base + ' ' + action;
+  }
+
   function expand(item) {
     item.setAttribute('aria-expanded', 'true');
     var tog = item.querySelector('.lnb-tog');
-    if (tog) tog.setAttribute('aria-expanded', 'true');
+    if (tog) {
+      tog.setAttribute('aria-expanded', 'true');
+      tog.setAttribute('aria-label', getTogLabel(tog, '접기'));
+    }
     var sub = item.querySelector('.lnb-sub');
     if (sub) sub.removeAttribute('hidden');
   }
@@ -175,7 +184,10 @@
   function collapse(item) {
     item.setAttribute('aria-expanded', 'false');
     var tog = item.querySelector('.lnb-tog');
-    if (tog) tog.setAttribute('aria-expanded', 'false');
+    if (tog) {
+      tog.setAttribute('aria-expanded', 'false');
+      tog.setAttribute('aria-label', getTogLabel(tog, '펼치기'));
+    }
     var sub = item.querySelector('.lnb-sub');
     if (sub) sub.setAttribute('hidden', '');
   }
