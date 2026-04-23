@@ -478,6 +478,11 @@ function toggleMobileMenu() {
     btn.querySelector('.icon-hamburger').style.display = 'none';
     btn.querySelector('.icon-close').style.display = 'block';
     document.body.style.overflow = 'hidden';
+    trapFocus(menu);
+    const firstFocusable = menu.querySelector(
+      'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])'
+    );
+    if (firstFocusable) firstFocusable.focus();
   }
 }
 
@@ -485,12 +490,14 @@ function closeMobileMenu() {
   const menu = document.getElementById('mobileMenu');
   const btn = document.getElementById('mobileMenuBtn');
   if (!menu || !menu.classList.contains('open')) return;
+  releaseFocus(menu);
   menu.classList.remove('open');
   menu.setAttribute('aria-hidden', 'true');
   if (btn) {
     btn.setAttribute('aria-expanded', 'false');
     btn.querySelector('.icon-hamburger').style.display = 'block';
     btn.querySelector('.icon-close').style.display = 'none';
+    btn.focus();
   }
   document.body.style.overflow = '';
 }
