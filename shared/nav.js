@@ -301,9 +301,10 @@
     });
   });
 
-  /* Keyboard navigation: ArrowDown/Up on tree, Enter/Space on toggle */
+  /* Keyboard navigation: ArrowDown/Up/Right/Left on tree, Enter/Space on toggle */
+  /* [A11y-03] WAI-ARIA Tree §5.2 — ArrowRight/Left expand·collapse */
   tree.addEventListener('keydown', function (e) {
-    if (['ArrowDown', 'ArrowUp', 'Enter', ' '].indexOf(e.key) === -1) return;
+    if (['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft', 'Enter', ' '].indexOf(e.key) === -1) return;
 
     /* Build list of currently visible focusable elements */
     var focusable = Array.from(
@@ -321,6 +322,37 @@
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       if (idx > 0) focusable[idx - 1].focus();
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      var item = document.activeElement.closest('.lnb-item');
+      if (item) {
+        if (item.getAttribute('aria-expanded') === 'false') {
+          /* 닫힌 treeitem: 열기 */
+          var tog = item.querySelector('.lnb-tog');
+          if (tog) tog.click();
+        } else {
+          /* 열린 treeitem: 첫 번째 자식으로 포커스 이동 */
+          var firstChild = item.querySelector('.lnb-sub:not([hidden]) .lnb-sub-a');
+          if (firstChild) firstChild.focus();
+        }
+      }
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      if (document.activeElement.classList.contains('lnb-sub-a')) {
+        /* 자식 링크: 부모 treeitem 링크로 포커스 이동 */
+        var parentItem = document.activeElement.closest('.lnb-item');
+        if (parentItem) {
+          var parentLink = parentItem.querySelector('.lnb-item-a');
+          if (parentLink) parentLink.focus();
+        }
+      } else {
+        var item2 = document.activeElement.closest('.lnb-item');
+        if (item2 && item2.getAttribute('aria-expanded') === 'true') {
+          /* 열린 treeitem: 닫기 */
+          var tog2 = item2.querySelector('.lnb-tog');
+          if (tog2) tog2.click();
+        }
+      }
     } else if ((e.key === 'Enter' || e.key === ' ') &&
                document.activeElement.classList.contains('lnb-tog')) {
       e.preventDefault();
