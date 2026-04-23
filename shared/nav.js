@@ -192,9 +192,13 @@
     if (p && cleanPath.indexOf(p) === 0) {
       expand(item);
       var link = item.querySelector('.lnb-item-a');
-      if (link) link.classList.add('active');
+      if (link) {
+        link.classList.add('active');
+        link.setAttribute('aria-current', 'page');
+      }
     }
   });
+
 
   /* Toggle on chevron button click */
   items.forEach(function (item) {
@@ -262,6 +266,18 @@
 
   /* Sub-link active state tracking on scroll */
   var subLinks = Array.from(tree.querySelectorAll('.lnb-sub-a'));
+
+  /* Activate sub-link matching the URL hash on page load */
+  if (location.hash && subLinks.length > 0) {
+    var hashId = location.hash.slice(1);
+    subLinks.forEach(function (a) {
+      if ((a.getAttribute('href') || '').split('#')[1] === hashId) {
+        a.classList.add('active');
+        a.setAttribute('aria-current', 'location');
+      }
+    });
+  }
+
   if (subLinks.length > 0) {
     var obs = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
@@ -269,7 +285,13 @@
         var id = entry.target.id;
         subLinks.forEach(function (a) {
           var href = a.getAttribute('href') || '';
-          a.classList.toggle('active', href.split('#')[1] === id);
+          var isActive = href.split('#')[1] === id;
+          a.classList.toggle('active', isActive);
+          if (isActive) {
+            a.setAttribute('aria-current', 'location');
+          } else {
+            a.removeAttribute('aria-current');
+          }
         });
       });
     }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
