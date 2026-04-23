@@ -209,9 +209,15 @@ a:hover { text-decoration: underline; }
 .lnb-section-label {
   font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--text-muted); padding: 12px 20px 4px;
-  opacity: 0.6;
+  opacity: 0.75;
 }
 .lnb-section-label + .lnb-item { margin-top: 0; }
+/* 두 번째 이후 섹션 레이블 앞에 시각 구분선 추가 */
+.lnb-item + .lnb-section-label {
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
 
 .lnb-item-hd {
   display: flex; align-items: center;
