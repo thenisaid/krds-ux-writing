@@ -91,7 +91,45 @@
     if (e.key === 'Escape') closeSidebar();
   });
 
-  /* ── 4. Sidebar active link on scroll ── */
+  /* ── 4. GNB 키보드 내비게이션 ── */
+  var gnbNav = document.querySelector('.gnb-nav');
+  if (gnbNav) {
+    gnbNav.addEventListener('keydown', function (e) {
+      var links = Array.from(gnbNav.querySelectorAll('.gnb-nav-link'));
+      var idx = links.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        if (idx < links.length - 1) links[idx + 1].focus();
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (idx > 0) links[idx - 1].focus();
+      } else if (e.key === 'Escape') {
+        // GNB 드롭다운 닫기 (메인 페이지 호환, principles 서브페이지는 무시)
+        var openItem = document.querySelector('.gnb-item.open');
+        if (openItem) {
+          openItem.classList.remove('open');
+          var gnbBtn = openItem.querySelector('.gnb-link');
+          if (gnbBtn) { gnbBtn.setAttribute('aria-expanded', 'false'); gnbBtn.focus(); }
+        }
+      }
+    });
+  }
+
+  /* ── 5. Ctrl+K 검색 단축키 ── */
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      var searchBtn = document.getElementById('gnbSearch');
+      if (searchBtn) {
+        searchBtn.click();
+      } else {
+        // principles 서브페이지: 검색 UI 없음 → 메인 페이지로 이동
+        window.location.href = '/krds-ux-writing/';
+      }
+    }
+  });
+
+  /* ── 6. Sidebar active link on scroll ── */
   var sidebarLinks = sidebar ? sidebar.querySelectorAll('.sidebar-link[href^="#"]') : [];
   if (sidebarLinks.length > 0) {
     var observer = new IntersectionObserver(function (entries) {
