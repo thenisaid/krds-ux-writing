@@ -287,3 +287,16 @@ a:hover { text-decoration: underline; }
 .lnb-section-label[data-label-section="governance"]::before { background: #6b3fa0; }
 [data-theme="dark"] .lnb-section-label[data-label-section="application"]::before { background: #c49c00; }
 [data-theme="dark"] .lnb-section-label[data-label-section="governance"]::before { background: #a87ed6; }
+
+/* ── 이터레이션 16: 컴포넌트 서브아이템 그룹 레이블 (UX Writer 확정 카피) ── */
+.lnb-sub-group-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-muted);
+  padding: 8px 8px 2px; display: block; opacity: 0.65;
+  line-height: 1;
+}
+.lnb-sub-group-label:not(:first-child) {
+  margin-top: 4px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
