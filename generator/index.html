@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>기관별 UX Writing 가이드라인 생성기 — KRDS</title>
+  <link
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-gov.min.css"
+    rel="stylesheet"
+    crossorigin="anonymous"
+  />
+  <script
+    src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"
+    crossorigin="anonymous"
+  ></script>
+  <style>
+    /* ===== KRDS 디자인 토큰 ===== */
+    :root {
+      --color-primary-50: #256ef4;
+      --color-primary-hover: #1a5bcc;
+      /* TODO: 아래 값은 KRDS 공식 토큰 시트(디자인 파일) 확인 후 교체 필요 */
+      --color-danger-50: #c82020;
+      --color-border: #9ca3af;       /* 3.1:1 — WCAG UI 기준 충족 */
+      --color-placeholder: #6b7280;  /* 5.0:1 — WCAG AA 충족 */
+      --color-text: #1a1a1a;         /* 19.1:1 */
+      --color-text-secondary: #4b5563;
+      --color-bg: #ffffff;
+      --color-surface: #f8f9fa;
+      --color-disabled-bg: #e5e7eb;
+      --color-disabled-text: #9ca3af;
+      --font: 'PretendardGOV', 'Pretendard GOV Variable', 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --max-width: 720px;
+    }
+
+    /* ===== 리셋 ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--color-text);
+      background: var(--color-bg);
+      min-height: 100vh;
+    }
+
+    /* ===== 레이아웃 ===== */
+    .page-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      width: 100%;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* ===== 헤더 ===== */
+    .site-header {
+      padding: 24px 0 16px;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: 32px;
+    }
+
+    .site-header .inner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-badge {
+      display: inline-flex;
+      align-items: center;
+      background: var(--color-primary-50);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      letter-spacing: 0.8px;
+    }
+
+    .site-header .site-name {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+    }
+
+    /* ===== 화면 전환 ===== */
+    .screen { display: none; flex: 1; padding-bottom: 48px; }
+    .screen.active { display: block; }
+
+    /* ===== 타이포그래피 ===== */
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+      font-size: 16px;
+      color: var(--color-text-secondary);
+      margin-bottom: 32px;
+      line-height: 1.7;
+    }
+
+    /* ===== 폼 ===== */
+    fieldset { border: none; padding: 0; margin-bottom: 24px; }
+
+    legend {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--color-text);
+    }
+
+    .form-group { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--color-text);
+    }
+
+    .required-mark {
+      color: var(--color-danger-50);
+      margin-left: 2px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .optional-mark {
+      color: var(--color-text-secondary);
+      font-size: 12px;
+      font-weight: 400;
+      margin-left: 4px;
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-family: var(--font);
+      font-size: 16px;
+      color: var(--color-text);
+      background: var(--color-bg);
+      transition: border-color 150ms ease, outline 150ms ease;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input[type="text"]::placeholder,
+    textarea::placeholder { color: var(--color-placeholder); }
+
+    input[type="text"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: 2px solid var(--color-primary-50);
+      outline-offset: 2px;
+      border-color: var(--color-primary-50);
+    }
+
+    input[type="text"].has-error,
+    select.has-error,
+    textarea.has-error {
+      border-color: var(--color-danger-50);
+    }
+
+    select {
+      min-height: 44px;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    /* ===== 에러 메시지 ===== */
+    .error-msg {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      color: var(--color-danger-50);
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    .error-msg.visible { display: flex; }
+    .error-icon { flex-shrink: 0; }
+
+    /* ===== 알림 배너 ===== */
+    .alert {
+      display: none;
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .alert.visible { display: block; }
+
+    .alert-error {
+      background: rgba(200, 32, 32, 0.06);
+      border: 1px solid var(--color-danger-50);
+      color: var(--color-danger-50);
+    }
+
+    /* ===== 버튼 ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      min-height: 48px;
+      border-radius: var(--radius-md);
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background-color 150ms ease;
+      text-decoration: none;
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--color-primary-50);
+      outline-offset: 2px;
+    }
+
+    .btn-primary {
+      background: var(--color-primary-50);
+      color: #fff;
+      width: 100%;
+    }
+
+    .btn-primary:hover:not(:disabled) { background: var(--color-primary-hover); }
+
+    .btn-primary:disabled {
+      background: var(--color-disabled-bg);
+      color: var(--color-disabled-text);
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--color-primary-50);
+      border: 1px solid var(--color-primary-50);
+      min-height: 44px;
+      padding: 10px 20px;
+      font-size: 15px;
+    }
+
+    .btn-secondary:hover { background: rgba(37, 110, 244, 0.06); }
+
+    .btn-link {
+      background: none;
+      border: none;
+      color: var(--color-primary-50);
+      font-family: var(--font);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 10px 0;
+      display: inline-block;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .btn-link:hover { text-decoration: none; }
+
+    .btn-link:focus-visible {
+      outline: 2px solid var(--color-primary-50);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+
+    .cta-wrapper { margin-top: 32px; }
+
+    /* ===== 화면 2 — 생성 중 ===== */
+    .generating-header {
+      text-align: center;
+      padding: 24px 0 16px;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(37, 110, 244, 0.2);
+      border-top-color: var(--color-primary-50);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 12px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .generating-status {
+      font-size: 15px;
+      color: var(--color-text-secondary);
+    }
+
+    .stream-output {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      min-height: 120px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--color-text);
+      margin: 16px 0;
+    }
+
+    .cancel-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    /* ===== 화면 3 — 출력 ===== */
+    .output-heading {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .output-card {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+    }
+
+    /* 마크다운 스타일 */
+    .output-card h1, .output-card h2,
+    .output-card h3, .output-card h4 {
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+      line-height: 1.3;
+      font-weight: 700;
+    }
+
+    .output-card > *:first-child,
+    .output-card h1:first-child,
+    .output-card h2:first-child { margin-top: 0; }
+
+    .output-card h1 { font-size: 22px; }
+    .output-card h2 {
+      font-size: 18px;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 6px;
+    }
+    .output-card h3 { font-size: 16px; }
+    .output-card h4 { font-size: 15px; }
+    .output-card p { margin-bottom: 0.75em; }
+    .output-card ul, .output-card ol {
+      padding-left: 1.5em;
+      margin-bottom: 0.75em;
+    }
+    .output-card li { margin-bottom: 0.3em; }
+    .output-card code {
+      background: var(--color-surface);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+    .output-card pre {
+      background: var(--color-surface);
+      padding: 12px;
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      margin-bottom: 0.75em;
+    }
+    .output-card pre code { background: none; padding: 0; }
+    .output-card table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 0.75em;
+      font-size: 14px;
+    }
+    .output-card th, .output-card td {
+      border: 1px solid var(--color-border);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .output-card th {
+      background: var(--color-surface);
+      font-weight: 600;
+    }
+    .output-card blockquote {
+      border-left: 3px solid var(--color-primary-50);
+      padding-left: 16px;
+      color: var(--color-text-secondary);
+      margin-bottom: 0.75em;
+    }
+
+    .usage-guide {
+      border-top: 1px solid var(--color-border);
+      padding-top: 16px;
+      margin-top: 16px;
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .action-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .action-group .btn-primary { flex: 1; min-width: 200px; }
+
+    .download-error {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      color: var(--color-danger-50);
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .download-error.visible { display: flex; }
+
+    /* ===== 반응형 ===== */
+    @media (max-width: 767px) {
+      h1 { font-size: 22px; }
+      .action-group { flex-direction: column; align-items: stretch; }
+      .action-group .btn-primary { min-width: unset; }
+      .btn-link { text-align: center; }
+    }
+
+    /* ===== 접근성 ===== */
+    :focus-visible {
+      outline: 2px solid var(--color-primary-50);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .spinner {
+        animation: none;
+        border: 3px solid var(--color-primary-50);
+        opacity: 0.6;
+      }
+      *, *::before, *::after { transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- 헤더 -->
+  <header class="site-header">
+    <div class="container">
+      <div class="inner">
+        <span class="logo-badge">KRDS</span>
+        <span class="site-name">UX Writing 가이드라인 생성기</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" aria-label="UX Writing 가이드라인 생성기">
+
+    <!-- ===== 화면 1: 입력 폼 ===== -->
+    <section id="screen-input" class="screen active" aria-label="기관 정보 입력">
+      <h1>기관별 UX Writing<br>가이드라인 생성기</h1>
+      <p class="page-subtitle">
+        기관명과 유형을 입력하고, 현재 서비스에서 사용 중인 UI 문구를 붙여넣으세요.<br>
+        KRDS 3원칙 기반 맞춤 가이드라인 초안을 즉시 생성합니다.
+      </p>
+
+      <div id="form-alert" class="alert alert-error" role="alert" aria-live="polite"></div>
+
+      <form id="generator-form" aria-label="기관 정보 입력" novalidate>
+
+        <fieldset>
+          <legend>기관 정보</legend>
+
+          <div class="form-group">
+            <label for="agency-name">
+              기관명<span class="required-mark" aria-hidden="true"> *</span>
+            </label>
+            <input
+              type="text"
+              id="agency-name"
+              name="agencyName"
+              placeholder="예: 서울시립미술관"
+              maxlength="50"
+              required
+              aria-required="true"
+              aria-describedby="agency-name-error"
+            />
+            <span id="agency-name-error" class="error-msg" role="alert">
+              <span class="error-icon" aria-hidden="true">⚠</span>
+              기관명을 입력해 주세요. (1~50자)
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="agency-type">
+              기관 유형<span class="required-mark" aria-hidden="true"> *</span>
+            </label>
+            <select
+              id="agency-type"
+              name="agencyType"
+              required
+              aria-required="true"
+              aria-describedby="agency-type-error"
+            >
+              <option value="">유형을 선택해 주세요</option>
+              <option value="지방자치단체">시청/군청/구청 (지방자치단체)</option>
+              <option value="광역자치단체">광역시도청 (광역자치단체)</option>
+              <option value="중앙행정기관">중앙행정기관 (부/처/청)</option>
+              <option value="공공기관">공공기관/공기업 (공사/공단/재단)</option>
+              <option value="교육기관">교육기관 (교육청/대학교)</option>
+              <option value="기타공공기관">기타 공공기관</option>
+            </select>
+            <span id="agency-type-error" class="error-msg" role="alert">
+              <span class="error-icon" aria-hidden="true">⚠</span>
+              기관 유형을 선택해 주세요.
+            </span>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>현재 사용 중인 UI 문구</legend>
+          <p style="font-size:14px;color:var(--color-text-secondary);margin-bottom:16px;">
+            에러 메시지, 버튼 레이블, 안내문 등 현재 서비스에서 사용하는 문구를 그대로 붙여넣어 주세요.
+          </p>
+
+          <div class="form-group">
+            <label for="sample-1">
+              샘플 텍스트 1<span class="required-mark" aria-hidden="true"> *</span>
+            </label>
+            <textarea
+              id="sample-1"
+              name="sample1"
+              placeholder="예: 오류가 발생하였습니다. 담당 부서에 문의하시기 바랍니다."
+              maxlength="500"
+              required
+              aria-required="true"
+              aria-describedby="sample-1-error"
+            ></textarea>
+            <span id="sample-1-error" class="error-msg" role="alert">
+              <span class="error-icon" aria-hidden="true">⚠</span>
+              샘플 텍스트를 1개 이상 입력해 주세요. (각 최대 500자)
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="sample-2">
+              샘플 텍스트 2<span class="optional-mark">(선택)</span>
+            </label>
+            <textarea
+              id="sample-2"
+              name="sample2"
+              placeholder="예: 해당 항목은 필수 입력 사항입니다."
+              maxlength="500"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="sample-3">
+              샘플 텍스트 3<span class="optional-mark">(선택)</span>
+            </label>
+            <textarea
+              id="sample-3"
+              name="sample3"
+              placeholder="예: 신청서 제출이 완료되었습니다."
+              maxlength="500"
+            ></textarea>
+          </div>
+        </fieldset>
+
+        <div class="cta-wrapper">
+          <button type="submit" id="submit-btn" class="btn btn-primary" disabled>
+            가이드라인 생성하기
+          </button>
+        </div>
+
+      </form>
+    </section>
+
+    <!-- ===== 화면 2: 생성 중 ===== -->
+    <section id="screen-generating" class="screen" aria-label="가이드라인 생성 중">
+
+      <div class="generating-header">
+        <div class="spinner" role="status" aria-hidden="true"></div>
+        <p
+          class="generating-status"
+          id="generating-status"
+          aria-live="polite"
+          aria-atomic="true"
+        >가이드라인을 생성하고 있습니다…</p>
+      </div>
+
+      <div
+        id="stream-output"
+        class="stream-output"
+        role="region"
+        aria-label="생성 중인 가이드라인"
+        aria-live="polite"
+        aria-atomic="false"
+        aria-busy="true"
+      ></div>
+
+      <div
+        id="generating-error"
+        class="alert alert-error"
+        role="alert"
+        aria-live="assertive"
+      ></div>
+
+      <div class="cancel-area">
+        <button type="button" id="cancel-btn" class="btn btn-secondary">
+          취소하기
+        </button>
+        <div id="fallback-area" style="display:none;">
+          <button type="button" id="fallback-btn" class="btn btn-secondary">
+            기본 양식 사용하기
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ===== 화면 3: 출력 ===== -->
+    <section id="screen-output" class="screen" aria-label="생성된 가이드라인">
+
+      <h2 id="output-title" class="output-heading" tabindex="-1"></h2>
+
+      <div
+        id="output-content"
+        class="output-card"
+        role="region"
+        aria-label="생성된 가이드라인 내용"
+      ></div>
+
+      <div class="usage-guide">
+        이 가이드라인을 내부 문서로 활용하거나 출력하여 결재 자료로 사용하세요.
+      </div>
+
+      <div class="action-group">
+        <button type="button" id="download-btn" class="btn btn-primary">
+          다운로드 (HTML)
+        </button>
+        <button type="button" id="restart-btn" class="btn-link">
+          다시 생성하기
+        </button>
+      </div>
+
+      <div id="download-error" class="download-error" role="alert">
+        <span class="error-icon" aria-hidden="true">⚠</span>
+        다운로드 중 오류가 발생했습니다. 다시 시도해 주세요.
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── CDN 가용성 확인 ── */
+  var purifyAvailable = typeof DOMPurify !== 'undefined';
+  var mdAvailable     = typeof markdownit !== 'undefined';
+  var md = mdAvailable
+    ? markdownit({ html: false, breaks: true, linkify: false })
+    : null;
+
+  /* ── 앱 상태 ── */
+  var currentMarkdown  = '';
+  var currentAgency    = '';
+  var abortController  = null;
+  var cancelled        = false;
+
+  /* ── DOM 참조 ── */
+  var form             = document.getElementById('generator-form');
+  var submitBtn        = document.getElementById('submit-btn');
+  var agencyNameEl     = document.getElementById('agency-name');
+  var agencyTypeEl     = document.getElementById('agency-type');
+  var sample1El        = document.getElementById('sample-1');
+  var sample2El        = document.getElementById('sample-2');
+  var sample3El        = document.getElementById('sample-3');
+  var formAlert        = document.getElementById('form-alert');
+  var streamOutput     = document.getElementById('stream-output');
+  var generatingStatus = document.getElementById('generating-status');
+  var generatingError  = document.getElementById('generating-error');
+  var fallbackArea     = document.getElementById('fallback-area');
+  var cancelBtn        = document.getElementById('cancel-btn');
+  var fallbackBtn      = document.getElementById('fallback-btn');
+  var outputTitle      = document.getElementById('output-title');
+  var outputContent    = document.getElementById('output-content');
+  var downloadBtn      = document.getElementById('download-btn');
+  var restartBtn       = document.getElementById('restart-btn');
+  var downloadError    = document.getElementById('download-error');
+
+  /* ── 화면 전환 ── */
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(function (s) {
+      s.classList.remove('active');
+    });
+    var target = document.getElementById(id);
+    if (!target) return;
+    target.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  /* ── 필드 에러 토글 ── */
+  function setFieldError(fieldId, show) {
+    var field = document.getElementById(fieldId);
+    var msg   = document.getElementById(fieldId + '-error');
+    if (!field || !msg) return;
+    if (show) {
+      field.classList.add('has-error');
+      msg.classList.add('visible');
+    } else {
+      field.classList.remove('has-error');
+      msg.classList.remove('visible');
+    }
+  }
+
+  /* ── 버튼 활성화 검사 ── */
+  function validateForm() {
+    var ok =
+      agencyNameEl.value.trim().length > 0 &&
+      agencyTypeEl.value !== '' &&
+      sample1El.value.trim().length > 0;
+    submitBtn.disabled = !ok;
+  }
+
+  /* ── 입력 이벤트 바인딩 ── */
+  agencyNameEl.addEventListener('input', function () {
+    setFieldError('agency-name', false);
+    validateForm();
+  });
+  agencyTypeEl.addEventListener('change', function () {
+    setFieldError('agency-type', false);
+    validateForm();
+  });
+  sample1El.addEventListener('input', function () {
+    setFieldError('sample-1', false);
+    validateForm();
+  });
+  sample2El.addEventListener('input', validateForm);
+  sample3El.addEventListener('input', validateForm);
+
+  /* ── HTML 이스케이프 (DOMPurify 없을 때 fallback) ── */
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  /* ── 마크다운 → 안전한 HTML ── */
+  function renderMarkdown(text) {
+    if (!mdAvailable) {
+      return '<pre style="white-space:pre-wrap;word-break:break-word;">' +
+        escapeHtml(text) + '</pre>';
+    }
+    var raw = md.render(text);
+    if (purifyAvailable) {
+      return DOMPurify.sanitize(raw, {
+        ALLOWED_TAGS: [
+          'h1','h2','h3','h4','h5','h6','p',
+          'ul','ol','li','strong','em','code','pre',
+          'table','thead','tbody','tr','th','td',
+          'blockquote','br','hr'
+        ]
+      });
+    }
+    /* DOMPurify CDN 로드 실패 시 plaintext fallback */
+    return '<pre style="white-space:pre-wrap;word-break:break-word;">' +
+      escapeHtml(text) + '</pre>';
+  }
+
+  /* ── Fallback 마크다운 ── */
+  function getFallbackMarkdown(agencyName) {
+    return '# ' + agencyName + ' UX Writing 기본 가이드라인 (기본 양식)\n\n' +
+      '## 1. 무번역 원칙\n\n' +
+      '- [ ] 행정 용어를 시민 언어로 전환했는가?\n\n' +
+      '## 2. 정보핵심화 원칙\n\n' +
+      '- [ ] 불필요한 수식어를 제거했는가?\n\n' +
+      '## 3. 심리적 안전망 원칙\n\n' +
+      '- [ ] 오류 메시지에 다음 행동을 명시했는가?\n';
+  }
+
+  /* ── 독립 실행형 HTML 빌드 ── */
+  function buildStandaloneHtml(agencyName, markdownText) {
+    var title   = escapeHtml(agencyName) + ' UX Writing 가이드라인';
+    var content = renderMarkdown(markdownText);
+    var date    = new Date().toLocaleDateString('ko-KR');
+    return [
+      '<!DOCTYPE html>',
+      '<html lang="ko">',
+      '<head>',
+      '<meta charset="UTF-8" />',
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
+      '<title>' + title + '</title>',
+      '<style>',
+      'body{font-family:\'Pretendard Variable\',Pretendard,-apple-system,sans-serif;',
+      '  font-size:16px;line-height:1.7;color:#1a1a1a;max-width:800px;margin:0 auto;padding:32px 24px;}',
+      'h1{font-size:24px;font-weight:700;margin-bottom:8px;}',
+      'h2{font-size:18px;font-weight:700;margin-top:2em;margin-bottom:.5em;',
+      '  border-bottom:1px solid #e5e7eb;padding-bottom:6px;}',
+      'h3{font-size:16px;font-weight:700;margin-top:1.5em;margin-bottom:.5em;}',
+      'ul,ol{padding-left:1.5em;margin-bottom:.75em;}',
+      'li{margin-bottom:.3em;}',
+      'table{width:100%;border-collapse:collapse;margin-bottom:.75em;font-size:14px;}',
+      'th,td{border:1px solid #e5e7eb;padding:8px 12px;text-align:left;}',
+      'th{background:#f8f9fa;font-weight:600;}',
+      'code{background:#f8f9fa;padding:1px 5px;border-radius:3px;font-size:.9em;}',
+      'pre{background:#f8f9fa;padding:12px;border-radius:6px;overflow-x:auto;}',
+      'blockquote{border-left:3px solid #256ef4;padding-left:16px;color:#4b5563;}',
+      '.meta{color:#6b7280;font-size:13px;margin-bottom:28px;',
+      '  padding-bottom:14px;border-bottom:1px solid #e5e7eb;}',
+      '</style>',
+      '</head>',
+      '<body>',
+      '<p class="meta">KRDS UX Writing 가이드라인 생성기 · 생성일: ' + date + '</p>',
+      content,
+      '</body>',
+      '</html>'
+    ].join('\n');
+  }
+
+  /* ── 출력 화면 표시 ── */
+  function showOutput(markdownText, agencyName) {
+    currentMarkdown = markdownText;
+    currentAgency   = agencyName;
+    outputTitle.textContent = agencyName + ' UX Writing 가이드라인';
+    outputContent.innerHTML = renderMarkdown(markdownText);
+    showScreen('screen-output');
+    /* 포커스 이동 (스크린리더 알림) */
+    setTimeout(function () { outputTitle.focus(); }, 50);
+  }
+
+  /* ── 생성 중 에러 표시 ── */
+  function showGeneratingError(msg) {
+    generatingError.textContent = msg || '가이드라인 생성 중 오류가 발생했습니다.';
+    generatingError.classList.add('visible');
+    generatingStatus.textContent = '오류가 발생했습니다.';
+    streamOutput.setAttribute('aria-busy', 'false');
+    fallbackArea.style.display = 'block';
+  }
+
+  /* ── SSE 스트리밍 ── */
+  async function startGeneration(payload) {
+    abortController = new AbortController();
+    cancelled       = false;
+    currentMarkdown = '';
+
+    streamOutput.textContent = '';
+    streamOutput.setAttribute('aria-busy', 'true');
+    generatingError.classList.remove('visible');
+    generatingError.textContent = '';
+    fallbackArea.style.display  = 'none';
+    generatingStatus.textContent = '가이드라인을 생성하고 있습니다…';
+    cancelBtn.textContent = '취소하기';
+
+    showScreen('screen-generating');
+
+    var signal = abortController.signal;
+
+    try {
+      var response = await fetch('/api/generate', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload),
+        signal:  signal
+      });
+
+      if (!response.ok) {
+        var errData = null;
+        try { errData = await response.json(); } catch (_) {}
+        var errMsg = (errData && errData.error)
+          ? errData.error
+          : '서버 오류가 발생했습니다. (' + response.status + ')';
+        if (response.status === 429) {
+          errMsg = '요청이 너무 많습니다. 1시간 후 다시 시도해 주세요.';
+        } else if (response.status === 400) {
+          errMsg = errData && errData.error
+            ? errData.error
+            : '입력값을 확인해 주세요.';
+        }
+        showGeneratingError(errMsg);
+        return;
+      }
+
+      var reader  = response.body.getReader();
+      var decoder = new TextDecoder('utf-8');
+      var buffer  = '';
+
+      /* ── CRITICAL: 네트워크 오류 대응 — 루프 전체 try/catch ── */
+      try {
+        while (true) {
+          var chunk = await reader.read();
+          if (chunk.done) break;
+
+          buffer += decoder.decode(chunk.value, { stream: true });
+
+          /* SSE 이벤트 파싱 */
+          var lines = buffer.split('\n');
+          buffer = lines.pop(); /* 불완전한 마지막 라인 보관 */
+
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].trim();
+            if (!line.startsWith('data: ')) continue;
+
+            var jsonStr = line.slice(6);
+            try {
+              var evt = JSON.parse(jsonStr);
+
+              if (evt.type === 'chunk') {
+                currentMarkdown += evt.text;
+                streamOutput.textContent = currentMarkdown;
+
+              } else if (evt.type === 'done') {
+                streamOutput.setAttribute('aria-busy', 'false');
+                showOutput(currentMarkdown, payload.agencyName);
+                return;
+
+              } else if (evt.type === 'error') {
+                streamOutput.setAttribute('aria-busy', 'false');
+                showGeneratingError(evt.message || '가이드라인 생성 중 오류가 발생했습니다.');
+                return;
+              }
+            } catch (_) {
+              /* JSON 파싱 실패는 무시 (부분 청크) */
+            }
+          }
+        }
+      } catch (readErr) {
+        streamOutput.setAttribute('aria-busy', 'false');
+        if (readErr.name === 'AbortError') return;
+        showGeneratingError(
+          '연결이 끊겼습니다. 다시 시도하거나 기본 양식을 사용해 주세요.'
+        );
+      }
+
+    } catch (fetchErr) {
+      if (fetchErr.name === 'AbortError') return;
+      streamOutput.setAttribute('aria-busy', 'false');
+      showGeneratingError(
+        '네트워크 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.'
+      );
+    }
+  }
+
+  /* ── 폼 제출 ── */
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var name = agencyNameEl.value.trim();
+    var type = agencyTypeEl.value;
+    var s1   = sample1El.value.trim();
+    var s2   = sample2El.value.trim();
+    var s3   = sample3El.value.trim();
+
+    var hasError = false;
+    formAlert.classList.remove('visible');
+    formAlert.textContent = '';
+
+    if (!name || name.length > 50) {
+      setFieldError('agency-name', true);
+      hasError = true;
+    }
+    if (!type) {
+      setFieldError('agency-type', true);
+      hasError = true;
+    }
+    if (!s1) {
+      setFieldError('sample-1', true);
+      hasError = true;
+    }
+
+    if (hasError) {
+      var firstBad = document.querySelector('.has-error');
+      if (firstBad) firstBad.focus();
+      return;
+    }
+
+    var samples = [s1];
+    if (s2) samples.push(s2);
+    if (s3) samples.push(s3);
+
+    startGeneration({ agencyName: name, agencyType: type, samples: samples });
+  });
+
+  /* ── 취소하기 ── */
+  cancelBtn.addEventListener('click', function () {
+    if (cancelled) {
+      /* 두 번째 클릭: 처음으로 돌아가기 */
+      cancelled = false;
+      cancelBtn.textContent = '취소하기';
+      generatingStatus.textContent = '가이드라인을 생성하고 있습니다…';
+      showScreen('screen-input');
+      return;
+    }
+
+    if (abortController) {
+      abortController.abort();
+      abortController = null;
+    }
+    cancelled = true;
+    streamOutput.setAttribute('aria-busy', 'false');
+    generatingStatus.textContent = '취소되었습니다. 처음으로 돌아가려면 아래 버튼을 눌러주세요.';
+    cancelBtn.textContent = '처음으로 돌아가기';
+  });
+
+  /* ── 기본 양식 사용하기 ── */
+  fallbackBtn.addEventListener('click', function () {
+    var agencyName = agencyNameEl.value.trim() || '기관';
+    showOutput(getFallbackMarkdown(agencyName), agencyName);
+  });
+
+  /* ── 다운로드 ── */
+  downloadBtn.addEventListener('click', function () {
+    downloadError.classList.remove('visible');
+    try {
+      var html = buildStandaloneHtml(currentAgency || '기관', currentMarkdown);
+      var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      var url  = URL.createObjectURL(blob);
+      var a    = document.createElement('a');
+      a.href     = url;
+      a.download = (currentAgency || '기관') + '-uxwriting-guide.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+    } catch (_) {
+      downloadError.classList.add('visible');
+    }
+  });
+
+  /* ── 다시 생성하기 ── */
+  restartBtn.addEventListener('click', function () {
+    showScreen('screen-input');
+  });
+
+})();
+</script>
+</body>
+</html>
