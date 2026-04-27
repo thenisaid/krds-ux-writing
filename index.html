@@ -2,6 +2,7 @@
 <html lang="ko" data-theme="light">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3gjIJGd6+ZKFIG/jtiC7rBSQsd4EpjvtsAnqBTXVgvA=' 'sha256-pHonT2lrmFofD0NSGLylPnUaRvd/9SptXh2kQtXzTqE='; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="KRDS 기반 UX Writing 가이드라인 — 정부 디지털 서비스의 언어 기준. 원칙, 사전, 사례로 구성된 공공 UX 라이팅 가이드.">
 <meta name="keywords" content="KRDS, UX 라이팅, UX Writing, 정부디지털서비스, 디자인시스템, 마이크로카피, 오류메시지, 접근성, 한국어 가이드라인">
@@ -58,6 +59,7 @@
   --border-mid:  var(--color-gray-20);
   --text:        var(--color-gray-90);
   --text-mid:    var(--color-gray-70);
+  --text-secondary: var(--color-gray-70);
   --text-muted:  var(--color-gray-50);
   --text-on-dark: var(--color-gray-0);
   --accent:      var(--color-primary-50);
@@ -88,7 +90,18 @@
   --text-mid:   var(--color-gray-20);
   --text-muted: var(--color-gray-40);
   --text-on-dark: var(--color-gray-90);
+  --text-secondary: var(--color-gray-30);
+  --accent:     var(--color-primary-30);
   --accent-bg:  rgba(37,110,244,0.15);
+}
+
+/* ═══════════════════════════════════════════════════
+   Accessibility — Focus visible (WCAG 2.5.3)
+   ═══════════════════════════════════════════════════ */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 /* ═══════════════════════════════════════════════════
