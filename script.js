@@ -850,3 +850,182 @@ function initAdminSearch() {
     }
   });
 }
+
+/* ═══════════════════════════════════════════════════
+   파생 가이드 — 마크다운 로더 & 이슈 뷰어
+   ═══════════════════════════════════════════════════ */
+
+/**
+ * .md 파일에서 ### E/H/F 이슈 항목만 파싱
+ * @param {string} md - 마크다운 전체 텍스트
+ * @returns {Array<{id, title, severity, principle, cycle, location, original, problem, guideline, recommendation}>}
+ */
+function parseDerivedGuide(md) {
+  const issues = [];
+  const blocks = md.split(/^(?=### [EHF]\d+)/m);
+
+  for (const block of blocks) {
+    const headerMatch = block.match(/^### ([EHF]\d+) — (.*?) (★+) \[([A-C/]+)\]/);
+    if (!headerMatch) continue;
+
+    const [, id, title, severity, principle] = headerMatch;
+
+    // Cycle 번호 추출 (이 이슈가 속한 Cycle)
+    const cycleMatch = md.match(new RegExp(`## Cycle (\\d+)[\\s\\S]*?${id}\\b`));
+    const cycle = cycleMatch ? parseInt(cycleMatch[1]) : 0;
+
+    const getField = (label) => {
+      const m = block.match(new RegExp(`\\*\\*${label}\\*\\*:\\s*([^\n]+)`));
+      return m ? m[1].trim() : '';
+    };
+
+    issues.push({
+      id,
+      title: title.replace(/^"|"$/g, '').trim(),
+      severity,
+      principle,
+      cycle,
+      location: getField('위치'),
+      original: getField('원문'),
+      problem: getField('문제'),
+      guideline: getField('원칙'),
+      recommendation: getField('권장 개선안'),
+    });
+  }
+  return issues;
+}
+
+/**
+ * 이슈 배열을 HTML 카드로 렌더링
+ */
+function renderIssueList(issues, container) {
+  if (issues.length === 0) {
+    container.innerHTML = '<p class="dg-issue-empty">검색 결과가 없습니다.</p>';
+    return;
+  }
+
+  const sevClass = { '★': 'sev-1', '★★': 'sev-2', '★★★': 'sev-3' };
+
+  container.innerHTML = issues.map(iss => `
+    <div class="dg-issue-card" data-principle="${iss.principle}" data-severity="${iss.severity}">
+      <div class="dg-issue-header">
+        <span class="dg-issue-id">${iss.id}</span>
+        <span class="dg-issue-sev ${sevClass[iss.severity] || 'sev-2'}">${iss.severity}</span>
+        <span class="dg-issue-prin">[${iss.principle}]</span>
+        ${iss.cycle ? `<span class="dg-issue-cycle">Cycle ${iss.cycle}</span>` : ''}
+      </div>
+      <p class="dg-issue-title">${escHtml(iss.title)}</p>
+      ${iss.original ? `<div class="dg-issue-row"><span class="dg-issue-label">원문</span><span class="dg-issue-val">${escHtml(iss.original)}</span></div>` : ''}
+      ${iss.problem ? `<div class="dg-issue-row"><span class="dg-issue-label">문제</span><span class="dg-issue-val">${escHtml(iss.problem)}</span></div>` : ''}
+      ${iss.recommendation ? `<div class="dg-issue-row dg-issue-rec"><span class="dg-issue-label">개선안</span><span class="dg-issue-val">${escHtml(iss.recommendation)}</span></div>` : ''}
+    </div>
+  `).join('');
+}
+
+function escHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/**
+ * 파생 가이드 로더 초기화
+ * @param {string} agency - 'jeongbu24' | 'hometax' | 'efamily'
+ * @param {string} mdPath - .md 파일 경로 (상대)
+ */
+function initDerivedGuideLoader(agency, mdPath) {
+  const toggleBtn = document.getElementById(`dg-toggle-${agency}`);
+  const panel = document.getElementById(`dg-issue-panel-${agency}`);
+  const searchInput = document.getElementById(`dg-search-${agency}`);
+  const filterBtns = document.querySelectorAll(`[data-dg-filter="${agency}"]`);
+  const countEl = document.getElementById(`dg-count-${agency}`);
+  if (!toggleBtn || !panel) return;
+
+  let allIssues = [];
+  let loaded = false;
+  let isOpen = false;
+  let activeFilter = 'all';
+  let searchTimer = null;
+
+  function applyFilters() {
+    const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    let filtered = allIssues;
+
+    if (activeFilter !== 'all') {
+      filtered = filtered.filter(iss => iss.principle.includes(activeFilter));
+    }
+    if (q) {
+      filtered = filtered.filter(iss =>
+        iss.title.toLowerCase().includes(q) ||
+        iss.original.toLowerCase().includes(q) ||
+        iss.problem.toLowerCase().includes(q) ||
+        iss.recommendation.toLowerCase().includes(q)
+      );
+    }
+
+    const listEl = panel.querySelector('.dg-issue-list');
+    if (listEl) renderIssueList(filtered, listEl);
+    if (countEl) countEl.textContent = `${filtered.length}개 표시 / 전체 ${allIssues.length}개`;
+  }
+
+  async function loadAndOpen() {
+    if (!loaded) {
+      const listEl = panel.querySelector('.dg-issue-list');
+      if (listEl) listEl.innerHTML = '<p class="dg-issue-empty">로딩 중...</p>';
+      try {
+        const res = await fetch(mdPath);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const md = await res.text();
+        allIssues = parseDerivedGuide(md);
+        loaded = true;
+        applyFilters();
+      } catch (e) {
+        const listEl = panel.querySelector('.dg-issue-list');
+        if (listEl) listEl.innerHTML = `<p class="dg-issue-empty">로딩 실패: ${escHtml(e.message)}</p>`;
+      }
+    } else {
+      applyFilters();
+    }
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    isOpen = !isOpen;
+    panel.hidden = !isOpen;
+    toggleBtn.setAttribute('aria-expanded', isOpen);
+    toggleBtn.textContent = isOpen ? '전체 이슈 접기 ▲' : '전체 이슈 조회 ▼';
+    if (isOpen) loadAndOpen();
+  });
+
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(applyFilters, 250);
+    });
+    searchInput.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { searchInput.value = ''; applyFilters(); }
+    });
+  }
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeFilter = btn.dataset.principle || 'all';
+      filterBtns.forEach(b => b.classList.toggle('active', b === btn));
+      applyFilters();
+    });
+  });
+}
+
+// DOM 준비 후 초기화 (readyState 가드 포함)
+function initDerivedGuides() {
+  const base = document.location.href.includes('github.io')
+    ? 'https://thenisaid.github.io/krds-ux-writing/derived/'
+    : 'derived/';
+
+  initDerivedGuideLoader('jeongbu24', `${base}jeongbu24-guide.md`);
+  initDerivedGuideLoader('hometax',   `${base}hometax-guide.md`);
+  initDerivedGuideLoader('efamily',   `${base}efamily-court-guide.md`);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initDerivedGuides);
+} else {
+  initDerivedGuides();
+}

@@ -1615,6 +1615,29 @@ footer {
             <li>안내 문구에 서비스명이 명시됐는가? (예: "발급" → "등본 발급")</li>
           </ul>
         </div>
+
+        <div class="dg-issue-viewer">
+          <div class="dg-issue-toolbar">
+            <button class="dg-toggle-btn" id="dg-toggle-jeongbu24" aria-expanded="false" aria-controls="dg-issue-panel-jeongbu24">
+              전체 이슈 조회 ▼
+            </button>
+            <span class="dg-issue-badge">정부24 264개</span>
+          </div>
+
+          <div id="dg-issue-panel-jeongbu24" class="dg-issue-panel" hidden>
+            <div class="dg-issue-controls">
+              <input type="search" id="dg-search-jeongbu24" class="dg-issue-search" placeholder="이슈 검색..." aria-label="이슈 검색">
+              <div class="dg-filter-group" role="group" aria-label="원칙 필터">
+                <button class="dg-filter-btn active" data-dg-filter="jeongbu24" data-principle="all">전체</button>
+                <button class="dg-filter-btn" data-dg-filter="jeongbu24" data-principle="A">A 무번역</button>
+                <button class="dg-filter-btn" data-dg-filter="jeongbu24" data-principle="B">B 정보핵심화</button>
+                <button class="dg-filter-btn" data-dg-filter="jeongbu24" data-principle="C">C 심리적안전망</button>
+              </div>
+              <span class="dg-count" id="dg-count-jeongbu24"></span>
+            </div>
+            <div class="dg-issue-list" role="list" aria-label="정부24 UX Writing 이슈 목록"></div>
+          </div>
+        </div>
       </div><!-- /dg-panel-jeongbu24 -->
 
       <!-- 패널 2: 홈택스 -->
@@ -1712,6 +1735,29 @@ footer {
             <li>세법 용어 옆에 일상어 설명(ⓘ 또는 괄호)이 있는가?</li>
           </ul>
         </div>
+
+        <div class="dg-issue-viewer">
+          <div class="dg-issue-toolbar">
+            <button class="dg-toggle-btn" id="dg-toggle-hometax" aria-expanded="false" aria-controls="dg-issue-panel-hometax">
+              전체 이슈 조회 ▼
+            </button>
+            <span class="dg-issue-badge">홈택스 251개</span>
+          </div>
+
+          <div id="dg-issue-panel-hometax" class="dg-issue-panel" hidden>
+            <div class="dg-issue-controls">
+              <input type="search" id="dg-search-hometax" class="dg-issue-search" placeholder="이슈 검색..." aria-label="이슈 검색">
+              <div class="dg-filter-group" role="group" aria-label="원칙 필터">
+                <button class="dg-filter-btn active" data-dg-filter="hometax" data-principle="all">전체</button>
+                <button class="dg-filter-btn" data-dg-filter="hometax" data-principle="A">A 무번역</button>
+                <button class="dg-filter-btn" data-dg-filter="hometax" data-principle="B">B 정보핵심화</button>
+                <button class="dg-filter-btn" data-dg-filter="hometax" data-principle="C">C 심리적안전망</button>
+              </div>
+              <span class="dg-count" id="dg-count-hometax"></span>
+            </div>
+            <div class="dg-issue-list" role="list" aria-label="홈택스 UX Writing 이슈 목록"></div>
+          </div>
+        </div>
       </div><!-- /dg-panel-hometax -->
 
       <!-- 패널 3: 전자가족관계등록시스템 -->
@@ -1808,6 +1854,29 @@ footer {
             <li>오류 표현이 "잘못됐습니다" 대신 "맞지 않습니다" 형식인가?</li>
             <li>등록기준지 등 법적 개념에 도움말(ⓘ)이 있는가?</li>
           </ul>
+        </div>
+
+        <div class="dg-issue-viewer">
+          <div class="dg-issue-toolbar">
+            <button class="dg-toggle-btn" id="dg-toggle-efamily" aria-expanded="false" aria-controls="dg-issue-panel-efamily">
+              전체 이슈 조회 ▼
+            </button>
+            <span class="dg-issue-badge">전자가족관계 241개</span>
+          </div>
+
+          <div id="dg-issue-panel-efamily" class="dg-issue-panel" hidden>
+            <div class="dg-issue-controls">
+              <input type="search" id="dg-search-efamily" class="dg-issue-search" placeholder="이슈 검색..." aria-label="이슈 검색">
+              <div class="dg-filter-group" role="group" aria-label="원칙 필터">
+                <button class="dg-filter-btn active" data-dg-filter="efamily" data-principle="all">전체</button>
+                <button class="dg-filter-btn" data-dg-filter="efamily" data-principle="A">A 무번역</button>
+                <button class="dg-filter-btn" data-dg-filter="efamily" data-principle="B">B 정보핵심화</button>
+                <button class="dg-filter-btn" data-dg-filter="efamily" data-principle="C">C 심리적안전망</button>
+              </div>
+              <span class="dg-count" id="dg-count-efamily"></span>
+            </div>
+            <div class="dg-issue-list" role="list" aria-label="전자가족관계 UX Writing 이슈 목록"></div>
+          </div>
         </div>
       </div><!-- /dg-panel-efamily -->
 
@@ -2099,5 +2168,6 @@ footer {
 
 })();
 </script>
+<script src="script.js"></script>
 </body>
 </html>
