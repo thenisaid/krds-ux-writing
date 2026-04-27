@@ -750,6 +750,31 @@ img { max-width: 100%; height: auto; }
 }
 .dg-guide-link:hover { text-decoration: underline; }
 
+/* 사례 섹션 내 아카이브 진입 카드 */
+.arc-entry-card {
+  display: flex; align-items: center; gap: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--color-border-gray-light, #cdd1d5);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+.arc-entry-icon { font-size: 2rem; flex-shrink: 0; }
+.arc-entry-body { flex: 1; min-width: 200px; }
+.arc-entry-label { font-size: .82rem; font-weight: 700; color: var(--color-primary-50, #256ef4); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
+.arc-entry-desc { font-size: .9rem; color: var(--color-text-muted, #6a737d); margin-bottom: 10px; line-height: 1.5; }
+.arc-entry-counts { display: flex; gap: 12px; flex-wrap: wrap; }
+.arc-entry-counts span { font-size: .78rem; color: var(--color-text-muted, #6a737d); background: var(--color-bg-subtle, rgba(13,17,23,.04)); padding: 3px 10px; border-radius: 12px; }
+.arc-entry-btn {
+  flex-shrink: 0; padding: 10px 22px;
+  background: var(--color-primary-50, #256ef4); color: #fff;
+  border-radius: 8px; font-size: .88rem; font-weight: 600;
+  text-decoration: none; transition: opacity .15s;
+  white-space: nowrap;
+}
+.arc-entry-btn:hover { opacity: .88; text-decoration: none; }
+
 @media (max-width: 900px) {
   .dg-examples { grid-template-columns: 1fr; }
   .dg-checklist-items { grid-template-columns: 1fr; }
@@ -1094,7 +1119,6 @@ footer {
     <a href="/krds-ux-writing/principles/" class="gnb-nav-link" data-section="principles">원칙</a>
     <a href="/krds-ux-writing/dictionary/" class="gnb-nav-link" data-section="dictionary">사전</a>
     <a href="/krds-ux-writing/case-studies/" class="gnb-nav-link" data-section="case-studies">사례</a>
-    <a href="/krds-ux-writing/archive.html" class="gnb-nav-link" data-section="archive">이슈 아카이브</a>
   </nav>
   <div class="gnb-actions">
     <span class="gnb-badge">v2.0</span>
@@ -1119,7 +1143,6 @@ footer {
     <a href="/krds-ux-writing/principles/" class="mobile-menu-link">원칙</a>
     <a href="/krds-ux-writing/dictionary/" class="mobile-menu-link">사전</a>
     <a href="/krds-ux-writing/case-studies/" class="mobile-menu-link">사례 연구</a>
-    <a href="/krds-ux-writing/archive.html" class="mobile-menu-link">이슈 아카이브</a>
     <a href="https://www.krds.go.kr/" target="_blank" rel="noopener" class="mobile-menu-link">KRDS 공식 사이트 ↗</a>
   </nav>
 </div>
@@ -1500,7 +1523,22 @@ footer {
         </div>
       </div>
 
-      <div style="text-align:center; margin-top: 40px;">
+      <!-- 이슈 아카이브 진입 카드 -->
+      <div class="arc-entry-card">
+        <div class="arc-entry-icon" aria-hidden="true">📋</div>
+        <div class="arc-entry-body">
+          <div class="arc-entry-label">이슈 아카이브</div>
+          <div class="arc-entry-desc">정부24 · 홈택스 · 전자가족관계등록시스템에서 발견한 UX Writing 이슈 665개를 원칙별로 검색하고 필터링할 수 있습니다.</div>
+          <div class="arc-entry-counts">
+            <span>정부24 222개</span>
+            <span>홈택스 221개</span>
+            <span>전자가족관계등록 222개</span>
+          </div>
+        </div>
+        <a href="/krds-ux-writing/archive.html" class="arc-entry-btn">아카이브 보기 →</a>
+      </div>
+
+      <div style="text-align:center; margin-top: 32px;">
         <a href="/krds-ux-writing/case-studies/" class="btn btn-outline">사례 연구 전체 보기 →</a>
       </div>
     </div>
