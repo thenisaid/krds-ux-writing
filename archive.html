@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="정부24 · 홈택스 · 전자가족관계등록시스템 UX Writing 이슈 665개 아카이브 — KRDS 3대 원칙(무번역·정보핵심화·심리적안전망) 기반 진단 결과">
+<title>이슈 아카이브 — KRDS UX Writing</title>
+
+<script>(function(){
+  var t = localStorage.getItem('krds-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  if (t !== 'light' && t !== 'dark') t = 'light';
+  document.documentElement.setAttribute('data-theme', t);
+})();</script>
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" crossorigin="anonymous"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
+
+<style>
+/* ── 토큰 ── */
+:root {
+  --accent: #256ef4;
+  --accent-light: #86aff9;
+  --text: #0d1117;
+  --text-muted: #6a737d;
+  --bg: #f8f7f5;
+  --bg-card: #ffffff;
+  --bg-subtle: rgba(13,17,23,.04);
+  --border: #cdd1d5;
+  --border-subtle: #e8e8e5;
+  --success: #228738;
+  --danger: #c7371a;
+  --warn: #a85c00;
+  --radius: 12px;
+  --font: 'Pretendard GOV Variable', Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+[data-theme="dark"] {
+  --accent: #86aff9;
+  --accent-light: #256ef4;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --bg: #0d1117;
+  --bg-card: #161b22;
+  --bg-subtle: rgba(255,255,255,.06);
+  --border: #30363d;
+  --border-subtle: #21262d;
+  --success: #3fb950;
+  --danger: #f48771;
+  --warn: #d29922;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── GNB ── */
+.gnb {
+  position: sticky; top: 0; z-index: 100;
+  height: 60px;
+  background: rgba(248,247,245,.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex; align-items: center;
+}
+[data-theme="dark"] .gnb { background: rgba(13,17,23,.92); }
+.gnb-inner {
+  max-width: 1160px; margin: 0 auto; padding: 0 24px;
+  width: 100%; display: flex; align-items: center; gap: 12px;
+}
+.gnb-logo {
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 700; font-size: .9rem;
+  color: var(--text); text-decoration: none;
+  flex-shrink: 0;
+}
+.gnb-logo-mark {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .8rem; font-weight: 800;
+}
+.gnb-divider { width: 1px; height: 16px; background: var(--border); }
+.gnb-page-title { font-size: .85rem; color: var(--text-muted); }
+.gnb-nav { display: flex; align-items: center; gap: 2px; margin-left: auto; }
+.gnb-nav-link {
+  padding: 6px 12px; border-radius: 6px;
+  font-size: .85rem; color: var(--text-muted);
+  text-decoration: none; transition: all .15s;
+}
+.gnb-nav-link:hover { color: var(--text); background: var(--bg-subtle); text-decoration: none; }
+.gnb-nav-link.active { color: var(--accent); font-weight: 600; }
+.gnb-theme-btn {
+  width: 32px; height: 32px; border-radius: 6px;
+  border: 1px solid var(--border); background: transparent;
+  cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); margin-left: 8px;
+}
+.gnb-theme-btn:hover { background: var(--bg-subtle); }
+
+/* ── 헤더 ── */
+.arc-header {
+  background: linear-gradient(160deg, #eef4ff 0%, var(--bg) 60%);
+  padding: 48px 0 36px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+[data-theme="dark"] .arc-header { background: linear-gradient(160deg, #0d1f3c 0%, var(--bg) 60%); }
+.container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+.arc-eyebrow {
+  font-size: .78rem; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
+}
+.arc-title { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+.arc-desc { font-size: .95rem; color: var(--text-muted); max-width: 600px; }
+.arc-stats {
+  display: flex; gap: 24px; margin-top: 24px; flex-wrap: wrap;
+}
+.arc-stat {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.arc-stat-num { font-size: 1.4rem; font-weight: 800; color: var(--accent); line-height: 1; }
+.arc-stat-label { font-size: .78rem; color: var(--text-muted); }
+
+/* ── 탭 ── */
+.arc-tabs-wrap {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 60px; z-index: 90;
+}
+.arc-tabs {
+  max-width: 1160px; margin: 0 auto; padding: 0 24px;
+  display: flex; gap: 0;
+}
+.arc-tab {
+  padding: 14px 20px;
+  font-size: .9rem; font-weight: 500;
+  color: var(--text-muted);
+  background: none; border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer; transition: all .15s;
+  display: flex; align-items: center; gap: 8px;
+}
+.arc-tab:hover { color: var(--text); }
+.arc-tab[aria-selected="true"] {
+  color: var(--accent); font-weight: 700;
+  border-bottom-color: var(--accent);
+}
+.arc-tab-count {
+  font-size: .72rem; font-weight: 600;
+  background: var(--bg-subtle); color: var(--text-muted);
+  padding: 2px 7px; border-radius: 10px;
+}
+.arc-tab[aria-selected="true"] .arc-tab-count {
+  background: rgba(37,110,244,.1); color: var(--accent);
+}
+
+/* ── 패널 ── */
+.arc-panel { display: none; }
+.arc-panel.active { display: block; }
+
+/* ── 컨트롤 바 ── */
+.arc-controls {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 14px 0;
+}
+.arc-controls-inner {
+  max-width: 1160px; margin: 0 auto; padding: 0 24px;
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+}
+.arc-search {
+  flex: 1; min-width: 220px; max-width: 360px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font); font-size: .88rem;
+  background: var(--bg); color: var(--text);
+  outline: none; transition: border-color .15s;
+}
+.arc-search:focus { border-color: var(--accent); }
+.arc-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.arc-filter {
+  padding: 5px 12px; border-radius: 20px;
+  border: 1px solid var(--border);
+  font-size: .8rem; font-weight: 500;
+  background: var(--bg); color: var(--text-muted);
+  cursor: pointer; transition: all .15s;
+}
+.arc-filter:hover { border-color: var(--accent); color: var(--accent); }
+.arc-filter.active {
+  background: var(--accent); border-color: var(--accent);
+  color: #fff;
+}
+.arc-result-count { margin-left: auto; font-size: .82rem; color: var(--text-muted); white-space: nowrap; }
+
+/* ── 이슈 그리드 ── */
+.arc-list-wrap {
+  max-width: 1160px; margin: 0 auto; padding: 24px;
+}
+.arc-issue-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+.arc-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 16px 18px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.arc-card:hover {
+  border-color: var(--border);
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+.arc-card-head {
+  display: flex; align-items: center; gap: 6px;
+  margin-bottom: 8px; flex-wrap: wrap;
+}
+.arc-card-id {
+  font-size: .75rem; font-weight: 700; font-variant-numeric: tabular-nums;
+  color: var(--accent); background: rgba(37,110,244,.07);
+  padding: 2px 8px; border-radius: 4px;
+}
+.arc-card-sev {
+  font-size: .75rem; font-weight: 600;
+  padding: 2px 8px; border-radius: 4px;
+}
+.sev-1 { background: rgba(168,92,0,.08); color: var(--warn); }
+.sev-2 { background: rgba(37,110,244,.08); color: var(--accent); }
+.sev-3 { background: rgba(199,55,26,.08); color: var(--danger); }
+.arc-card-prin {
+  font-size: .72rem; font-weight: 600; color: var(--text-muted);
+  background: var(--bg-subtle); padding: 2px 8px; border-radius: 4px;
+}
+.arc-card-cycle {
+  font-size: .7rem; color: var(--text-muted);
+  margin-left: auto;
+}
+.arc-card-title {
+  font-size: .9rem; font-weight: 600; color: var(--text);
+  margin-bottom: 10px; line-height: 1.4;
+}
+.arc-card-row {
+  display: flex; gap: 8px; margin-bottom: 6px;
+  font-size: .82rem; line-height: 1.5;
+}
+.arc-card-label {
+  flex-shrink: 0; width: 40px;
+  font-size: .72rem; font-weight: 600;
+  color: var(--text-muted); padding-top: 1px;
+}
+.arc-card-val { color: var(--text); }
+.arc-card-rec {
+  background: rgba(34,135,56,.06);
+  border-left: 3px solid var(--success);
+  border-radius: 0 6px 6px 0;
+  padding: 8px 12px;
+  margin-top: 10px;
+}
+[data-theme="dark"] .arc-card-rec { background: rgba(63,185,80,.06); }
+.arc-card-rec .arc-card-label { color: var(--success); }
+.arc-card-rec .arc-card-val { color: var(--text); }
+
+/* ── 로딩 / 빈 상태 ── */
+.arc-state {
+  text-align: center; padding: 60px 24px;
+  color: var(--text-muted); font-size: .9rem;
+}
+.arc-loading-dots { display: inline-flex; gap: 5px; }
+.arc-loading-dots span {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent); opacity: .4;
+  animation: dot-pulse 1.2s infinite;
+}
+.arc-loading-dots span:nth-child(2) { animation-delay: .2s; }
+.arc-loading-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes dot-pulse { 0%,80%,100%{opacity:.2} 40%{opacity:.9} }
+
+/* ── 반응형 ── */
+@media (max-width: 600px) {
+  .arc-title { font-size: 1.5rem; }
+  .arc-issue-grid { grid-template-columns: 1fr; }
+  .arc-controls-inner { flex-direction: column; align-items: stretch; }
+  .arc-search { max-width: none; }
+  .arc-result-count { margin-left: 0; }
+  .gnb-nav { display: none; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- GNB -->
+<header class="gnb" role="banner">
+  <div class="gnb-inner">
+    <a href="/krds-ux-writing/" class="gnb-logo">
+      <span class="gnb-logo-mark" aria-hidden="true">K</span>
+      KRDS UX Writing
+    </a>
+    <div class="gnb-divider" aria-hidden="true"></div>
+    <span class="gnb-page-title">이슈 아카이브</span>
+    <nav class="gnb-nav" aria-label="주요 메뉴">
+      <a href="/krds-ux-writing/" class="gnb-nav-link">홈</a>
+      <a href="/krds-ux-writing/principles/" class="gnb-nav-link">원칙</a>
+      <a href="/krds-ux-writing/archive.html" class="gnb-nav-link active">이슈 아카이브</a>
+    </nav>
+    <button class="gnb-theme-btn" id="themeToggle" aria-label="다크/라이트 모드 전환">☀</button>
+  </div>
+</header>
+
+<!-- 아카이브 헤더 -->
+<div class="arc-header">
+  <div class="container">
+    <p class="arc-eyebrow">UX Writing 검수 결과</p>
+    <h1 class="arc-title">이슈 아카이브</h1>
+    <p class="arc-desc">정부24 · 홈택스 · 전자가족관계등록시스템 3개 기관을 42 Cycle 동안 검수한 결과입니다.<br>원칙 위반(무번역·정보핵심화·심리적안전망) 이슈와 권장 개선안을 확인하세요.</p>
+    <div class="arc-stats">
+      <div class="arc-stat">
+        <span class="arc-stat-num" id="stat-total">665</span>
+        <span class="arc-stat-label">전체 이슈</span>
+      </div>
+      <div class="arc-stat">
+        <span class="arc-stat-num">3</span>
+        <span class="arc-stat-label">검수 기관</span>
+      </div>
+      <div class="arc-stat">
+        <span class="arc-stat-num">42</span>
+        <span class="arc-stat-label">검수 사이클</span>
+      </div>
+      <div class="arc-stat">
+        <span class="arc-stat-num">3</span>
+        <span class="arc-stat-label">적용 원칙</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 탭 -->
+<div class="arc-tabs-wrap">
+  <div class="arc-tabs" role="tablist" aria-label="기관별 이슈 아카이브">
+    <button class="arc-tab" role="tab" aria-selected="true" aria-controls="arc-panel-jeongbu24" id="arc-tab-jeongbu24">
+      정부24
+      <span class="arc-tab-count" id="arc-count-badge-jeongbu24">222</span>
+    </button>
+    <button class="arc-tab" role="tab" aria-selected="false" aria-controls="arc-panel-hometax" id="arc-tab-hometax">
+      홈택스
+      <span class="arc-tab-count" id="arc-count-badge-hometax">221</span>
+    </button>
+    <button class="arc-tab" role="tab" aria-selected="false" aria-controls="arc-panel-efamily" id="arc-tab-efamily">
+      전자가족관계등록
+      <span class="arc-tab-count" id="arc-count-badge-efamily">222</span>
+    </button>
+  </div>
+</div>
+
+<!-- 패널: 정부24 -->
+<div class="arc-panel active" id="arc-panel-jeongbu24" role="tabpanel" aria-labelledby="arc-tab-jeongbu24">
+  <div class="arc-controls">
+    <div class="arc-controls-inner">
+      <input type="search" class="arc-search" id="arc-search-jeongbu24" placeholder="이슈 번호·제목·원문으로 검색..." aria-label="정부24 이슈 검색">
+      <div class="arc-filters" role="group" aria-label="원칙 필터">
+        <button class="arc-filter active" data-agency="jeongbu24" data-principle="all">전체</button>
+        <button class="arc-filter" data-agency="jeongbu24" data-principle="A">A 무번역</button>
+        <button class="arc-filter" data-agency="jeongbu24" data-principle="B">B 정보핵심화</button>
+        <button class="arc-filter" data-agency="jeongbu24" data-principle="C">C 심리적안전망</button>
+      </div>
+      <span class="arc-result-count" id="arc-result-jeongbu24"></span>
+    </div>
+  </div>
+  <div class="arc-list-wrap">
+    <div class="arc-issue-grid" id="arc-grid-jeongbu24">
+      <div class="arc-state"><div class="arc-loading-dots"><span></span><span></span><span></span></div><p style="margin-top:12px">이슈 불러오는 중...</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- 패널: 홈택스 -->
+<div class="arc-panel" id="arc-panel-hometax" role="tabpanel" aria-labelledby="arc-tab-hometax">
+  <div class="arc-controls">
+    <div class="arc-controls-inner">
+      <input type="search" class="arc-search" id="arc-search-hometax" placeholder="이슈 번호·제목·원문으로 검색..." aria-label="홈택스 이슈 검색">
+      <div class="arc-filters" role="group" aria-label="원칙 필터">
+        <button class="arc-filter active" data-agency="hometax" data-principle="all">전체</button>
+        <button class="arc-filter" data-agency="hometax" data-principle="A">A 무번역</button>
+        <button class="arc-filter" data-agency="hometax" data-principle="B">B 정보핵심화</button>
+        <button class="arc-filter" data-agency="hometax" data-principle="C">C 심리적안전망</button>
+      </div>
+      <span class="arc-result-count" id="arc-result-hometax"></span>
+    </div>
+  </div>
+  <div class="arc-list-wrap">
+    <div class="arc-issue-grid" id="arc-grid-hometax">
+      <div class="arc-state"><div class="arc-loading-dots"><span></span><span></span><span></span></div><p style="margin-top:12px">이슈 불러오는 중...</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- 패널: 전자가족관계등록 -->
+<div class="arc-panel" id="arc-panel-efamily" role="tabpanel" aria-labelledby="arc-tab-efamily">
+  <div class="arc-controls">
+    <div class="arc-controls-inner">
+      <input type="search" class="arc-search" id="arc-search-efamily" placeholder="이슈 번호·제목·원문으로 검색..." aria-label="전자가족관계등록 이슈 검색">
+      <div class="arc-filters" role="group" aria-label="원칙 필터">
+        <button class="arc-filter active" data-agency="efamily" data-principle="all">전체</button>
+        <button class="arc-filter" data-agency="efamily" data-principle="A">A 무번역</button>
+        <button class="arc-filter" data-agency="efamily" data-principle="B">B 정보핵심화</button>
+        <button class="arc-filter" data-agency="efamily" data-principle="C">C 심리적안전망</button>
+      </div>
+      <span class="arc-result-count" id="arc-result-efamily"></span>
+    </div>
+  </div>
+  <div class="arc-list-wrap">
+    <div class="arc-issue-grid" id="arc-grid-efamily">
+      <div class="arc-state"><div class="arc-loading-dots"><span></span><span></span><span></span></div><p style="margin-top:12px">이슈 불러오는 중...</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── 다크모드 토글 ── */
+  var themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) {
+    themeBtn.addEventListener('click', function () {
+      var cur = document.documentElement.getAttribute('data-theme');
+      var next = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('krds-theme', next);
+      themeBtn.textContent = next === 'dark' ? '☾' : '☀';
+    });
+    themeBtn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☾' : '☀';
+  }
+
+  /* ── 유틸 ── */
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── 마크다운 파서 ── */
+  function parseDerivedGuide(md) {
+    var issues = [];
+    var blocks = md.split(/^(?=### [EHF]\d+)/m);
+    for (var i = 0; i < blocks.length; i++) {
+      var block = blocks[i];
+      var hm = block.match(/^### ([EHF]\d+) — (.*?) (★+) \[([A-C/]+)\]/);
+      if (!hm) continue;
+      var id = hm[1], rawTitle = hm[2], severity = hm[3], principle = hm[4];
+      var cycleM = md.match(new RegExp('## Cycle (\\d+)[\\s\\S]*?' + id + '\\b'));
+      var cycle = cycleM ? parseInt(cycleM[1]) : 0;
+      function getField(label) {
+        var m = block.match(new RegExp('\\*\\*' + label + '\\*\\*:\\s*([^\n]+)'));
+        return m ? m[1].trim() : '';
+      }
+      issues.push({
+        id: id,
+        title: rawTitle.replace(/^"|"$/g, '').trim(),
+        severity: severity,
+        principle: principle,
+        cycle: cycle,
+        original: getField('원문'),
+        problem: getField('문제'),
+        recommendation: getField('권장 개선안')
+      });
+    }
+    return issues;
+  }
+
+  /* ── 카드 렌더 ── */
+  var SEV_CLASS = {'★':'sev-1','★★':'sev-2','★★★':'sev-3'};
+
+  function renderGrid(issues, grid, countEl) {
+    if (!grid) return;
+    if (issues.length === 0) {
+      grid.innerHTML = '<div class="arc-state">검색 결과가 없습니다.</div>';
+      if (countEl) countEl.textContent = '';
+      return;
+    }
+    var html = issues.map(function(iss) {
+      return '<div class="arc-card">' +
+        '<div class="arc-card-head">' +
+          '<span class="arc-card-id">' + iss.id + '</span>' +
+          '<span class="arc-card-sev ' + (SEV_CLASS[iss.severity]||'sev-2') + '">' + iss.severity + '</span>' +
+          '<span class="arc-card-prin">[' + escHtml(iss.principle) + ']</span>' +
+          (iss.cycle ? '<span class="arc-card-cycle">Cycle ' + iss.cycle + '</span>' : '') +
+        '</div>' +
+        '<p class="arc-card-title">' + escHtml(iss.title) + '</p>' +
+        (iss.original ? '<div class="arc-card-row"><span class="arc-card-label">원문</span><span class="arc-card-val">' + escHtml(iss.original) + '</span></div>' : '') +
+        (iss.problem ? '<div class="arc-card-row"><span class="arc-card-label">문제</span><span class="arc-card-val">' + escHtml(iss.problem) + '</span></div>' : '') +
+        (iss.recommendation ? '<div class="arc-card-row arc-card-rec"><span class="arc-card-label">개선안</span><span class="arc-card-val">' + escHtml(iss.recommendation) + '</span></div>' : '') +
+      '</div>';
+    }).join('');
+    grid.innerHTML = html;
+    if (countEl) countEl.textContent = issues.length + '개 표시 / 전체 ' + issues.length + '개';
+  }
+
+  /* ── 기관별 상태 ── */
+  var agencies = {
+    jeongbu24: { md: null, all: [], loaded: false },
+    hometax:   { md: null, all: [], loaded: false },
+    efamily:   { md: null, all: [], loaded: false }
+  };
+
+  var filters = { jeongbu24: 'all', hometax: 'all', efamily: 'all' };
+  var searches = { jeongbu24: '', hometax: '', efamily: '' };
+  var searchTimers = { jeongbu24: null, hometax: null, efamily: null };
+
+  function applyFilters(agency) {
+    var state = agencies[agency];
+    var grid = document.getElementById('arc-grid-' + agency);
+    var countEl = document.getElementById('arc-result-' + agency);
+    var q = searches[agency].toLowerCase();
+    var f = filters[agency];
+    var result = state.all;
+    if (f !== 'all') {
+      result = result.filter(function(iss){ return iss.principle.includes(f); });
+    }
+    if (q) {
+      result = result.filter(function(iss){
+        return iss.id.toLowerCase().includes(q) ||
+               iss.title.toLowerCase().includes(q) ||
+               iss.original.toLowerCase().includes(q) ||
+               iss.problem.toLowerCase().includes(q) ||
+               iss.recommendation.toLowerCase().includes(q);
+      });
+    }
+    renderGrid(result, grid, countEl);
+    if (countEl) countEl.textContent = result.length + '개 표시 / 전체 ' + state.all.length + '개';
+  }
+
+  var BASE = document.location.href.includes('github.io')
+    ? 'https://thenisaid.github.io/krds-ux-writing/derived/'
+    : 'derived/';
+
+  var MD_PATHS = {
+    jeongbu24: BASE + 'jeongbu24-guide.md',
+    hometax:   BASE + 'hometax-guide.md',
+    efamily:   BASE + 'efamily-court-guide.md'
+  };
+
+  function loadAgency(agency) {
+    var state = agencies[agency];
+    if (state.loaded) { applyFilters(agency); return; }
+    fetch(MD_PATHS[agency])
+      .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then(function(md){
+        state.all = parseDerivedGuide(md);
+        state.loaded = true;
+        var badge = document.getElementById('arc-count-badge-' + agency);
+        if (badge) badge.textContent = state.all.length;
+        applyFilters(agency);
+      })
+      .catch(function(e){
+        var grid = document.getElementById('arc-grid-' + agency);
+        if (grid) grid.innerHTML = '<div class="arc-state">로딩 실패: ' + escHtml(e.message) + '</div>';
+      });
+  }
+
+  /* ── 탭 전환 ── */
+  var tabs = document.querySelectorAll('.arc-tab');
+  var panels = document.querySelectorAll('.arc-panel');
+
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var targetId = tab.getAttribute('aria-controls');
+      tabs.forEach(function(t){ t.setAttribute('aria-selected', 'false'); });
+      panels.forEach(function(p){ p.classList.remove('active'); });
+      tab.setAttribute('aria-selected', 'true');
+      var panel = document.getElementById(targetId);
+      if (panel) panel.classList.add('active');
+      var agency = targetId.replace('arc-panel-', '');
+      loadAgency(agency);
+    });
+    tab.addEventListener('keydown', function(e) {
+      var arr = Array.from(tabs);
+      var idx = arr.indexOf(tab);
+      if (e.key === 'ArrowRight') { arr[(idx+1)%arr.length].focus(); arr[(idx+1)%arr.length].click(); }
+      if (e.key === 'ArrowLeft')  { arr[(idx-1+arr.length)%arr.length].focus(); arr[(idx-1+arr.length)%arr.length].click(); }
+    });
+  });
+
+  /* ── 검색 & 필터 이벤트 연결 ── */
+  ['jeongbu24','hometax','efamily'].forEach(function(agency) {
+    var searchEl = document.getElementById('arc-search-' + agency);
+    if (searchEl) {
+      searchEl.addEventListener('input', function() {
+        clearTimeout(searchTimers[agency]);
+        searches[agency] = searchEl.value.trim();
+        searchTimers[agency] = setTimeout(function(){ applyFilters(agency); }, 200);
+      });
+      searchEl.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') { searchEl.value = ''; searches[agency] = ''; applyFilters(agency); }
+      });
+    }
+    var filterBtns = document.querySelectorAll('[data-agency="' + agency + '"]');
+    filterBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        filters[agency] = btn.dataset.principle || 'all';
+        filterBtns.forEach(function(b){ b.classList.toggle('active', b === btn); });
+        applyFilters(agency);
+      });
+    });
+  });
+
+  /* ── 초기 로드 (첫 탭 자동) ── */
+  loadAgency('jeongbu24');
+
+})();
+</script>
+</body>
+</html>
