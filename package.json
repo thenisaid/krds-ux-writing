@@ -1,0 +1,14 @@
+{
+  "name": "krds-lint",
+  "version": "1.0.0",
+  "description": "KRDS UX Writing 자동화 린터 CLI",
+  "main": "krds-lint.js",
+  "bin": {
+    "krds-lint": "bin/krds-lint"
+  },
+  "scripts": {
+    "lint": "node bin/krds-lint"
+  },
+  "keywords": ["krds", "ux-writing", "lint", "korean", "accessibility"],
+  "license": "MIT"
+}
