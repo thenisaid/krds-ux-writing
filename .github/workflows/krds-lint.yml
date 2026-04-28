@@ -1,0 +1,267 @@
+name: KRDS UX 라이팅 린팅 (CLI)
+
+# PR 시 자동 실행 — UX Writing 품질 게이트
+# @krds/cli (bin/krds-lint) 를 사용하여 변경된 파일을 검사합니다.
+#
+# ✅ PR 열기 / 커밋 추가 시 자동 실행
+# ❌ 오류 1건 이상이면 exit 1 → CI 실패 → 머지 차단
+# 💬 린트 결과를 PR 코멘트로 자동 게시 (이전 코멘트는 업데이트)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - '**.md'
+      - '**.txt'
+      - '**.html'
+  workflow_dispatch:
+    inputs:
+      target_file:
+        description: '검사할 파일 경로 (기본: 전체 md/txt/html)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  pull-requests: write  # PR 코멘트 게시에 필요
+
+jobs:
+  krds-lint:
+    name: KRDS UX 라이팅 검사
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0  # 변경 파일 감지를 위해 전체 히스토리 필요
+
+      - name: Node.js 설정
+        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 의존성 설치
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci --prefer-offline
+          else
+            npm install
+          fi
+
+      - name: bin/krds-lint 실행 권한 부여
+        run: chmod +x bin/krds-lint
+
+      - name: 변경된 파일 목록 수집
+        id: changed-files
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # PR 이벤트: base..head 사이 변경된 파일만 검사
+            git diff --name-only origin/${{ github.base_ref }}...HEAD \
+              | grep -E '\.(md|txt|html)$' \
+              | grep -v 'node_modules' \
+              > /tmp/changed_files.txt || true
+          else
+            # workflow_dispatch: 수동 지정 또는 전체 검사
+            if [ -n "${{ inputs.target_file }}" ]; then
+              echo "${{ inputs.target_file }}" > /tmp/changed_files.txt
+            else
+              find . -name '*.md' -o -name '*.txt' -o -name '*.html' \
+                | grep -v 'node_modules' | grep -v '\.git' \
+                > /tmp/changed_files.txt
+            fi
+          fi
+
+          echo "변경된 검사 대상 파일:"
+          cat /tmp/changed_files.txt || echo "(없음)"
+          FILE_COUNT=$(wc -l < /tmp/changed_files.txt | tr -d ' ')
+          echo "file_count=$FILE_COUNT" >> $GITHUB_OUTPUT
+
+      - name: KRDS 린팅 실행 (CLI)
+        id: lint
+        run: |
+          set +e  # exit code를 직접 제어
+
+          FILE_COUNT="${{ steps.changed-files.outputs.file_count }}"
+          if [ "$FILE_COUNT" -eq 0 ]; then
+            echo "검사할 파일이 없습니다. 건너뜁니다."
+            echo "total_errors=0" >> $GITHUB_OUTPUT
+            echo "total_warnings=0" >> $GITHUB_OUTPUT
+            echo "report=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # JSON 결과를 파일별로 수집
+          TOTAL_ERRORS=0
+          TOTAL_WARNINGS=0
+          REPORT_LINES=""
+          HAS_ISSUES=false
+
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            [ ! -f "$file" ] && continue
+
+            JSON_RESULT=$(node bin/krds-lint --json "$file" 2>/dev/null)
+            EXIT_CODE=$?
+
+            ERRORS=$(echo "$JSON_RESULT" | node -e "
+              let d=''; process.stdin.on('data',c=>d+=c).on('end',()=>{
+                try { const r=JSON.parse(d); console.log(r.summary&&r.summary.errors||0); }
+                catch(e) { console.log(0); }
+              });
+            " 2>/dev/null || echo "0")
+
+            WARNINGS=$(echo "$JSON_RESULT" | node -e "
+              let d=''; process.stdin.on('data',c=>d+=c).on('end',()=>{
+                try { const r=JSON.parse(d); console.log(r.summary&&r.summary.warnings||0); }
+                catch(e) { console.log(0); }
+              });
+            " 2>/dev/null || echo "0")
+
+            SCORE=$(echo "$JSON_RESULT" | node -e "
+              let d=''; process.stdin.on('data',c=>d+=c).on('end',()=>{
+                try { const r=JSON.parse(d); console.log(r.score!==undefined?r.score:100); }
+                catch(e) { console.log(100); }
+              });
+            " 2>/dev/null || echo "100")
+
+            TOTAL_ERRORS=$((TOTAL_ERRORS + ERRORS))
+            TOTAL_WARNINGS=$((TOTAL_WARNINGS + WARNINGS))
+
+            if [ "$ERRORS" -gt 0 ] || [ "$WARNINGS" -gt 0 ]; then
+              HAS_ISSUES=true
+              REPORT_LINES="${REPORT_LINES}### \`${file}\` — 점수: ${SCORE}/100\n"
+              REPORT_LINES="${REPORT_LINES}> 오류 ${ERRORS}건 / 경고 ${WARNINGS}건\n\n"
+
+              # 상위 15개 이슈 추출
+              ISSUES=$(echo "$JSON_RESULT" | node -e "
+                let d=''; process.stdin.on('data',c=>d+=c).on('end',()=>{
+                  try {
+                    const r=JSON.parse(d);
+                    const issues=(r.issues||[]).slice(0,15);
+                    issues.forEach(i=>{
+                      const icon=i.severity==='error'?'❌':i.severity==='warning'?'⚠️':'ℹ️';
+                      console.log(icon+' ['+(i.line||'-')+'줄] ['+i.category+'] \`'+i.match+'\` → '+i.suggestion);
+                    });
+                    if((r.issues||[]).length>15) console.log('... 외 '+((r.issues||[]).length-15)+'건 더');
+                  } catch(e){}
+                });
+              " 2>/dev/null || echo "")
+
+              REPORT_LINES="${REPORT_LINES}${ISSUES}\n\n"
+            fi
+          done < /tmp/changed_files.txt
+
+          # GitHub Actions 출력 변수
+          echo "total_errors=${TOTAL_ERRORS}" >> $GITHUB_OUTPUT
+          echo "total_warnings=${TOTAL_WARNINGS}" >> $GITHUB_OUTPUT
+
+          # 멀티라인 출력은 heredoc 방식 사용
+          {
+            echo "report<<REPORT_EOF"
+            printf "%b" "$REPORT_LINES"
+            echo "REPORT_EOF"
+          } >> $GITHUB_OUTPUT
+
+          echo ""
+          echo "════════════════════════════════════════"
+          echo "KRDS UX 라이팅 린팅 완료"
+          echo "총 오류: ${TOTAL_ERRORS}건 / 총 경고: ${TOTAL_WARNINGS}건"
+          echo "════════════════════════════════════════"
+
+          # 오류 있으면 CI 실패
+          if [ "$TOTAL_ERRORS" -gt 0 ]; then
+            echo ""
+            echo "❌ 오류 ${TOTAL_ERRORS}건 발견 — PR 머지를 차단합니다."
+            exit 1
+          fi
+
+          exit 0
+
+      - name: PR 코멘트 게시
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const totalErrors = parseInt('${{ steps.lint.outputs.total_errors }}' || '0');
+            const totalWarnings = parseInt('${{ steps.lint.outputs.total_warnings }}' || '0');
+            const fileCount = parseInt('${{ steps.changed-files.outputs.file_count }}' || '0');
+            const report = `${{ steps.lint.outputs.report }}`;
+
+            const statusIcon = totalErrors > 0 ? '❌' : totalWarnings > 0 ? '⚠️' : '✅';
+            const statusText = totalErrors > 0
+              ? `오류 **${totalErrors}건** 발견 — 머지 전 수정 필요`
+              : totalWarnings > 0
+                ? `경고 **${totalWarnings}건** 발견 — 검토 권장`
+                : '이슈 없음';
+
+            const body = [
+              `## ${statusIcon} KRDS UX 라이팅 린팅 결과`,
+              '',
+              `| 항목 | 결과 |`,
+              `|------|------|`,
+              `| 검사 파일 수 | ${fileCount}개 |`,
+              `| 오류 | ${totalErrors}건 |`,
+              `| 경고 | ${totalWarnings}건 |`,
+              `| 상태 | ${statusText} |`,
+              '',
+              ...(report && report.trim() ? [
+                '<details>',
+                '<summary>📋 상세 결과 펼치기</summary>',
+                '',
+                report.trim(),
+                '',
+                '</details>',
+                '',
+              ] : []),
+              `> 📖 [KRDS UX 라이팅 가이드](https://thenisaid.github.io/krds-ux-writing/) · [린터 도구](https://thenisaid.github.io/krds-ux-writing/lint.html)`,
+              `> 🤖 \`@krds/cli\` (bin/krds-lint v1.0.0) — [IND-182](/IND/issues/IND-182)`,
+            ].join('\n');
+
+            // 기존 봇 코멘트 찾기 (업데이트 또는 새 코멘트)
+            const marker = '<!-- krds-lint-comment -->';
+            const fullBody = marker + '\n' + body;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes(marker)
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: fullBody,
+              });
+              console.log('기존 KRDS 린팅 코멘트를 업데이트했습니다.');
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: fullBody,
+              });
+              console.log('새 KRDS 린팅 코멘트를 게시했습니다.');
+            }
+
+      - name: 워크플로우 요약 작성
+        if: always()
+        run: |
+          {
+            echo "## KRDS UX 라이팅 린팅 결과"
+            echo ""
+            echo "| 항목 | 결과 |"
+            echo "|------|------|"
+            echo "| 검사 파일 수 | ${{ steps.changed-files.outputs.file_count }}개 |"
+            echo "| 총 오류 | ${{ steps.lint.outputs.total_errors }}건 |"
+            echo "| 총 경고 | ${{ steps.lint.outputs.total_warnings }}건 |"
+            echo ""
+            echo "📖 [KRDS UX 라이팅 린터](https://thenisaid.github.io/krds-ux-writing/lint.html)"
+          } >> $GITHUB_STEP_SUMMARY
