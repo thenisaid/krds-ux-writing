@@ -8,15 +8,24 @@
 
 (function (root, factory) {
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = factory();
+    // Node.js: jargon-dictionary.json 에서 로드 (없으면 인라인 폴백)
+    var _dict = null;
+    try {
+      var _path = require('path').join(__dirname, 'jargon-dictionary.json');
+      _dict = require(_path);
+    } catch (e) {}
+    module.exports = factory(_dict);
   } else {
-    root.KRDSLint = factory();
+    // 브라우저: window.KRDS_JARGON_DICT 로 주입 가능 (없으면 인라인 폴백)
+    root.KRDSLint = factory(root.KRDS_JARGON_DICT || null);
   }
-})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (jargonDict) {
 
   // ─── 1. 행정어·전문용어 금지어 데이터베이스 (principles.md 2.1) ──────────────
+  // Node.js: jargon-dictionary.json 자동 로드 (scripts/extract-jargon.js 로 재생성)
+  // 브라우저: <script src="jargon-dictionary.js"> 또는 window.KRDS_JARGON_DICT 주입
 
-  const ADMIN_JARGON = [
+  const ADMIN_JARGON = (jargonDict && jargonDict.entries) || [
     // 카테고리 1: 행정 관습어 (한자어·관청 은어)
     { banned: '명일까지', alt: '내일까지', cat: '행정 관습어' },
     { banned: '직접 내방하여', alt: '직접 방문하여', cat: '행정 관습어' },
