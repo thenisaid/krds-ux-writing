@@ -25,8 +25,7 @@ const PORT = process.env.PORT || 3000;
 const API_KEY = process.env.ANTHROPIC_API_KEY;
 const BASE_URL = process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com/v1';
 const API_ENDPOINT = BASE_URL.replace(/\/+$/, '') + '/v1/messages';
-  ? BASE_URL
-  : BASE_URL.replace(//+$/, '') + '/v1/messages';
+
 
 // ---------------------------------------------------------------------------
 // MIME 타입

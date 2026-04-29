@@ -1,7 +1,7 @@
 {
   "name": "krds-lint",
-  "version": "1.0.0",
-  "description": "KRDS UX Writing 자동화 린터 CLI",
+  "version": "0.1.0",
+  "description": "KRDS UX Writing 자동화 린터 CLI — 공공기관 행정어 자동 감지",
   "main": "krds-lint.js",
   "bin": {
     "krds-lint": "bin/krds-lint"
@@ -9,6 +9,13 @@
   "scripts": {
     "lint": "node bin/krds-lint"
   },
-  "keywords": ["krds", "ux-writing", "lint", "korean", "accessibility"],
-  "license": "MIT"
+  "keywords": ["krds", "ux-writing", "lint", "korean", "public-sector", "accessibility"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thenisaid/krds-ux-writing"
+  },
+  "engines": {
+    "node": ">=14"
+  }
 }
