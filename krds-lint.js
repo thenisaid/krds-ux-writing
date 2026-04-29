@@ -322,6 +322,11 @@
     };
   }
 
+  // 이슈 심각도별 패널티 가중치 (품질 점수 차감)
+  var PENALTY_ERROR   = 10;
+  var PENALTY_WARNING = 5;
+  var PENALTY_INFO    = 2;
+
   /**
    * 품질 점수 계산 (0~100)
    * 이슈가 없을수록 100에 가까움
@@ -330,7 +335,7 @@
     // 단어 수 기반 기준점
     const words = text.replace(/\s+/g, ' ').trim().split(' ').length;
     const base = Math.max(words, 1);
-    const penalty = (summary.errors * 10) + (summary.warnings * 5) + (summary.infos * 2);
+    const penalty = (summary.errors * PENALTY_ERROR) + (summary.warnings * PENALTY_WARNING) + (summary.infos * PENALTY_INFO);
     const score = Math.max(0, Math.min(100, Math.round(100 - (penalty / base) * 100)));
     return score;
   }

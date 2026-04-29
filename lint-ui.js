@@ -71,6 +71,7 @@
   // ── 린팅 ──
   var lastResult = null;
   var currentFilter = 'all';
+  var toastEl = document.getElementById('toast');
 
   document.getElementById('lintBtn').addEventListener('click', function () {
     var text = inputText.value.trim();
@@ -211,21 +212,26 @@
     if (!lastResult) return;
     var text = KRDSLint.formatCLI(lastResult);
     var btn = this;
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(text).then(function () {
-        btn.textContent = '✅ 복사됨';
-        setTimeout(function () { btn.innerHTML = '<span aria-hidden="true">📋</span> 결과 복사'; }, 2000);
-      });
-    } else {
+    var origHtml = '<span aria-hidden="true">📋</span> 결과 복사';
+    function legacyCopy() {
       var ta = document.createElement('textarea');
       ta.value = text;
       ta.style.position = 'fixed'; ta.style.opacity = '0';
       document.body.appendChild(ta);
       ta.select();
-      try { document.execCommand('copy'); } catch(e) {}
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch(e) {}
       document.body.removeChild(ta);
-      btn.textContent = '✅ 복사됨';
-      setTimeout(function () { btn.innerHTML = '<span aria-hidden="true">📋</span> 결과 복사'; }, 2000);
+      btn.textContent = ok ? '✅ 복사됨' : '❌ 복사 실패';
+      setTimeout(function () { btn.innerHTML = origHtml; }, 2000);
+    }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function () {
+        btn.textContent = '✅ 복사됨';
+        setTimeout(function () { btn.innerHTML = origHtml; }, 2000);
+      }).catch(legacyCopy);
+    } else {
+      legacyCopy();
     }
   });
 
@@ -252,11 +258,10 @@
 
   // ── 토스트 ──
   function showToast(msg) {
-    var toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.classList.add('show');
-    clearTimeout(toast._timer);
-    toast._timer = setTimeout(function () { toast.classList.remove('show'); }, 2000);
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastEl._timer);
+    toastEl._timer = setTimeout(function () { toastEl.classList.remove('show'); }, 2000);
   }
 
   // ── 결과 링크 복사 ──
