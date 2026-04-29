@@ -8,12 +8,12 @@ const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1시간
 const rateLimitMap = new Map();
 
 const VALID_AGENCY_TYPES = [
-  '시청/군청/구청 (지방자치단체)',
-  '광역시도청 (광역자치단체)',
-  '중앙행정기관 (부/처/청)',
-  '공공기관/공기업 (공사/공단/공단)',
-  '교육기관 (교육청/대학교)',
-  '기타 공공기관',
+  '지방자치단체',
+  '광역자치단체',
+  '중앙행정기관',
+  '공공기관',
+  '교육기관',
+  '기타공공기관',
 ];
 
 const KRDS_SYSTEM_PROMPT = `당신은 KRDS(Korea Reference Design System) UX Writing 전문가입니다.
