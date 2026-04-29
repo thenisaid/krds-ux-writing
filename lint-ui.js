@@ -58,6 +58,7 @@
     document.getElementById('scoreSection').innerHTML = emptyPlaceholder();
     document.getElementById('highlightCard').style.display = 'none';
     document.getElementById('issuesCard').style.display = 'none';
+    document.getElementById('improvedCard').style.display = 'none';
     lastResult = null;
   });
 
@@ -81,6 +82,11 @@
     renderScore(lastResult);
     renderHighlight(text, lastResult.issues);
     renderIssues(lastResult.issues);
+    renderImproved(text, lastResult.issues);
+    saveHistory(text, lastResult.score, lastResult.issues.length);
+    renderHistory();
+    renderCliBanner(lastResult.score, text.length);
+    updateShareBtn();
   });
 
   // ── 점수 렌더 ──
@@ -242,6 +248,60 @@
     URL.revokeObjectURL(url);
   });
 
+  // ── CSV 내보내기 이후 추가 기능들 ──
+
+  // ── 토스트 ──
+  function showToast(msg) {
+    var toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(function () { toast.classList.remove('show'); }, 2000);
+  }
+
+  // ── 결과 링크 복사 ──
+  function updateShareBtn() {
+    var text = inputText.value.trim();
+    var btn = document.getElementById('shareLinkBtn');
+    if (!btn || !lastResult) return;
+    if (text.length > 500) {
+      btn.disabled = true;
+      btn.title = '텍스트가 500자를 초과하면 URL 공유를 사용할 수 없습니다';
+    } else {
+      btn.disabled = false;
+      btn.title = '';
+    }
+  }
+
+  document.getElementById('shareLinkBtn').addEventListener('click', function () {
+    var text = inputText.value.trim();
+    if (!text || text.length > 500) {
+      showToast('⚠️ 500자 이하 텍스트만 링크로 공유할 수 있습니다');
+      return;
+    }
+    var url = window.location.href.split('?')[0] + '?t=' + encodeURIComponent(text);
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(function () {
+        showToast('✅ 링크가 클립보드에 복사되었습니다');
+      }).catch(function () {
+        copyFallback(url);
+      });
+    } else {
+      copyFallback(url);
+    }
+  });
+
+  function copyFallback(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+    showToast('✅ 링크가 클립보드에 복사되었습니다');
+  }
+
   // ── 유틸 ──
   function escapeHtml(str) {
     return String(str)
@@ -253,5 +313,126 @@
   function escapeAttr(str) {
     return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
+
+  // ── US-L02: Before/After 개선문 ──
+  function renderImproved(text, issues) {
+    var card = document.getElementById('improvedCard');
+    // Only replace admin-jargon issues (PRD: 감지된 행정어만 교체)
+    var jargonIssues = issues.filter(function(i) { return i.type === 'admin-jargon' && i.match && i.suggestion; });
+    if (!jargonIssues.length) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+    // Build replacement map (match → first alt), sort by length descending to avoid partial replacements
+    var replacements = {};
+    jargonIssues.forEach(function(i) {
+      if (!replacements[i.match]) {
+        // suggestion format: '→ firstAlt, secondAlt' — strip arrow prefix, take first
+        var altStr = i.suggestion.replace(/^→\s*/, '');
+        replacements[i.match] = altStr.split(',')[0].trim();
+      }
+    });
+    var terms = Object.keys(replacements).sort(function(a, b) { return b.length - a.length; });
+    var result = text;
+    terms.forEach(function(term) {
+      var escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      result = result.replace(new RegExp(escaped, 'g'), replacements[term]);
+    });
+    document.getElementById('improvedText').textContent = result;
+  }
+
+  document.getElementById('copyImprovedBtn').addEventListener('click', function() {
+    var text = document.getElementById('improvedText').textContent;
+    if (!text) return;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function() { showToast('✅ 개선문이 복사되었습니다'); });
+    } else { copyFallback(text); showToast('✅ 개선문이 복사되었습니다'); }
+  });
+
+  // ── US-L04: 검사 이력 ──
+  var HISTORY_KEY = 'krds-lint-history';
+
+  function saveHistory(text, score, issueCount) {
+    try {
+      var history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      history.unshift({ date: new Date().toLocaleDateString('ko-KR'), score: score, text: text.slice(0, 80), issueCount: issueCount });
+      if (history.length > 5) history = history.slice(0, 5);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    } catch(e) {}
+  }
+
+  function renderHistory() {
+    var card = document.getElementById('historyCard');
+    var list = document.getElementById('historyList');
+    try {
+      var history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      if (!history.length) { card.style.display = 'none'; return; }
+      card.style.display = 'block';
+      list.innerHTML = history.map(function(h, i) {
+        var color = h.score >= 80 ? 'var(--color-success-50)' : h.score >= 50 ? 'var(--color-warning-50)' : 'var(--color-danger-50)';
+        return '<button data-idx="' + i + '" style="text-align:left; width:100%; background:var(--color-surface-sub); border:1px solid var(--color-border); border-radius:8px; padding:10px 14px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">' +
+          '<div>' +
+          '<div style="font-size:12px; color:var(--color-text-sub);">' + h.date + ' · 이슈 ' + h.issueCount + '개</div>' +
+          '<div style="font-size:13px; color:var(--color-text); margin-top:2px;">' + escapeHtml(h.text) + (h.text.length >= 80 ? '…' : '') + '</div>' +
+          '</div>' +
+          '<span style="font-weight:700; color:' + color + '; font-size:16px; margin-left:12px;">' + h.score + '</span>' +
+          '</button>';
+      }).join('');
+    } catch(e) { card.style.display = 'none'; }
+  }
+
+  document.getElementById('historyList').addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-idx]');
+    if (!btn) return;
+    try {
+      var history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      var item = history[parseInt(btn.dataset.idx)];
+      if (item) { inputText.value = item.text; document.getElementById('charCount').textContent = item.text.length; }
+    } catch(e) {}
+  });
+
+  document.getElementById('clearHistoryBtn').addEventListener('click', function() {
+    try { localStorage.removeItem(HISTORY_KEY); } catch(e) {}
+    renderHistory();
+  });
+
+  // ── US-L05: CLI 유도 배너 ──
+  var CLI_CMD = 'npm install -g github:thenisaid/krds-ux-writing';
+
+  function renderCliBanner(score, textLen) {
+    var banner = document.getElementById('cliBanner');
+    if (score < 60 || textLen > 300) {
+      banner.style.display = 'block';
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+
+  document.getElementById('cliBannerClose').addEventListener('click', function() {
+    document.getElementById('cliBanner').style.display = 'none';
+  });
+
+  document.getElementById('copyCliBtn').addEventListener('click', function() {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(CLI_CMD).then(function() { showToast('✅ 설치 명령어가 복사되었습니다'); });
+    } else { copyFallback(CLI_CMD); showToast('✅ 설치 명령어가 복사되었습니다'); }
+  });
+
+  // ── URL 파라미터 자동 로드 ──
+  (function () {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var t = params.get('t');
+      if (t) {
+        inputText.value = t;
+        document.getElementById('charCount').textContent = t.length;
+        lastResult = KRDSLint.lint(t, opts);
+        renderScore(lastResult);
+        renderHighlight(t, lastResult.issues);
+        renderIssues(lastResult.issues);
+        renderImproved(t, lastResult.issues);
+        renderCliBanner(lastResult.score, t.length);
+        updateShareBtn();
+      }
+    } catch (e) {}
+  })();
 
 })();
