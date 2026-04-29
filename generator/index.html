@@ -671,6 +671,9 @@
       </div>
 
       <div class="action-group">
+        <button type="button" id="copy-md-btn" class="btn btn-secondary">
+          텍스트 복사
+        </button>
         <button type="button" id="download-btn" class="btn btn-primary">
           다운로드 (HTML)
         </button>
@@ -682,6 +685,19 @@
       <div id="download-error" class="download-error" role="alert">
         <span class="error-icon" aria-hidden="true">⚠</span>
         다운로드 중 오류가 발생했습니다. 다시 시도해 주세요.
+      </div>
+
+      <!-- US-G04: lint 연동 CTA -->
+      <div style="margin-top:24px; padding:16px 20px; background:var(--color-surface-sub,#f8f7f5); border:1px solid var(--color-border,#e4e2df); border-radius:12px; text-align:center;">
+        <div style="font-size:14px; font-weight:600; color:var(--color-text,#1e2124); margin-bottom:6px;">
+          이 기관의 기존 텍스트를 바로 검사해 보세요
+        </div>
+        <div style="font-size:13px; color:var(--color-text-sub,#5a6270); margin-bottom:12px;">
+          행정어 자동 감지 · 품질 점수 · 개선문 자동 생성
+        </div>
+        <a href="../lint.html" target="_blank" rel="noopener" class="btn btn-primary" style="text-decoration:none;">
+          텍스트 검사 도구 열기 →
+        </a>
       </div>
 
     </section>
@@ -705,6 +721,7 @@
   var currentAgency    = '';
   var abortController  = null;
   var cancelled        = false;
+  var statusTimers     = [];
 
   /* ── DOM 참조 ── */
   var form             = document.getElementById('generator-form');
@@ -723,6 +740,7 @@
   var fallbackBtn      = document.getElementById('fallback-btn');
   var outputTitle      = document.getElementById('output-title');
   var outputContent    = document.getElementById('output-content');
+  var copyMdBtn        = document.getElementById('copy-md-btn');
   var downloadBtn      = document.getElementById('download-btn');
   var restartBtn       = document.getElementById('restart-btn');
   var downloadError    = document.getElementById('download-error');
@@ -766,8 +784,49 @@
     setFieldError('agency-name', false);
     validateForm();
   });
+  /* ── 기관 유형별 샘플 텍스트 (US-G02) ── */
+  var TYPE_SAMPLES = {
+    '지방자치단체': [
+      '귀하의 주민등록 말소 사실을 통보하오니 이의신청 기간 내에 처분청에 이의제기 하시기 바랍니다.',
+      '해당 민원은 소관 부서로 이첩 처리되었습니다. 불편을 드려 죄송합니다.',
+      '신청서 접수가 완료되었습니다. 처리 기간은 7일이며 결과는 문자로 통보됩니다.'
+    ],
+    '광역자치단체': [
+      '수급권자는 소명자료를 첨부하여 관할 주민센터에 제출하시기 바랍니다.',
+      '해당 사업은 예산 소진으로 인하여 금일부로 접수가 종료되었습니다.',
+      '귀 기관의 협조에 감사드리며 결재 완료 후 공문을 발송하겠습니다.'
+    ],
+    '중앙행정기관': [
+      '귀책사유가 없는 경우 변상금 부과가 면제됩니다. 관련 서류를 제출하시기 바랍니다.',
+      '동 사안은 관계 법령에 의거하여 처리되었음을 알려드립니다.',
+      '상기 내용에 대하여 이의가 있는 경우 행정심판을 청구할 수 있습니다.'
+    ],
+    '공공기관': [
+      'ERROR 4023: 인증 실패. 다시 시도해 주세요.',
+      '해당 서비스는 점검 중으로 인하여 일시적으로 이용이 제한됩니다.',
+      '회원 가입 완료. 서비스 이용을 위해 이메일 인증을 진행해 주시기 바랍니다.'
+    ],
+    '교육기관': [
+      '수강신청 기간 내 미신청 시 해당 학기 수강이 불가합니다.',
+      '장학금 수혜 대상자로 선발되었습니다. 구비서류를 제출하여 주시기 바랍니다.',
+      '성적 이의신청은 공시일로부터 5일 이내 학사지원팀에 신청하시기 바랍니다.'
+    ],
+    '기타공공기관': [
+      '신청이 접수되었습니다. 담당자가 확인 후 연락드리겠습니다.',
+      '해당 서비스는 현재 점검 중입니다. 잠시 후 다시 이용해 주세요.',
+      '입력하신 정보가 일치하지 않습니다. 다시 확인해 주세요.'
+    ]
+  };
+
   agencyTypeEl.addEventListener('change', function () {
     setFieldError('agency-type', false);
+    var samples = TYPE_SAMPLES[this.value];
+    if (samples && !sample1El.value.trim() && !sample2El.value.trim() && !sample3El.value.trim()) {
+      sample1El.value  = samples[0] || '';
+      sample2El.value  = samples[1] || '';
+      sample3El.value  = samples[2] || '';
+      setFieldError('sample-1', false);
+    }
     validateForm();
   });
   sample1El.addEventListener('input', function () {
@@ -861,6 +920,8 @@
 
   /* ── 출력 화면 표시 ── */
   function showOutput(markdownText, agencyName) {
+    statusTimers.forEach(function(t) { clearTimeout(t); });
+    statusTimers = [];
     currentMarkdown = markdownText;
     currentAgency   = agencyName;
     outputTitle.textContent = agencyName + ' UX Writing 가이드라인';
@@ -874,6 +935,7 @@
   function showGeneratingError(msg) {
     generatingError.textContent = msg || '가이드라인 생성 중 오류가 발생했습니다.';
     generatingError.classList.add('visible');
+    statusTimers && statusTimers.forEach(function(t) { clearTimeout(t); });
     generatingStatus.textContent = '오류가 발생했습니다.';
     streamOutput.setAttribute('aria-busy', 'false');
     fallbackArea.style.display = 'block';
@@ -890,8 +952,21 @@
     generatingError.classList.remove('visible');
     generatingError.textContent = '';
     fallbackArea.style.display  = 'none';
-    generatingStatus.textContent = '가이드라인을 생성하고 있습니다…';
     cancelBtn.textContent = '취소하기';
+
+    /* ── US-G03: 단계 메시지 ── */
+    statusTimers.forEach(function(t) { clearTimeout(t); });
+    var STATUS_STEPS = [
+      { delay: 0,    msg: '기관 정보를 분석하고 있습니다…' },
+      { delay: 3000, msg: 'KRDS 3대 원칙을 적용하고 있습니다…' },
+      { delay: 8000, msg: '맞춤 가이드라인을 작성하고 있습니다…' },
+      { delay: 15000, msg: '거의 다 됐습니다. 마무리 중입니다…' },
+    ];
+    statusTimers = STATUS_STEPS.map(function(step) {
+      return setTimeout(function() {
+        if (generatingStatus) generatingStatus.textContent = step.msg;
+      }, step.delay);
+    });
 
     showScreen('screen-generating');
 
@@ -1039,6 +1114,7 @@
     }
     cancelled = true;
     streamOutput.setAttribute('aria-busy', 'false');
+    statusTimers && statusTimers.forEach(function(t) { clearTimeout(t); });
     generatingStatus.textContent = '취소되었습니다. 처음으로 돌아가려면 아래 버튼을 눌러주세요.';
     cancelBtn.textContent = '처음으로 돌아가기';
   });
@@ -1047,6 +1123,32 @@
   fallbackBtn.addEventListener('click', function () {
     var agencyName = agencyNameEl.value.trim() || '기관';
     showOutput(getFallbackMarkdown(agencyName), agencyName);
+  });
+
+  /* ── 텍스트 복사 (US-G01) ── */
+  copyMdBtn.addEventListener('click', function () {
+    if (!currentMarkdown) return;
+    var btn = copyMdBtn;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(currentMarkdown).then(function () {
+        btn.textContent = '✅ 복사됨';
+        setTimeout(function () { btn.textContent = '텍스트 복사'; }, 2000);
+      }).catch(function () {
+        btn.textContent = '❌ 복사 실패';
+        setTimeout(function () { btn.textContent = '텍스트 복사'; }, 2000);
+      });
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = currentMarkdown;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch(e) {}
+      document.body.removeChild(ta);
+      btn.textContent = ok ? '✅ 복사됨' : '❌ 복사 실패';
+      setTimeout(function () { btn.textContent = '텍스트 복사'; }, 2000);
+    }
   });
 
   /* ── 다운로드 ── */
