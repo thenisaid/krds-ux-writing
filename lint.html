@@ -315,6 +315,27 @@
   }
   .footer a { color: var(--color-primary-30); text-decoration: none; }
 
+  /* ── 토스트 ── */
+  #toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(12px);
+    background: var(--color-text); color: var(--color-surface);
+    font-size: 13px; font-weight: 600;
+    padding: 10px 20px; border-radius: 8px;
+    opacity: 0; transition: opacity .2s, transform .2s;
+    pointer-events: none; z-index: 999; white-space: nowrap;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── 개선 텍스트 ── */
+  .improved-text {
+    font-size: 14px; line-height: 1.7; white-space: pre-wrap;
+    background: var(--color-success-10);
+    border: 1px solid var(--color-border);
+    border-radius: 8px; padding: 12px 14px;
+    color: var(--color-text);
+    max-height: 300px; overflow-y: auto;
+  }
+
   /* ── 하이라이트 텍스트 ── */
   .highlighted-text {
     font-size: 13px; line-height: 1.8; white-space: pre-wrap;
@@ -430,8 +451,47 @@
       <button class="btn btn-secondary" id="downloadBtn" style="font-size:12px; padding:6px 12px;">
         <span aria-hidden="true">⬇️</span> CSV 내보내기
       </button>
+      <button class="btn btn-secondary" id="shareLinkBtn" style="font-size:12px; padding:6px 12px;" disabled>
+        <span aria-hidden="true">🔗</span> 결과 링크 복사
+      </button>
     </div>
   </div>
+
+  <!-- US-L02: Before/After 개선문 -->
+  <div class="card" id="improvedCard" style="margin-top:16px; display:none;">
+    <div class="issues-header">
+      <div class="issues-title">✏️ 개선 텍스트</div>
+      <button class="btn btn-secondary" id="copyImprovedBtn" style="font-size:12px; padding:6px 12px;">
+        <span aria-hidden="true">📋</span> 개선문 복사
+      </button>
+    </div>
+    <div id="improvedText" style="font-size:14px; line-height:1.8; white-space:pre-wrap; padding:12px 0; color:var(--color-text);"></div>
+  </div>
+
+  <!-- US-L04: 검사 이력 -->
+  <div class="card" id="historyCard" style="margin-top:16px; display:none;">
+    <div class="issues-header">
+      <div class="issues-title">🕐 이전 검사 이력</div>
+      <button class="btn btn-secondary" id="clearHistoryBtn" style="font-size:12px; padding:6px 12px;">이력 삭제</button>
+    </div>
+    <div id="historyList" style="display:flex; flex-direction:column; gap:8px; margin-top:8px;"></div>
+  </div>
+
+  <!-- US-L05: CLI 유도 배너 -->
+  <div id="cliBanner" style="display:none; margin-top:16px; background:var(--color-primary-05); border:1px solid var(--color-primary-30); border-radius:12px; padding:16px 20px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <div>
+        <div style="font-weight:700; font-size:14px; color:var(--color-primary-50); margin-bottom:6px;">💻 파일 전체를 자동 검사하려면 CLI를 사용하세요</div>
+        <div style="font-size:13px; color:var(--color-text-sub); margin-bottom:10px;">디렉터리 일괄 검사, CI/CD 연동, JSON 출력 지원</div>
+        <code style="display:block; background:var(--color-surface); border:1px solid var(--color-border); border-radius:6px; padding:8px 12px; font-size:12px; color:var(--color-text);">npm install -g github:thenisaid/krds-ux-writing</code>
+      </div>
+      <button id="cliBannerClose" aria-label="배너 닫기" style="background:none; border:none; cursor:pointer; font-size:18px; color:var(--color-text-sub); padding:0 0 0 12px;">✕</button>
+    </div>
+    <button class="btn btn-secondary" id="copyCliBtn" style="margin-top:12px; font-size:12px; padding:6px 12px;">
+      <span aria-hidden="true">📋</span> 설치 명령어 복사
+    </button>
+  </div>
+
 </main>
 
 <footer class="footer">
@@ -442,6 +502,7 @@
   <span style="margin-top:4px; display:block;">거버넌스 조건 5 · 라이팅 자동화 도입</span>
 </footer>
 
+<div id="toast" role="status" aria-live="polite"></div>
 <script src="./krds-lint.js"></script>
 <script src="./lint-ui.js"></script>
 </body>
