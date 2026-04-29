@@ -5,7 +5,15 @@ export const config = { runtime: 'edge' };
 // ---------------------------------------------------------------------------
 const RATE_LIMIT_MAX = 5;
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1시간
+const RATE_LIMIT_MAP_MAX = 1000;              // 최대 추적 IP 수
 const rateLimitMap = new Map();
+
+// CORS 허용 오리진 (배포 도메인 + 로컬 개발)
+const ALLOWED_ORIGINS = new Set([
+  'https://thenisaid.github.io',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+]);
 
 const VALID_AGENCY_TYPES = [
   '지방자치단체',
@@ -75,11 +83,16 @@ function jsonResponse(data, status) {
 }
 
 function getClientIp(request) {
-  return (
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    request.headers.get('x-real-ip') ||
-    'unknown'
-  );
+  // x-real-ip: Vercel이 설정하는 실제 클라이언트 IP (스푸핑 불가)
+  // x-forwarded-for 마지막 값: 신뢰할 수 있는 마지막 프록시가 추가한 IP
+  const realIp = request.headers.get('x-real-ip')?.trim();
+  if (realIp) return realIp;
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    const parts = forwarded.split(',');
+    return parts[parts.length - 1].trim();
+  }
+  return 'unknown';
 }
 
 function checkRateLimit(ip) {
@@ -87,6 +100,13 @@ function checkRateLimit(ip) {
   const entry = rateLimitMap.get(ip);
 
   if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
+    // 맵 크기 초과 시 만료된 항목부터 제거
+    if (rateLimitMap.size >= RATE_LIMIT_MAP_MAX) {
+      for (const [k, v] of rateLimitMap) {
+        if (now - v.windowStart > RATE_LIMIT_WINDOW_MS) rateLimitMap.delete(k);
+        if (rateLimitMap.size < RATE_LIMIT_MAP_MAX) break;
+      }
+    }
     rateLimitMap.set(ip, { windowStart: now, count: 1 });
     return true;
   }
@@ -99,16 +119,24 @@ function checkRateLimit(ip) {
   return true;
 }
 
+function getCorsHeaders(origin) {
+  const allowed = ALLOWED_ORIGINS.has(origin) ? origin : null;
+  return allowed
+    ? { 'Access-Control-Allow-Origin': allowed, 'Vary': 'Origin' }
+    : {};
+}
+
 // ---------------------------------------------------------------------------
 // 핸들러
 // ---------------------------------------------------------------------------
 export default async function handler(request) {
   // CORS preflight
+  const origin = request.headers.get('origin') || '';
   if (request.method === 'OPTIONS') {
     return new Response(null, {
       status: 204,
       headers: {
-        'Access-Control-Allow-Origin': '*',
+        ...getCorsHeaders(origin),
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
       },
@@ -314,7 +342,7 @@ ${samplesText}
     headers: {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
-      'Access-Control-Allow-Origin': '*',
+      ...getCorsHeaders(origin),
     },
   });
 }
