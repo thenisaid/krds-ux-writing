@@ -403,9 +403,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const input = document.getElementById('searchInput');
   if (!input) return;
 
-  const escapeHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const highlight = (text, query) => {
-    const escaped = escapeHtml(text);
+    const escaped = escHtml(text);
     const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
     return escaped.replace(regex, m => `<mark>${m}</mark>`);
   };
