@@ -27,3 +27,9 @@ krds-sections-data.json
 .env
 .env.local
 .env*.local
+
+# 로컬 컨텍스트 캐시 (세션별)
+.context/
+
+# Cloudflare Wrangler 빌드 캐시
+.wrangler/

@@ -15,7 +15,7 @@
     --color-primary-05: #eef4ff;
     --color-success-50: #228738;
     --color-success-10: #e6f4ea;
-    --color-danger-50: #d43a2f;
+    --color-danger-50: #d9342b;
     --color-danger-10: #fdecea;
     --color-warning-50: #c07000;
     --color-warning-10: #fdf3dc;
@@ -247,18 +247,26 @@
   }
 
   .issue-item {
+    position: relative;
     border: 1px solid var(--color-border);
     border-radius: 8px;
-    padding: 12px 14px;
+    padding: 12px 14px 12px 28px;
     margin-bottom: 8px;
     background: var(--color-surface);
     transition: box-shadow .12s;
     cursor: pointer;
   }
   .issue-item:hover { box-shadow: var(--shadow-card); }
-  .issue-item.sev-error { border-left: 3px solid var(--color-danger-50); }
-  .issue-item.sev-warning { border-left: 3px solid var(--color-warning-50); }
-  .issue-item.sev-info { border-left: 3px solid var(--color-info-50); }
+  .issue-item.sev-error   { background: rgba(212, 58,  47, 0.04); }
+  .issue-item.sev-warning { background: rgba(180, 83,   9, 0.04); }
+  .issue-item.sev-info    { background: rgba(  2,132, 199, 0.04); }
+  .issue-item::before {
+    content: ''; position: absolute; left: 10px; top: 18px;
+    width: 6px; height: 6px; border-radius: 50%;
+  }
+  .issue-item.sev-error::before   { background: var(--color-danger-50); }
+  .issue-item.sev-warning::before { background: var(--color-warning-50); }
+  .issue-item.sev-info::before    { background: var(--color-info-50); }
 
   .issue-row1 { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
   .issue-sev {
@@ -422,7 +430,7 @@
     <div class="card-title">텍스트 하이라이트</div>
     <div class="highlighted-text" id="highlightedText" aria-live="polite"></div>
     <div style="margin-top:8px; font-size:12px; color:var(--color-text-sub);">
-      <span style="background:rgba(212,58,47,.18); border-bottom:2px solid #d43a2f; padding:1px 6px; border-radius:2px;">■</span> 오류
+      <span style="background:rgba(212,58,47,.18); border-bottom:2px solid #d9342b; padding:1px 6px; border-radius:2px;">■</span> 오류
       &nbsp;
       <span style="background:rgba(192,112,0,.14); border-bottom:2px solid #c07000; padding:1px 6px; border-radius:2px;">■</span> 경고
       &nbsp;
