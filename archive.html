@@ -30,7 +30,7 @@
   --border: #cdd1d5;
   --border-subtle: #e8e8e5;
   --success: #228738;
-  --danger: #c7371a;
+  --danger: #d9342b;
   --warn: #a85c00;
   --radius: 12px;
   --font: 'Pretendard GOV Variable', Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -261,11 +261,16 @@ a:hover { text-decoration: underline; }
 }
 .arc-card-val { color: var(--text); }
 .arc-card-rec {
+  position: relative;
   background: rgba(34,135,56,.06);
-  border-left: 3px solid var(--success);
-  border-radius: 0 6px 6px 0;
-  padding: 8px 12px;
+  border-radius: 6px;
+  padding: 8px 12px 8px 26px;
   margin-top: 10px;
+}
+.arc-card-rec::before {
+  content: ''; position: absolute; left: 8px; top: 50%;
+  transform: translateY(-50%); width: 6px; height: 6px;
+  border-radius: 50%; background: var(--success);
 }
 [data-theme="dark"] .arc-card-rec { background: rgba(63,185,80,.06); }
 .arc-card-rec .arc-card-label { color: var(--success); }
