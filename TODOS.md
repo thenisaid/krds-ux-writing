@@ -262,7 +262,7 @@ _없음 — 모든 항목 완료 (2026-05-04, commit 3a77440)_
 **Result**: Python re.sub + `(?![-\w])` 음수 전방탐색으로 접두어 충돌 없이 3개 파일 전체 교체. focus ring: textarea outline:none 제거 → :focus outline 추가, arc-search outline:none → :focus-visible outline 추가.
 
 ### ✅ TODO-008: Danger 색상 통일 (#d9342b)
-**완료**: 2026-05-02
-**What**: lint.html `#d43a2f`, archive.html `#c7371a` → `#d9342b`로 통일 (sed 치환)
-**Result**: 3개 파일(lint.html, archive.html, design-system.md) 모두 `#d9342b` 동일
+**완료**: 2026-05-02 (lint/archive/design-system), 2026-05-04 (generator — commit 8dfdf3a)
+**What**: lint.html `#d43a2f`, archive.html `#c7371a`, generator/index.html `#c82020` → `#d9342b`로 통일
+**Result**: 4개 파일(lint.html, archive.html, design-system.md, generator/index.html) 모두 `#d9342b` 동일
 
