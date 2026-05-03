@@ -7,6 +7,8 @@
 
 ## 열린 항목
 
+_없음 — 모든 항목 완료 (2026-05-04, commit 3a77440)_
+
 ### TODO-001: HWP/Word 다운로드 포맷 지원
 **Priority**: P2
 **What**: 현재 독립 실행형 HTML 파일만 제공하는 다운로드 기능을 `.hwp` 또는 `.docx` 포맷으로 확장
@@ -230,6 +232,34 @@
 ## 완료 항목
 
 <!-- 완료 시 날짜와 커밋 해시 기록 -->
+
+### ✅ TODO-001: HWP/Word 다운로드 드롭다운 UI
+**완료**: 2026-05-04, commit 3a77440
+**Result**: generator/index.html + app.js — split-button 드롭다운 (HTML/.hwp/.docx), role=menu, 키보드 Arrow/Enter/Esc. HWP/Word은 "준비 중" 배지 표시 + 에러 메시지 반환.
+
+### ✅ TODO-002: 레이트 리밋 KV 스텁
+**완료**: 2026-05-04, commit 3a77440
+**Result**: api/generate.js — checkRateLimitKV() 추가. KV_REST_API_URL/TOKEN 환경변수 설정 시 Vercel KV INCR/EXPIRE, 미설정 시 in-memory 폴백.
+
+### ✅ TODO-003: Skip-to-content 링크
+**완료**: 2026-05-04, commit 3a77440
+**Result**: 3개 파일 `<body>` 바로 다음 `.skip-link` 추가. lint.html→`#main`, archive.html/generator→`#main-content`. focus-visible + reduced-motion CSS 포함.
+
+### ✅ TODO-004: Print 스타일시트
+**완료**: 2026-05-04, commit 3a77440
+**Result**: 3개 파일 `@media print` 추가. GNB/toast/공유버튼 숨김, body 흑백, @page 2cm 여백, .card page-break-inside:avoid. lint.html `.empty-print-msg` 요소 추가.
+
+### ✅ TODO-005: 태블릿 브레이크포인트
+**완료**: 2026-05-04, commit 3a77440
+**Result**: lint.html `.grid-2` 브레이크포인트 680px→900px 확장. archive.html/generator 불필요 (기존 그리드 대응).
+
+### ✅ TODO-006: prefers-reduced-motion 전체 적용
+**완료**: 2026-05-04, commit 3a77440
+**Result**: lint.html — score-ring/filter-tab/toast 전환 비활성화. archive.html — arc-card/arc-tab 전환 비활성화. generator — 기존 spinner 블록 유지 + skip-link 추가.
+
+### ✅ TODO-007: CSS 토큰 --krds-* 프리픽스 통일
+**완료**: 2026-05-04, commit 3a77440
+**Result**: Python re.sub + `(?![-\w])` 음수 전방탐색으로 접두어 충돌 없이 3개 파일 전체 교체. focus ring: textarea outline:none 제거 → :focus outline 추가, arc-search outline:none → :focus-visible outline 추가.
 
 ### ✅ TODO-008: Danger 색상 통일 (#d9342b)
 **완료**: 2026-05-02
