@@ -29,8 +29,8 @@
       --color-border: #9ca3af;       /* 3.1:1 — WCAG UI 기준 충족 */
       --color-placeholder: #6b7280;  /* 5.0:1 — WCAG AA 충족 */
       --color-text: #1a1a1a;         /* 19.1:1 */
-      --color-text-secondary: #4b5563;
-      --color-bg: #ffffff;
+      --krds-text-secondary: #4b5563;
+      --krds-surface-subtle: #ffffff;
       --color-surface: #f8f9fa;
       --color-disabled-bg: #e5e7eb;
       --color-disabled-text: #9ca3af;
@@ -49,7 +49,7 @@
       font-size: 16px;
       line-height: 1.6;
       color: var(--color-text);
-      background: var(--color-bg);
+      background: var(--krds-surface-subtle);
       min-height: 100vh;
     }
 
@@ -94,7 +94,7 @@
 
     .site-header .site-name {
       font-size: 14px;
-      color: var(--color-text-secondary);
+      color: var(--krds-text-secondary);
     }
 
     /* ===== 화면 전환 ===== */
@@ -111,7 +111,7 @@
 
     .page-subtitle {
       font-size: 16px;
-      color: var(--color-text-secondary);
+      color: var(--krds-text-secondary);
       margin-bottom: 32px;
       line-height: 1.7;
     }
@@ -144,7 +144,7 @@
     }
 
     .optional-mark {
-      color: var(--color-text-secondary);
+      color: var(--krds-text-secondary);
       font-size: 12px;
       font-weight: 400;
       margin-left: 4px;
@@ -160,7 +160,7 @@
       font-family: var(--font);
       font-size: 16px;
       color: var(--color-text);
-      background: var(--color-bg);
+      background: var(--krds-surface-subtle);
       transition: border-color 150ms ease, outline 150ms ease;
       -webkit-appearance: none;
       appearance: none;
@@ -320,7 +320,7 @@
 
     .generating-status {
       font-size: 15px;
-      color: var(--color-text-secondary);
+      color: var(--krds-text-secondary);
     }
 
     .stream-output {
@@ -419,7 +419,7 @@
     .output-card blockquote {
       border-left: 3px solid var(--color-primary-50);
       padding-left: 16px;
-      color: var(--color-text-secondary);
+      color: var(--krds-text-secondary);
       margin-bottom: 0.75em;
     }
 
@@ -428,7 +428,7 @@
       padding-top: 16px;
       margin-top: 16px;
       font-size: 14px;
-      color: var(--color-text-secondary);
+      color: var(--krds-text-secondary);
       line-height: 1.6;
       text-align: center;
     }
@@ -454,6 +454,67 @@
 
     .download-error.visible { display: flex; }
 
+    /* ── 다운로드 드롭다운 버튼 그룹 ── */
+    .dl-btn-group {
+      position: relative;
+      display: flex;
+      flex: 1;
+      min-width: 200px;
+    }
+    .dl-btn-group #download-btn {
+      flex: 1;
+      border-radius: var(--radius-md) 0 0 var(--radius-md);
+      width: auto;
+    }
+    .dl-divider {
+      width: 1px;
+      background: rgba(255,255,255,.3);
+      flex-shrink: 0;
+      align-self: stretch;
+    }
+    .dl-chevron {
+      background: var(--color-primary-50);
+      color: #fff;
+      border: none;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: 0 14px;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      transition: background-color 150ms ease;
+    }
+    .dl-chevron:hover { background: var(--color-primary-hover); }
+    .dl-chevron[aria-expanded="true"] { background: var(--color-primary-hover); }
+    .dl-menu {
+      position: absolute;
+      bottom: calc(100% + 6px);
+      right: 0;
+      min-width: 200px;
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 16px rgba(0,0,0,.12);
+      z-index: 200;
+      display: none;
+      flex-direction: column;
+      padding: 4px 0;
+    }
+    .dl-menu.open { display: flex; }
+    .dl-menu-item {
+      padding: 10px 16px;
+      font-size: 14px; font-weight: 500;
+      color: var(--color-text);
+      background: none; border: none;
+      text-align: left; cursor: pointer;
+      font-family: var(--font);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .dl-menu-item:hover { background: var(--krds-surface-subtle); }
+    .dl-menu-item:focus-visible { outline: 2px solid var(--color-primary-50); outline-offset: -2px; }
+    .dl-badge { font-size: 10px; font-weight: 600; background: rgba(37,110,244,.1); color: var(--color-primary-50); padding: 1px 6px; border-radius: 3px; margin-left: auto; }
+    .dl-badge-soon { font-size: 10px; font-weight: 600; background: rgba(0,0,0,.06); color: #666; padding: 1px 6px; border-radius: 3px; margin-left: auto; }
+
     /* ===== 반응형 ===== */
     @media (max-width: 767px) {
       h1 { font-size: 22px; }
@@ -476,9 +537,34 @@
       }
       *, *::before, *::after { transition-duration: 0.01ms !important; }
     }
+
+    /* ── 스킵 링크 ── */
+    .skip-link {
+      position: absolute;
+      top: 8px; left: 8px;
+      transform: translateY(-200%);
+      padding: 12px 20px;
+      background: #256ef4; color: #ffffff;
+      font-size: 14px; font-weight: 600;
+      border-radius: 6px;
+      text-decoration: none;
+      z-index: 9999;
+      transition: transform 0.15s ease;
+    }
+    .skip-link:focus { transform: translateY(0); outline: 3px solid #ffffff; outline-offset: -3px; }
+    @media (prefers-reduced-motion: reduce) { .skip-link { transition: none; } }
+
+    /* ── 인쇄 ── */
+    @media print {
+      .site-header, .action-group, .btn-link { display: none !important; }
+      body { color: #000; background: #fff; }
+      @page { margin: 2cm; }
+      .output-card { page-break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+    }
   </style>
 </head>
 <body>
+<a href="#main-content" class="skip-link">본문으로 이동</a>
 <div class="page-wrapper">
 
   <!-- 헤더 -->
@@ -491,7 +577,7 @@
     </div>
   </header>
 
-  <main class="container" aria-label="UX Writing 가이드라인 생성기">
+  <main class="container" id="main-content" aria-label="UX Writing 가이드라인 생성기">
 
     <!-- ===== 화면 1: 입력 폼 ===== -->
     <section id="screen-input" class="screen active" aria-label="기관 정보 입력">
@@ -556,7 +642,7 @@
 
         <fieldset>
           <legend>현재 사용 중인 UI 문구</legend>
-          <p style="font-size:14px;color:var(--color-text-secondary);margin-bottom:16px;">
+          <p style="font-size:14px;color:var(--krds-text-secondary);margin-bottom:16px;">
             에러 메시지, 버튼 레이블, 안내문 등 현재 서비스에서 사용하는 문구를 그대로 붙여넣어 주세요.
           </p>
 
@@ -676,9 +762,25 @@
         <button type="button" id="copy-md-btn" class="btn btn-secondary">
           텍스트 복사
         </button>
-        <button type="button" id="download-btn" class="btn btn-primary">
-          다운로드 (HTML)
-        </button>
+        <div class="dl-btn-group">
+          <button type="button" id="download-btn" class="btn btn-primary">
+            HTML 파일 다운로드
+          </button>
+          <div class="dl-divider" aria-hidden="true"></div>
+          <button type="button" id="dl-chevron" class="dl-chevron"
+            aria-haspopup="true" aria-expanded="false" aria-label="다운로드 포맷 선택">▾</button>
+          <div id="dl-menu" class="dl-menu" role="menu" aria-label="다운로드 포맷 선택">
+            <button class="dl-menu-item" role="menuitem" data-format="html">
+              HTML 파일 <span class="dl-badge">.html</span>
+            </button>
+            <button class="dl-menu-item" role="menuitem" data-format="hwp">
+              한글 <span class="dl-badge-soon">.hwp · 준비 중</span>
+            </button>
+            <button class="dl-menu-item" role="menuitem" data-format="docx">
+              Word <span class="dl-badge-soon">.docx · 준비 중</span>
+            </button>
+          </div>
+        </div>
         <button type="button" id="restart-btn" class="btn-link">
           다시 생성하기
         </button>
