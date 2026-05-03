@@ -456,8 +456,8 @@
     copyToClipboard(currentMarkdown, copyMdBtn, '텍스트 복사');
   });
 
-  /* ── 다운로드 ── */
-  downloadBtn.addEventListener('click', function () {
+  /* ── 다운로드 (HTML) ── */
+  function downloadHtml() {
     downloadError.classList.remove('visible');
     try {
       var html = buildStandaloneHtml(currentAgency || '기관', currentMarkdown);
@@ -473,6 +473,64 @@
     } catch (_) {
       downloadError.classList.add('visible');
     }
+  }
+
+  downloadBtn.addEventListener('click', downloadHtml);
+
+  /* ── 다운로드 드롭다운 ── */
+  var dlChevron = document.getElementById('dl-chevron');
+  var dlMenu    = document.getElementById('dl-menu');
+
+  function closeDlMenu() {
+    dlMenu.classList.remove('open');
+    dlChevron.setAttribute('aria-expanded', 'false');
+  }
+
+  dlChevron.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var isOpen = dlMenu.classList.contains('open');
+    if (isOpen) {
+      closeDlMenu();
+    } else {
+      dlMenu.classList.add('open');
+      dlChevron.setAttribute('aria-expanded', 'true');
+      var firstItem = dlMenu.querySelector('.dl-menu-item');
+      if (firstItem) firstItem.focus();
+    }
+  });
+
+  dlMenu.addEventListener('click', function (e) {
+    var item = e.target.closest('.dl-menu-item');
+    if (!item) return;
+    var fmt = item.dataset.format;
+    closeDlMenu();
+    if (fmt === 'html') {
+      downloadHtml();
+    } else {
+      var fmtName = fmt === 'hwp' ? 'HWP' : 'Word';
+      downloadError.classList.remove('visible');
+      downloadError.textContent = fmtName + ' 변환에 실패했습니다. HTML로 다운로드해 주세요.';
+      downloadError.classList.add('visible');
+    }
+  });
+
+  dlMenu.addEventListener('keydown', function (e) {
+    var items = Array.from(dlMenu.querySelectorAll('.dl-menu-item'));
+    var idx   = items.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      items[(idx + 1) % items.length].focus();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      items[(idx - 1 + items.length) % items.length].focus();
+    } else if (e.key === 'Escape') {
+      closeDlMenu();
+      dlChevron.focus();
+    }
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.dl-btn-group')) closeDlMenu();
   });
 
   /* ── 다시 생성하기 ── */

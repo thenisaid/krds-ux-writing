@@ -119,6 +119,32 @@ function checkRateLimit(ip) {
   return true;
 }
 
+// KV 기반 레이트 리밋 (Vercel KV / Upstash REST API)
+// KV_REST_API_URL + KV_REST_API_TOKEN 환경변수가 설정된 경우에만 사용.
+// 미설정 시 in-memory Map으로 폴백 (cold start 간 상태 비공유).
+async function checkRateLimitKV(ip) {
+  const kvUrl   = process.env.KV_REST_API_URL;
+  const kvToken = process.env.KV_REST_API_TOKEN;
+  if (!kvUrl || !kvToken) return checkRateLimit(ip);
+
+  const key     = `rl:${ip}`;
+  const headers = { Authorization: `Bearer ${kvToken}` };
+  const windowSec = Math.ceil(RATE_LIMIT_WINDOW_MS / 1000);
+
+  try {
+    const incrRes = await fetch(`${kvUrl}/incr/${key}`, { method: 'POST', headers });
+    const { result: count } = await incrRes.json();
+    if (count === 1) {
+      // 첫 요청 — 윈도우 만료 설정
+      await fetch(`${kvUrl}/expire/${key}/${windowSec}`, { method: 'POST', headers });
+    }
+    return count <= RATE_LIMIT_MAX;
+  } catch (_) {
+    // KV 불가 시 in-memory 폴백
+    return checkRateLimit(ip);
+  }
+}
+
 function getCorsHeaders(origin) {
   const allowed = ALLOWED_ORIGINS.has(origin) ? origin : null;
   return allowed
@@ -148,9 +174,9 @@ export default async function handler(request) {
     return jsonResponse({ error: '허용되지 않는 메서드입니다.' }, 405);
   }
 
-  // 레이트 리밋
+  // 레이트 리밋 (KV 우선, 폴백 in-memory)
   const ip = getClientIp(request);
-  if (!checkRateLimit(ip)) {
+  if (!await checkRateLimitKV(ip)) {
     return jsonResponse(
       { error: '요청 한도를 초과했습니다. 1시간 후 다시 시도해 주세요.' },
       429

@@ -64,6 +64,36 @@
 **Depends on**: 없음
 **Blocked by**: 없음
 
+**구현 스펙 (2026-05-04 plan-design-review 확정)**:
+- 삽입 위치: `<body>` 바로 다음 첫 번째 자식 (GNB 이전)
+- 링크 타겟:
+  - `lint.html` → `href="#main"` (id="main" 이미 존재)
+  - `archive.html` → `href="#main-content"` (id="main-content" 추가 필요)
+  - `generator/index.html` → `href="#main-content"` (id 추가 필요)
+- CSS 스펙:
+  ```css
+  .skip-link {
+    position: absolute;
+    top: 8px; left: 8px;
+    transform: translateY(-200%);
+    padding: 12px 20px;
+    background: #256ef4; color: #ffffff;
+    font-size: 14px; font-weight: 600;
+    border-radius: 6px;
+    text-decoration: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+  }
+  .skip-link:focus {
+    transform: translateY(0);
+    outline: 3px solid #ffffff;
+    outline-offset: -3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .skip-link { transition: none; }
+  }
+  ```
+
 ---
 
 ### TODO-004: Print 스타일시트 추가
@@ -83,6 +113,13 @@
 **Depends on**: 없음
 **Blocked by**: 없음
 
+**구현 스펙 (2026-05-04 plan-design-review 확정)**:
+- 숨길 요소: `.gnb` (header), `.toast`, `[role="complementary"]`, `.share-btn`, `.footer`
+- print 흑백 강제: `body { color: #000; background: #fff; }`
+- 페이지 여백: `@page { margin: 2cm; }`
+- 빈 결과 처리: 결과 카드가 모두 `display:none`이면 `<p class="empty-print-msg">결과가 없습니다. 텍스트를 입력하고 검사를 실행해 주세요.</p>` HTML 요소 추가 (기본값 `display:none`, `@media print`에서 `display:block`). ⚠️ CSS `content` 속성은 `::before`/`::after` 수도 요소에만 동작 — 일반 요소에 사용 불가.
+- 페이지 나누기: `.card { page-break-inside: avoid; }`
+
 ---
 
 ### TODO-005: Tablet 브레이크포인트 추가 (768px–1023px)
@@ -100,6 +137,11 @@
 **Context**: `/plan-design-review` Pass 6 (반응형) 에서 발견. 768px 디바이스에서 목측 확인 권장.
 **Depends on**: 없음
 **Blocked by**: 없음
+
+**구현 스펙 (2026-05-04 plan-design-review 확정, D3 결정)**:
+- `lint.html`: `@media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }` 추가. 기존 `@media (max-width: 680px)` 제거 (900px으로 대체). 1열 순서: 입력 패널 → 결과 패널.
+- `archive.html`: `auto-fill, minmax(340px, 1fr)` 그리드가 768px에서 자연스럽게 동작 → 별도 태블릿 브레이크포인트 불필요.
+- `generator/index.html`: 이미 `@media (max-width: 767px)` 존재 → 추가 불필요.
 
 ---
 
@@ -120,6 +162,13 @@
 **Depends on**: 없음
 **Blocked by**: 없음
 
+**구현 스펙 (2026-05-04 plan-design-review 확정, D2 결정)**:
+- 점수 링 SVG (lint.html): `@media (prefers-reduced-motion: reduce) { .score-ring circle { transition: none; animation: none; } }`. JS에서 애니메이션 클래스 없이 `stroke-dashoffset`을 최종값으로 직접 설정.
+- 필터 탭·하이라이트 페이드 (lint.html): `transition: none` 적용
+- 카드 확장 (archive.html): `transition: none` 적용
+- 스피너 (generator): `animation: none` 적용. `@media (prefers-reduced-motion: reduce)` 이미 존재하므로 spinner 규칙만 추가.
+- 스트림 출력 (generator): 토큰 도착 시 opacity 페이드 → 즉시 표시.
+
 ---
 
 ### TODO-007: CSS 토큰 네이밍 통일 (--krds-* 프리픽스)
@@ -136,10 +185,45 @@
 - `--color-danger-50` 등 KRDS 공식 토큰과 이름 충돌 가능성 검토 필요
 
 **Context**: `/plan-design-review` Pass 5 (디자인 시스템 정렬) 에서 발견. 해결 전까지 Pass 5 점수 6/10 유지.
-**Depends on**: TODO-008 (danger 색상 통일) 선행 권장
+**Depends on**: TODO-008 (danger 색상 통일) 선행 권장 — 완료됨 ✅
 **Blocked by**: 없음
 
+**구현 스펙 (2026-05-04 plan-design-review 추가)**:
+- 토큰 매핑 (기존→카노니컬):
+  - lint.html `--color-primary-50` → `--krds-color-primary`
+  - lint.html `--color-danger-50` → `--krds-color-danger`
+  - lint.html `--color-danger-10` → `--krds-color-danger-subtle`
+  - lint.html `--color-surface` → `--krds-surface-default`
+  - lint.html `--color-surface-sub` → `--krds-surface-subtle`
+  - lint.html `--color-text` → `--krds-text-primary`
+  - lint.html `--color-text-sub` → `--krds-text-secondary`
+  - lint.html `--color-border` → `--krds-border-default`
+  - archive.html `--accent` → `--krds-color-primary`
+  - archive.html `--bg` → `--krds-surface-subtle`
+  - archive.html `--bg-card` → `--krds-surface-default`
+  - archive.html `--text` → `--krds-text-primary`
+  - archive.html `--text-muted` → `--krds-text-tertiary`
+  - archive.html `--border` → `--krds-border-default`
+  - archive.html `--danger` → `--krds-color-danger`
+  - generator `--color-bg` → `--krds-surface-subtle`
+  - generator `--color-text-secondary` → `--krds-text-secondary`
+- **focus ring 수정 (Pass 5 추가 발견)**:
+  - lint.html textarea: `outline: none` 제거 → `outline: 2px solid var(--krds-border-focus); outline-offset: 2px` 추가 (box-shadow 병용 가능)
+  - archive.html `.arc-search`: `outline: none` 제거 → `:focus-visible { outline: 2px solid var(--krds-border-focus); outline-offset: 2px; }` 추가
+- 교체 방법: Python `re.sub` (sed는 변수명 충돌 위험) + `node --check` 로 JS 문법 검증. **⚠️ 모든 `re.sub` 패턴에 음수 전방탐색 `(?![-\w])` 필수** — 미적용 시 접두어 충돌 발생 (예: `--accent` 패턴이 `--accent-light`도 치환). 올바른 형식: `re.sub(r'--TOKEN-NAME(?![-\w])', '--NEW-NAME', content)`
+- 교체 후 Playwright MCP로 3개 도구 시각 회귀 확인 필수
+
 ---
+
+### TODO-001 UI 스펙 보완 (HWP/Word 다운로드 — 2026-05-04 plan-design-review, D4 결정)
+**기존 TODO-001에 추가되는 UI 스펙**:
+- 드롭다운 버튼 그룹 패턴:
+  - 기존 `#download-btn` ("HTML 파일 다운로드") 오른쪽에 구분선 + 쐐기(▾) 토글 버튼 추가
+  - 쐐기 버튼 클릭 시 드롭다운 열림: [HTML 파일 (.html)] / [한글 (.hwp)] / [Word (.docx)]
+  - 드롭다운: `role="menu"`, `aria-label="다운로드 포맷 선택"`, 키보드 Arrow/Enter/Esc 지원
+  - 포맷 없이 기존 버튼 클릭: HTML 직접 다운로드 (기존 동작 유지)
+- 변환 중 상태: 기존 스피너 패턴 재사용, "변환 중..." 레이블
+- 실패 상태: 기존 `#download-error` 영역 재사용, 포맷명 포함 에러 메시지 (예: "HWP 변환에 실패했습니다. HTML로 다운로드해 주세요.")
 
 ---
 
