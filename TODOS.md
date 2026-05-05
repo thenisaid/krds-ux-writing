@@ -47,6 +47,37 @@ _없음 — 모든 항목 완료 (2026-05-04, commit 3a77440)_
 **Depends on**: Phase 2 전환 (Vercel KV 또는 내부망 Redis)
 **Blocked by**: 없음 (MVP 이후 독립적으로 진행 가능)
 
+> **⚠️ 알려진 경쟁 조건 (D11)**: `checkRateLimitKV`의 INCR + EXPIRE 호출은 원자적이지 않음.
+> 두 요청이 동시에 count=0을 읽으면 둘 다 INCR → count=1 처리 후 EXPIRE를 각각 실행 →
+> 두 번째 EXPIRE가 TTL을 초기화해 윈도우가 연장됨. 실제 영향: 창 시작 시점에 최대 N개 동시 요청이
+> N+1회로 처리될 수 있음. 해결책: Lua 스크립트 또는 Vercel KV의 원자적 EVAL 사용. Phase 2 KV 전환 시 함께 적용.
+
+---
+
+### TODO-009: IP 헤더 일관성 — CF-Connecting-IP vs x-forwarded-for
+**Priority**: P2
+**What**: `api/generate.js`의 `getClientIp()`는 `x-real-ip` → `x-forwarded-for` 순으로 IP를 읽음. Vercel을 Cloudflare 프록시 뒤에 배포할 경우 Cloudflare가 `CF-Connecting-IP` 헤더를 추가하며, `x-forwarded-for`에는 Cloudflare 엣지 IP가 포함될 수 있음 → 모든 요청이 같은 IP로 집계되어 레이트 리밋이 작동하지 않는 구조적 위험.
+**Why**: KRDS 서비스가 Cloudflare CDN 뒤에 배포될 가능성 있음. 현재 코드에서는 `CF-Connecting-IP`를 전혀 읽지 않음.
+**Fix**: `getClientIp()` 에 `req.headers.get('cf-connecting-ip')` 최우선 검사 추가:
+```javascript
+// 우선순위: CF-Connecting-IP > x-real-ip > x-forwarded-for (last)
+const cfIp = req.headers.get('cf-connecting-ip');
+if (cfIp) return cfIp.trim();
+```
+**Depends on**: Cloudflare 배포 여부 확인 후 적용
+**Blocked by**: 없음 (독립적으로 적용 가능)
+
+---
+
+### TODO-010: computeScore 한국어 형태소 분석기 연동 (Phase 2)
+**Priority**: P3
+**What**: `krds-lint.js`의 `computeScore()`는 공백 기준 어절 분리(`split(' ')`)로 단어 수를 계산함. 교착어인 한국어에서는 어절 수 ≠ 형태소 수이므로, base 값이 과소 산정되어 짧은 텍스트에서 점수가 비정상적으로 낮게 나올 수 있음.
+**Why**: 영어 단어 기준 정규화는 한국어 형태소 단위 문장과 직접 비교할 수 없음. 예: "처리되시겠습니다" 1어절 = 형태소 7개.
+**Fix**: Kiwi(한국어 형태소 분석기) 또는 mecab-ko 바인딩을 Node.js 모듈로 추가하여 형태소 단위 token count로 base 교체. 브라우저 환경 폴백은 현행 어절 분리 유지.
+**Context**: `krds-lint.js` `computeScore()` 함수 JSDoc 주석에 한계 명시 완료 (2026-05-04). Phase 2 내부망 배포 전환 시 함께 적용.
+**Depends on**: Phase 2 Node.js 서버 배포 (현재 브라우저 전용 번들)
+**Blocked by**: 없음 (MVP 이후 독립적으로 진행 가능)
+
 ---
 
 ### TODO-003: Skip-to-content 링크 추가

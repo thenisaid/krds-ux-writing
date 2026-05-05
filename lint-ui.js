@@ -358,7 +358,7 @@
   function saveHistory(text, score, issueCount) {
     try {
       var history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-      history.unshift({ date: new Date().toLocaleDateString('ko-KR'), score: score, text: text.slice(0, 80), issueCount: issueCount });
+      history.unshift({ date: new Date().toLocaleDateString('ko-KR'), score: score, text: text.slice(0, 80), fullText: text, issueCount: issueCount });
       if (history.length > 5) history = history.slice(0, 5);
       localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
     } catch(e) {}
@@ -390,7 +390,7 @@
     try {
       var history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
       var item = history[parseInt(btn.dataset.idx)];
-      if (item) { inputText.value = item.text; document.getElementById('charCount').textContent = item.text.length; }
+      if (item) { inputText.value = item.fullText || item.text; document.getElementById('charCount').textContent = (item.fullText || item.text).length; }
     } catch(e) {}
   });
 

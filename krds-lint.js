@@ -25,7 +25,23 @@
   // Node.js: jargon-dictionary.json 자동 로드 (scripts/extract-jargon.js 로 재생성)
   // 브라우저: <script src="jargon-dictionary.js"> 또는 window.KRDS_JARGON_DICT 주입
 
-  const ADMIN_JARGON = (jargonDict && jargonDict.entries) || [
+  // 에러 메시지 금지 표현 (4.1) — jargon-dictionary.json 로드 여부와 무관하게 항상 포함
+  const INLINE_JARGON = [
+    { banned: '잘못 입력하셨습니다', alt: '"일치하지 않습니다" / "확인이 필요합니다"', cat: '에러 메시지' },
+    { banned: '올바르지 않은 정보입니다', alt: '구체적 필드명 + 기대 형식 명시', cat: '에러 메시지' },
+    { banned: '맞춤법 오류가 있는지 확인해 주세요', alt: '"결과를 찾지 못했습니다" + 검색 팁', cat: '에러 메시지' },
+    { banned: '철자를 확인해 주세요', alt: '"결과를 찾지 못했습니다" + 검색 팁', cat: '에러 메시지' },
+    { banned: '죄송합니다', alt: '공감 없이 건조하게 상황+행동만 제시', cat: '에러 메시지' },
+    { banned: '비밀번호가 틀렸습니다', alt: '비밀번호가 일치하지 않습니다', cat: '에러 메시지' },
+    { banned: '잘못 입력한 항목이 있습니다', alt: '확인이 필요한 항목이 있습니다', cat: '에러 메시지' },
+  ];
+
+  // jargon-dictionary.json이 로드되면 INLINE_JARGON을 병합 (dedup by banned)
+  const ADMIN_JARGON = (jargonDict && jargonDict.entries)
+    ? [...jargonDict.entries, ...INLINE_JARGON.filter(function(e) {
+        return !jargonDict.entries.some(function(d) { return d.banned === e.banned; });
+      })]
+    : [
     // 카테고리 1: 행정 관습어 (한자어·관청 은어)
     { banned: '명일까지', alt: '내일까지', cat: '행정 관습어' },
     { banned: '직접 내방하여', alt: '직접 방문하여', cat: '행정 관습어' },
@@ -142,7 +158,7 @@
       id: 'excessive-honorific',
       name: '과잉 존칭',
       severity: 'warning',
-      pattern: /처리되시겠습니다|완료되시겠습니다|진행되시겠습니다|발송되시겠습니다|입력되시면|확인되시면|\w{1,5}되시\w{0,5}겠습니다/g,
+      pattern: /처리되시겠습니다|완료되시겠습니다|진행되시겠습니다|발송되시겠습니다|입력되시면|확인되시면|[\uac00-\ud7a3\w]{1,5}되시[\uac00-\ud7a3\w]{0,5}겠습니다/g,
       message: (match) => `과잉 존칭 "${match}" — 주어를 명확히 하고 "-시-"를 제거하세요.`,
       alt: '"처리됩니다", "완료됩니다"',
     },
@@ -330,9 +346,13 @@
   /**
    * 품질 점수 계산 (0~100)
    * 이슈가 없을수록 100에 가까움
+   *
+   * 한계: 공백 기준 어절 분리 방식으로, 교착어인 한국어에서는
+   * 형태소 단위 정규화 대비 base 값이 작아 점수가 낮게 산정될 수 있음.
+   * Phase 2: 형태소 분석기(Kiwi 등) 연동으로 개선 예정. (TODOS.md 참조)
    */
   function computeScore(text, summary) {
-    // 단어 수 기반 기준점
+    // 어절(공백 구분) 수 기반 기준점 — 한국어 형태소 미분리 (TODO: Phase 2)
     const words = text.replace(/\s+/g, ' ').trim().split(' ').length;
     const base = Math.max(words, 1);
     const penalty = (summary.errors * PENALTY_ERROR) + (summary.warnings * PENALTY_WARNING) + (summary.infos * PENALTY_INFO);
