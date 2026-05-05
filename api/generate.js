@@ -107,8 +107,11 @@ function checkRateLimit(ip) {
         if (rateLimitMap.size < RATE_LIMIT_MAP_MAX) break;
       }
     }
-    rateLimitMap.set(ip, { windowStart: now, count: 1 });
-    return true;
+    if (rateLimitMap.size < RATE_LIMIT_MAP_MAX) {
+      rateLimitMap.set(ip, { windowStart: now, count: 1 });
+      return true;
+    }
+    return false; // eviction failed, reject
   }
 
   if (entry.count >= RATE_LIMIT_MAX) {
