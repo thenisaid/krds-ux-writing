@@ -268,6 +268,17 @@ if (cfIp) return cfIp.trim();
 
 ---
 
+### UX-GEN-001: Generator cancel flow — 2단계 취소 UX
+**Priority**: Low
+**What**: "취소하기" 클릭 시 "취소되었습니다. 처음으로 돌아가려면 아래 버튼을 눌러주세요." 메시지 + "처음으로 돌아가기" 버튼이 표시됨. 한 번 더 클릭해야 폼으로 복귀.
+**Why**: 단일 클릭으로 폼 복귀가 더 직관적. 현재 2단계는 불필요한 마찰.
+**Fix**: 취소 시 "처음으로 돌아가기" 버튼 표시 없이 바로 초기 폼 상태로 복귀.
+**Context**: QA 2026-05-06 발견.
+**Depends on**: 없음
+**Blocked by**: 없음
+
+---
+
 ## 완료 항목
 
 <!-- 완료 시 날짜와 커밋 해시 기록 -->
@@ -299,6 +310,21 @@ if (cfIp) return cfIp.trim();
 ### ✅ TODO-007: CSS 토큰 --krds-* 프리픽스 통일
 **완료**: 2026-05-04, commit 3a77440
 **Result**: Python re.sub + `(?![-\w])` 음수 전방탐색으로 접두어 충돌 없이 3개 파일 전체 교체. focus ring: textarea outline:none 제거 → :focus outline 추가, arc-search outline:none → :focus-visible outline 추가.
+
+### ✅ ISSUE-003: archive.html recommendation 필드 항상 빈값
+**완료**: 2026-05-06, commit ba22fde
+**What**: getField('권장 개선안')이 Cycle 8+ 항목(수정 제안/개선안 라벨 사용)을 매칭 못해 222개 카드 모두 recommendation 빈값
+**Fix**: `recommendation: getField('권장 개선안') || getField('수정 제안') || getField('개선안')`
+
+### ✅ lint.html 중복 CSP 헤더 (DOMPurify CDN 차단)
+**완료**: 2026-05-06, commit eac62c2
+**What**: 두 번째 `<meta Content-Security-Policy>` 태그가 첫 번째를 덮어써 cdn.jsdelivr.net이 script-src에서 제거됨
+**Fix**: Python 문자열 치환으로 중복 태그 제거
+
+### ✅ api/generate.js 레이트 리밋 Map 크기 버그
+**완료**: 2026-05-06, commit eac62c2
+**What**: rateLimitMap.set() 가 RATE_LIMIT_MAP_MAX 검사 전에 호출되어 Map 무한 증가 가능
+**Fix**: `if (rateLimitMap.size < RATE_LIMIT_MAP_MAX)` 가드 추가
 
 ### ✅ TODO-008: Danger 색상 통일 (#d9342b)
 **완료**: 2026-05-02 (lint/archive/design-system), 2026-05-04 (generator — commit 8dfdf3a)
