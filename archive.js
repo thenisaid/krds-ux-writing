@@ -45,7 +45,7 @@
         cycle: cycle,
         original: getField('원문'),
         problem: getField('문제'),
-        recommendation: getField('권장 개선안')
+        recommendation: getField('권장 개선안') || getField('수정 제안') || getField('개선안')
       });
     }
     return issues;
