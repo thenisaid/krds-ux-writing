@@ -146,7 +146,7 @@ lsof -ti:8300 | xargs kill -9 2>/dev/null
 
 ---
 
-## 현재 상태 (2026-04-07)
+## 현재 상태 (2026-05-06, v0.1.0.1)
 
 ### 완료
 - US-001~010 구현
@@ -168,6 +168,12 @@ lsof -ti:8300 | xargs kill -9 2>/dev/null
   - `onclick` 73개 → `addEventListener` / 이벤트 위임 교체
   - Pretendard CDN SRI(`sha384-...`) + localStorage whitelist 추가
   - Chrome Extension: manifest CSP 명시, innerHTML→DOM API, 섹션 allowlist
+
+- **v0.1.0.1 버그 수정** (2026-05-06, commit eac62c2~cac9722)
+  - `api/generate.js`: rate-limit Map 크기 버그 수정 (OOM 방지)
+  - `lint.html`: 중복 CSP meta 태그 제거 → DOMPurify CDN 로딩 복구
+  - `archive.js`: recommendation 필드 폴백 체인 추가 (`권장 개선안` || `수정 제안` || `개선안`)
+  - `VERSION` 파일 생성 (`0.1.0.1`), `CHANGELOG.md` 생성
 
 ### 남은 작업 (기존 site 유지보수)
 - 없음 (모든 계획 항목 완료)
