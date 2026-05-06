@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.0.2] - 2026-05-07
+
+### Quality Assurance
+
+- **Regression verification pass** (Standard tier, 94/100): All 3 High-severity fixes from v0.1.0.1 confirmed intact — ISSUE-001 (rate-limit Map OOM), ISSUE-002 (duplicate CSP blocking DOMPurify), ISSUE-003 (archive recommendation fallback chain)
+- **All 665 archive cards** verified: recommendation fields populated across 정부24 (222), 홈택스 (221), 전자가족관계등록 (222)
+- **lint.html**: share link enable/disable threshold (>500 chars), `?t=` URL param auto-load, filter tabs all confirmed functional
+- **generator/index.html**: cancel 2-step flow, fallback template, dropdown keyboard nav confirmed functional
+- No new regressions detected; health score maintained at 94/100
+
 ## [0.1.0.1] - 2026-05-06
 
 ### Fixed
