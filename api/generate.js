@@ -83,6 +83,9 @@ function jsonResponse(data, status) {
 }
 
 function getClientIp(request) {
+  // CF-Connecting-IP: Cloudflare 프록시 뒤에 배포 시 실제 클라이언트 IP (최우선)
+  const cfIp = request.headers.get('cf-connecting-ip');
+  if (cfIp) return cfIp.trim();
   // x-real-ip: Vercel이 설정하는 실제 클라이언트 IP (스푸핑 불가)
   // x-forwarded-for 마지막 값: 신뢰할 수 있는 마지막 프록시가 추가한 IP
   const realIp = request.headers.get('x-real-ip')?.trim();

@@ -423,25 +423,15 @@
 
   /* ── 취소하기 ── */
   cancelBtn.addEventListener('click', function () {
-    if (cancelled) {
-      /* 두 번째 클릭: 처음으로 돌아가기 */
-      cancelled = false;
-      cancelBtn.textContent = '취소하기';
-      generatingStatus.textContent = '가이드라인을 생성하고 있습니다…';
-      showScreen('screen-input');
-      return;
-    }
-
     if (abortController) {
       abortController.abort();
       abortController = null;
     }
-    cancelled = true;
+    cancelled = false;
     streamOutput.setAttribute('aria-busy', 'false');
     statusTimers.forEach(function(t) { clearTimeout(t); });
     statusTimers = [];
-    generatingStatus.textContent = '취소되었습니다. 처음으로 돌아가려면 아래 버튼을 눌러주세요.';
-    cancelBtn.textContent = '처음으로 돌아가기';
+    showScreen('screen-input');
   });
 
   /* ── 기본 양식 사용하기 ── */
