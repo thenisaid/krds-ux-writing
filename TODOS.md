@@ -7,15 +7,6 @@
 
 ## 열린 항목
 
-### TODO-009: Generator API 배포 설정
-**Priority**: P1
-**What**: `generator/index.html`의 `fetch('/api/generate')` 호출이 GitHub Pages에서 405 Method Not Allowed를 반환. `functions/api/generate.js` (Cloudflare Pages) 및 `api/generate.js` (Vercel)이 작성되어 있으나 배포되지 않음.
-**Why**: AI 가이드라인 생성 기능(SSE 스트리밍)이 라이브에서 완전히 비작동. "기본 양식 사용하기" 폴백은 동작하지만 AI 생성이 핵심 기능.
-**Context**: `wrangler.toml` (Cloudflare Pages용, `pages_build_output_dir="."`) 구성 완료. Cloudflare Pages 계정 연결 및 `wrangler pages deploy .` 실행 필요. 또는 Vercel 프로젝트로 배포 시 `api/generate.js` 자동 인식. GitHub Pages는 서버사이드 함수 미지원.
-**How to fix**: `cd /Users/7457948/KRDS && wrangler pages deploy .` (CF Pages) 또는 Vercel CLI로 배포.
-**Blocked by**: Cloudflare/Vercel 계정 및 환경변수 설정 (ANTHROPIC_API_KEY 등)
-
----
 
 ### TODO-001: HWP/Word 다운로드 포맷 지원
 **Priority**: P2
@@ -280,6 +271,18 @@ if (cfIp) return cfIp.trim();
 ---
 
 ## 완료 항목
+
+### ✅ TODO-009: Generator API 배포 설정 — 현행 유지 결정
+**완료**: 2026-05-08
+**Decision**: GitHub Pages + "기본 양식 사용하기" 폴백으로 현행 유지. AI 생성 기능(SSE)은 외부 Anthropic API 키 없이는 공개 배포 불가 (사내 HMG 프록시 토큰은 외부 서비스에서 사용 불가). Cloudflare Pages / Vercel 배포는 별도 Anthropic 계정 확보 시점에 재검토.
+
+### ✅ TODO-009 IP: IP 헤더 일관성 (CF-Connecting-IP)
+**완료**: 2026-05-08, commit e2acb22
+**Result**: `api/generate.js` `getClientIp()`에 `cf-connecting-ip` 최우선 검사 추가.
+
+### ✅ UX-GEN-001: Generator 취소 플로우 간소화
+**완료**: 2026-05-08, commit e2acb22
+**Result**: `generator/app.js` 취소 버튼 2단계 → 1단계 (클릭 즉시 초기 폼 복귀).
 
 <!-- 완료 시 날짜와 커밋 해시 기록 -->
 
