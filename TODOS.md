@@ -7,6 +7,20 @@
 
 ## 열린 항목
 
+### TODO-011: Anthropic API 월 사용량 한도 설정
+**Priority**: P2
+**What**: Anthropic 대시보드 → Settings → Billing → Usage limits에서 월 하드 리밋($10-20) 설정
+**Why**: Vercel 배포 후 공개 URL로 API가 노출됨. 레이트 리밋(5회/IP/시간)은 in-memory Map 기반으로 cold start 시 초기화됨(TODO-002). 의도치 않은 비용 폭주 방어 최후의 안전망.
+**Pros**:
+- 비용 폭주 방지 (한도 초과 시 API가 429 반환)
+- 구현 비용: ~5분 (Anthropic 대시보드에서 수동)
+**Cons**:
+- 한도 초과 시 정상 사용자도 차단됨
+**Context**: Vercel 배포(2026-05-08) 이후 즉시 적용 권장. plan-ceo-review Section 3 (Security) 에서 발견.
+**Depends on**: Vercel 배포 완료
+**Blocked by**: 없음
+
+---
 
 ### TODO-001: HWP/Word 다운로드 포맷 지원
 **Priority**: P2

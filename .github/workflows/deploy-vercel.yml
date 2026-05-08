@@ -1,0 +1,68 @@
+name: Vercel 배포
+
+# main 브랜치에 push 할 때마다 Vercel Production 배포
+# 필요 GitHub Secrets:
+#   VERCEL_TOKEN       — Vercel 계정 토큰 (Settings → Tokens)
+#   VERCEL_ORG_ID      — Vercel org/account ID (vercel.json 또는 .vercel/project.json에서 확인)
+#   VERCEL_PROJECT_ID  — Vercel 프로젝트 ID (동일)
+# ANTHROPIC_API_KEY는 Vercel 대시보드 → Project → Settings → Environment Variables에 설정
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # 수동 실행 허용
+
+jobs:
+  deploy:
+    name: Vercel Production 배포
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Node.js 설정
+        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+        with:
+          node-version: '20'
+
+      - name: Vercel CLI 설치
+        run: npm install --global vercel@latest
+
+      - name: Vercel 프로젝트 환경 설정 Pull
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Vercel 빌드
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Vercel Production 배포
+        id: deploy
+        run: |
+          DEPLOY_URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "deploy_url=$DEPLOY_URL" >> $GITHUB_OUTPUT
+          echo "배포 완료: $DEPLOY_URL"
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: 배포 결과 요약
+        if: always()
+        run: |
+          {
+            echo "## 🚀 Vercel 배포 결과"
+            echo ""
+            echo "| 항목 | 값 |"
+            echo "|------|---|"
+            echo "| 브랜치 | \`${{ github.ref_name }}\` |"
+            echo "| 커밋 | \`${{ github.sha }}\` |"
+            echo "| 배포 URL | ${{ steps.deploy.outputs.deploy_url }} |"
+            echo ""
+            echo "📌 AI 생성 기능은 Vercel URL에서만 작동합니다 (GitHub Pages는 정적 파일 제공 유지)."
+          } >> $GITHUB_STEP_SUMMARY
