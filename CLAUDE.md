@@ -204,3 +204,21 @@ print(f\"sha256-{h}\")
 - ✅ 부록 B 자가진단 체크리스트 완성 — 23개 항목, 5개 섹션 (무번역·정보핵심화·심리적안전망·보이스톤·접근성)
 - ✅ **principles.md 전 챕터 완성** (2026-05-02, 2,974줄) — 2.2·3장·4.2·4.3·5장·6장·7장·부록A·C 전체 포함
 - ✅ 다음 단계: index.html 전면 재작성 예정 (SeMA 납품 완료 이후)
+
+## Skill routing
+
+When the user's request matches an available skill, invoke it via the Skill tool. When in doubt, invoke the skill.
+
+Key routing rules:
+- Product ideas/brainstorming → invoke /office-hours
+- Strategy/scope → invoke /plan-ceo-review
+- Architecture → invoke /plan-eng-review
+- Design system/plan review → invoke /design-consultation or /plan-design-review
+- Full review pipeline → invoke /autoplan
+- Bugs/errors → invoke /investigate
+- QA/testing site behavior → invoke /qa or /qa-only
+- Code review/diff check → invoke /review
+- Visual polish → invoke /design-review
+- Ship/deploy/PR → invoke /ship or /land-and-deploy
+- Save progress → invoke /context-save
+- Resume context → invoke /context-restore
