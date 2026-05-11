@@ -1,1030 +1,290 @@
+// KRDS UX Writing 가이드라인 v2.0
+// Doc site script: theme, sidebar nav, scroll spy, search
 
-// ===== SEARCH DATA & FUNCTIONS =====
-let searchData = [];
+'use strict';
 
-function buildSearchIndex() {
-  const results = [];
-  // 섹션 ID → 태그 이름 매핑
-  const sectionLabels = {
-    preface: '서문',
-    chapter1: '1장. 파운데이션',
-    chapter2: '2장. 맥락별 가이드',
-    chapter3: '3장. 파생 적용',
-    checklist: '체크리스트'
-  };
+// ─── Theme ──────────────────────────────────────────
+function initTheme() {
+  const toggle = document.getElementById('theme-toggle');
+  const iconLight = document.getElementById('theme-icon-light');
+  const iconDark = document.getElementById('theme-icon-dark');
+  if (!toggle) return;
 
-  const sections = ['preface','chapter1','chapter2','chapter3','checklist'];
-  sections.forEach(sectionId => {
-    const section = document.getElementById(sectionId);
-    if (!section) return;
-    const sectionTag = sectionLabels[sectionId] || sectionId;
-
-    // h2, h3, h4 헤딩 인덱싱
-    section.querySelectorAll('h2, h3, h4').forEach(heading => {
-      const text = heading.textContent.trim();
-      if (!text) return;
-      results.push({ id: sectionId, tag: sectionTag, text: text, preview: text });
-    });
-
-    // 행정어 사전 테이블 셀 인덱싱
-    section.querySelectorAll('.word-table td, .word-table th').forEach(cell => {
-      const text = cell.textContent.trim();
-      if (text.length < 2) return;
-      results.push({ id: sectionId, tag: sectionTag + ' · 행정어 사전', text: text, preview: text.slice(0, 60) });
-    });
-
-    // 원칙 카드 제목 인덱싱 (principle-title)
-    section.querySelectorAll('.principle-title').forEach(el => {
-      const text = el.textContent.trim();
-      if (!text) return;
-      results.push({ id: sectionId, tag: sectionTag, text: text, preview: text });
-    });
-
-    // 원칙 카드 본문 인덱싱
-    section.querySelectorAll('.principle-body, .principle-card p, .subsection p').forEach(p => {
-      const text = p.textContent.trim();
-      if (text.length < 10) return;
-      results.push({ id: sectionId, tag: sectionTag, text: text, preview: text.slice(0, 80) });
-    });
-  });
-
-  // 히어로 섹션 원칙 카드 제목 인덱싱 (I-1: 3대 원칙명 검색 포함)
-  const heroEl = document.getElementById('hero');
-  if (heroEl) {
-    heroEl.querySelectorAll('.hero-rule-card .hero-rule-new').forEach(el => {
-      const text = el.textContent.trim();
-      if (!text) return;
-      results.push({ id: 'chapter1', tag: '3대 원칙', text: text, preview: text });
-    });
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('krds-theme', t);
+    if (iconLight) iconLight.style.display = t === 'dark' ? 'none' : '';
+    if (iconDark)  iconDark.style.display  = t === 'dark' ? '' : 'none';
+    toggle.setAttribute('aria-label', t === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환');
   }
 
-  searchData = results;
-}
+  // Init icon state
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(current);
 
-function trapFocus(modalEl) {
-  const focusable = modalEl.querySelectorAll(
-    'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])'
-  );
-  const first = focusable[0];
-  const last = focusable[focusable.length - 1];
-  modalEl._trapHandler = function(e) {
-    if (e.key !== 'Tab') return;
-    if (e.shiftKey) {
-      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
-    } else {
-      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
-    }
-  };
-  modalEl.addEventListener('keydown', modalEl._trapHandler);
-}
-
-function releaseFocus(modalEl) {
-  if (modalEl._trapHandler) {
-    modalEl.removeEventListener('keydown', modalEl._trapHandler);
-    modalEl._trapHandler = null;
-  }
-}
-
-function openSearch() {
-  const modal = document.getElementById('searchModal');
-  modal.classList.add('open');
-  setTimeout(() => {
-    document.getElementById('searchInput').focus();
-    trapFocus(modal);
-  }, 50);
-}
-
-function closeSearch() {
-  const modal = document.getElementById('searchModal');
-  modal.classList.remove('open');
-  releaseFocus(modal);
-  document.getElementById('searchInput').value = '';
-  document.getElementById('searchResults').innerHTML = '';
-}
-
-// ===== PERSONA TAB SWITCHING =====
-function switchPersonaTab(name) {
-  // 모든 탭 버튼 비활성화
-  document.querySelectorAll('.persona-tab').forEach(b => {
-    b.classList.remove('active');
-    b.setAttribute('aria-selected', 'false');
-  });
-  // 모든 패널 숨기기
-  document.querySelectorAll('.persona-panel').forEach(p => {
-    p.classList.remove('active');
-    p.hidden = true;
-  });
-  // 선택된 탭 활성화
-  const activeBtn = document.getElementById('tab-btn-' + name);
-  if (activeBtn) {
-    activeBtn.classList.add('active');
-    activeBtn.setAttribute('aria-selected', 'true');
-  }
-  // 선택된 패널 표시
-  const activePanel = document.getElementById('tab-' + name);
-  if (activePanel) {
-    activePanel.classList.add('active');
-    activePanel.hidden = false;
-  }
-}
-
-// ===== SCROLL NAVIGATION =====
-function scrollToSection(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const top = el.getBoundingClientRect().top + window.scrollY - 86;
-  window.scrollTo({ top, behavior: 'smooth' });
-}
-
-// ===== GNB SCROLL EFFECT =====
-function initGnbScroll() {
-  const gnb = document.getElementById('gnb');
-  if (!gnb) return;
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 10) {
-      gnb.classList.add('scrolled');
-    } else {
-      gnb.classList.remove('scrolled');
-    }
-  }, { passive: true });
-}
-
-// ===== SCROLL PROGRESS BAR =====
-function initScrollProgress() {
-  const fill = document.getElementById('scrollFill');
-  if (!fill) return;
-  window.addEventListener('scroll', () => {
-    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
-    fill.style.width = Math.min(pct, 100) + '%';
-  }, { passive: true });
-}
-
-// ===== INTERSECTION OBSERVER (REVEAL + STAGGER) =====
-function initReveal() {
-  const revealObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        revealObs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0, rootMargin: '0px 0px 120px 0px' });
-
-  const staggerObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        const items = e.target.querySelectorAll('.stagger-item');
-        items.forEach((item, i) => {
-          setTimeout(() => item.classList.add('visible'), i * 80);
-        });
-        staggerObs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.08 });
-
-  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
-  const grid = document.querySelector('.composition-grid');
-  if (grid) staggerObs.observe(grid);
-
-  // 뷰포트 위(이미 지나친)와 뷰포트 안(현재 보이는) 요소를 즉시 visible 처리
-  function revealInAndAbove() {
-    const vh = window.innerHeight;
-    document.querySelectorAll('.reveal:not(.visible)').forEach(el => {
-      const top = el.getBoundingClientRect().top;
-      // 뷰포트 위(bottom<0) 또는 뷰포트 안(top < vh)인 요소
-      if (top < vh) el.classList.add('visible');
-    });
-    const g = document.querySelector('.composition-grid');
-    if (g) {
-      const top = g.getBoundingClientRect().top;
-      if (top < vh) {
-        g.querySelectorAll('.stagger-item:not(.visible)').forEach((item, i) => {
-          setTimeout(() => item.classList.add('visible'), i * 80);
-        });
-      }
-    }
-  }
-
-  // 앵커 이동 후 스크롤 완료 시점에 실행
-  // hashchange: 앵커 클릭 → 스크롤 완료 후 100ms 대기
-  window.addEventListener('hashchange', () => {
-    setTimeout(revealInAndAbove, 100);
-  });
-  // 초기 앵커(URL에 이미 #hash 있는 경우): load 후 실행
-  window.addEventListener('load', revealInAndAbove, { once: true });
-}
-
-// ===== CHECKLIST =====
-function toggleCheck(item) {
-  const box = item.querySelector('.check-box');
-  if (!box) return; // Skip group title items (no .check-box inside)
-  const isChecked = item.classList.toggle('checked');
-  box.setAttribute('aria-checked', isChecked ? 'true' : 'false');
-  if (isChecked) {
-    box.style.background = 'var(--success)';
-    box.style.borderColor = 'var(--success)';
-    box.style.color = 'white';
-  } else {
-    box.style.background = 'transparent';
-    box.style.borderColor = 'var(--border)';
-    box.style.color = 'transparent';
-  }
-  const all = document.querySelectorAll('.check-item');
-  const actual = document.querySelectorAll('.check-box').length;
-  const checkedActual = document.querySelectorAll('.check-item.checked .check-box').length;
-  const complete = document.getElementById('checklistComplete');
-  if (complete) {
-    if (checkedActual === actual && checkedActual > 0) {
-      complete.classList.add('show');
-    } else {
-      complete.classList.remove('show');
-    }
-  }
-  // Save state to localStorage
-  all.forEach((el, idx) => {
-    localStorage.setItem('krds-checklist-' + idx, el.classList.contains('checked') ? 'checked' : '');
+  toggle.addEventListener('click', () => {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
   });
 }
 
-function resetChecklist() {
-  const all = document.querySelectorAll('.check-item');
-  all.forEach((item, idx) => {
-    item.classList.remove('checked');
-    const box = item.querySelector('.check-box');
-    if (box) box.setAttribute('aria-checked', 'false');
-    if (box) {
-      box.style.background = 'transparent';
-      box.style.borderColor = 'var(--border)';
-      box.style.color = 'transparent';
-    }
-    localStorage.removeItem('krds-checklist-' + idx);
-  });
-  const complete = document.getElementById('checklistComplete');
-  if (complete) complete.classList.remove('show');
-}
+// ─── Sidebar mobile toggle ───────────────────────────
+function initSidebarToggle() {
+  const btn = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (!btn || !sidebar) return;
 
-function initChecklist() {
-  const all = document.querySelectorAll('.check-item');
-  const actual = document.querySelectorAll('.check-box').length;
-  let checkedCount = 0;
-  all.forEach((item, idx) => {
-    const box = item.querySelector('.check-box');
-    if (!box) return; // Skip group title items
-    const saved = localStorage.getItem('krds-checklist-' + idx);
-    if (saved === 'checked') {
-      item.classList.add('checked');
-      box.setAttribute('aria-checked', 'true');
-      box.style.background = 'var(--success)';
-      box.style.borderColor = 'var(--success)';
-      box.style.color = 'white';
-      checkedCount++;
-    }
-  });
-  const complete = document.getElementById('checklistComplete');
-  if (complete && actual > 0 && checkedCount === actual) {
-    complete.classList.add('show');
-  }
-}
-
-// ===== COPY FUNCTION =====
-// ===== ANCHOR LINK COPY =====
-function copyAnchorLink(sectionId) {
-  const url = window.location.href.split('#')[0] + '#' + sectionId;
-  navigator.clipboard.writeText(url).then(() => {
-    let toast = document.getElementById('anchor-toast');
-    toast.classList.add('show');
-    clearTimeout(toast._timer);
-    toast._timer = setTimeout(() => { toast.classList.remove('show'); }, 2500);
-  });
-}
-
-function initAnchorButtons() {
-  const toast = document.createElement('div');
-  toast.id = 'anchor-toast';
-  toast.textContent = '🔗 링크 복사됨';
-  document.body.appendChild(toast);
-
-  document.querySelectorAll('.guideline-section[id]').forEach(section => {
-    const h2 = section.querySelector('h2.guideline-title');
-    if (!h2) return;
-    const btn = document.createElement('button');
-    btn.className = 'anchor-btn';
-    btn.setAttribute('aria-label', '섹션 링크 복사');
-    btn.setAttribute('title', '섹션 링크 복사');
-    btn.innerHTML = '🔗';
-    btn.addEventListener('click', () => copyAnchorLink(section.id));
-    h2.appendChild(btn);
-  });
-}
-
-function cp(btn, text) {
-  function onSuccess() {
-    const prev = btn.textContent;
-    btn.textContent = '✓ 복사됨';
-    btn.classList.add('copied');
-    btn.animate([
-      { transform: 'scale(1)' },
-      { transform: 'scale(1.1)' },
-      { transform: 'scale(0.97)' },
-      { transform: 'scale(1)' }
-    ], { duration: 300, easing: 'ease-out' });
-    setTimeout(() => {
-      btn.textContent = prev;
-      btn.classList.remove('copied');
-    }, 1500);
-  }
-  function onFail() {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;';
-    document.body.appendChild(ta);
-    ta.select();
-    const ok = document.execCommand('copy');
-    document.body.removeChild(ta);
-    if (ok) { onSuccess(); }
-    else { alert('복사에 실패했습니다. 텍스트를 직접 선택하여 복사해 주세요.'); }
-  }
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(onSuccess).catch(onFail);
-  } else {
-    onFail();
-  }
-}
-
-// ===== DARK MODE =====
-function updateThemeIcon(theme) {
-  const sun = document.querySelector('.icon-sun');
-  const moon = document.querySelector('.icon-moon');
-  if (!sun || !moon) return;
-  if (theme === 'dark') {
-    sun.style.display = 'none';
-    moon.style.display = 'block';
-  } else {
-    sun.style.display = 'block';
-    moon.style.display = 'none';
-  }
-  const btn = document.getElementById('themeToggle');
-  if (btn) btn.setAttribute('aria-label', theme === 'dark' ? '라이트모드로 전환' : '다크모드로 전환');
-}
-
-function toggleTheme() {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const next = isDark ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('krds-theme', next);
-  updateThemeIcon(next);
-}
-
-(function initTheme() {
-  const saved = localStorage.getItem('krds-theme') ||
-    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  document.documentElement.setAttribute('data-theme', saved);
-  document.addEventListener('DOMContentLoaded', () => {
-    updateThemeIcon(saved);
-  });
-})();
-
-// ===== OS 단축키 감지 =====
-(function initSearchShortcutHint() {
-  const isMac = navigator.platform.includes('Mac') || navigator.userAgent.includes('Mac');
-  const shortcutKey = isMac ? '⌘K' : 'Ctrl+K';
-  document.addEventListener('DOMContentLoaded', function() {
-    const hint = document.getElementById('searchShortcutHint');
-    if (hint) hint.textContent = shortcutKey + ' 열기';
-    const searchBtn = document.getElementById('searchBtn');
-    if (searchBtn) searchBtn.setAttribute('aria-label', '검색 열기 (' + shortcutKey + ')');
-  });
-})();
-
-// ===== DOMCONTENTLOADED: SEARCH MODAL =====
-document.addEventListener('DOMContentLoaded', function() {
-  const modal = document.getElementById('searchModal');
-  if (modal) modal.addEventListener('click', e => { if (e.target === e.currentTarget) closeSearch(); });
-  const input = document.getElementById('searchInput');
-  if (!input) return;
-
-  const highlight = (text, query) => {
-    const escaped = escHtml(text);
-    const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-    return escaped.replace(regex, m => `<mark>${m}</mark>`);
-  };
-
-  function renderResults(q) {
-    const res = document.getElementById('searchResults');
-    if (!q) { res.innerHTML = ''; return; }
-    const hits = searchData.filter(d => d.text.toLowerCase().includes(q) || d.tag.toLowerCase().includes(q));
-    if (!hits.length) {
-      res.innerHTML = '<div style="padding:20px 24px;color:var(--text-muted);font-size:14px">검색 결과가 없습니다.</div>';
-      return;
-    }
-    res.innerHTML = hits.map((h, i) => `
-      <div class="search-result-item" role="option" tabindex="-1" data-section="${h.id}"
-           data-section-id="${h.id}">
-        <div class="search-result-tag">${highlight(h.tag, q)}</div>
-        <div class="search-result-text">${highlight(h.preview || h.tag, q)}</div>
-      </div>`).join('');
-  }
-
-  input.addEventListener('input', function() {
-    renderResults(this.value.trim().toLowerCase());
-  });
-
-  // 검색 입력창에서 ArrowDown → 첫 번째 결과로 포커스
-  input.addEventListener('keydown', function(e) {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      const first = document.querySelector('#searchResults .search-result-item');
-      if (first) first.focus();
-    }
-  });
-});
-
-// ===== 검색 결과 키보드 내비게이션 =====
-function handleResultKey(e, el) {
-  const items = Array.from(document.querySelectorAll('#searchResults .search-result-item'));
-  const idx = items.indexOf(el);
-  if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    if (idx < items.length - 1) items[idx + 1].focus();
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    if (idx > 0) items[idx - 1].focus();
-    else document.getElementById('searchInput').focus();
-  } else if (e.key === 'Enter') {
-    e.preventDefault();
-    el.click();
-  }
-}
-
-// ===== KEYBOARD SHORTCUTS =====
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
-  if (e.key === 'Escape') { closeSearch(); closeMobileMenu(); }
-});
-
-// ===== MOBILE MENU =====
-function toggleMobileMenu() {
-  const menu = document.getElementById('mobileMenu');
-  const btn = document.getElementById('mobileMenuBtn');
-  if (!menu) return;
-  const isOpen = menu.classList.contains('open');
-  if (isOpen) {
-    closeMobileMenu();
-  } else {
-    menu.classList.add('open');
-    menu.setAttribute('aria-hidden', 'false');
+  function open() {
+    sidebar.classList.add('open');
+    backdrop.classList.add('open');
     btn.setAttribute('aria-expanded', 'true');
-    btn.querySelector('.icon-hamburger').style.display = 'none';
-    btn.querySelector('.icon-close').style.display = 'block';
     document.body.style.overflow = 'hidden';
-    trapFocus(menu);
-    const firstFocusable = menu.querySelector(
-      'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])'
-    );
-    if (firstFocusable) firstFocusable.focus();
   }
-}
-
-function closeMobileMenu() {
-  const menu = document.getElementById('mobileMenu');
-  const btn = document.getElementById('mobileMenuBtn');
-  if (!menu || !menu.classList.contains('open')) return;
-  releaseFocus(menu);
-  menu.classList.remove('open');
-  menu.setAttribute('aria-hidden', 'true');
-  if (btn) {
+  function close() {
+    sidebar.classList.remove('open');
+    backdrop.classList.remove('open');
     btn.setAttribute('aria-expanded', 'false');
-    btn.querySelector('.icon-hamburger').style.display = 'block';
-    btn.querySelector('.icon-close').style.display = 'none';
-    btn.focus();
+    document.body.style.overflow = '';
   }
-  document.body.style.overflow = '';
-}
 
-// ===== DOMCONTENTLOADED: ANCHOR LINKS =====
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      const id = a.getAttribute('href').slice(1);
-      if (!id) return;
-      const el = document.getElementById(id);
-      if (el) {
-        e.preventDefault();
-        const top = el.getBoundingClientRect().top + window.scrollY - 86;
-        window.scrollTo({ top, behavior: 'smooth' });
-      }
+  btn.addEventListener('click', () => {
+    sidebar.classList.contains('open') ? close() : open();
+  });
+  backdrop.addEventListener('click', close);
+
+  // Close on nav link click (mobile)
+  sidebar.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      if (window.innerWidth <= 900) close();
     });
   });
-});
 
-// ===== DOMCONTENTLOADED: INIT =====
-document.addEventListener('DOMContentLoaded', function() {
-  initGnbScroll();
-  initScrollProgress();
-  initReveal();
-  initChecklist();
-});
-
-// ===== GNB DROPDOWN TOGGLE =====
-function closeAllGnbDropdowns() {
-  document.querySelectorAll('.gnb-item.has-dropdown').forEach(i => {
-    i.classList.remove('open');
-    const b = i.querySelector('.gnb-link');
-    if (b) b.setAttribute('aria-expanded', 'false');
+  // Close on Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && sidebar.classList.contains('open')) close();
   });
 }
 
-function openGnbDropdown(item, btn) {
-  closeAllGnbDropdowns();
-  item.classList.add('open');
-  btn.setAttribute('aria-expanded', 'true');
-}
+// ─── Scroll Spy (sidebar active highlight) ───────────
+function initScrollSpy() {
+  const allLinks = document.querySelectorAll('.sidebar-chapter-link, .sidebar-section-link');
+  if (!allLinks.length) return;
 
-function initGnbDropdowns() {
-  document.querySelectorAll('.gnb-item.has-dropdown .gnb-link').forEach(btn => {
-    const item = btn.closest('.gnb-item');
-    const dropItems = () => Array.from(item.querySelectorAll('.gnb-dropdown-item'));
+  // Build map: slug → sidebar link
+  const linkMap = {};
+  allLinks.forEach(link => {
+    const href = link.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      linkMap[href.slice(1)] = link;
+    }
+  });
 
-    // 클릭 토글
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isOpen = item.classList.contains('open');
-      if (isOpen) { closeAllGnbDropdowns(); } else { openGnbDropdown(item, btn); }
-    });
+  // Get all headings in content
+  const headings = Array.from(
+    document.querySelectorAll('.content-area h2, .content-area h3')
+  ).filter(h => h.id);
 
-    // 키보드: ArrowDown/Up → 드롭다운 열고 포커스
-    btn.addEventListener('keydown', (e) => {
-      const isOpen = item.classList.contains('open');
-      const items = dropItems();
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        if (!isOpen) openGnbDropdown(item, btn);
-        if (items.length) items[0].focus();
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        if (!isOpen) openGnbDropdown(item, btn);
-        if (items.length) items[items.length - 1].focus();
-      } else if (e.key === 'Escape') {
-        closeAllGnbDropdowns();
-      }
-    });
+  let activeSlug = null;
 
-    // 드롭다운 아이템 키보드 내비게이션
-    item.querySelectorAll('.gnb-dropdown-item').forEach(link => {
-      link.addEventListener('keydown', (e) => {
-        const items = dropItems();
-        const idx = items.indexOf(link);
-        if (e.key === 'ArrowDown') {
-          e.preventDefault();
-          if (idx < items.length - 1) items[idx + 1].focus();
-        } else if (e.key === 'ArrowUp') {
-          e.preventDefault();
-          if (idx > 0) items[idx - 1].focus(); else btn.focus();
-        } else if (e.key === 'Escape') {
-          e.preventDefault();
-          closeAllGnbDropdowns();
-          btn.focus();
-        } else if (e.key === 'Tab') {
-          // Tab/Shift+Tab으로 드롭다운 벗어날 때 닫기
-          const leaving = (e.shiftKey && idx === 0) || (!e.shiftKey && idx === items.length - 1);
-          if (leaving) closeAllGnbDropdowns();
+  function setActive(slug) {
+    if (slug === activeSlug) return;
+    activeSlug = slug;
+    allLinks.forEach(l => l.classList.remove('active'));
+    if (slug && linkMap[slug]) {
+      linkMap[slug].classList.add('active');
+      // Scroll sidebar link into view
+      const link = linkMap[slug];
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar) {
+        const linkRect = link.getBoundingClientRect();
+        const sidebarRect = sidebar.getBoundingClientRect();
+        if (linkRect.top < sidebarRect.top || linkRect.bottom > sidebarRect.bottom) {
+          link.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         }
+      }
+    }
+  }
+
+  const headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 56;
+
+  function updateActive() {
+    const scrollY = window.scrollY + headerH + 32;
+    let current = null;
+    for (const h of headings) {
+      if (h.offsetTop <= scrollY) {
+        current = h.id;
+      }
+    }
+    setActive(current);
+  }
+
+  window.addEventListener('scroll', updateActive, { passive: true });
+  updateActive();
+}
+
+// ─── Search ──────────────────────────────────────────
+function initSearch() {
+  const input = document.getElementById('search-input');
+  const overlay = document.getElementById('search-overlay');
+  if (!input || !overlay) return;
+
+  // Build search index from DOM
+  let searchIndex = null;
+
+  function buildIndex() {
+    if (searchIndex) return searchIndex;
+    const items = [];
+    const contentArea = document.getElementById('content-area');
+    if (!contentArea) return [];
+
+    // Index headings
+    contentArea.querySelectorAll('h2, h3, h4').forEach(h => {
+      const text = h.textContent.replace('¶', '').trim();
+      if (!text || text.length < 2) return;
+      items.push({
+        id: h.id,
+        text,
+        type: h.tagName.toLowerCase(),
+        excerpt: ''
       });
     });
-  });
 
-  document.addEventListener('click', closeAllGnbDropdowns);
-}
+    // Index paragraphs (link to nearest preceding heading)
+    let lastHeadingId = '';
+    contentArea.querySelectorAll('h2, h3, h4, p, li').forEach(el => {
+      if (el.matches('h2,h3,h4')) {
+        lastHeadingId = el.id || lastHeadingId;
+        return;
+      }
+      const text = el.textContent.trim();
+      if (text.length < 15) return;
+      items.push({
+        id: lastHeadingId,
+        text: text.slice(0, 200),
+        type: 'text',
+        excerpt: text.slice(0, 100)
+      });
+    });
 
-// ===== SCROLL SPY =====
-function initScrollSpy() {
-  // Map section id → dropdown item href
-  const sectionToDropdownMap = {
-    principles: '#principles',
-    voice: '#voice',
-    tone: '#tone',
-    button: '#button',
-    form: '#form',
-    error: '#error',
-    help: '#help',
-    loading: '#loading',
-    accessibility: '#accessibility',
-    checklist: '#checklist'
-  };
-
-  function clearActiveStates() {
-    document.querySelectorAll('.gnb-item.active').forEach(i => i.classList.remove('active'));
-    document.querySelectorAll('.gnb-dropdown-item.active').forEach(a => a.classList.remove('active'));
+    searchIndex = items;
+    return items;
   }
 
-  function setActiveSection(sectionId) {
-    clearActiveStates();
-    const href = sectionToDropdownMap[sectionId];
-    if (!href) return;
+  function highlight(text, query) {
+    if (!query) return escHtml(text);
+    const escaped = escHtml(text);
+    const pattern = escHtml(query).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return escaped.replace(new RegExp(pattern, 'gi'), m => `<mark class="search-result-mark">${m}</mark>`);
+  }
 
-    // Find the dropdown item with matching href
-    const dropdownItem = document.querySelector('.gnb-dropdown-item[href="' + href + '"]');
-    if (dropdownItem) {
-      dropdownItem.classList.add('active');
-      // Also activate the parent gnb-item
-      const parentItem = dropdownItem.closest('.gnb-item');
-      if (parentItem) parentItem.classList.add('active');
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function doSearch(query) {
+    query = query.trim();
+    if (!query || query.length < 2) {
+      overlay.classList.remove('visible');
+      return;
+    }
+
+    const index = buildIndex();
+    const q = query.toLowerCase();
+    const seen = new Set();
+    const results = [];
+
+    for (const item of index) {
+      if (results.length >= 12) break;
+      if (!item.text.toLowerCase().includes(q)) continue;
+      const key = item.id + item.text.slice(0,20);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      results.push(item);
+    }
+
+    if (!results.length) {
+      overlay.innerHTML = `<div class="search-no-results">"${escHtml(query)}" 검색 결과 없음</div>`;
     } else {
-      // Non-dropdown link (e.g. accessibility)
-      const directLink = document.querySelector('.gnb-link[href="' + href + '"]');
-      if (directLink) {
-        const parentItem = directLink.closest('.gnb-item');
-        if (parentItem) parentItem.classList.add('active');
-      }
+      overlay.innerHTML = results.map(r => {
+        const href = r.id ? `#${r.id}` : '#';
+        const title = r.type === 'text'
+          ? (document.getElementById(r.id)?.textContent?.replace('¶','').trim() || '본문')
+          : r.text;
+        const excerpt = r.type === 'text' ? r.text : '';
+        return `<a href="${escHtml(href)}" class="search-result-item" role="option">
+          <div class="search-result-title">${highlight(title.slice(0,60), query)}</div>
+          ${excerpt ? `<div class="search-result-excerpt">${highlight(excerpt.slice(0,80), query)}</div>` : ''}
+        </a>`;
+      }).join('');
     }
+
+    overlay.classList.add('visible');
   }
 
-  const sections = document.querySelectorAll('.guideline-section[id], .checklist-section[id]');
-  if (!sections.length) return;
-
-  // Track which section is most visible
-  const visibleSections = new Map();
-
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        visibleSections.set(e.target.id, e.intersectionRatio);
-      } else {
-        visibleSections.delete(e.target.id);
-      }
-    });
-
-    if (visibleSections.size === 0) return;
-
-    // Pick the section with highest intersection ratio
-    let topId = null;
-    let topRatio = 0;
-    visibleSections.forEach((ratio, id) => {
-      if (ratio > topRatio) { topRatio = ratio; topId = id; }
-    });
-    if (topId) {
-      setActiveSection(topId);
-      history.replaceState(null, '', '#' + topId);
-    }
-  }, { threshold: [0, 0.1, 0.25, 0.5], rootMargin: '-60px 0px -30% 0px' });
-
-  sections.forEach(s => observer.observe(s));
-}
-
-// ===== GNB DROPDOWNS INIT =====
-// ===== STICKY TOC =====
-function initStickyToc() {
-  const toc = document.getElementById('stickyToc');
-  if (!toc) return;
-  const sections = ['preface','chapter1','chapter2','chapter3','checklist'];
-  const tocItems = {};
-  sections.forEach(id => {
-    tocItems[id] = toc.querySelector('[data-toc="' + id + '"]');
-  });
-  let activeId = null;
-
-  function setTocActive(id) {
-    if (activeId && tocItems[activeId]) tocItems[activeId].classList.remove('active');
-    activeId = id;
-    if (tocItems[id]) tocItems[id].classList.add('active');
-  }
-
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      const id = entry.target.id;
-      if (entry.isIntersecting) {
-        setTocActive(id);
-      }
-    });
-  }, { rootMargin: '-10% 0px -70% 0px', threshold: 0 });
-  sections.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) observer.observe(el);
-  });
-
-  // 초기 URL hash 기반 TOC 활성화
-  if (location.hash) {
-    const hashId = location.hash.slice(1);
-    if (tocItems[hashId]) setTocActive(hashId);
-  }
-
-  // TOC 링크 클릭 시 즉시 활성화
-  toc.querySelectorAll('.sticky-toc-item').forEach(a => {
-    a.addEventListener('click', function() {
-      setTocActive(this.dataset.toc);
-    });
-  });
-  // 히어로/상단일 때 TOC 숨기기
-  const hero = document.getElementById('hero');
-  if (hero) {
-    const heroObserver = new IntersectionObserver(([entry]) => {
-      toc.style.opacity = entry.isIntersecting ? '0' : '1';
-      toc.style.pointerEvents = entry.isIntersecting ? 'none' : '';
-    }, { threshold: 0.1 });
-    heroObserver.observe(hero);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  buildSearchIndex();
-  initGnbDropdowns();
-  initAnchorButtons();
-  initScrollSpy();
-  initStickyToc();
-  initInlineHandlers();
-});
-
-function initInlineHandlers() {
-  // Theme toggle
-  const themeToggleBtn = document.getElementById('themeToggle');
-  if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
-
-  // Search open
-  const searchBtn = document.getElementById('searchBtn');
-  if (searchBtn) searchBtn.addEventListener('click', openSearch);
-
-  // Search close — button inside search overlay (no id, find by aria-label)
-  const searchCloseBtn = document.querySelector('[aria-label="검색 닫기"]');
-  if (searchCloseBtn) searchCloseBtn.addEventListener('click', closeSearch);
-
-  // Mobile menu toggle
-  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-  if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-
-  // Mobile menu items — event delegation
-  const mobileMenu = document.getElementById('mobileMenu');
-  if (mobileMenu) {
-    mobileMenu.addEventListener('click', e => {
-      const item = e.target.closest('.mobile-menu-item');
-      if (item) closeMobileMenu();
-    });
-  }
-
-  // Copy buttons — event delegation on document
-  document.addEventListener('click', e => {
-    const btn = e.target.closest('[data-copy]');
-    if (btn) cp(btn, btn.dataset.copy);
-  });
-
-  // Checklist items — event delegation
-  const checklistSection = document.getElementById('checklist');
-  if (checklistSection) {
-    checklistSection.addEventListener('click', e => {
-      const item = e.target.closest('.check-item');
-      if (item) toggleCheck(item);
-    });
-    checklistSection.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        const item = e.target.closest('.check-item');
-        if (item) { e.preventDefault(); toggleCheck(item); }
-      }
-    });
-  }
-
-  // Reset checklist
-  const resetBtn = document.querySelector('[data-action="reset-checklist"]');
-  if (resetBtn) resetBtn.addEventListener('click', resetChecklist);
-
-  // Persona tabs
-  ['writer', 'designer', 'developer'].forEach(name => {
-    const btn = document.getElementById('tab-btn-' + name);
-    if (btn) btn.addEventListener('click', () => switchPersonaTab(name));
-  });
-
-  // Search results — delegated (for dynamic content)
-  const searchResults = document.getElementById('searchResults');
-  if (searchResults) {
-    searchResults.addEventListener('click', e => {
-      const item = e.target.closest('[data-section-id]');
-      if (item) {
-        scrollToSection(item.dataset.sectionId);
-        closeSearch();
-      }
-    });
-    searchResults.addEventListener('keydown', e => {
-      const item = e.target.closest('[data-section-id]');
-      if (item) handleResultKey(e, item);
-    });
-  }
-
-  // 행정어 사전 실시간 필터링 (debounce 300ms)
-  initAdminSearch();
-}
-
-function initAdminSearch() {
-  const input = document.getElementById('admin-search');
-  if (!input) return;
-
-  const table = document.querySelector('.word-table');
-  const emptyMsg = document.getElementById('adminSearchEmpty');
-  if (!table || !emptyMsg) return;
-
-  let timer = null;
-
-  function filterTable(q) {
-    const rows = table.querySelectorAll('tbody tr');
-    const keyword = q.trim().toLowerCase();
-    let visibleCount = 0;
-
-    rows.forEach(row => {
-      const text = row.textContent.toLowerCase();
-      const match = !keyword || text.includes(keyword);
-      row.style.display = match ? '' : 'none';
-      if (match) visibleCount++;
-    });
-
-    emptyMsg.classList.toggle('visible', keyword.length > 0 && visibleCount === 0);
-  }
-
-  input.addEventListener('input', () => {
-    clearTimeout(timer);
-    timer = setTimeout(() => filterTable(input.value), 300);
-  });
-
-  // ESC 키로 검색 초기화
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      input.value = '';
-      filterTable('');
-    }
-  });
-}
-
-/* ═══════════════════════════════════════════════════
-   파생 가이드 — 마크다운 로더 & 이슈 뷰어
-   ═══════════════════════════════════════════════════ */
-
-/**
- * .md 파일에서 ### E/H/F 이슈 항목만 파싱
- * @param {string} md - 마크다운 전체 텍스트
- * @returns {Array<{id, title, severity, principle, cycle, location, original, problem, guideline, recommendation}>}
- */
-function parseDerivedGuide(md) {
-  const issues = [];
-  const blocks = md.split(/^(?=### [EHF]\d+)/m);
-
-  for (const block of blocks) {
-    const headerMatch = block.match(/^### ([EHF]\d+) — (.*?) (★+) \[([A-C/]+)\]/);
-    if (!headerMatch) continue;
-
-    const [, id, title, severity, principle] = headerMatch;
-
-    // Cycle 번호 추출 (이 이슈가 속한 Cycle)
-    const cycleMatch = md.match(new RegExp(`## Cycle (\\d+)[\\s\\S]*?${id}\\b`));
-    const cycle = cycleMatch ? parseInt(cycleMatch[1]) : 0;
-
-    const getField = (label) => {
-      const m = block.match(new RegExp(`\\*\\*${label}\\*\\*:\\s*([^\n]+)`));
-      return m ? m[1].trim() : '';
-    };
-
-    issues.push({
-      id,
-      title: title.replace(/^"|"$/g, '').trim(),
-      severity,
-      principle,
-      cycle,
-      location: getField('위치'),
-      original: getField('원문'),
-      problem: getField('문제'),
-      guideline: getField('원칙'),
-      recommendation: getField('권장 개선안'),
-    });
-  }
-  return issues;
-}
-
-/**
- * 이슈 배열을 HTML 카드로 렌더링
- */
-function renderIssueList(issues, container) {
-  if (issues.length === 0) {
-    container.innerHTML = '<p class="dg-issue-empty">검색 결과가 없습니다.</p>';
-    return;
-  }
-
-  const sevClass = { '★': 'sev-1', '★★': 'sev-2', '★★★': 'sev-3' };
-
-  container.innerHTML = issues.map(iss => `
-    <div class="dg-issue-card" data-principle="${iss.principle}" data-severity="${iss.severity}">
-      <div class="dg-issue-header">
-        <span class="dg-issue-id">${iss.id}</span>
-        <span class="dg-issue-sev ${sevClass[iss.severity] || 'sev-2'}">${iss.severity}</span>
-        <span class="dg-issue-prin">[${iss.principle}]</span>
-        ${iss.cycle ? `<span class="dg-issue-cycle">Cycle ${iss.cycle}</span>` : ''}
-      </div>
-      <p class="dg-issue-title">${escHtml(iss.title)}</p>
-      ${iss.original ? `<div class="dg-issue-row"><span class="dg-issue-label">원문</span><span class="dg-issue-val">${escHtml(iss.original)}</span></div>` : ''}
-      ${iss.problem ? `<div class="dg-issue-row"><span class="dg-issue-label">문제</span><span class="dg-issue-val">${escHtml(iss.problem)}</span></div>` : ''}
-      ${iss.recommendation ? `<div class="dg-issue-row dg-issue-rec"><span class="dg-issue-label">개선안</span><span class="dg-issue-val">${escHtml(iss.recommendation)}</span></div>` : ''}
-    </div>
-  `).join('');
-}
-
-function escHtml(str) {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-/**
- * 파생 가이드 로더 초기화
- * @param {string} agency - 'jeongbu24' | 'hometax' | 'efamily'
- * @param {string} mdPath - .md 파일 경로 (상대)
- */
-function initDerivedGuideLoader(agency, mdPath) {
-  const toggleBtn = document.getElementById(`dg-toggle-${agency}`);
-  const panel = document.getElementById(`dg-issue-panel-${agency}`);
-  const searchInput = document.getElementById(`dg-search-${agency}`);
-  const filterBtns = document.querySelectorAll(`[data-dg-filter="${agency}"]`);
-  const countEl = document.getElementById(`dg-count-${agency}`);
-  if (!toggleBtn || !panel) return;
-
-  let allIssues = [];
-  let loaded = false;
-  let isOpen = false;
-  let activeFilter = 'all';
   let searchTimer = null;
-
-  function applyFilters() {
-    const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
-    let filtered = allIssues;
-
-    if (activeFilter !== 'all') {
-      filtered = filtered.filter(iss => iss.principle.includes(activeFilter));
-    }
-    if (q) {
-      filtered = filtered.filter(iss =>
-        iss.title.toLowerCase().includes(q) ||
-        iss.original.toLowerCase().includes(q) ||
-        iss.problem.toLowerCase().includes(q) ||
-        iss.recommendation.toLowerCase().includes(q)
-      );
-    }
-
-    const listEl = panel.querySelector('.dg-issue-list');
-    if (listEl) renderIssueList(filtered, listEl);
-    if (countEl) countEl.textContent = `${filtered.length}개 표시 / 전체 ${allIssues.length}개`;
-  }
-
-  async function loadAndOpen() {
-    if (!loaded) {
-      const listEl = panel.querySelector('.dg-issue-list');
-      if (listEl) listEl.innerHTML = '<p class="dg-issue-empty">로딩 중...</p>';
-      try {
-        const res = await fetch(mdPath);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const md = await res.text();
-        allIssues = parseDerivedGuide(md);
-        loaded = true;
-        applyFilters();
-      } catch (e) {
-        const listEl = panel.querySelector('.dg-issue-list');
-        if (listEl) listEl.innerHTML = `<p class="dg-issue-empty">로딩 실패: ${escHtml(e.message)}</p>`;
-      }
-    } else {
-      applyFilters();
-    }
-  }
-
-  toggleBtn.addEventListener('click', () => {
-    isOpen = !isOpen;
-    panel.hidden = !isOpen;
-    toggleBtn.setAttribute('aria-expanded', isOpen);
-    toggleBtn.textContent = isOpen ? '전체 이슈 접기 ▲' : '전체 이슈 조회 ▼';
-    if (isOpen) loadAndOpen();
+  input.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => doSearch(input.value), 200);
   });
 
-  if (searchInput) {
-    searchInput.addEventListener('input', () => {
-      clearTimeout(searchTimer);
-      searchTimer = setTimeout(applyFilters, 250);
-    });
-    searchInput.addEventListener('keydown', e => {
-      if (e.key === 'Escape') { searchInput.value = ''; applyFilters(); }
-    });
-  }
+  // Click outside → close
+  document.addEventListener('click', e => {
+    if (!overlay.contains(e.target) && e.target !== input) {
+      overlay.classList.remove('visible');
+    }
+  });
 
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      activeFilter = btn.dataset.principle || 'all';
-      filterBtns.forEach(b => b.classList.toggle('active', b === btn));
-      applyFilters();
-    });
+  // Result click → navigate + close
+  overlay.addEventListener('click', e => {
+    const item = e.target.closest('.search-result-item');
+    if (!item) return;
+    overlay.classList.remove('visible');
+    input.value = '';
+  });
+
+  // Keyboard navigation in overlay
+  input.addEventListener('keydown', e => {
+    const items = overlay.querySelectorAll('.search-result-item');
+    const focused = overlay.querySelector('.search-result-item:focus');
+    const idx = Array.from(items).indexOf(focused);
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const next = items[idx + 1] || items[0];
+      if (next) next.focus();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prev = items[idx - 1] || items[items.length - 1];
+      if (prev) prev.focus();
+    } else if (e.key === 'Escape') {
+      overlay.classList.remove('visible');
+      input.value = '';
+    } else if (e.key === 'Enter' && focused) {
+      focused.click();
+    }
+  });
+
+  // Focus search with Cmd+K / Ctrl+K
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      input.focus();
+      input.select();
+    }
   });
 }
 
-// DOM 준비 후 초기화 (readyState 가드 포함)
-function initDerivedGuides() {
-  const base = document.location.href.includes('github.io')
-    ? 'https://thenisaid.github.io/krds-ux-writing/derived/'
-    : 'derived/';
-
-  initDerivedGuideLoader('jeongbu24', `${base}jeongbu24-guide.md`);
-  initDerivedGuideLoader('hometax',   `${base}hometax-guide.md`);
-  initDerivedGuideLoader('efamily',   `${base}efamily-court-guide.md`);
+// ─── Init ────────────────────────────────────────────
+function init() {
+  initTheme();
+  initSidebarToggle();
+  initScrollSpy();
+  initSearch();
 }
 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initDerivedGuides);
+  document.addEventListener('DOMContentLoaded', init);
 } else {
-  initDerivedGuides();
+  init();
 }
