@@ -400,77 +400,81 @@ img { max-width: 100%; height: auto; }
   max-width: 60ch;
 }
 
-.section-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+/* ═══════════════════════════════════════════════════
+   SECTION EDITORIAL LIST
+   ═══════════════════════════════════════════════════ */
+.section-editorial {
+  margin-top: 40px;
 }
 
-.section-card {
+.editorial-item {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  padding: 36px 0;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+}
+.editorial-item:first-child {
+  border-top: 1px solid var(--border);
+}
+.editorial-item:hover { text-decoration: none; }
+.editorial-item:hover .editorial-title { color: var(--accent); }
+
+.editorial-left {
+  padding-right: 32px;
   display: flex;
   flex-direction: column;
-  padding: 32px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  background: var(--bg);
-  text-decoration: none;
-  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
-  position: relative;
-  overflow: hidden;
-}
-.section-card:hover {
-  border-color: var(--accent);
-  box-shadow: 0 4px 24px rgba(37,110,244,0.08);
-  transform: translateY(-2px);
-  text-decoration: none;
+  justify-content: flex-start;
 }
 
-.section-card-num {
+.editorial-num {
+  font-size: 56px;
+  font-weight: 900;
+  color: var(--border);
+  line-height: 1;
+  margin-bottom: 12px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+
+.editorial-right {
+  padding-left: 40px;
+  border-left: 1px solid var(--border);
+}
+
+.editorial-label {
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  margin-bottom: 20px;
-  font-variant-numeric: tabular-nums;
-}
-
-.section-card-icon {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 20px;
-  flex-shrink: 0;
-}
-
-.section-card-title {
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text);
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  text-transform: uppercase;
   margin-bottom: 10px;
-  line-height: 1.3;
 }
 
-.section-card-subtitle {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
-  letter-spacing: 0.03em;
+.editorial-title {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
   margin-bottom: 12px;
+  line-height: 1.2;
+  transition: color 0.15s;
 }
 
-.section-card-desc {
-  font-size: 14px;
+.editorial-desc {
+  font-size: 15px;
   color: var(--text-muted);
   line-height: 1.7;
-  flex: 1;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  max-width: 56ch;
 }
 
-.section-card-tags {
+.editorial-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .tag {
@@ -483,17 +487,87 @@ img { max-width: 100%; height: auto; }
   border: 1px solid var(--border);
 }
 
-.section-card-link {
-  display: flex;
+.editorial-cta {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--accent);
-  margin-top: auto;
   transition: gap 0.15s;
 }
-.section-card:hover .section-card-link { gap: 10px; }
+.editorial-item:hover .editorial-cta { gap: 10px; }
+
+/* ═══════════════════════════════════════════════════
+   GENERATOR BANNER
+   ═══════════════════════════════════════════════════ */
+.generator-banner {
+  padding: 0 0 40px;
+  border-bottom: 1px solid var(--border);
+}
+
+.generator-banner-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 32px 40px;
+  background: linear-gradient(135deg, #eef4ff 0%, #f8f7f5 100%);
+  border: 1px solid #c5d8fd;
+  border-radius: var(--radius-md);
+}
+
+.generator-banner-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #fff;
+  background: var(--accent);
+  padding: 3px 8px;
+  border-radius: 3px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.generator-banner-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+.generator-banner-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 52ch;
+  margin: 0;
+}
+
+.generator-banner-cta {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s, transform 0.15s;
+}
+.generator-banner-cta:hover {
+  background: #1a5ae0;
+  transform: translateY(-1px);
+  text-decoration: none;
+  color: #fff;
+}
 
 /* ═══════════════════════════════════════════════════
    ENTRY POINTS — Visitor Type
@@ -819,7 +893,7 @@ img { max-width: 100%; height: auto; }
 
 .quotes-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
 
@@ -1090,8 +1164,7 @@ footer {
 @media (max-width: 1024px) {
   .hero-layout { grid-template-columns: 1fr; gap: 40px; }
   .hero-visual { height: 240px; }
-  .section-cards { grid-template-columns: 1fr; gap: 16px; }
-  .faq-layout { grid-template-columns: 1fr; gap: 32px; }
+.faq-layout { grid-template-columns: 1fr; gap: 32px; }
   .strip-grid { grid-template-columns: 1fr; }
   .strip-item { border-right: none; border-bottom: 1px solid var(--border); }
 }
@@ -1105,6 +1178,12 @@ footer {
   .entry-item { border-right: none; border-bottom: 1px solid var(--border); }
   .entry-item:last-child { border-bottom: none; }
   .quotes-grid { grid-template-columns: 1fr; gap: 16px; }
+  .editorial-item { grid-template-columns: 1fr; }
+  .editorial-left { padding-right: 0; margin-bottom: 16px; flex-direction: row; align-items: baseline; gap: 12px; }
+  .editorial-num { font-size: 36px; margin-bottom: 0; }
+  .editorial-right { padding-left: 0; border-left: none; border-top: 1px solid var(--border); padding-top: 20px; }
+  .generator-banner-inner { flex-direction: column; align-items: flex-start; padding: 24px; }
+  .generator-banner-cta { width: 100%; justify-content: center; }
   .footer-inner { grid-template-columns: 1fr; }
   .footer-links { align-items: flex-start; }
 }
@@ -1247,6 +1326,103 @@ footer {
     </div>
   </section>
 
+  <!-- ── SECTION NAVIGATION EDITORIAL ── -->
+  <section class="section-nav" aria-labelledby="section-nav-title">
+    <div class="container">
+      <div class="section-nav-header">
+        <div class="section-rule">
+          <span class="section-rule-label">섹션 탐색</span>
+          <span class="section-rule-line" aria-hidden="true"></span>
+        </div>
+        <h2 id="section-nav-title" class="section-nav-title">
+          무엇을 찾고 계신가요?
+        </h2>
+        <p class="section-nav-desc">
+          1장(파운데이션)부터 5장(파생 가이드)까지 5장 체계로 구성된 KRDS UX Writing 가이드라인을 탐색해요.
+        </p>
+      </div>
+
+      <div class="section-editorial">
+        <!-- Item 1: 원칙 -->
+        <a href="/krds-ux-writing/principles/" class="editorial-item" aria-label="원칙 섹션으로 이동">
+          <div class="editorial-left">
+            <div class="editorial-num">01</div>
+          </div>
+          <div class="editorial-right">
+            <div class="editorial-label">원칙</div>
+            <div class="editorial-title">파운데이션부터 기관 적용까지</div>
+            <p class="editorial-desc">
+              1장 파운데이션(비전·주권자·3대원칙·보이스톤)부터 2~4장 실행 기준, 5장 기관별 파생 가이드까지. 공공 서비스 UX 라이팅의 완전한 체계입니다.
+            </p>
+            <div class="editorial-tags">
+              <span class="tag">파운데이션</span>
+              <span class="tag">무번역</span>
+              <span class="tag">정보핵심화</span>
+              <span class="tag">심리적안전망</span>
+            </div>
+            <span class="editorial-cta">원칙 살펴보기 →</span>
+          </div>
+        </a>
+
+        <!-- Item 2: 사전 -->
+        <a href="/krds-ux-writing/dictionary/" class="editorial-item" aria-label="사전 섹션으로 이동">
+          <div class="editorial-left">
+            <div class="editorial-num">02</div>
+          </div>
+          <div class="editorial-right">
+            <div class="editorial-label">사전</div>
+            <div class="editorial-title">행정 용어, 먼저 알면 실수 없어요</div>
+            <p class="editorial-desc">
+              행정 언어는 낯설지만 규칙이 있어요. '~하시기 바랍니다'를 '~해 주세요'로 바꾸는 것처럼, 소수의 패턴이 수백 가지 표현을 결정해요. 자주 헷갈리는 표현을 찾아 확인하고, 팀 전체의 기준으로 쓰세요.
+            </p>
+            <div class="editorial-tags">
+              <span class="tag">행정용어</span>
+              <span class="tag">대체 표현</span>
+              <span class="tag">사용 맥락</span>
+              <span class="tag">난이도 태그</span>
+            </div>
+            <span class="editorial-cta">용어 사전 열기 →</span>
+          </div>
+        </a>
+
+        <!-- Item 3: 사례 연구 -->
+        <a href="/krds-ux-writing/case-studies/" class="editorial-item" aria-label="사례 연구 섹션으로 이동">
+          <div class="editorial-left">
+            <div class="editorial-num">03</div>
+          </div>
+          <div class="editorial-right">
+            <div class="editorial-label">사례 연구</div>
+            <div class="editorial-title">실제로 이렇게 바뀌었습니다</div>
+            <p class="editorial-desc">
+              원칙이 현장에서 어떻게 작동하는지 보여드려요. 실제 공공 서비스 화면의 텍스트를 가이드라인에 따라 수정한 과정과 결과예요. 이론보다 빠른 이해, 사례보다 좋은 교사는 없어요.
+            </p>
+            <div class="editorial-tags">
+              <span class="tag">SeMA</span>
+              <span class="tag">개선 전/후</span>
+              <span class="tag">실전 적용</span>
+              <span class="tag">성과 측정</span>
+            </div>
+            <span class="editorial-cta">사례 보러 가기 →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── AI GENERATOR BANNER ── -->
+  <section class="generator-banner" aria-label="AI 가이드라인 생성기">
+    <div class="container">
+      <div class="generator-banner-inner">
+        <div class="generator-banner-content">
+          <div class="generator-banner-badge">NEW</div>
+          <h2 class="generator-banner-title">AI가 기관 맞춤 가이드라인을 생성해 드려요</h2>
+          <p class="generator-banner-desc">기관 이름과 서비스 특성만 입력하면, KRDS 원칙을 적용한 UX 라이팅 가이드라인 초안을 바로 받을 수 있어요.</p>
+        </div>
+        <a href="/krds-ux-writing/generator/" class="generator-banner-cta">가이드라인 생성하기 →</a>
+      </div>
+    </div>
+  </section>
+
   <!-- ── CORE PRINCIPLES Strip ── -->
   <section class="principles-strip" aria-label="3대 원칙 요약">
     <div class="container">
@@ -1270,112 +1446,6 @@ footer {
           <div class="strip-title">심리적안전망</div>
           <p class="strip-desc">오류, 막힘, 실패 상황에서 사용자가 혼자 해결할 수 있도록 항상 다음 단계를 안내하세요.</p>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── SECTION NAVIGATION CARDS ── -->
-  <section class="section-nav" aria-labelledby="section-nav-title">
-    <div class="container">
-      <div class="section-nav-header">
-        <div class="section-rule">
-          <span class="section-rule-label">섹션 탐색</span>
-          <span class="section-rule-line" aria-hidden="true"></span>
-        </div>
-        <h2 id="section-nav-title" class="section-nav-title">
-          무엇을 찾고 계신가요?
-        </h2>
-        <p class="section-nav-desc">
-          1장(파운데이션)부터 5장(파생 가이드)까지 5장 체계로 구성된 KRDS UX Writing 가이드라인을 탐색해요.
-        </p>
-      </div>
-
-      <div class="section-cards">
-        <!-- Card 1: Principles -->
-        <a href="/krds-ux-writing/principles/" class="section-card" aria-label="원칙 섹션으로 이동">
-          <div class="section-card-num">01 — 원칙</div>
-          <div class="section-card-icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="4" y="4" width="40" height="40" rx="4" stroke="var(--accent)" stroke-width="1.5"/>
-              <rect x="12" y="14" width="24" height="2" fill="var(--accent)" rx="1"/>
-              <rect x="12" y="20" width="18" height="2" fill="var(--border-mid)" rx="1"/>
-              <rect x="12" y="26" width="20" height="2" fill="var(--border-mid)" rx="1"/>
-              <rect x="12" y="32" width="14" height="2" fill="var(--border)" rx="1"/>
-              <circle cx="38" cy="10" r="4" fill="var(--accent)"/>
-            </svg>
-          </div>
-          <div class="section-card-title">원칙</div>
-          <div class="section-card-subtitle">5장 체계: 파운데이션부터 기관 적용까지</div>
-          <p class="section-card-desc">
-            1장 파운데이션(비전·주권자·3대원칙·보이스톤)부터 2~4장 실행 기준, 5장 기관별 파생 가이드까지. 공공 서비스 UX 라이팅의 완전한 체계입니다.
-          </p>
-          <div class="section-card-tags">
-            <span class="tag">파운데이션</span>
-            <span class="tag">무번역</span>
-            <span class="tag">정보핵심화</span>
-            <span class="tag">심리적안전망</span>
-          </div>
-          <span class="section-card-link">원칙 살펴보기 →</span>
-        </a>
-
-        <!-- Card 2: Dictionary -->
-        <a href="/krds-ux-writing/dictionary/" class="section-card" aria-label="사전 섹션으로 이동">
-          <div class="section-card-num">02 — 사전</div>
-          <div class="section-card-icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="8" y="4" width="32" height="40" rx="4" stroke="var(--accent)" stroke-width="1.5"/>
-              <rect x="4" y="6" width="6" height="36" rx="2" fill="var(--accent)" opacity="0.15"/>
-              <rect x="4" y="6" width="6" height="36" rx="2" stroke="var(--accent)" stroke-width="1"/>
-              <rect x="16" y="14" width="16" height="1.5" fill="var(--accent)" rx="0.75"/>
-              <rect x="16" y="20" width="12" height="1.5" fill="var(--border-mid)" rx="0.75"/>
-              <rect x="16" y="26" width="14" height="1.5" fill="var(--border-mid)" rx="0.75"/>
-              <rect x="16" y="32" width="10" height="1.5" fill="var(--border)" rx="0.75"/>
-            </svg>
-          </div>
-          <div class="section-card-title">사전</div>
-          <div class="section-card-subtitle">행정 용어, 먼저 알면 실수 없어요</div>
-          <p class="section-card-desc">
-            행정 언어는 낯설지만 규칙이 있어요. '~하시기 바랍니다'를 '~해 주세요'로 바꾸는 것처럼, 소수의 패턴이 수백 가지 표현을 결정해요. 자주 헷갈리는 표현을 찾아 확인하고, 팀 전체의 기준으로 쓰세요.
-          </p>
-          <div class="section-card-tags">
-            <span class="tag">행정용어</span>
-            <span class="tag">대체 표현</span>
-            <span class="tag">사용 맥락</span>
-            <span class="tag">난이도 태그</span>
-          </div>
-          <span class="section-card-link">용어 사전 열기 →</span>
-        </a>
-
-        <!-- Card 3: Case Studies -->
-        <a href="/krds-ux-writing/case-studies/" class="section-card" aria-label="사례 연구 섹션으로 이동">
-          <div class="section-card-num">03 — 사례 연구</div>
-          <div class="section-card-icon" aria-hidden="true">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="24" cy="24" r="18" stroke="var(--accent)" stroke-width="1.5"/>
-              <!-- Before -->
-              <rect x="10" y="16" width="12" height="8" rx="2" fill="var(--border)" stroke="var(--border-mid)" stroke-width="1"/>
-              <!-- After -->
-              <rect x="26" y="16" width="12" height="8" rx="2" fill="var(--accent)" opacity="0.15" stroke="var(--accent)" stroke-width="1"/>
-              <!-- Arrow -->
-              <path d="M22 20 L26 20" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M24.5 18 L26.5 20 L24.5 22" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-              <rect x="14" y="28" width="20" height="2" fill="var(--border-mid)" rx="1"/>
-              <rect x="16" y="32" width="16" height="2" fill="var(--border)" rx="1"/>
-            </svg>
-          </div>
-          <div class="section-card-title">사례 연구</div>
-          <div class="section-card-subtitle">실제로 이렇게 바뀌었습니다</div>
-          <p class="section-card-desc">
-            원칙이 현장에서 어떻게 작동하는지 보여드려요. 실제 공공 서비스 화면의 텍스트를 가이드라인에 따라 수정한 과정과 결과예요. 이론보다 빠른 이해, 사례보다 좋은 교사는 없어요.
-          </p>
-          <div class="section-card-tags">
-            <span class="tag">SeMA</span>
-            <span class="tag">개선 전/후</span>
-            <span class="tag">실전 적용</span>
-            <span class="tag">성과 측정</span>
-          </div>
-          <span class="section-card-link">사례 보러 가기 →</span>
-        </a>
       </div>
     </div>
   </section>
