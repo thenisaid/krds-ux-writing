@@ -7,6 +7,21 @@
 
 ## 열린 항목
 
+### TODO-012: DESIGN.md 생성
+**Priority**: P3
+**What**: `:root` CSS 디자인 토큰을 별도 `DESIGN.md` 파일로 문서화. 색상·타이포·스페이싱 토큰 설명 + Do/Don't 사용 가이드 포함.
+**Why**: 디자인 시스템 업데이트 시 일관성 체크 관점 부재. 제3자 콘트리뷰터가 결정 기준 없이 임의 값을 사용할 위험.
+**Pros**:
+- 토큰 의미(의도) 문서화 — `--color-primary-50`이 언제 쓰이고 언제 안 쓰이는지
+- plan-design-review 다음 실행 시 시스템 정렬 체크 기준 확보
+**Cons**:
+- 유지보수 부담 (CSS 바꿀 때 DESIGN.md도 업데이트)
+- 1인 프로젝트에서는 오버헤드
+**Context**: /plan-design-review 2026-05-11 실행에서 발견. DESIGN.md 없어도 CSS 토큰이 source of truth로 기능하지만, 리뷰 품질과 신규 기여자 온보딩을 위해 중기적으로 필요.
+**Blocked by**: 없음
+
+---
+
 ### TODO-011: Anthropic API 월 사용량 한도 설정
 **Priority**: P2
 **What**: Anthropic 대시보드 → Settings → Billing → Usage limits에서 월 하드 리밋($10-20) 설정
