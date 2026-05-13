@@ -2,7 +2,7 @@
 <html lang="ko" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3gjIJGd6+ZKFIG/jtiC7rBSQsd4EpjvtsAnqBTXVgvA=' 'sha256-pHonT2lrmFofD0NSGLylPnUaRvd/9SptXh2kQtXzTqE='; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3gjIJGd6+ZKFIG/jtiC7rBSQsd4EpjvtsAnqBTXVgvA=' 'sha256-4rRFRT/RwM159hMSv0ZmIf9tu+WeOob+K9Bp8RQyU/A='; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="KRDS 기반 UX Writing 가이드라인 — 정부 디지털 서비스의 언어 기준. 원칙, 사전, 사례로 구성된 공공 UX 라이팅 가이드.">
 <meta name="keywords" content="KRDS, UX 라이팅, UX Writing, 정부디지털서비스, 디자인시스템, 마이크로카피, 오류메시지, 접근성, 한국어 가이드라인">
@@ -2155,28 +2155,6 @@ footer {
 <script>
 (function () {
   'use strict';
-
-  /* ── Theme Toggle ── */
-  var themeToggle = document.getElementById('themeToggle');
-  if (themeToggle) {
-    themeToggle.addEventListener('click', function () {
-      var current = document.documentElement.getAttribute('data-theme');
-      var next = current === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('krds-theme', next);
-    });
-  }
-
-  /* ── Mobile Menu ── */
-  var mobileMenuBtn = document.getElementById('mobileMenuBtn');
-  var mobileMenu = document.getElementById('mobileMenu');
-  if (mobileMenuBtn && mobileMenu) {
-    mobileMenuBtn.addEventListener('click', function () {
-      var isOpen = mobileMenu.classList.toggle('open');
-      mobileMenuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      mobileMenu.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
-    });
-  }
 
   /* ── FAQ Accordion ── */
   var faqItems = document.querySelectorAll('.faq-item');
