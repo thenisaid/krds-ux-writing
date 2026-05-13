@@ -315,6 +315,18 @@ if (cfIp) return cfIp.trim();
 
 <!-- 완료 시 날짜와 커밋 해시 기록 -->
 
+### ✅ ISSUE-001: 다크모드 토글 이중 등록 버그
+**완료**: 2026-05-14, commit 290530c
+**What**: `index.html` 인라인 `<script>`와 `script.js` 양쪽에서 `#themeToggle` click 리스너가 중복 등록됨. 클릭 시 두 핸들러가 순서대로 실행되어 light→dark→light로 원위치 됨.
+**Fix**: `index.html` 인라인 블록에서 Theme Toggle + Mobile Menu 섹션 제거. CSP SHA256 해시 재계산 후 업데이트.
+**Fixed by**: /qa on main, 2026-05-14
+
+### ✅ ISSUE-002: archive.html CSP — theme-init 인라인 스크립트 해시 누락
+**완료**: 2026-05-14, commit bf93a9a
+**What**: `archive.html` CSP `script-src` 디렉티브에 theme-init IIFE SHA256 해시 미포함 → 콘솔 에러 + 다크모드 초기화 실패 가능성.
+**Fix**: `script-src`에 `'sha256-3gjIJGd6+ZKFIG/jtiC7rBSQsd4EpjvtsAnqBTXVgvA='` 추가.
+**Fixed by**: /qa on main, 2026-05-14
+
 ### ✅ TODO-001: HWP/Word 다운로드 드롭다운 UI
 **완료**: 2026-05-04, commit 3a77440
 **Result**: generator/index.html + app.js — split-button 드롭다운 (HTML/.hwp/.docx), role=menu, 키보드 Arrow/Enter/Esc. HWP/Word은 "준비 중" 배지 표시 + 에러 메시지 반환.
