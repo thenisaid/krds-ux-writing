@@ -86,6 +86,7 @@
     efamily:   { md: null, all: [], loaded: false }
   };
 
+  var PRINCIPLE_NAMES = { 'A': '무번역', 'B': '정보핵심화', 'C': '심리적안전망' };
   var filters = { jeongbu24: 'all', hometax: 'all', efamily: 'all' };
   var searches = { jeongbu24: '', hometax: '', efamily: '' };
   var searchTimers = { jeongbu24: null, hometax: null, efamily: null };
@@ -106,7 +107,8 @@
                iss.title.toLowerCase().includes(q) ||
                iss.original.toLowerCase().includes(q) ||
                iss.problem.toLowerCase().includes(q) ||
-               iss.recommendation.toLowerCase().includes(q);
+               iss.recommendation.toLowerCase().includes(q) ||
+               iss.principle.split('/').some(function(p){ return (PRINCIPLE_NAMES[p.trim()] || '').includes(q); });
       });
     }
     renderGrid(result, grid, countEl);
