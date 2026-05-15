@@ -327,6 +327,13 @@ if (cfIp) return cfIp.trim();
 **Fix**: `script-src`에 `'sha256-3gjIJGd6+ZKFIG/jtiC7rBSQsd4EpjvtsAnqBTXVgvA='` 추가.
 **Fixed by**: /qa on main, 2026-05-14
 
+### ✅ ISSUE-003: archive.html 한국어 원칙명 검색 불가
+**완료**: 2026-05-14, commit 81ae944 (fix) + 02720c4 (cache-bust ?v=2)
+**What**: `archive.js` `applyFilters()`가 원칙명 한국어('무번역', '정보핵심화', '심리적안전망')로 검색 시 거의 결과 없음. `PRINCIPLE_NAMES` 맵 부재로 원칙 코드(A/B/C)만 검색 가능.
+**Fix**: `PRINCIPLE_NAMES = { 'A': '무번역', 'B': '정보핵심화', 'C': '심리적안전망' }` 맵 추가 + `applyFilters()`에 `.principle.split('/').some(p => PRINCIPLE_NAMES[p.trim()].includes(q))` 검색 로직 추가.
+**Verified**: '무번역' 검색 → 77개 표시 / 전체 222개 (정상)
+**Fixed by**: /qa on main, 2026-05-14
+
 ### ✅ TODO-001: HWP/Word 다운로드 드롭다운 UI
 **완료**: 2026-05-04, commit 3a77440
 **Result**: generator/index.html + app.js — split-button 드롭다운 (HTML/.hwp/.docx), role=menu, 키보드 Arrow/Enter/Esc. HWP/Word은 "준비 중" 배지 표시 + 에러 메시지 반환.
