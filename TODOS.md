@@ -382,3 +382,13 @@ if (cfIp) return cfIp.trim();
 **What**: lint.html `#d43a2f`, archive.html `#c7371a`, generator/index.html `#c82020` → `#d9342b`로 통일
 **Result**: 4개 파일(lint.html, archive.html, design-system.md, generator/index.html) 모두 `#d9342b` 동일
 
+
+---
+
+### TODO-013: warning 색상 접근성 — 텍스트에 #92580a 사용
+**Priority**: P3
+**Discovered by**: /qa 2026-05-15
+**What**: 경고 색상 `#f5a623`은 흰 배경 대비 2.6:1로 WCAG 미달. 텍스트 요소에는 `--krds-color-warning-text: #92580a` (4.8:1 대비) 사용 필요. 아이콘/배경에만 원색 허용.
+**Files**: lint.html, archive.html, generator/index.html (any element using warning orange as text color)
+**Why**: WCAG 1.4.3 — 텍스트 색상 대비 최소 4.5:1 요건
+**Blocked by**: 없음
