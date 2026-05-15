@@ -339,7 +339,20 @@
     var result = text;
     terms.forEach(function(term) {
       var escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      result = result.replace(new RegExp(escaped, 'g'), replacements[term]);
+      var repl = replacements[term];
+      var lastCode = repl.charCodeAt(repl.length - 1);
+      var isKorean = lastCode >= 0xAC00 && lastCode <= 0xD7A3;
+      var hasBatchim = isKorean && (lastCode - 0xAC00) % 28 !== 0;
+      result = result.replace(new RegExp(escaped + '(으로|가|를|는|로|와|이|을|은|과)?', 'g'), function(match, particle) {
+        if (!particle) return repl;
+        var corrected = particle;
+        if (hasBatchim) {
+          corrected = ({'\uAC00':'\uC774','\uB97C':'\uC744','\uB294':'\uC740','\uB85C':'\uC73C\uB85C','\uC640':'\uACFC'})[particle] || particle;
+        } else if (isKorean) {
+          corrected = ({'\uC774':'\uAC00','\uC744':'\uB97C','\uC740':'\uB294','\uC73C\uB85C':'\uB85C','\uACFC':'\uC640'})[particle] || particle;
+        }
+        return repl + corrected;
+      });
     });
     document.getElementById('improvedText').textContent = result;
   }
