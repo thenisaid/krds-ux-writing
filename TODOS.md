@@ -392,3 +392,22 @@ if (cfIp) return cfIp.trim();
 **Files**: lint.html, archive.html, generator/index.html (any element using warning orange as text color)
 **Why**: WCAG 1.4.3 — 텍스트 색상 대비 최소 4.5:1 요건
 **Blocked by**: 없음
+
+---
+
+### TODO-014: principles/ 프롬프트 스니펫 자동 동기화
+**Priority**: P3
+**Discovered by**: /plan-ceo-review 2026-05-18
+**What**: `prompt-library.html`의 10개 프롬프트 패턴과 `principles/` 3개 페이지에 발췌 삽입된 핵심 패턴(3개) 간 콘텐츠 동기화 자동화. 현재는 수동 업데이트 필요 — prompt-library.html 수정 시 각 원칙 페이지도 수동으로 같이 업데이트해야 함.
+**Why**: prompt-library.html이 단일 진실 소스(source of truth). principles/ 페이지의 발췌 스니펫이 오래된 버전으로 방치될 경우 원칙-실행 간 내용 불일치 발생.
+**Pros**:
+- 수동 동기화 작업 완전 제거
+- 콘텐츠 일관성 자동 보장
+- 향후 패턴 10개→20개 확장 시 스케일 가능
+**Cons**:
+- 빌드 스텝 추가 필요 (현재 빌드 파이프라인 없음 — GitHub Pages 정적 배포)
+- 발췌 선정 로직(어떤 3개를 각 원칙 페이지에) 코드로 인코딩 필요
+- 오버헤드 대비 현재 스코프(3개 페이지 × 3패턴 = 9개 스니펫)에서 ROI 낮음
+**Context**: /plan-ceo-review 2026-05-18 SELECTIVE EXPANSION 검토에서 발견. prompt-library.html 완성 이후 수동 동기화 운영 → 콘텐츠 규모 증가 시 자동화 재검토. 배포 파이프라인 없는 GitHub Pages 환경에서는 Node.js 빌드 스크립트 + GitHub Actions 조합이 가장 현실적.
+**Depends on**: prompt-library.html 완성 (현재 스코프 내)
+**Blocked by**: 없음

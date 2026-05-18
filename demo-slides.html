@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>원칙은 있고, 도구는 없다 — 공공기관 UX Writing 실행 도구</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary: #256ef4;
+  --primary-dark: #1a55c8;
+  --primary-light: #eef4ff;
+  --text: #1a1a2e;
+  --text-sub: #4b5563;
+  --white: #ffffff;
+  --gray-100: #f3f4f6;
+  --gray-300: #d1d5db;
+  --gray-500: #6b7280;
+  --dur: .55s;
+  --ease: cubic-bezier(.4,0,.2,1);
+}
+
+body {
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif;
+  background: #0f1117;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ── 뷰포트 & 캔버스 ── */
+.viewport {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #0f1117;
+}
+
+.slide-stage {
+  width: 1024px;
+  height: 576px;
+  transform-origin: center center;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 32px 80px rgba(0,0,0,.5);
+}
+
+.slide-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform var(--dur) var(--ease);
+}
+
+.slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 56px 80px;
+  text-align: center;
+  background: var(--white);
+  position: relative;
+}
+
+/* ── 슬라이드 번호 & 진행 바 ── */
+.progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--primary);
+  transition: width var(--dur) var(--ease);
+}
+
+.slide-num {
+  position: absolute;
+  bottom: 16px;
+  right: 24px;
+  font-size: 13px;
+  color: var(--gray-500);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 슬라이드 1: 타이틀 ── */
+.slide-1 {
+  background: linear-gradient(145deg, #1a55c8 0%, #256ef4 60%, #4b8ef8 100%);
+}
+
+.slide-1 .badge {
+  display: inline-block;
+  background: rgba(255,255,255,.18);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-bottom: 28px;
+  border: 1px solid rgba(255,255,255,.3);
+}
+
+.slide-1 h1 {
+  font-size: 58px;
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1.15;
+  margin-bottom: 20px;
+  letter-spacing: -.02em;
+}
+
+.slide-1 .sub {
+  font-size: 22px;
+  color: rgba(255,255,255,.8);
+  font-weight: 400;
+}
+
+/* ── 슬라이드 2: 문제 ── */
+.slide-2 { background: var(--white); align-items: flex-start; text-align: left; }
+
+.slide-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: var(--primary);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.slide-2 h2 {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 36px;
+  line-height: 1.3;
+  letter-spacing: -.02em;
+}
+
+.problem-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.problem-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  font-size: 19px;
+  color: var(--text);
+  line-height: 1.55;
+}
+
+.problem-list .icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  background: var(--primary-light);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  margin-top: 2px;
+}
+
+.highlight {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* ── 슬라이드 3: 해결책 ── */
+.slide-3 { background: var(--gray-100); }
+
+.slide-3 h2 {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 40px;
+  letter-spacing: -.02em;
+}
+
+.tool-cards {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  justify-content: center;
+}
+
+.tool-card {
+  flex: 1;
+  background: var(--white);
+  border-radius: 16px;
+  padding: 28px 24px;
+  text-align: left;
+  border: 1px solid var(--gray-300);
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+.tool-card .card-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.tool-card .card-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.tool-card .card-desc {
+  font-size: 14px;
+  color: var(--text-sub);
+  line-height: 1.55;
+}
+
+.slide-3 .cta-hint {
+  margin-top: 28px;
+  font-size: 14px;
+  color: var(--gray-500);
+}
+
+/* ── 슬라이드 4/5/6: 영상 자리 ── */
+.slide-demo { background: #f8faff; }
+
+.slide-demo h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 24px;
+  letter-spacing: -.01em;
+}
+
+.video-placeholder {
+  width: 768px;
+  height: 342px;
+  background: var(--gray-100);
+  border: 2px dashed var(--gray-300);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.video-placeholder .vp-icon {
+  font-size: 40px;
+  opacity: .4;
+}
+
+.video-placeholder .vp-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-500);
+}
+
+/* ── 슬라이드 7: 실현 계획 ── */
+.slide-7 { background: var(--white); }
+
+.slide-7 h2 {
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 40px;
+  letter-spacing: -.02em;
+}
+
+.plan-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 780px;
+}
+
+.plan-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  text-align: left;
+}
+
+.step-num {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  background: var(--primary);
+  color: var(--white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.step-content .step-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.step-content .step-desc {
+  font-size: 15px;
+  color: var(--text-sub);
+  line-height: 1.5;
+}
+
+/* ── Fragment ── */
+.build-item {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .4s var(--ease), transform .4s var(--ease);
+}
+.build-item.shown {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── 도움말 ── */
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+.help-overlay.visible { opacity: 1; pointer-events: all; }
+.help-box {
+  background: #1e2124;
+  color: #e5e7eb;
+  border-radius: 12px;
+  padding: 32px 40px;
+  font-size: 15px;
+  line-height: 2;
+  min-width: 280px;
+}
+.help-box strong { color: var(--white); }
+</style>
+</head>
+<body>
+
+<div class="viewport">
+  <div class="slide-stage">
+    <div class="slide-container" id="slide-container">
+
+      <!-- 슬라이드 1: 타이틀 -->
+      <section class="slide slide-1" tabindex="0" data-slide="0">
+        <div class="badge">공공기관 UX Writing 실행 도구</div>
+        <h1>원칙은 있고,<br>도구는 없다</h1>
+        <p class="sub">행정 언어를 시민 언어로 — KRDS UX Writing 플랫폼</p>
+        <div class="slide-num">1 / 7</div>
+      </section>
+
+      <!-- 슬라이드 2: 문제 -->
+      <section class="slide slide-2" tabindex="0" data-slide="1">
+        <div class="slide-label">Problem</div>
+        <h2>공공기관 텍스트,<br>왜 이렇게 어렵나요?</h2>
+        <ul class="problem-list">
+          <li class="build-item" data-build="0">
+            <span class="icon">📋</span>
+            <span>행안부가 <strong>KRDS(디자인 표준)</strong>를 만들었지만, UX Writing 실행 기준은 없음</span>
+          </li>
+          <li class="build-item" data-build="1">
+            <span class="icon">📊</span>
+            <span>국립국어원 조사: 공공용어 140개 중 <span class="highlight">97개(69.3%)가 이해 어려움</span></span>
+          </li>
+          <li class="build-item" data-build="2">
+            <span class="icon">💬</span>
+            <span>담당자는 쓰고 싶어도 <strong>참고할 도구가 없는 상황</strong></span>
+          </li>
+        </ul>
+        <div class="progress-bar" id="pb-1"></div>
+        <div class="slide-num">2 / 7</div>
+      </section>
+
+      <!-- 슬라이드 3: 해결책 -->
+      <section class="slide slide-3" tabindex="0" data-slide="2">
+        <div class="slide-label">Solution</div>
+        <h2>세 가지 도구를 만들었습니다</h2>
+        <div class="tool-cards">
+          <div class="tool-card build-item" data-build="0">
+            <div class="card-icon">🔍</div>
+            <div class="card-name">린터</div>
+            <div class="card-desc">행정 용어, 중복 표현, 모호한 안내 문구를 즉시 진단합니다</div>
+          </div>
+          <div class="tool-card build-item" data-build="1">
+            <div class="card-icon">📚</div>
+            <div class="card-name">아카이브</div>
+            <div class="card-desc">실제 공공기관 이슈 사례 665개와 개선안을 원칙별로 정리했습니다</div>
+          </div>
+          <div class="tool-card build-item" data-build="2">
+            <div class="card-icon">✨</div>
+            <div class="card-name">AI 생성기</div>
+            <div class="card-desc">기관 정보를 입력하면 맞춤 가이드라인 초안을 자동으로 만들어 줍니다</div>
+          </div>
+        </div>
+        <p class="cta-hint build-item" data-build="3">지금부터 실제 작동 화면을 보여드립니다 →</p>
+        <div class="slide-num">3 / 7</div>
+      </section>
+
+      <!-- 슬라이드 4: 린터 데모 -->
+      <section class="slide slide-demo" tabindex="0" data-slide="3">
+        <div class="slide-label">Demo 1</div>
+        <h2>린터 시연</h2>
+        <div class="video-placeholder">
+          <div class="vp-icon">▶</div>
+          <div class="vp-label">린터 데모 영상</div>
+        </div>
+        <div class="slide-num">4 / 7</div>
+      </section>
+
+      <!-- 슬라이드 5: 아카이브 데모 -->
+      <section class="slide slide-demo" tabindex="0" data-slide="4">
+        <div class="slide-label">Demo 2</div>
+        <h2>아카이브 시연</h2>
+        <div class="video-placeholder">
+          <div class="vp-icon">▶</div>
+          <div class="vp-label">아카이브 데모 영상</div>
+        </div>
+        <div class="slide-num">5 / 7</div>
+      </section>
+
+      <!-- 슬라이드 6: AI 생성기 데모 -->
+      <section class="slide slide-demo" tabindex="0" data-slide="5">
+        <div class="slide-label">Demo 3</div>
+        <h2>AI 생성기 시연</h2>
+        <div class="video-placeholder">
+          <div class="vp-icon">▶</div>
+          <div class="vp-label">AI 생성기 데모 영상</div>
+        </div>
+        <div class="slide-num">6 / 7</div>
+      </section>
+
+      <!-- 슬라이드 7: 실현 계획 -->
+      <section class="slide slide-7" tabindex="0" data-slide="6">
+        <div class="slide-label">Plan</div>
+        <h2>어떻게 공공기관에 도입할까요?</h2>
+        <div class="plan-steps">
+          <div class="plan-step build-item" data-build="0">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <div class="step-title">나라장터 조달 등록 후 입찰</div>
+              <div class="step-desc">합법적이고 반복적인 수주 구조를 만드는 기반</div>
+            </div>
+          </div>
+          <div class="plan-step build-item" data-build="1">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <div class="step-title">파일럿 기관 확보 → 교육·컨설팅 묶어서 제공</div>
+              <div class="step-desc">실제 개선 사례와 담당자 피드백으로 레퍼런스 구축</div>
+            </div>
+          </div>
+          <div class="plan-step build-item" data-build="2">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <div class="step-title">파일럿 사례를 토대로 기관 담당자 직접 컨택</div>
+              <div class="step-desc">검증된 사례가 있으면 담당자의 내부 결재 부담이 낮아짐</div>
+            </div>
+          </div>
+        </div>
+        <div class="slide-num">7 / 7</div>
+      </section>
+
+    </div><!-- /slide-container -->
+  </div><!-- /slide-stage -->
+</div><!-- /viewport -->
+
+<!-- 도움말 -->
+<div class="help-overlay" id="help-overlay">
+  <div class="help-box">
+    <strong>키보드 단축키</strong><br>
+    → / Space : 다음<br>
+    ← : 이전<br>
+    Home : 처음으로<br>
+    End : 마지막으로<br>
+    ? : 이 도움말 닫기
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── 스케일 ── */
+  function scaleSlideStage() {
+    var stage = document.querySelector('.slide-stage');
+    var scale = Math.min(window.innerWidth / 1024, window.innerHeight / 576);
+    stage.style.transform = 'scale(' + scale + ')';
+  }
+  window.addEventListener('resize', scaleSlideStage);
+  scaleSlideStage();
+
+  /* ── 상태 ── */
+  var container   = document.getElementById('slide-container');
+  var slides      = Array.from(document.querySelectorAll('.slide'));
+  var total       = slides.length;
+  var current     = 0;
+  var isAnimating = false;
+
+  /* build-item 인덱스 수집 */
+  function getBuildItems(slideIndex) {
+    return Array.from(slides[slideIndex].querySelectorAll('.build-item'))
+      .sort(function (a, b) {
+        return (+a.dataset.build || 0) - (+b.dataset.build || 0);
+      });
+  }
+
+  var buildState = slides.map(function () { return 0; });
+
+  function waitForTransition(el, ms) {
+    return new Promise(function (resolve) {
+      var tid = setTimeout(resolve, (ms || 600) + 80);
+      el.addEventListener('transitionend', function h(e) {
+        if (e.target !== el) return;
+        clearTimeout(tid);
+        el.removeEventListener('transitionend', h);
+        resolve();
+      });
+    });
+  }
+
+  function resetSlide(idx) {
+    getBuildItems(idx).forEach(function (el) { el.classList.remove('shown'); });
+    buildState[idx] = 0;
+  }
+
+  function showAllSlide(idx) {
+    getBuildItems(idx).forEach(function (el) { el.classList.add('shown'); });
+    buildState[idx] = getBuildItems(idx).length;
+  }
+
+  function goTo(index, showAll) {
+    if (isAnimating || index === current) return;
+    if (index < 0 || index >= total) return;
+    isAnimating = true;
+
+    resetSlide(current);
+    current = index;
+
+    requestAnimationFrame(function () {
+      container.style.transform = 'translateX(-' + (index * 100) + '%)';
+      history.replaceState(null, '', '#slide-' + (index + 1));
+
+      waitForTransition(container, 550).then(function () {
+        if (showAll) showAllSlide(index);
+        slides[index].focus({ preventScroll: true });
+        isAnimating = false;
+      });
+    });
+  }
+
+  function next() {
+    var items = getBuildItems(current);
+    var built = buildState[current];
+    if (built < items.length) {
+      items[built].classList.add('shown');
+      buildState[current]++;
+    } else {
+      goTo(current + 1);
+    }
+  }
+
+  function prev() {
+    goTo(current - 1, true);
+  }
+
+  /* ── 키보드 ── */
+  document.addEventListener('keydown', function (e) {
+    switch (e.key) {
+      case 'ArrowRight': case 'ArrowDown': case ' ':
+        e.preventDefault(); next(); break;
+      case 'ArrowLeft': case 'ArrowUp':
+        e.preventDefault(); prev(); break;
+      case 'Home': goTo(0); break;
+      case 'End':  goTo(total - 1, true); break;
+      case '?':    toggleHelp(); break;
+      case 'Escape': closeHelp(); break;
+    }
+  });
+
+  /* ── 스와이프 ── */
+  var startX = 0;
+  container.addEventListener('pointerdown', function (e) { startX = e.clientX; });
+  container.addEventListener('pointerup', function (e) {
+    var dx = e.clientX - startX;
+    if (Math.abs(dx) > 50) { dx < 0 ? next() : prev(); }
+  });
+
+  /* ── 해시 ── */
+  window.addEventListener('hashchange', function () {
+    var m = location.hash.match(/slide-(\d+)/);
+    if (m) goTo(+m[1] - 1, true);
+  });
+
+  /* 초기 슬라이드 */
+  (function () {
+    var m = location.hash.match(/slide-(\d+)/);
+    if (m) goTo(+m[1] - 1, true);
+  })();
+
+  /* ── 도움말 ── */
+  var helpOverlay = document.getElementById('help-overlay');
+  function toggleHelp() { helpOverlay.classList.toggle('visible'); }
+  function closeHelp()  { helpOverlay.classList.remove('visible'); }
+  helpOverlay.addEventListener('click', closeHelp);
+
+})();
+</script>
+</body>
+</html>
