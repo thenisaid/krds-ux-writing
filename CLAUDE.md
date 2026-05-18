@@ -205,6 +205,24 @@ print(f\"sha256-{h}\")
 - ✅ **principles.md 전 챕터 완성** (2026-05-02, 2,974줄) — 2.2·3장·4.2·4.3·5장·6장·7장·부록A·C 전체 포함
 - ✅ 다음 단계: index.html 전면 재작성 예정 (SeMA 납품 완료 이후)
 
+## Testing
+
+- **Framework**: vitest (`npm test` to run, `npm run test:watch` for watch mode)
+- **Test directory**: `tests/`
+- **Reference**: `TESTING.md`
+
+Test expectations:
+- When writing new functions in `krds-lint.js`, write a corresponding test
+- When fixing a bug, write a regression test before the fix
+- When adding error handling, write a test that triggers the error
+- When adding a conditional (if/else), write tests for BOTH paths
+- Never commit code that makes existing tests fail
+- 100% coverage is the goal — tests make vibe coding safe
+
+Note: only `krds-lint.js` is unit-testable via Node.js (UMD module). `archive.js` and `script.js` are browser-DOM IIFEs with no exports.
+
+---
+
 ## Skill routing
 
 When the user's request matches an available skill, invoke it via the Skill tool. When in doubt, invoke the skill.
