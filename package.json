@@ -7,9 +7,18 @@
     "krds-lint": "bin/krds-lint"
   },
   "scripts": {
-    "lint": "node bin/krds-lint"
+    "lint": "node bin/krds-lint",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
-  "keywords": ["krds", "ux-writing", "lint", "korean", "public-sector", "accessibility"],
+  "keywords": [
+    "krds",
+    "ux-writing",
+    "lint",
+    "korean",
+    "public-sector",
+    "accessibility"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -17,5 +26,8 @@
   },
   "engines": {
     "node": ">=14"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.6"
   }
 }

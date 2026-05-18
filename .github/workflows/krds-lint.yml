@@ -50,6 +50,9 @@ jobs:
             npm install
           fi
 
+      - name: 유닛 테스트 실행
+        run: npm test
+
       - name: bin/krds-lint 실행 권한 부여
         run: chmod +x bin/krds-lint
 
