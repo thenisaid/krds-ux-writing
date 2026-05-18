@@ -385,13 +385,13 @@ if (cfIp) return cfIp.trim();
 
 ---
 
-### TODO-013: warning 색상 접근성 — 텍스트에 #92580a 사용
+### ~~TODO-013: warning 색상 접근성 — 텍스트에 #92580a 사용~~ ✅ FIXED
 **Priority**: P3
 **Discovered by**: /qa 2026-05-15
-**What**: 경고 색상 `#f5a623`은 흰 배경 대비 2.6:1로 WCAG 미달. 텍스트 요소에는 `--krds-color-warning-text: #92580a` (4.8:1 대비) 사용 필요. 아이콘/배경에만 원색 허용.
-**Files**: lint.html, archive.html, generator/index.html (any element using warning orange as text color)
+**Fixed by**: /qa 2026-05-18 (commit b4a1768)
+**What**: `--color-warning-50: #c07000` → `#92580a` in lint.html (3.42:1 → 5.25:1 on #fdf3dc). Dark mode override `#d08000` added (5.26:1 on #2a1e06). Hardcoded rgba/hex values updated.
 **Why**: WCAG 1.4.3 — 텍스트 색상 대비 최소 4.5:1 요건
-**Blocked by**: 없음
+**Status**: RESOLVED
 
 ---
 
