@@ -192,18 +192,10 @@ print(f\"sha256-{h}\")
 "
 ```
 
-### 다음 단계 — 가이드라인 전체 재구성 (2026-04~)
-- KRDS UX Writing 원칙 전면 재설계 (사용자 주도 / 어시스턴트는 구조화·문서화·슬라이드 변환 담당)
-- 워크플로우: KRDS 원칙 설계 → SeMA(서울시립미술관) 파생 적용 → 슬라이드 제작
-- index.html 전면 재작성 (SeMA 납품 완료 이후)
-
-**진행 현황 (2026-04-08~14)**:
-- ✅ KRDS 사이트 분석 완료 (`krds-site-analysis.md`) — 46개 컴포넌트, 10개 UX Writing 공백 확인
-- ✅ 대응 전략 수립 완료 (`response-strategy.md`) — Depth Extension 프레임, DECISION A/B 확정
-- ✅ principles.md P1 완성 — 1장(파운데이션) + 2.1(행정어 사전 150개) + 4.1(에러 3단 구조)
-- ✅ 부록 B 자가진단 체크리스트 완성 — 23개 항목, 5개 섹션 (무번역·정보핵심화·심리적안전망·보이스톤·접근성)
-- ✅ **principles.md 전 챕터 완성** (2026-05-02, 2,974줄) — 2.2·3장·4.2·4.3·5장·6장·7장·부록A·C 전체 포함
-- ✅ 다음 단계: index.html 전면 재작성 예정 (SeMA 납품 완료 이후)
+### 사이트 현황 (2026-05-19 확인)
+- principles.md 전 챕터 완성 (2026-05-02, 2,974줄) — 서문·0장~7장·부록A·B·C 전체
+- 웹 사이트 구조도 완성 — foundation/, no-translation/, core-info/, safety-net/, structure/, notation/, components/, derivative/, governance/ 전체 구현
+- 콘텐츠 정렬 확인 완료 — 웹 페이지 구조가 principles.md와 일치함 (전면 재작성 불필요)
 
 ## Testing
 
