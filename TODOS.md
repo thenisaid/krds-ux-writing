@@ -85,13 +85,13 @@
 **완료**: 2026-05-19
 **Result**: `DESIGN.md` 생성 — 색상 원시값·시맨틱 토큰·타이포·레이아웃·보더 반경·컴포넌트 스펙·Do/Don't 규칙·접근성 대비비 표 포함. Source of truth: `index.html` `:root` 블록.
 
-### ✅ TODO-014: principles/ 프롬프트 스니펫 자동 동기화 — 인프라 완료
-**완료**: 2026-05-19 (인프라 준비 완료. 실제 동기화는 prompt-library.html 생성 후 자동 실행)
+### ✅ TODO-014: principles/ 프롬프트 스니펫 자동 동기화 — 완전 완료
+**완료**: 2026-05-19 (인프라 + 실제 동기화 모두 완료)
 **Result**:
 - `scripts/sync-prompts.js` — 외부 의존성 없는 Node.js 스크립트. prompt-library.html에서 `data-principle="<id>"` 요소 추출 → 원칙 페이지 sync 마커 사이에 삽입.
 - `.github/workflows/sync-prompts.yml` — prompt-library.html 또는 sync 스크립트 변경 push 시 자동 실행.
 - 3개 원칙 페이지에 `<!-- sync:<id>:start/end -->` 마커 삽입 완료.
-**Depends on (remaining)**: `prompt-library.html` 생성 — 생성 후 push하면 GitHub Actions가 자동으로 원칙 페이지 업데이트.
+- **prompt-library.html 생성 + push → GitHub Actions 자동 실행 (commit a9c6c19)** — 3개 원칙 페이지에 스니펫 자동 삽입 완료. TODO-014 완전 종료.
 
 ### ✅ TODO-009: Generator API 배포 설정 — 현행 유지 결정
 **완료**: 2026-05-08
