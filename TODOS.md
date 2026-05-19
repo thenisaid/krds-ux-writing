@@ -7,21 +7,6 @@
 
 ## 열린 항목
 
-### TODO-012: DESIGN.md 생성
-**Priority**: P3
-**What**: `:root` CSS 디자인 토큰을 별도 `DESIGN.md` 파일로 문서화. 색상·타이포·스페이싱 토큰 설명 + Do/Don't 사용 가이드 포함.
-**Why**: 디자인 시스템 업데이트 시 일관성 체크 관점 부재. 제3자 콘트리뷰터가 결정 기준 없이 임의 값을 사용할 위험.
-**Pros**:
-- 토큰 의미(의도) 문서화 — `--color-primary-50`이 언제 쓰이고 언제 안 쓰이는지
-- plan-design-review 다음 실행 시 시스템 정렬 체크 기준 확보
-**Cons**:
-- 유지보수 부담 (CSS 바꿀 때 DESIGN.md도 업데이트)
-- 1인 프로젝트에서는 오버헤드
-**Context**: /plan-design-review 2026-05-11 실행에서 발견. DESIGN.md 없어도 CSS 토큰이 source of truth로 기능하지만, 리뷰 품질과 신규 기여자 온보딩을 위해 중기적으로 필요.
-**Blocked by**: 없음
-
----
-
 ### TODO-011: Anthropic API 월 사용량 한도 설정
 **Priority**: P2
 **What**: Anthropic 대시보드 → Settings → Billing → Usage limits에서 월 하드 리밋($10-20) 설정
@@ -82,20 +67,6 @@
 
 ---
 
-### TODO-009: IP 헤더 일관성 — CF-Connecting-IP vs x-forwarded-for
-**Priority**: P2
-**What**: `api/generate.js`의 `getClientIp()`는 `x-real-ip` → `x-forwarded-for` 순으로 IP를 읽음. Vercel을 Cloudflare 프록시 뒤에 배포할 경우 Cloudflare가 `CF-Connecting-IP` 헤더를 추가하며, `x-forwarded-for`에는 Cloudflare 엣지 IP가 포함될 수 있음 → 모든 요청이 같은 IP로 집계되어 레이트 리밋이 작동하지 않는 구조적 위험.
-**Why**: KRDS 서비스가 Cloudflare CDN 뒤에 배포될 가능성 있음. 현재 코드에서는 `CF-Connecting-IP`를 전혀 읽지 않음.
-**Fix**: `getClientIp()` 에 `req.headers.get('cf-connecting-ip')` 최우선 검사 추가:
-```javascript
-// 우선순위: CF-Connecting-IP > x-real-ip > x-forwarded-for (last)
-const cfIp = req.headers.get('cf-connecting-ip');
-if (cfIp) return cfIp.trim();
-```
-**Depends on**: Cloudflare 배포 여부 확인 후 적용
-**Blocked by**: 없음 (독립적으로 적용 가능)
-
----
 
 ### TODO-010: computeScore 한국어 형태소 분석기 연동 (Phase 2)
 **Priority**: P3
@@ -300,6 +271,18 @@ if (cfIp) return cfIp.trim();
 ---
 
 ## 완료 항목
+
+### ✅ TODO-012: DESIGN.md 생성
+**완료**: 2026-05-19
+**Result**: `DESIGN.md` 생성 — 색상 원시값·시맨틱 토큰·타이포·레이아웃·보더 반경·컴포넌트 스펙·Do/Don't 규칙·접근성 대비비 표 포함. Source of truth: `index.html` `:root` 블록.
+
+### ✅ TODO-014: principles/ 프롬프트 스니펫 자동 동기화 — 인프라 완료
+**완료**: 2026-05-19 (인프라 준비 완료. 실제 동기화는 prompt-library.html 생성 후 자동 실행)
+**Result**:
+- `scripts/sync-prompts.js` — 외부 의존성 없는 Node.js 스크립트. prompt-library.html에서 `data-principle="<id>"` 요소 추출 → 원칙 페이지 sync 마커 사이에 삽입.
+- `.github/workflows/sync-prompts.yml` — prompt-library.html 또는 sync 스크립트 변경 push 시 자동 실행.
+- 3개 원칙 페이지에 `<!-- sync:<id>:start/end -->` 마커 삽입 완료.
+**Depends on (remaining)**: `prompt-library.html` 생성 — 생성 후 push하면 GitHub Actions가 자동으로 원칙 페이지 업데이트.
 
 ### ✅ TODO-009: Generator API 배포 설정 — 현행 유지 결정
 **완료**: 2026-05-08
