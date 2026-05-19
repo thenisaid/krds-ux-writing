@@ -784,7 +784,46 @@
       </div>
 
       <!-- sync:safety-net:start -->
-      <!-- prompt-library.html 생성 후 scripts/sync-prompts.js가 자동 채웁니다. 직접 편집 금지. -->
+      <!-- auto-updated: 2026-05-19 -->
+      <article class="pl-card" data-principle="safety-net" data-category="safety-net">
+      <div class="pl-card-head">
+        <div class="pl-card-badges">
+          <span class="pl-badge pl-badge--principle-3">원칙 03 심리적 안전망</span>
+        </div>
+        <span class="pl-card-num">05 / 10</span>
+      </div>
+      <div class="pl-card-title">에러 메시지 3단 구조 작성</div>
+      <div class="pl-card-desc">KRDS 3단 구조(무슨 일 → 왜 → 어떻게)로 에러 메시지를 작성합니다.</div>
+      <div class="pl-prompt-wrap">
+        <pre class="pl-prompt" id="prompt-05">다음 에러 상황을 KRDS 3단 구조로 에러 메시지를 작성해 주세요.
+
+3단 구조:
+1단 — 무슨 일: 오류를 한 문장으로 (시스템 코드·에러 번호 없이)
+2단 — 왜: 원인을 한 문장으로 (기술적 설명 없이, 사용자 관점으로)
+3단 — 어떻게: 사용자가 바로 취할 수 있는 행동 1가지
+
+작성 규칙:
+- 사용자를 탓하는 표현 금지 ("잘못 입력" → "맞지 않습니다")
+- 이모지·느낌표·대문자 강조 금지
+- 합쇼체(~합니다/~해 주세요) 통일
+- 3단을 한 문단으로 자연스럽게 연결해 주세요
+
+에러 상황: [예: "로그인 실패 — 비밀번호 5회 오류"]</pre>
+        <button class="pl-copy-btn" data-target="prompt-05">복사</button>
+      </div>
+      <div class="pl-example">
+        <div class="pl-example-head">
+          <div class="pl-example-before">
+            <div class="pl-example-label">❌ 변환 전</div>
+            <div class="pl-example-text">ERROR 4023: 인증 실패. 올바르지 않은 정보를 입력하셨습니다!</div>
+          </div>
+          <div class="pl-example-after">
+            <div class="pl-example-label">✅ 변환 후</div>
+            <div class="pl-example-text">인증 번호가 맞지 않습니다. 문자로 받은 6자리 숫자를 다시 확인해 주세요.</div>
+          </div>
+        </div>
+      </div>
+    </article>
       <!-- sync:safety-net:end -->
 
       <div class="sub-h3" style="margin-top:32px">다른 원칙 보기</div>
