@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="KRDS UX Writing 프롬프트 라이브러리 — AI 도구에 바로 붙여넣는 10개 실무 프롬프트">
+<meta property="og:type" content="website">
+<meta property="og:title" content="프롬프트 라이브러리 — KRDS UX Writing 가이드라인">
+<meta property="og:description" content="행정어 순화, 역피라미드, 에러 메시지 등 공공 UX Writing 실무에 바로 쓰는 AI 프롬프트 10개">
+<meta property="og:url" content="https://thenisaid.github.io/krds-ux-writing/prompt-library.html">
+<link rel="canonical" href="https://thenisaid.github.io/krds-ux-writing/prompt-library.html">
+<title>프롬프트 라이브러리 — KRDS UX Writing 가이드라인</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
+<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" as="style" crossorigin="anonymous"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
+  integrity="sha384-o2ZrV2/pmy/zDV8dhdJIibaM1s+TlS8+7JwrtshqmiTJGTczb1GcwzkjzZ80EUyy">
+<link rel="stylesheet" href="shared/style.css">
+<style>
+/* ── Prompt Library page ── */
+.pl-hero {
+  background: linear-gradient(160deg, #eef4ff 0%, #f8f7f5 60%);
+  padding: 64px 24px 48px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.pl-hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  padding: 3px 12px; border-radius: 100px;
+  background: rgba(37,110,244,0.08); color: var(--accent);
+  border: 1px solid rgba(37,110,244,0.2); margin-bottom: 16px;
+}
+.pl-hero-title {
+  font-size: clamp(24px, 4vw, 36px); font-weight: 800;
+  letter-spacing: -0.03em; color: var(--text); margin-bottom: 12px;
+}
+.pl-hero-sub {
+  font-size: 16px; color: var(--text-mid); max-width: 560px;
+  margin: 0 auto 32px; line-height: 1.7;
+}
+.pl-how {
+  display: flex; justify-content: center; gap: 32px; flex-wrap: wrap;
+  font-size: 13px; color: var(--text-muted);
+}
+.pl-how-step { display: flex; align-items: center; gap: 6px; }
+.pl-how-num {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+
+/* ── Filter bar ── */
+.pl-filter {
+  position: sticky; top: var(--gnb-h);
+  background: var(--bg); border-bottom: 1px solid var(--border);
+  padding: 12px 24px; z-index: 100;
+  display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+}
+.pl-filter-label { font-size: 12px; color: var(--text-muted); margin-right: 4px; }
+.pl-chip {
+  padding: 5px 14px; border-radius: 100px; font-size: 13px; font-weight: 500;
+  border: 1px solid var(--border-mid); background: transparent;
+  color: var(--text-mid); cursor: pointer; transition: all 0.15s;
+}
+.pl-chip:hover { border-color: var(--accent); color: var(--accent); }
+.pl-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ── Grid ── */
+.pl-main { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+.pl-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 24px;
+}
+@media (max-width: 880px) { .pl-grid { grid-template-columns: 1fr; } }
+
+/* ── Card ── */
+.pl-card {
+  border: 1px solid var(--border); border-radius: 12px;
+  background: var(--bg); overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: box-shadow 0.15s;
+}
+.pl-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+
+.pl-card-head {
+  padding: 20px 24px 0;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+}
+.pl-card-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.pl-badge {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+  padding: 2px 8px; border-radius: 4px;
+}
+.pl-badge--principle-1 { background: #e8f0fe; color: #1a56c4; }
+.pl-badge--principle-2 { background: #e6f4ea; color: #1a6b35; }
+.pl-badge--principle-3 { background: #fce8e6; color: #b31412; }
+.pl-badge--general    { background: var(--bg-subtle); color: var(--text-muted); border: 1px solid var(--border); }
+.pl-badge--new        { background: #fff3cd; color: #856404; }
+
+.pl-card-num {
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  letter-spacing: 0.06em; flex-shrink: 0; margin-top: 2px;
+}
+
+.pl-card-title {
+  font-size: 17px; font-weight: 700; color: var(--text);
+  letter-spacing: -0.02em; padding: 10px 24px 4px; line-height: 1.4;
+}
+.pl-card-desc {
+  font-size: 13px; color: var(--text-mid); padding: 0 24px 16px;
+  line-height: 1.6;
+}
+
+.pl-prompt-wrap { position: relative; margin: 0 24px 20px; }
+.pl-prompt {
+  background: var(--bg-subtle); border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px; padding-right: 48px;
+  font-size: 13px; color: var(--text); line-height: 1.7;
+  white-space: pre-wrap; font-family: var(--font-sans);
+  max-height: 220px; overflow-y: auto;
+}
+.pl-copy-btn {
+  position: absolute; top: 10px; right: 10px;
+  padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;
+  background: var(--bg); border: 1px solid var(--border-mid);
+  color: var(--text-mid); cursor: pointer; transition: all 0.15s;
+}
+.pl-copy-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.pl-copy-btn.copied { background: #228738; color: #fff; border-color: #228738; }
+
+.pl-example {
+  margin: 0 24px 24px;
+  border-radius: 8px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.pl-example-head {
+  display: flex; gap: 0;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.05em;
+}
+.pl-example-before, .pl-example-after {
+  flex: 1; padding: 10px 14px; line-height: 1.6;
+}
+.pl-example-before {
+  background: #fff5f5; color: #c0392b;
+  border-right: 1px solid var(--border);
+}
+.pl-example-after { background: #f0faf3; color: #1a6b35; }
+.pl-example-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+  margin-bottom: 4px; opacity: 0.7;
+}
+.pl-example-text { font-size: 13px; line-height: 1.7; }
+
+/* ── Counter ── */
+.pl-count {
+  font-size: 13px; color: var(--text-muted); margin-bottom: 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pl-card, .pl-copy-btn, .pl-chip { transition: none; }
+}
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-nav">본문으로 이동</a>
+<nav class="gnb" role="navigation" aria-label="주 메뉴"></nav>
+
+<header class="pl-hero">
+  <div class="pl-hero-badge">✦ AI 프롬프트 라이브러리</div>
+  <h1 class="pl-hero-title">공공 UX Writing 프롬프트 10선</h1>
+  <p class="pl-hero-sub">
+    KRDS 3대 원칙을 AI 도구에서 바로 쓸 수 있는 실무 프롬프트.
+    복사해서 Claude·ChatGPT에 붙여넣으세요.
+  </p>
+  <div class="pl-how">
+    <div class="pl-how-step"><div class="pl-how-num">1</div> 프롬프트 복사</div>
+    <div class="pl-how-step"><div class="pl-how-num">2</div> AI 도구에 붙여넣기</div>
+    <div class="pl-how-step"><div class="pl-how-num">3</div> 대괄호 부분에 내 텍스트 입력</div>
+  </div>
+</header>
+
+<div class="pl-filter" role="group" aria-label="원칙별 필터">
+  <span class="pl-filter-label">필터:</span>
+  <button class="pl-chip active" data-filter="all">전체 10개</button>
+  <button class="pl-chip" data-filter="no-translation">무번역</button>
+  <button class="pl-chip" data-filter="core-info">핵심 정보화</button>
+  <button class="pl-chip" data-filter="safety-net">심리적 안전망</button>
+  <button class="pl-chip" data-filter="general">범용</button>
+</div>
+
+<main id="main-content" class="pl-main">
+  <p class="pl-count"><span id="pl-visible-count">10</span>개 표시 중</p>
+
+  <div class="pl-grid" id="pl-grid">
+
+    <!-- ① 행정어·전문용어 순화 -->
+    <article class="pl-card" data-principle="no-translation" data-category="no-translation">
+      <div class="pl-card-head">
+        <div class="pl-card-badges">
+          <span class="pl-badge pl-badge--principle-1">원칙 01 무번역</span>
+        </div>
+        <span class="pl-card-num">01 / 10</span>
+      </div>
+      <div class="pl-card-title">행정어·전문용어 순화</div>
+      <div class="pl-card-desc">행정 관습어와 이중 부정을 시민 언어로 한 번에 변환합니다.</div>
+      <div class="pl-prompt-wrap">
+        <pre class="pl-prompt" id="prompt-01">다음 텍스트에서 행정어, 전문용어, 관습어를 시민이 바로 이해하는 말로 바꿔주세요.
+
+변환 규칙:
+- 관공서 관습어 → 일상어 (예: "명일" → "내일", "내방" → "방문", "기표" → "등록")
+- 이중 부정 → 긍정문 (예: "미비하지 않으면 신청 가능" → "모두 준비되면 신청 가능")
+- 과도한 경어 → 자연스러운 존댓말 (예: "~하시어 주시기 바랍니다" → "~해 주세요")
+- 불필요한 주어 "귀하는" 삭제
+- 원문의 의미와 정보량은 그대로 유지
+
+[여기에 텍스트를 붙여넣으세요]</pre>
+        <button class="pl-copy-btn" data-target="prompt-01">복사</button>
+      </div>
+      <div class="pl-example">
+        <div class="pl-example-head">
+          <div class="pl-example-before">
+            <div class="pl-example-label">❌ 변환 전</div>
+            <div class="pl-example-text">명일까지 서류를 제출하지 않으시면 신청이 불가합니다.</div>
+          </div>
+          <div class="pl-example-after">
+            <div class="pl-example-label">✅ 변환 후</div>
+            <div class="pl-example-text">내일까지 서류를 제출해야 신청할 수 있습니다.</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ② 이중 부정·과도한 경어 집중 교정 -->
+    <article class="pl-card" data-category="no-translation">
+      <div class="pl-card-head">
+        <div class="pl-card-badges">
+          <span class="pl-badge pl-badge--principle-1">원칙 01 무번역</span>
+        </div>
+        <span class="pl-card-num">02 / 10</span>
+      </div>
+      <div class="pl-card-title">이중 부정·과도한 경어 집중 교정</div>
+      <div class="pl-card-desc">경어 남발과 이중 부정만 집중적으로 제거합니다. 짧은 문장 목록에 적합합니다.</div>
+      <div class="pl-prompt-wrap">
+        <pre class="pl-prompt" id="prompt-02">다음 공공 서비스 문장에서 이중 부정과 과도한 경어를 제거해 주세요.
+
+교정 패턴:
+- "~하지 않으면 안 됩니다" → "~해야 합니다"
+- "~하지 않을 수 없습니다" → "~합니다"
+- "~하시어 주시기 바랍니다" → "~해 주세요"
+- "~하여 주시면 감사하겠습니다" → "~해 주세요"
+- "~해 주셨으면 합니다" → "~해 주세요"
+합쇼체(~합니다/~해 주세요) 통일 유지.
+
+[문장 목록을 번호와 함께 입력하세요]</pre>
+        <button class="pl-copy-btn" data-target="prompt-02">복사</button>
+      </div>
+      <div class="pl-example">
+        <div class="pl-example-head">
+          <div class="pl-example-before">
+            <div class="pl-example-label">❌ 변환 전</div>
+            <div class="pl-example-text">제출하지 않으시면 안 되오니 기한 내에 제출하시어 주시기 바랍니다.</div>
+          </div>
+          <div class="pl-example-after">
+            <div class="pl-example-label">✅ 변환 후</div>
+            <div class="pl-example-text">기한 내에 제출해야 합니다.</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ③ 안내문 역피라미드 변환 -->
+    <article class="pl-card" data-principle="core-info" data-category="core-info">
+      <div class="pl-card-head">
+        <div class="pl-card-badges">
+          <span class="pl-badge pl-badge--principle-2">원칙 02 핵심 정보화</span>
+        </div>
+        <span class="pl-card-num">03 / 10</span>
+      </div>
+      <div class="pl-card-title">안내문 역피라미드 변환</div>
+      <div class="pl-card-desc">결론이 맨 뒤에 오는 안내문을 '결론 먼저' 구조로 재작성합니다.</div>
+      <div class="pl-prompt-wrap">
+        <pre class="pl-prompt" id="prompt-03">다음 공공 서비스 안내문을 '결론 먼저(역피라미드)' 구조로 재작성해 주세요.
+
+변환 원칙:
+1. 첫 문장: 사용자가 해야 할 행동 또는 최종 결과를 한 문장으로
+2. 두 번째 단락: 이유·조건·상세 설명
+3. 마지막: 예외 처리·참고 사항 (필요한 경우만)
+
+제거할 것:
+- 인사말, 배경 설명, 불필요한 수식어
+- "안전하게 처리됩니다", "소중한" 등 당연한 설명
+- 결론을 뒤로 미루는 종속절 구조
+
+출력 형식: 변환 전 / 변환 후를 나란히 보여주세요.
+
+[안내문을 붙여넣으세요]</pre>
+        <button class="pl-copy-btn" data-target="prompt-03">복사</button>
+      </div>
+      <div class="pl-example">
+        <div class="pl-example-head">
+          <div class="pl-example-before">
+            <div class="pl-example-label">❌ 변환 전</div>
+            <div class="pl-example-text">귀하의 소득 및 재산 현황을 검토한 결과, 지원 대상에 해당되지 않음을 알려드립니다.</div>
+          </div>
+          <div class="pl-example-after">
+            <div class="pl-example-label">✅ 변환 후</div>
+            <div class="pl-example-text">지원 대상이 아닙니다. 소득 기준을 초과했습니다.</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ④ 알림·토스트 메시지 압축 -->
+    <article class="pl-card" data-category="core-info">
+      <div class="pl-card-head">
+        <div class="pl-card-badges">
+          <span class="pl-badge pl-badge--principle-2">원칙 02 핵심 정보화</span>
+        </div>
+        <span class="pl-card-num">04 / 10</span>
+      </div>
+      <div class="pl-card-title">알림·토스트 메시지 압축</div>
+      <div class="pl-card-desc">모바일 알림과 토스트 메시지를 30자 이내로 압축합니다.</div>
+      <div class="pl-prompt-wrap">
+        <pre class="pl-prompt" id="prompt-04">다음 알림·토스트 메시지를 모바일 기준 30자 이내로 압축해 주세요.
+
+조건:
+- 핵심 정보(무엇이 됐는지/안 됐는지)를 맨 앞에 배치
+- 앱 이름, 시스템 이름, "알림" 단어 제거
+- 동사로 끝내기 (예: "~됐습니다", "~해 주세요")
+- 이모지 금지, 합쇼체 유지
+- 글자 수도 함께 표기해 주세요
+
+[알림 목록을 번호와 함께 입력하세요]</pre>
+        <button class="pl-copy-btn" data-target="prompt-04">복사</button>
+      </div>
+      <div class="pl-example">
+        <div class="pl-example-head">
+          <div class="pl-example-before">
+            <div class="pl-example-label">❌ 변환 전</div>
+            <div class="pl-example-text">민원24 서비스 알림: 귀하의 신청 건이 처리 완료되었습니다. (32자)</div>
+          </div>
+          <div class="pl-example-after">
+            <div class="pl-example-label">✅ 변환 후</div>
+            <div class="pl-example-text">신청이 처리됐습니다. (10자)</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ⑤ 에러 메시지 3단 구조 -->
+    <article class="pl-card" data-principle="safety-net" data-category="safety-net">
+      <div class="pl-card-head">
+        <div class="pl-card-badges">
+          <span class="pl-badge pl-badge--principle-3">원칙 03 심리적 안전망</span>
+        </div>
+        <span class="pl-card-num">05 / 10</span>
+      </div>
+      <div class="pl-card-title">에러 메시지 3단 구조 작성</div>
+      <div class="pl-card-desc">KRDS 3단 구조(무슨 일 → 왜 → 어떻게)로 에러 메시지를 작성합니다.</div>
+      <div class="pl-prompt-wrap">
+        <pre class="pl-prompt" id="prompt-05">다음 에러 상황을 KRDS 3단 구조로 에러 메시지를 작성해 주세요.
+
+3단 구조:
+1단 — 무슨 일: 오류를 한 문장으로 (시스템 코드·에러 번호 없이)
+2단 — 왜: 원인을 한 문장으로 (기술적 설명 없이, 사용자 관점으로)
+3단 — 어떻게: 사용자가 바로 취할 수 있는 행동 1가지
+
+작성 규칙:
+- 사용자를 탓하는 표현 금지 ("잘못 입력" → "맞지 않습니다")
+- 이모지·느낌표·대문자 강조 금지
+- 합쇼체(~합니다/~해 주세요) 통일
+- 3단을 한 문단으로 자연스럽게 연결해 주세요
+
+에러 상황: [예: "로그인 실패 — 비밀번호 5회 오류"]</pre>
+        <button class="pl-copy-btn" data-target="prompt-05">복사</button>
+      </div>
+      <div class="pl-example">
+        <div class="pl-example-head">
+          <div class="pl-example-before">
+            <div class="pl-example-label">❌ 변환 전</div>
+            <div class="pl-example-text">ERROR 4023: 인증 실패. 올바르지 않은 정보를 입력하셨습니다!</div>
+          </div>
+          <div class="pl-example-after">
+            <div class="pl-example-label">✅ 변환 후</div>
+            <div class="pl-example-text">인증 번호가 맞지 않습니다. 문자로 받은 6자리 숫자를 다시 확인해 주세요.</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ⑥ 버튼 레이블 명확화 -->
+    <article class="pl-card" data-category="safety-net">
+      <div class="pl-card-head">
+        <div class="pl-card-badges">
+          <span class="pl-badge pl-badge--principle-3">원칙 03 심리적 안전망</span>
+        </div>
+        <span class="pl-card-num">06 / 10</span>
+      </div>
+      <div class="pl-card-title">버튼 레이블 명확화</div>
+      <div class="pl-card-desc">누른 뒤 일어날 일이 100% 예측되도록 모호한 버튼 레이블을 다시 씁니다.</div>
+      <div class="pl-prompt-wrap">
+        <pre class="pl-prompt" id="prompt-06">다음 버튼 레이블을 '누른 뒤 일어날 일'이 100% 예측되도록 다시 써주세요.
+
+규칙:
+- "확인", "완료", "다음" 등 범용 단어 금지
+- 동사+목적어 구조 (예: "신청서 제출하기", "작성 취소하고 나가기")
+- 비가역 행동(제출·삭제·결제)은 결과 명시 (예: "최종 제출 — 이후 수정 불가")
+- 15자 이하 유지
+- 각 버튼의 컨텍스트(어느 화면, 어떤 상황)도 함께 명시해 주세요
+
+버튼 목록:
+[버튼 레이블과 컨텍스트를 입력하세요]</pre>
+        <button class="pl-copy-btn" data-target="prompt-06">복사</button>
+      </div>
+      <div class="pl-example">
+        <div class="pl-example-head">
+          <div class="pl-example-before">
+            <div class="pl-example-label">❌ 변환 전</div>
+            <div class="pl-example-text">확인 / 취소 / 다음</div>
+          </div>
+          <div class="pl-example-after">
+            <div class="pl-example-label">✅ 변환 후</div>
+            <div class="pl-example-text">신청서 제출하기 / 작성 취소하고 나가기 / 본인 인증으로 이동</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ⑦ 폼 레이블·플레이스홀더 작성 -->
+    <article class="pl-card" data-category="general">
+      <div class="pl-card-head">
+        <div class="pl-card-badges">
+          <span class="pl-badge pl-badge--general">범용</span>
+        </div>
+        <span class="pl-card-num">07 / 10</span>
+      </div>
+      <div class="pl-card-title">폼 레이블·플레이스홀더 작성</div>
+      <div class="pl-card-desc">KRDS 기준에 맞는 입력 폼 레이블과 플레이스홀더를 생성합니다.</div>
+      <div class="pl-prompt-wrap">
+        <pre class="pl-prompt" id="prompt-07">다음 입력 폼 항목의 레이블과 플레이스홀더를 KRDS 기준으로 작성해 주세요.
+
+레이블 규칙:
+- 명사형으로 (예: "생년월일", "연락처")
+- 필수 항목은 레이블 옆 * 표시, 부연은 "(필수)" 텍스트
+- 선택 항목은 레이블 옆 "(선택)" 명시
+
+플레이스홀더 규칙:
+- 입력 형식 힌트만 표시 (예: "2000.01.01", "010-0000-0000")
+- 레이블 반복 금지 ("이름을 입력하세요" → 삭제)
+- 예시값은 실제 형식을 보여주는 것으로
+- 보조 설명이 필요하면 별도 헬퍼 텍스트로
+
+폼 항목:
+[항목명과 입력 유형을 번호로 나열하세요]</pre>
+        <button class="pl-copy-btn" data-target="prompt-07">복사</button>
+      </div>
+      <div class="pl-example">
+        <div class="pl-example-head">
+          <div class="pl-example-before">
+            <div class="pl-example-label">❌ 변환 전</div>
+            <div class="pl-example-text">이름을 입력하시오 / 주민등록번호를 -없이 입력해 주세요</div>
+          </div>
+          <div class="pl-example-after">
+            <div class="pl-example-label">✅ 변환 후</div>
+            <div class="pl-example-text">이름 * / 생년월일 * [플레이스홀더: 2000.01.01]</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ⑧ 빈 상태(Empty State) 메시지 -->
+    <article class="pl-card" data-category="safety-net">
+      <div class="pl-card-head">
+        <div class="pl-card-badges">
+          <span class="pl-badge pl-badge--principle-3">원칙 03 심리적 안전망</span>
+        </div>
+        <span class="pl-card-num">08 / 10</span>
+      </div>
+      <div class="pl-card-title">빈 상태(Empty State) 메시지 작성</div>
+      <div class="pl-card-desc">막다른 길이 아닌 다음 행동으로 안내하는 빈 화면 텍스트를 작성합니다.</div>
+      <div class="pl-prompt-wrap">
+        <pre class="pl-prompt" id="prompt-08">다음 빈 화면 상황에 맞는 Empty State 메시지를 작성해 주세요.
+
+3요소 구조:
+1. 현재 상태 한 문장 (예: "아직 신청 내역이 없습니다")
+2. 다음 행동 안내 1가지 (예: "아래 버튼으로 첫 신청을 시작해 보세요")
+3. (선택) CTA 버튼 레이블
+
+작성 규칙:
+- 사용자 잘못처럼 느껴지는 표현 금지
+  ("결과가 없습니다" → "찾는 결과가 없습니다")
+- 막다른 길이 아닌 다음 행동으로 연결
+- 합쇼체 유지, 이모지 금지
+- 친근하되 과하지 않게 (공공기관 보이스 유지)
+
+빈 화면 상황:
+[예: "보조금 신청 내역 없음", "검색 결과 없음", "알림 없음"]</pre>
+        <button class="pl-copy-btn" data-target="prompt-08">복사</button>
+      </div>
+      <div class="pl-example">
+        <div class="pl-example-head">
+          <div class="pl-example-before">
+            <div class="pl-example-label">❌ 변환 전</div>
+            <div class="pl-example-text">검색 결과가 없습니다.</div>
+          </div>
+          <div class="pl-example-after">
+            <div class="pl-example-label">✅ 변환 후</div>
+            <div class="pl-example-text">찾는 결과가 없습니다. 검색어를 바꿔보거나 필터를 초기화해 주세요.</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ⑨ 성공·완료 메시지 작성 -->
+    <article class="pl-card" data-category="general">
+      <div class="pl-card-head">
+        <div class="pl-card-badges">
+          <span class="pl-badge pl-badge--general">범용</span>
+        </div>
+        <span class="pl-card-num">09 / 10</span>
+      </div>
+      <div class="pl-card-title">성공·완료 메시지 작성</div>
+      <div class="pl-card-desc">과도한 축하 표현 없이 핵심 정보와 다음 단계를 전달합니다.</div>
+      <div class="pl-prompt-wrap">
+        <pre class="pl-prompt" id="prompt-09">다음 완료 상황에 맞는 성공·완료 메시지를 작성해 주세요.
+
+2요소 구조:
+1. 완료 사실 한 문장 (예: "신청서를 제출했습니다")
+2. 다음 단계 안내 (처리 기한, 확인 방법, 접수번호 등)
+
+작성 규칙:
+- "축하드립니다!", "감사합니다" 등 과도한 표현 자제
+- 사용자가 다음에 해야 할 일 또는 기다려야 할 일을 명시
+- 접수번호·처리기한 등 핵심 정보를 포함
+- 합쇼체 유지
+
+완료 상황:
+[예: "보조금 신청 완료", "비밀번호 변경", "개인정보 수정"]</pre>
+        <button class="pl-copy-btn" data-target="prompt-09">복사</button>
+      </div>
+      <div class="pl-example">
+        <div class="pl-example-head">
+          <div class="pl-example-before">
+            <div class="pl-example-label">❌ 변환 전</div>
+            <div class="pl-example-text">신청해 주셔서 감사합니다! 처리가 완료되었습니다.</div>
+          </div>
+          <div class="pl-example-after">
+            <div class="pl-example-label">✅ 변환 후</div>
+            <div class="pl-example-text">신청서를 제출했습니다. 결과는 영업일 기준 3일 이내 문자로 안내됩니다.</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ⑩ 파생 기관 가이드 초안 생성 -->
+    <article class="pl-card" data-category="general">
+      <div class="pl-card-head">
+        <div class="pl-card-badges">
+          <span class="pl-badge pl-badge--general">범용</span>
+          <span class="pl-badge pl-badge--new">심화</span>
+        </div>
+        <span class="pl-card-num">10 / 10</span>
+      </div>
+      <div class="pl-card-title">기관별 파생 가이드 초안 생성</div>
+      <div class="pl-card-desc">기관 특성에 맞게 KRDS를 커스터마이징한 파생 가이드 초안을 만듭니다.</div>
+      <div class="pl-prompt-wrap">
+        <pre class="pl-prompt" id="prompt-10">다음 기관 정보를 바탕으로 KRDS UX Writing 파생 가이드 초안을 작성해 주세요.
+
+파생 가이드 구조:
+1. 기관 미션과 주요 사용자 (2-3문장)
+2. 보이스·톤 설정
+   - 공식↔친근 슬라이더 (0=딱딱한 공문, 10=카카오 수준) 수치와 근거
+   - 대표 어조 3가지 키워드
+3. 기관 전용 금지어 목록 (최소 5개 + 대체어)
+4. 기관 전용 버튼 레이블 패턴 (주요 서비스 3개 이상)
+5. 기관 특수 상황 에러 메시지 예시 (2개)
+
+기관 정보:
+- 기관명: [예: 국민건강보험공단]
+- 주요 서비스: [예: 보험료 조회·납부, 급여 신청, 자격 확인]
+- 주요 사용자: [예: 전 연령, 특히 40대 이상, 병원 이용자]
+- 기관의 특수 용어: [기관에서 자주 쓰는 전문 용어 나열]</pre>
+        <button class="pl-copy-btn" data-target="prompt-10">복사</button>
+      </div>
+      <div class="pl-example">
+        <div class="pl-example-head">
+          <div class="pl-example-before">
+            <div class="pl-example-label">예시 입력</div>
+            <div class="pl-example-text">국민건강보험공단 / 보험료 조회·납부, 급여 신청 / 전 연령, 병원 이용자</div>
+          </div>
+          <div class="pl-example-after">
+            <div class="pl-example-label">출력 포함 항목</div>
+            <div class="pl-example-text">보이스 수치·금지어 목록·버튼 패턴·에러 예시 포함 가이드 초안</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </div><!-- /.pl-grid -->
+</main>
+
+<footer class="page-footer">
+  <span>KRDS UX Writing 가이드라인 v2.0</span>
+  <div class="footer-links">
+    <a href="https://www.koreads.go.kr/" target="_blank" rel="noopener">KRDS 공식 사이트</a>
+    <a href="https://github.com/thenisaid/krds-ux-writing" target="_blank" rel="noopener">GitHub</a>
+    <a href="/krds-ux-writing/">홈으로</a>
+  </div>
+</footer>
+
+<script src="shared/nav.js"></script>
+<script>
+(function () {
+  // Copy buttons
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.pl-copy-btn');
+    if (!btn) return;
+    var pre = document.getElementById(btn.dataset.target);
+    if (!pre) return;
+    var text = pre.textContent;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function () { flash(btn); });
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      flash(btn);
+    }
+  });
+
+  function flash(btn) {
+    btn.textContent = '복사됨!';
+    btn.classList.add('copied');
+    setTimeout(function () {
+      btn.textContent = '복사';
+      btn.classList.remove('copied');
+    }, 1800);
+  }
+
+  // Filter chips
+  var chips = document.querySelectorAll('.pl-chip');
+  var cards = document.querySelectorAll('.pl-card');
+  var countEl = document.getElementById('pl-visible-count');
+
+  chips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      chips.forEach(function (c) { c.classList.remove('active'); });
+      chip.classList.add('active');
+      var filter = chip.dataset.filter;
+      var visible = 0;
+      cards.forEach(function (card) {
+        var show = filter === 'all' || card.dataset.category === filter;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      countEl.textContent = visible;
+    });
+  });
+})();
+</script>
+</body>
+</html>
