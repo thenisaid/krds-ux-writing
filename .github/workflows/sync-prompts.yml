@@ -1,0 +1,37 @@
+name: Sync prompt snippets
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'prompt-library.html'
+      - 'scripts/sync-prompts.js'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run sync
+        run: node scripts/sync-prompts.js
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --quiet || (
+            git add principles/no-translation/index.html \
+                    principles/core-info/index.html \
+                    principles/safety-net/index.html
+            git commit -m "chore: sync prompt snippets from prompt-library.html [skip ci]"
+            git push
+          )
