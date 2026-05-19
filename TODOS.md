@@ -18,7 +18,7 @@
 - 한도 초과 시 정상 사용자도 차단됨
 **Context**: Vercel 배포(2026-05-08) 이후 즉시 적용 권장. plan-ceo-review Section 3 (Security) 에서 발견.
 **Depends on**: Vercel 배포 완료
-**Blocked by**: 없음
+**Blocked by**: 현재 회사(HMG) 프록시를 통해 Claude API 사용 중 → 개인 Anthropic 계정 없음. 회사로부터 독립하는 시점에 처리. (`console.anthropic.com → Settings → Billing → Usage limits`)
 
 ---
 
