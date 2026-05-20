@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="KRDS UX Writing 3대 원칙 — 실제 텍스트에 원칙이 어떻게 적용되는지 Before/After로 확인하세요.">
+<title>원칙 Before/After — KRDS UX Writing</title>
+
+<script>(function(){
+  var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  if(t!=='light'&&t!=='dark')t='light';
+  document.documentElement.setAttribute('data-theme',t);
+})();</script>
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" crossorigin="anonymous"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
+  integrity="sha384-o2ZrV2/pmy/zDV8dhdJIibaM1s+TlS8+7JwrtshqmiTJGTczb1GcwzkjzZ80EUyy">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
+
+<style>
+/* ─── Design Tokens (KRDS) ─── */
+:root {
+  --color-primary-5:  #ecf2fe;
+  --color-primary-10: #d8e5fd;
+  --color-primary-30: #86aff9;
+  --color-primary-50: #256ef4;
+  --color-primary-60: #0b50d0;
+  --color-primary-70: #083891;
+  --color-gray-0:   #ffffff;
+  --color-gray-5:   #f4f5f6;
+  --color-gray-10:  #e6e8ea;
+  --color-gray-20:  #cdd1d5;
+  --color-gray-40:  #8a949e;
+  --color-gray-50:  #6d7882;
+  --color-gray-60:  #58616a;
+  --color-gray-70:  #464c53;
+  --color-gray-80:  #33363d;
+  --color-gray-90:  #1e2124;
+  --color-gray-95:  #131416;
+  --color-danger-50: #d9342b;
+  --color-success-50: #228738;
+  --color-warning-50: #92580a;
+  --bg:          var(--color-gray-0);
+  --bg-subtle:   var(--color-gray-5);
+  --bg-strong:   var(--color-gray-90);
+  --border:      var(--color-gray-10);
+  --border-mid:  var(--color-gray-20);
+  --text:        var(--color-gray-90);
+  --text-mid:    var(--color-gray-70);
+  --text-muted:  var(--color-gray-50);
+  --accent:      var(--color-primary-50);
+  --font-sans:   'Pretendard GOV Variable','Pretendard Variable',system-ui,-apple-system,sans-serif;
+  --container:   1200px;
+  --gutter:      clamp(20px,4vw,48px);
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   16px;
+}
+[data-theme="dark"] {
+  --bg:         var(--color-gray-95);
+  --bg-subtle:  var(--color-gray-90);
+  --border:     var(--color-gray-80);
+  --border-mid: var(--color-gray-70);
+  --text:       var(--color-gray-0);
+  --text-mid:   var(--color-gray-20);
+  --text-muted: var(--color-gray-40);
+  --accent:     var(--color-primary-30);
+}
+
+/* ─── Base ─── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-sans);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  font-size:16px;
+  min-height:100vh;
+}
+.skip-nav{
+  position:absolute;left:-9999px;top:8px;padding:8px 16px;
+  background:var(--accent);color:#fff;border-radius:var(--radius-sm);
+  font-size:14px;z-index:9999;
+}
+.skip-nav:focus{left:8px}
+.container{max-width:var(--container);margin:0 auto;padding:0 var(--gutter)}
+
+/* ─── GNB ─── */
+.gnb{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;gap:24px;
+  height:60px;padding:0 var(--gutter);
+  background:rgba(248,247,245,.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
+[data-theme="dark"] .gnb{background:rgba(19,20,22,.92)}
+.gnb-logo{
+  display:flex;align-items:center;gap:8px;
+  text-decoration:none;color:var(--text);
+  font-size:15px;font-weight:700;white-space:nowrap;
+}
+.gnb-logo-mark{
+  width:28px;height:28px;border-radius:6px;
+  background:var(--accent);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;flex-shrink:0;
+}
+.gnb-nav{display:flex;align-items:center;gap:2px;flex:1}
+.gnb-nav-link{
+  padding:6px 12px;border-radius:var(--radius-sm);
+  text-decoration:none;color:var(--text-muted);
+  font-size:14px;font-weight:500;transition:all .15s;
+}
+.gnb-nav-link:hover,.gnb-nav-link.active{color:var(--text);background:var(--bg-subtle)}
+.gnb-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+.gnb-badge{
+  font-size:11px;font-weight:700;padding:3px 8px;
+  background:var(--color-primary-5);color:var(--accent);
+  border-radius:100px;border:1px solid var(--color-primary-10);
+}
+.gnb-icon-btn{
+  width:36px;height:36px;border-radius:var(--radius-sm);
+  border:none;background:transparent;cursor:pointer;
+  color:var(--text-muted);display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.gnb-icon-btn:hover{background:var(--bg-subtle);color:var(--text)}
+.gnb-mobile-btn{display:none}
+@media(max-width:640px){.gnb-mobile-btn{display:flex}.gnb-nav{display:none}}
+
+/* ─── Page Hero ─── */
+.page-hero{
+  padding:56px 0 40px;
+  border-bottom:1px solid var(--border);
+}
+.page-hero .container{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.page-hero-eyebrow{
+  font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:12px;
+}
+.page-hero-title{font-size:clamp(24px,4vw,36px);font-weight:700;line-height:1.25;margin-bottom:12px}
+.page-hero-desc{font-size:15px;color:var(--text-muted);max-width:560px;line-height:1.65}
+.seminar-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 20px;border-radius:var(--radius-md);
+  background:var(--bg-subtle);border:1px solid var(--border-mid);
+  color:var(--text-mid);font-size:14px;font-weight:600;
+  cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0;
+}
+.seminar-btn:hover{background:var(--color-primary-5);border-color:var(--color-primary-10);color:var(--accent)}
+.seminar-btn svg{opacity:.7}
+
+/* ─── Tabs ─── */
+.tabs-bar{
+  display:flex;gap:0;border-bottom:2px solid var(--border);
+  padding:0 var(--gutter);margin-top:0;overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.tab-btn{
+  position:relative;padding:16px 24px;
+  font-size:15px;font-weight:600;
+  background:none;border:none;cursor:pointer;
+  color:var(--text-muted);transition:color .15s;white-space:nowrap;
+}
+.tab-btn::after{
+  content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;
+  background:var(--accent);transform:scaleX(0);transition:transform .2s;
+}
+.tab-btn.active{color:var(--accent)}
+.tab-btn.active::after{transform:scaleX(1)}
+.tab-btn:hover:not(.active){color:var(--text)}
+
+.tab-principle-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:2px 7px;border-radius:100px;margin-left:8px;vertical-align:middle;
+}
+.chip-a{background:#ecf2fe;color:#256ef4}
+.chip-b{background:#f0fdf4;color:#228738}
+.chip-c{background:#fff7ed;color:#9a3412}
+
+/* ─── Tab Panels ─── */
+.tab-panel{display:none;padding:48px 0}
+.tab-panel.active{display:block}
+.panel-intro{
+  margin-bottom:40px;padding:24px 28px;
+  border-radius:var(--radius-md);background:var(--bg-subtle);
+  border-left:3px solid var(--accent);
+}
+.panel-intro-label{
+  font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:8px;
+}
+.panel-intro-title{font-size:18px;font-weight:700;margin-bottom:6px}
+.panel-intro-desc{font-size:14px;color:var(--text-muted);line-height:1.65}
+
+/* ─── Before/After Pairs ─── */
+.pair-grid{display:flex;flex-direction:column;gap:28px}
+.pair{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;
+  align-items:start;
+}
+@media(max-width:768px){.pair{grid-template-columns:1fr}}
+
+.pair-context{
+  grid-column:1/-1;
+  font-size:12px;font-weight:600;color:var(--text-muted);
+  letter-spacing:.06em;text-transform:uppercase;
+  padding-bottom:8px;border-bottom:1px solid var(--border);
+  margin-bottom:4px;
+}
+
+.ba-card{
+  border-radius:var(--radius-md);padding:20px 24px;
+  border:1.5px solid;transition:transform .1s;
+}
+.ba-card.before{background:#fff5f5;border-color:#d9342b}
+[data-theme="dark"] .ba-card.before{background:rgba(217,52,43,.12);border-color:#d9342b}
+.ba-card.after{background:#f0fff4;border-color:#228738}
+[data-theme="dark"] .ba-card.after{background:rgba(34,135,56,.12);border-color:#228738}
+
+.ba-label{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:3px 8px;border-radius:100px;margin-bottom:12px;
+}
+.ba-label.before{background:#d9342b;color:#fff}
+.ba-label.after{background:#228738;color:#fff}
+
+.ba-text{
+  font-size:15px;line-height:1.7;color:var(--text);
+}
+.ba-card.before .ba-text{color:var(--text-mid)}
+
+/* ─── Mark highlight animation (Risk 2) ─── */
+mark.diff{
+  background:rgba(34,135,56,.18);color:inherit;
+  padding:1px 2px;border-radius:2px;
+  animation:markFade .6s ease forwards;
+  animation-play-state:paused;
+}
+mark.diff.animate{animation-play-state:running}
+@keyframes markFade{
+  0%{background:rgba(34,135,56,.5);outline:2px solid rgba(34,135,56,.4)}
+  100%{background:rgba(34,135,56,.15);outline:2px solid transparent}
+}
+
+/* ─── Interactive Section (Risk 3) ─── */
+.interactive-section{
+  padding:56px 0;
+  border-top:1px solid var(--border);
+  background:var(--bg-subtle);
+}
+.interactive-inner{max-width:720px}
+.interactive-eyebrow{
+  font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:8px;
+}
+.interactive-title{font-size:22px;font-weight:700;margin-bottom:8px}
+.interactive-desc{font-size:14px;color:var(--text-muted);margin-bottom:24px;line-height:1.65}
+
+.lint-textarea{
+  width:100%;min-height:120px;padding:16px;
+  border:1.5px solid var(--border-mid);border-radius:var(--radius-md);
+  background:var(--bg);color:var(--text);
+  font-family:var(--font-sans);font-size:15px;line-height:1.65;
+  resize:vertical;transition:border-color .15s;outline:none;
+}
+.lint-textarea:focus{border-color:var(--accent)}
+.lint-textarea::placeholder{color:var(--text-muted)}
+
+.lint-actions{display:flex;align-items:center;gap:10px;margin-top:10px}
+.lint-btn{
+  padding:9px 20px;border-radius:var(--radius-sm);
+  font-size:14px;font-weight:600;cursor:pointer;
+  border:1.5px solid var(--border-mid);background:var(--bg);
+  color:var(--text-mid);transition:all .15s;
+}
+.lint-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.lint-btn.primary:hover{background:var(--color-primary-60);border-color:var(--color-primary-60)}
+.lint-btn:hover:not(.primary){border-color:var(--border-mid);background:var(--bg-subtle)}
+
+.lint-results{margin-top:20px;display:none}
+.lint-results.visible{display:block}
+.lint-score-bar{
+  display:flex;align-items:center;gap:16px;
+  padding:16px 20px;border-radius:var(--radius-md);
+  background:var(--bg);border:1px solid var(--border);
+  margin-bottom:12px;
+}
+.lint-score-num{
+  font-size:32px;font-weight:800;line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.lint-score-num.good{color:#228738}
+.lint-score-num.ok{color:#92580a}
+.lint-score-num.bad{color:#d9342b}
+.lint-score-label{font-size:13px;color:var(--text-muted)}
+.lint-summary{
+  display:flex;gap:12px;margin-left:auto;
+  font-size:13px;font-weight:600;
+}
+.lint-summary-item{display:flex;align-items:center;gap:4px}
+.lint-summary-item.error{color:#d9342b}
+.lint-summary-item.warn{color:#92580a}
+.lint-summary-item.ok{color:#228738}
+
+.lint-issue-list{display:flex;flex-direction:column;gap:8px}
+.lint-issue{
+  padding:12px 16px;border-radius:var(--radius-sm);
+  border-left:3px solid;background:var(--bg);
+  border:1px solid var(--border);
+  border-left-width:3px;
+}
+.lint-issue.error{border-left-color:#d9342b}
+.lint-issue.warning{border-left-color:#92580a}
+.lint-issue.info{border-left-color:#256ef4}
+.lint-issue-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+.lint-issue-cat{
+  font-size:11px;font-weight:700;padding:2px 7px;
+  border-radius:100px;background:var(--bg-subtle);color:var(--text-muted);
+}
+.lint-issue-match{
+  font-size:13px;font-weight:600;
+  background:#fff5f5;color:#d9342b;padding:1px 6px;border-radius:3px;
+}
+[data-theme="dark"] .lint-issue-match{background:rgba(217,52,43,.15)}
+.lint-issue-msg{font-size:13px;color:var(--text-muted)}
+.lint-issue-suggestion{font-size:13px;color:#228738;margin-top:2px}
+.lint-empty{
+  text-align:center;padding:32px;color:var(--text-muted);
+  font-size:14px;
+}
+
+/* ─── Seminar Mode (Risk 1) ─── */
+.seminar-overlay{
+  display:none;position:fixed;inset:0;z-index:9000;
+  background:#0e1012;overflow:hidden;
+}
+.seminar-overlay.active{display:flex;flex-direction:column}
+.seminar-toolbar{
+  display:flex;align-items:center;gap:16px;
+  padding:16px 32px;border-bottom:1px solid rgba(255,255,255,.1);
+  flex-shrink:0;
+}
+.seminar-principle{
+  font-size:13px;font-weight:600;color:rgba(255,255,255,.5);
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.seminar-counter{
+  margin-left:auto;font-size:13px;font-weight:700;
+  color:rgba(255,255,255,.4);font-variant-numeric:tabular-nums;
+}
+.seminar-close{
+  width:36px;height:36px;border-radius:var(--radius-sm);
+  background:rgba(255,255,255,.08);border:none;cursor:pointer;
+  color:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;
+  transition:background .15s;
+}
+.seminar-close:hover{background:rgba(255,255,255,.15)}
+
+.seminar-stage{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:40px 64px;overflow:auto;
+}
+.seminar-slide{
+  width:100%;max-width:900px;
+}
+.seminar-context-label{
+  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);margin-bottom:20px;text-align:center;
+}
+.seminar-pair{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:640px){.seminar-pair{grid-template-columns:1fr}}
+.seminar-card{
+  border-radius:var(--radius-md);padding:24px 28px;border:1.5px solid;
+}
+.seminar-card.before{background:rgba(217,52,43,.1);border-color:#d9342b}
+.seminar-card.after{background:rgba(34,135,56,.1);border-color:#228738}
+.seminar-card-label{
+  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:3px 8px;border-radius:100px;margin-bottom:12px;
+  display:inline-flex;align-items:center;gap:5px;
+}
+.seminar-card.before .seminar-card-label{background:#d9342b;color:#fff}
+.seminar-card.after .seminar-card-label{background:#228738;color:#fff}
+.seminar-card-text{font-size:17px;line-height:1.75;color:rgba(255,255,255,.9)}
+.seminar-card.before .seminar-card-text{color:rgba(255,255,255,.6)}
+
+.seminar-nav{
+  display:flex;align-items:center;justify-content:center;gap:20px;
+  padding:20px 32px;flex-shrink:0;
+}
+.seminar-nav-btn{
+  width:48px;height:48px;border-radius:var(--radius-md);
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  color:rgba(255,255,255,.7);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;transition:all .15s;
+}
+.seminar-nav-btn:hover:not(:disabled){background:rgba(255,255,255,.15);color:#fff}
+.seminar-nav-btn:disabled{opacity:.25;cursor:default}
+.seminar-hint{font-size:12px;color:rgba(255,255,255,.25)}
+
+/* ─── Footer ─── */
+footer{
+  border-top:1px solid var(--border);
+  padding:40px 0 28px;
+  background:var(--color-gray-90);
+}
+.footer-inner{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  gap:32px;flex-wrap:wrap;margin-bottom:24px;
+}
+.footer-logo{
+  display:flex;align-items:center;gap:8px;
+  text-decoration:none;color:var(--color-gray-0);
+  font-size:14px;font-weight:700;margin-bottom:8px;
+}
+.footer-desc{font-size:13px;color:var(--color-gray-40);line-height:1.65;max-width:360px;margin-top:6px}
+.footer-links{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.footer-link{
+  font-size:13px;text-decoration:none;color:var(--color-gray-50);
+  transition:color .15s;
+}
+.footer-link:hover{color:var(--color-gray-0)}
+.footer-legal{font-size:12px;color:var(--color-gray-60);padding-top:20px;border-top:1px solid var(--color-gray-80)}
+
+/* ─── Utilities ─── */
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<a class="skip-nav" href="#main">본문 바로가기</a>
+
+<!-- GNB -->
+<header class="gnb" role="banner">
+  <a href="/krds-ux-writing/" class="gnb-logo" aria-label="KRDS UX Writing 가이드라인 홈">
+    <span class="gnb-logo-mark" aria-hidden="true">K</span>
+    <span>UX Writing</span>
+  </a>
+  <nav class="gnb-nav" aria-label="섹션 내비게이션">
+    <a href="/krds-ux-writing/principles/" class="gnb-nav-link">원칙</a>
+    <a href="/krds-ux-writing/dictionary/" class="gnb-nav-link">사전</a>
+    <a href="/krds-ux-writing/#case-studies" class="gnb-nav-link">사례</a>
+    <a href="before-after.html" class="gnb-nav-link active" aria-current="page">Before/After</a>
+  </nav>
+  <div class="gnb-actions">
+    <span class="gnb-badge">v2.0</span>
+    <button class="gnb-icon-btn" id="themeToggle" aria-label="다크모드 전환" type="button">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path id="themeIcon" fill="currentColor" d="M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2zm0 1.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- Page Hero -->
+<section class="page-hero" aria-labelledby="hero-title">
+  <div class="container">
+    <div>
+      <div class="page-hero-eyebrow">원칙 적용 시각화</div>
+      <h1 class="page-hero-title" id="hero-title">원칙 Before / After</h1>
+      <p class="page-hero-desc">
+        무번역·정보핵심화·심리적안전망 — 3대 원칙이 실제 공공 서비스 텍스트에
+        어떻게 적용되는지 전/후 비교로 확인하세요.
+      </p>
+    </div>
+    <button class="seminar-btn" id="seminarBtn" aria-label="발표 모드로 전환" type="button">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <rect x="1" y="2" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+        <path d="M6 15h4M8 12v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      발표 모드
+    </button>
+  </div>
+</section>
+
+<!-- Tab Navigation -->
+<div class="tabs-bar" role="tablist" aria-label="원칙 선택">
+  <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="panel-a" id="tab-a" type="button">
+    무번역
+    <span class="tab-principle-chip chip-a">A</span>
+  </button>
+  <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-b" id="tab-b" type="button">
+    정보핵심화
+    <span class="tab-principle-chip chip-b">B</span>
+  </button>
+  <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-c" id="tab-c" type="button">
+    심리적안전망
+    <span class="tab-principle-chip chip-c">C</span>
+  </button>
+</div>
+
+<!-- ── Tab A: 무번역 ── -->
+<div class="tab-panel active" id="panel-a" role="tabpanel" aria-labelledby="tab-a">
+  <div class="container">
+    <div class="panel-intro">
+      <div class="panel-intro-label">원칙 A — 무번역</div>
+      <div class="panel-intro-title">행정어·한자어를 국민의 언어로</div>
+      <p class="panel-intro-desc">
+        공공기관이 오랫동안 사용해온 행정 관습어와 한자어를 풀어 씁니다.
+        번역 없이 바로 이해할 수 있어야 합니다.
+      </p>
+    </div>
+
+    <div class="pair-grid">
+      <!-- Pair A-1 -->
+      <div class="pair" data-context="신청 완료 알림" data-principle="A">
+        <div class="pair-context">신청 완료 알림</div>
+        <div class="ba-card before">
+          <span class="ba-label before">✗ Before</span>
+          <p class="ba-text">귀하의 신청이 접수되었습니다. 결과는 익일까지 안내해 드리겠습니다.</p>
+        </div>
+        <div class="ba-card after">
+          <span class="ba-label after">✓ After</span>
+          <p class="ba-text"><mark class="diff">신청</mark>이 완료되었습니다. 결과는 <mark class="diff">내일까지</mark> <mark class="diff">알려드리겠습니다.</mark></p>
+        </div>
+      </div>
+
+      <!-- Pair A-2 -->
+      <div class="pair" data-context="방문 안내" data-principle="A">
+        <div class="pair-context">방문 안내</div>
+        <div class="ba-card before">
+          <span class="ba-label before">✗ Before</span>
+          <p class="ba-text">교부 신청서를 지참하여 직접 내방하여 주시기 바랍니다.</p>
+        </div>
+        <div class="ba-card after">
+          <span class="ba-label after">✓ After</span>
+          <p class="ba-text"><mark class="diff">발급</mark> 신청서를 <mark class="diff">들고</mark> 직접 <mark class="diff">방문해</mark> 주세요.</p>
+        </div>
+      </div>
+
+      <!-- Pair A-3 -->
+      <div class="pair" data-context="법정대리인 동의" data-principle="A">
+        <div class="pair-context">보호자 동의 안내</div>
+        <div class="ba-card before">
+          <span class="ba-label before">✗ Before</span>
+          <p class="ba-text">법정대리인의 인감 날인이 필요합니다.</p>
+        </div>
+        <div class="ba-card after">
+          <span class="ba-label after">✓ After</span>
+          <p class="ba-text"><mark class="diff">부모님 또는 후견인</mark>의 <mark class="diff">도장</mark>이 필요합니다.</p>
+        </div>
+      </div>
+
+      <!-- Pair A-4 -->
+      <div class="pair" data-context="처리 결과 안내" data-principle="A">
+        <div class="pair-context">처리 결과 안내</div>
+        <div class="ba-card before">
+          <span class="ba-label before">✗ Before</span>
+          <p class="ba-text">피부양자 등재 신청이 접수되었습니다. 상기 사항을 확인하여 주시기 바랍니다.</p>
+        </div>
+        <div class="ba-card after">
+          <span class="ba-label after">✓ After</span>
+          <p class="ba-text"><mark class="diff">부양가족</mark> 등재 신청이 완료되었습니다. <mark class="diff">위 내용</mark>을 확인해 주세요.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Tab B: 정보핵심화 ── -->
+<div class="tab-panel" id="panel-b" role="tabpanel" aria-labelledby="tab-b">
+  <div class="container">
+    <div class="panel-intro" style="border-left-color:#228738">
+      <div class="panel-intro-label" style="color:#228738">원칙 B — 정보핵심화</div>
+      <div class="panel-intro-title">필요한 정보만, 가장 짧게</div>
+      <p class="panel-intro-desc">
+        읽는 사람이 결정을 내리거나 행동을 취하는 데 필요한 정보만 담습니다.
+        한 문장에 한 가지 메시지를 전합니다.
+      </p>
+    </div>
+
+    <div class="pair-grid">
+      <!-- Pair B-1 -->
+      <div class="pair" data-context="오류 안내 문구" data-principle="B">
+        <div class="pair-context">오류 안내 문구</div>
+        <div class="ba-card before">
+          <span class="ba-label before">✗ Before</span>
+          <p class="ba-text">서비스 이용 중 불편함이 있으시거나 오류가 발생하였을 경우, 저희 고객센터(1234-5678)로 연락 주시면 신속하게 처리해 드리도록 하겠습니다.</p>
+        </div>
+        <div class="ba-card after">
+          <span class="ba-label after">✓ After</span>
+          <p class="ba-text">오류가 발생했나요? <mark class="diff">고객센터 1234-5678</mark></p>
+        </div>
+      </div>
+
+      <!-- Pair B-2 -->
+      <div class="pair" data-context="파일 업로드 안내" data-principle="B">
+        <div class="pair-context">파일 업로드 안내</div>
+        <div class="ba-card before">
+          <span class="ba-label before">✗ Before</span>
+          <p class="ba-text">첨부파일은 PDF, JPG, PNG 형식의 파일만 업로드 가능하며, 파일의 크기는 최대 10MB까지만 가능합니다. 그 외의 파일 형식이나 10MB를 초과하는 파일은 업로드가 되지 않습니다.</p>
+        </div>
+        <div class="ba-card after">
+          <span class="ba-label after">✓ After</span>
+          <p class="ba-text">첨부파일: <mark class="diff">PDF · JPG · PNG, 최대 10MB</mark></p>
+        </div>
+      </div>
+
+      <!-- Pair B-3 -->
+      <div class="pair" data-context="버튼 레이블" data-principle="B">
+        <div class="pair-context">버튼 레이블</div>
+        <div class="ba-card before">
+          <span class="ba-label before">✗ Before</span>
+          <p class="ba-text">클릭하시면 신청이 완료되고 신청 내역 확인 페이지로 이동하게 됩니다</p>
+        </div>
+        <div class="ba-card after">
+          <span class="ba-label after">✓ After</span>
+          <p class="ba-text"><mark class="diff">신청하기</mark></p>
+        </div>
+      </div>
+
+      <!-- Pair B-4 -->
+      <div class="pair" data-context="공지 제목" data-principle="B">
+        <div class="pair-context">공지 제목</div>
+        <div class="ba-card before">
+          <span class="ba-label before">✗ Before</span>
+          <p class="ba-text">2026년도 제1차 국민 참여 정책 제안 공모전 시행 계획 공고에 대한 안내</p>
+        </div>
+        <div class="ba-card after">
+          <span class="ba-label after">✓ After</span>
+          <p class="ba-text"><mark class="diff">2026 정책 제안 공모전 안내</mark></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Tab C: 심리적안전망 ── -->
+<div class="tab-panel" id="panel-c" role="tabpanel" aria-labelledby="tab-c">
+  <div class="container">
+    <div class="panel-intro" style="border-left-color:#9a3412">
+      <div class="panel-intro-label" style="color:#9a3412">원칙 C — 심리적안전망</div>
+      <div class="panel-intro-title">비난 대신 해결책, 불안 대신 안심</div>
+      <p class="panel-intro-desc">
+        실수한 사용자를 탓하지 않습니다. 무엇을 해야 하는지 알려주고,
+        다음 단계로 나아갈 수 있도록 돕습니다.
+      </p>
+    </div>
+
+    <div class="pair-grid">
+      <!-- Pair C-1 -->
+      <div class="pair" data-context="로그인 오류" data-principle="C">
+        <div class="pair-context">로그인 오류 메시지</div>
+        <div class="ba-card before">
+          <span class="ba-label before">✗ Before</span>
+          <p class="ba-text">비밀번호가 틀렸습니다. 다시 입력하세요.</p>
+        </div>
+        <div class="ba-card after">
+          <span class="ba-label after">✓ After</span>
+          <p class="ba-text">비밀번호가 <mark class="diff">일치하지 않습니다</mark>. 다시 <mark class="diff">확인해</mark> 주세요.</p>
+        </div>
+      </div>
+
+      <!-- Pair C-2 -->
+      <div class="pair" data-context="입력 오류" data-principle="C">
+        <div class="pair-context">입력 오류 메시지</div>
+        <div class="ba-card before">
+          <span class="ba-label before">✗ Before</span>
+          <p class="ba-text">잘못 입력하셨습니다. 올바른 정보를 입력해 주세요.</p>
+        </div>
+        <div class="ba-card after">
+          <span class="ba-label after">✓ After</span>
+          <p class="ba-text"><mark class="diff">확인이 필요한 항목이 있습니다</mark>. <mark class="diff">이름</mark>과 <mark class="diff">생년월일</mark>을 다시 입력해 주세요.</p>
+        </div>
+      </div>
+
+      <!-- Pair C-3 -->
+      <div class="pair" data-context="파일 오류" data-principle="C">
+        <div class="pair-context">파일 업로드 오류</div>
+        <div class="ba-card before">
+          <span class="ba-label before">✗ Before</span>
+          <p class="ba-text">파일 업로드에 실패했습니다. 오류 코드: ERR_403</p>
+        </div>
+        <div class="ba-card after">
+          <span class="ba-label after">✓ After</span>
+          <p class="ba-text">파일을 <mark class="diff">업로드하지 못했습니다</mark>. <mark class="diff">파일 크기가 10MB 이하</mark>인지 확인하고 다시 시도해 주세요.</p>
+        </div>
+      </div>
+
+      <!-- Pair C-4 -->
+      <div class="pair" data-context="마감 안내" data-principle="C">
+        <div class="pair-context">마감 안내 문구</div>
+        <div class="ba-card before">
+          <span class="ba-label before">✗ Before</span>
+          <p class="ba-text">기한 내 미신청 시 불이익이 발생할 수 있습니다.</p>
+        </div>
+        <div class="ba-card after">
+          <span class="ba-label after">✓ After</span>
+          <p class="ba-text"><mark class="diff">3월 31일까지</mark> 신청하시면 <mark class="diff">혜택을 받으실 수 있습니다.</mark></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Interactive Section (Risk 3) ── -->
+<section class="interactive-section" aria-labelledby="interactive-title">
+  <div class="container">
+    <div class="interactive-inner">
+      <div class="interactive-eyebrow">직접 실험</div>
+      <h2 class="interactive-title" id="interactive-title">내 텍스트로 확인하기</h2>
+      <p class="interactive-desc">
+        작성한 UX 텍스트를 붙여넣으세요. 3대 원칙 위반 여부를 즉시 확인해 드립니다.
+      </p>
+      <textarea
+        class="lint-textarea"
+        id="lintInput"
+        placeholder="예: 귀하의 신청이 접수되었습니다. 익일까지 교부 가능합니다. 법정대리인의 날인이 필요합니다."
+        aria-label="검사할 텍스트 입력"
+        spellcheck="false"
+      ></textarea>
+      <div class="lint-actions">
+        <button class="lint-btn primary" id="lintRunBtn" type="button">원칙 검사하기</button>
+        <button class="lint-btn" id="lintClearBtn" type="button">지우기</button>
+      </div>
+      <div class="lint-results" id="lintResults" aria-live="polite" aria-label="검사 결과"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- Footer -->
+<footer role="contentinfo">
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <a href="/" class="footer-logo">
+          <span style="width:20px;height:20px;border-radius:4px;background:#256ef4;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800" aria-hidden="true">K</span>
+          KRDS UX Writing 가이드라인
+        </a>
+        <p class="footer-desc">
+          Korea Design System(KRDS) 기반의 공공 서비스 UX 라이팅 가이드라인.
+          행정안전부 KRDS를 기반으로 하며, 정부 디지털 서비스 개선을 위한 언어 기준을 제공해요.
+        </p>
+      </div>
+      <div class="footer-links">
+        <a href="https://www.krds.go.kr/" target="_blank" rel="noopener" class="footer-link">KRDS 공식 사이트 ↗</a>
+        <a href="https://github.com/thenisaid/krds-ux-writing" target="_blank" rel="noopener" class="footer-link">GitHub ↗</a>
+        <a href="/krds-ux-writing/principles/" class="footer-link">원칙</a>
+        <a href="/krds-ux-writing/dictionary/" class="footer-link">사전</a>
+        <a href="before-after.html" class="footer-link">Before/After</a>
+      </div>
+    </div>
+    <p class="footer-legal">© 2026 KRDS UX Writing 가이드라인. KRDS(Korea Design System)는 행정안전부 소유입니다.</p>
+  </div>
+</footer>
+
+<!-- Seminar Overlay (Risk 1) -->
+<div class="seminar-overlay" id="seminarOverlay" role="dialog" aria-modal="true" aria-label="발표 모드">
+  <div class="seminar-toolbar">
+    <span class="seminar-principle" id="seminarPrinciple"></span>
+    <span class="seminar-counter" id="seminarCounter"></span>
+    <button class="seminar-close" id="seminarClose" aria-label="발표 모드 종료" type="button">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="seminar-stage">
+    <div class="seminar-slide" id="seminarSlide">
+      <!-- filled by JS -->
+    </div>
+  </div>
+  <div class="seminar-nav">
+    <button class="seminar-nav-btn" id="seminarPrev" aria-label="이전 슬라이드" type="button">←</button>
+    <span class="seminar-hint">← → 키보드 화살표로 이동 · ESC로 종료</span>
+    <button class="seminar-nav-btn" id="seminarNext" aria-label="다음 슬라이드" type="button">→</button>
+  </div>
+</div>
+
+<script src="krds-lint.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ── Theme Toggle ── */
+  var themeToggle = document.getElementById('themeToggle');
+  var themeIcon = document.getElementById('themeIcon');
+  var SUN = 'M8 1v2M8 13v2M1 8h2M13 8h2M3.22 3.22l1.42 1.42M11.36 11.36l1.42 1.42M3.22 12.78l1.42-1.42M11.36 4.64l1.42-1.42M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z';
+  var MOON = 'M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2zm0 1.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9z';
+  function updateThemeIcon(theme) {
+    if (themeIcon) themeIcon.setAttribute('d', theme === 'dark' ? SUN : MOON);
+  }
+  var currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  updateThemeIcon(currentTheme);
+  if (themeToggle) {
+    themeToggle.addEventListener('click', function () {
+      currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', currentTheme);
+      localStorage.setItem('krds-theme', currentTheme);
+      updateThemeIcon(currentTheme);
+    });
+  }
+
+  /* ── Tabs (with mark animation trigger) ── */
+  var tabBtns = document.querySelectorAll('.tab-btn');
+  var tabPanels = document.querySelectorAll('.tab-panel');
+
+  function activateTab(btn) {
+    tabBtns.forEach(function (b) {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+    });
+    tabPanels.forEach(function (p) { p.classList.remove('active'); });
+
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    var panel = document.getElementById(btn.getAttribute('aria-controls'));
+    if (panel) {
+      panel.classList.add('active');
+      triggerMarkAnimation(panel);
+    }
+  }
+
+  tabBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () { activateTab(btn); });
+    btn.addEventListener('keydown', function (e) {
+      var idx = Array.from(tabBtns).indexOf(btn);
+      if (e.key === 'ArrowRight') { tabBtns[(idx + 1) % tabBtns.length].focus(); tabBtns[(idx + 1) % tabBtns.length].click(); }
+      if (e.key === 'ArrowLeft')  { tabBtns[(idx - 1 + tabBtns.length) % tabBtns.length].focus(); tabBtns[(idx - 1 + tabBtns.length) % tabBtns.length].click(); }
+    });
+  });
+
+  /* ── Risk 2: Mark highlight animation ── */
+  function triggerMarkAnimation(panel) {
+    var marks = panel.querySelectorAll('mark.diff');
+    marks.forEach(function (m) {
+      m.classList.remove('animate');
+      void m.offsetWidth; /* reflow */
+      m.classList.add('animate');
+    });
+  }
+  /* trigger on initial load for first panel */
+  var firstPanel = document.getElementById('panel-a');
+  if (firstPanel) {
+    setTimeout(function () { triggerMarkAnimation(firstPanel); }, 200);
+  }
+
+  /* ── Risk 1: Seminar Mode ── */
+  var seminarOverlay = document.getElementById('seminarOverlay');
+  var seminarSlide   = document.getElementById('seminarSlide');
+  var seminarPrinciple = document.getElementById('seminarPrinciple');
+  var seminarCounter = document.getElementById('seminarCounter');
+  var seminarPrev    = document.getElementById('seminarPrev');
+  var seminarNext    = document.getElementById('seminarNext');
+  var seminarBtn     = document.getElementById('seminarBtn');
+  var seminarClose   = document.getElementById('seminarClose');
+
+  var PRINCIPLE_NAMES = { A: '무번역', B: '정보핵심화', C: '심리적안전망' };
+
+  /* collect all pairs from all panels */
+  function collectSlides() {
+    var slides = [];
+    document.querySelectorAll('.pair').forEach(function (pair) {
+      var ctx = pair.getAttribute('data-context') || '';
+      var principle = pair.getAttribute('data-principle') || '';
+      var before = pair.querySelector('.ba-card.before .ba-text');
+      var after  = pair.querySelector('.ba-card.after .ba-text');
+      if (before && after) {
+        slides.push({
+          context: ctx,
+          principle: principle,
+          beforeHtml: before.innerHTML,
+          afterHtml: after.innerHTML,
+        });
+      }
+    });
+    return slides;
+  }
+
+  var slides = [];
+  var slideIdx = 0;
+
+  function renderSeminarSlide() {
+    var s = slides[slideIdx];
+    if (!s) return;
+    var pName = PRINCIPLE_NAMES[s.principle] || s.principle;
+    if (seminarPrinciple) seminarPrinciple.textContent = '원칙 ' + s.principle + ' — ' + pName;
+    if (seminarCounter)   seminarCounter.textContent   = (slideIdx + 1) + ' / ' + slides.length;
+    if (seminarPrev)      seminarPrev.disabled = slideIdx === 0;
+    if (seminarNext)      seminarNext.disabled = slideIdx === slides.length - 1;
+    if (seminarSlide) {
+      seminarSlide.innerHTML =
+        '<div class="seminar-context-label">' + escHtml(s.context) + '</div>' +
+        '<div class="seminar-pair">' +
+          '<div class="seminar-card before">' +
+            '<span class="seminar-card-label">✗ Before</span>' +
+            '<p class="seminar-card-text">' + s.beforeHtml + '</p>' +
+          '</div>' +
+          '<div class="seminar-card after">' +
+            '<span class="seminar-card-label">✓ After</span>' +
+            '<p class="seminar-card-text">' + s.afterHtml + '</p>' +
+          '</div>' +
+        '</div>';
+      /* trigger mark anim in seminar */
+      var marks = seminarSlide.querySelectorAll('mark.diff');
+      marks.forEach(function (m) {
+        void m.offsetWidth;
+        m.classList.add('animate');
+      });
+    }
+  }
+
+  function openSeminar() {
+    slides = collectSlides();
+    slideIdx = 0;
+    renderSeminarSlide();
+    seminarOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    if (seminarClose) seminarClose.focus();
+  }
+
+  function closeSeminar() {
+    seminarOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+    if (seminarBtn) seminarBtn.focus();
+  }
+
+  if (seminarBtn)   seminarBtn.addEventListener('click', openSeminar);
+  if (seminarClose) seminarClose.addEventListener('click', closeSeminar);
+  if (seminarPrev)  seminarPrev.addEventListener('click', function () { if (slideIdx > 0) { slideIdx--; renderSeminarSlide(); } });
+  if (seminarNext)  seminarNext.addEventListener('click', function () { if (slideIdx < slides.length - 1) { slideIdx++; renderSeminarSlide(); } });
+
+  document.addEventListener('keydown', function (e) {
+    if (!seminarOverlay.classList.contains('active')) return;
+    if (e.key === 'Escape') { closeSeminar(); return; }
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { if (slideIdx < slides.length - 1) { slideIdx++; renderSeminarSlide(); } }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { if (slideIdx > 0) { slideIdx--; renderSeminarSlide(); } }
+  });
+
+  /* ── Risk 3: Lint Integration ── */
+  var lintInput   = document.getElementById('lintInput');
+  var lintRunBtn  = document.getElementById('lintRunBtn');
+  var lintClearBtn = document.getElementById('lintClearBtn');
+  var lintResults = document.getElementById('lintResults');
+
+  function runLint() {
+    if (!lintInput || !lintResults) return;
+    var text = lintInput.value.trim();
+    if (!text) { renderLintEmpty('텍스트를 입력해 주세요.'); return; }
+    if (typeof KRDSLint === 'undefined') { renderLintEmpty('린팅 엔진을 불러오는 중입니다.'); return; }
+    var result = KRDSLint.lint(text);
+    renderLintResult(result);
+  }
+
+  function renderLintResult(result) {
+    var score = result.score;
+    var scoreClass = score >= 80 ? 'good' : score >= 50 ? 'ok' : 'bad';
+    var issueHtml = '';
+    if (result.issues.length === 0) {
+      issueHtml = '<div class="lint-empty">✅ 원칙 위반이 없습니다. 잘 작성된 텍스트입니다!</div>';
+    } else {
+      issueHtml = '<div class="lint-issue-list">';
+      result.issues.forEach(function (issue) {
+        issueHtml +=
+          '<div class="lint-issue ' + escHtml(issue.severity) + '">' +
+            '<div class="lint-issue-top">' +
+              '<span class="lint-issue-cat">' + escHtml(issue.category) + '</span>' +
+              '<span class="lint-issue-match">' + escHtml(issue.match) + '</span>' +
+            '</div>' +
+            '<div class="lint-issue-msg">' + escHtml(issue.message) + '</div>' +
+            '<div class="lint-issue-suggestion">' + escHtml(issue.suggestion) + '</div>' +
+          '</div>';
+      });
+      issueHtml += '</div>';
+    }
+    lintResults.innerHTML =
+      '<div class="lint-score-bar">' +
+        '<div>' +
+          '<div class="lint-score-num ' + scoreClass + '">' + score + '</div>' +
+          '<div class="lint-score-label">/ 100 점</div>' +
+        '</div>' +
+        '<div class="lint-summary">' +
+          '<span class="lint-summary-item error">✗ 오류 ' + result.summary.errors + '</span>' +
+          '<span class="lint-summary-item warn">⚠ 경고 ' + result.summary.warnings + '</span>' +
+          '<span class="lint-summary-item ok">ℹ 안내 ' + result.summary.infos + '</span>' +
+        '</div>' +
+      '</div>' +
+      issueHtml;
+    lintResults.classList.add('visible');
+  }
+
+  function renderLintEmpty(msg) {
+    lintResults.innerHTML = '<div class="lint-empty">' + escHtml(msg) + '</div>';
+    lintResults.classList.add('visible');
+  }
+
+  if (lintRunBtn)   lintRunBtn.addEventListener('click', runLint);
+  if (lintClearBtn) lintClearBtn.addEventListener('click', function () {
+    if (lintInput) lintInput.value = '';
+    lintResults.classList.remove('visible');
+    lintResults.innerHTML = '';
+    if (lintInput) lintInput.focus();
+  });
+  if (lintInput) {
+    lintInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) runLint();
+    });
+  }
+
+  /* ── Utility ── */
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+})();
+</script>
+</body>
+</html>
