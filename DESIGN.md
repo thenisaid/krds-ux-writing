@@ -386,9 +386,9 @@ index.html / before-after.html: shadow 최소화, border 기반 depth.
 
 | 항목 | 현재 상태 | 목표 |
 |------|-----------|------|
-| GNB 높이 | index.html 56px / before-after.html 60px | 60px 통일 |
-| GNB 아이콘 버튼 터치 타겟 | index.html `padding:6px` (미준수) | 44×44px |
+| ~~GNB 높이~~ | ~~index.html 56px / before-after.html 60px~~ | ✅ 2026-05-21 60px 통일 완료 |
+| ~~GNB 아이콘 버튼 터치 타겟~~ | ~~index.html `padding:6px` (미준수)~~ | ✅ 2026-05-21 44×44px 완료 |
 | 토큰 접두사 | `--bg/--text` vs `--krds-*` 혼용 | `--bg/--text` 체계 통일 |
-| `color-scheme` 선언 | before-after.html만 적용 | 전 파일 적용 |
-| `text-wrap: balance` | before-after.html 헤딩만 | 전 파일 헤딩 |
+| ~~`color-scheme` 선언~~ | ~~before-after.html만 적용~~ | ✅ 2026-05-21 index.html 추가 완료 |
+| ~~`text-wrap: balance`~~ | ~~before-after.html 헤딩만~~ | ✅ 2026-05-21 index.html `.hero-title` 적용 완료 |
 | Warning 다크모드 | lint.html만 `#d08000` | 전 파일 적용 |
