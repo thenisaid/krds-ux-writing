@@ -100,22 +100,23 @@
 
   /* ── Hero ── */
   .hero {
-    background: linear-gradient(160deg, #eef4ff 0%, #f8f7f5 55%);
-    padding: 40px 24px 32px;
+    background: linear-gradient(160deg, #eef4ff 0%, #f8f7f5 60%);
+    padding: 52px 24px 44px;
     text-align: center;
   }
-  [data-theme="dark"] .hero { background: linear-gradient(160deg, #1a2e54 0%, #1e2124 55%); }
+  [data-theme="dark"] .hero { background: linear-gradient(160deg, #1a2e54 0%, #1e2124 60%); }
   .hero-badge {
     display: inline-block;
     background: var(--color-primary-05);
     color: var(--accent);
-    font-size: 12px; font-weight: 600;
-    padding: 3px 10px; border-radius: 20px;
-    margin-bottom: 12px;
+    font-size: 13px; font-weight: 600;
+    padding: 4px 12px; border-radius: 20px;
+    margin-bottom: 16px;
     border: 1px solid rgba(37,110,244,.2);
+    letter-spacing: 0.01em;
   }
-  .hero h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.3; margin-bottom: 8px; }
-  .hero p { font-size: 15px; color: var(--text-muted); max-width: 500px; margin: 0 auto; }
+  .hero h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.3; margin-bottom: 10px; }
+  .hero p { font-size: 15px; color: var(--text-muted); max-width: 520px; margin: 0 auto; line-height: 1.65; }
 
   /* ── 레이아웃 ── */
   .container { max-width: 960px; margin: 0 auto; padding: 24px; }
@@ -127,10 +128,10 @@
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: var(--radius-card);
-    padding: 20px;
+    padding: 24px;
     box-shadow: var(--shadow-card);
   }
-  .card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 16px; letter-spacing: -0.1px; }
 
   /* ── 텍스트 에리어 ── */
   .textarea-wrap { position: relative; }
@@ -154,7 +155,7 @@
     outline-offset: 2px;
   }
   textarea::placeholder { color: var(--color-text-disabled); }
-  .char-count { font-size: 12px; color: var(--text-muted); text-align: right; margin-top: 4px; }
+  .char-count { font-size: 13px; color: var(--text-muted); text-align: right; margin-top: 6px; }
 
   /* ── 버튼 ── */
   .btn-group { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
@@ -167,9 +168,10 @@
   }
   .btn-primary {
     background: var(--accent); color: #fff;
-    box-shadow: 0 2px 8px rgba(37,110,244,.3);
+    box-shadow: 0 1px 3px rgba(37,110,244,.2), 0 2px 8px rgba(37,110,244,.15);
   }
-  .btn-primary:hover { background: #1e5fd8; box-shadow: 0 4px 12px rgba(37,110,244,.4); }
+  .btn-primary:hover { background: #1e5fd8; box-shadow: 0 2px 6px rgba(37,110,244,.3); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
   .btn-secondary {
     background: var(--bg);
     color: var(--text);
@@ -182,8 +184,8 @@
   .options-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
   .opt-chip {
     display: inline-flex; align-items: center; gap: 5px;
-    font-size: 12px; font-weight: 500;
-    padding: 4px 10px; border-radius: 20px;
+    font-size: 13px; font-weight: 500;
+    padding: 5px 12px; border-radius: 20px;
     border: 1px solid var(--color-border-emphasis);
     cursor: pointer; user-select: none;
     background: var(--bg);
@@ -200,7 +202,7 @@
   .score-section { text-align: center; padding: 16px; }
   .score-ring {
     position: relative; display: inline-block;
-    width: 100px; height: 100px; margin-bottom: 8px;
+    width: 112px; height: 112px; margin-bottom: 10px;
   }
   .score-ring svg { transform: rotate(-90deg); }
   .score-ring circle { fill: none; stroke-width: 8; }
@@ -214,7 +216,7 @@
     font-size: 22px; font-weight: 800; color: var(--text);
   }
   .score-label { font-size: 13px; color: var(--text-muted); }
-  .score-desc { font-size: 12px; font-weight: 600; margin-top: 4px; }
+  .score-desc { font-size: 13px; font-weight: 600; margin-top: 4px; }
 
   /* ── 통계 배지 ── */
   .stat-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
@@ -224,7 +226,7 @@
     border: 1px solid var(--border);
   }
   .stat-badge .num { font-size: 18px; font-weight: 800; }
-  .stat-badge .lbl { font-size: 11px; color: var(--text-muted); }
+  .stat-badge .lbl { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
   .stat-error .num { color: var(--krds-color-danger); }
   .stat-warning .num { color: var(--color-warning-50); }
   .stat-info .num { color: var(--color-info-50); }
@@ -241,8 +243,8 @@
     border: 1px solid var(--border);
     background: var(--bg);
     color: var(--text-muted);
-    font-size: 12px; font-weight: 500;
-    padding: 4px 10px; border-radius: 20px; cursor: pointer;
+    font-size: 13px; font-weight: 500;
+    padding: 5px 12px; border-radius: 20px; cursor: pointer;
     transition: all .12s;
   }
   .filter-tab.active {
@@ -273,34 +275,35 @@
 
   .issue-row1 { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
   .issue-sev {
-    display: inline-block; font-size: 10px; font-weight: 700;
+    display: inline-block; font-size: 11px; font-weight: 700;
     padding: 2px 7px; border-radius: var(--radius-badge);
     text-transform: uppercase; letter-spacing: .3px;
   }
   .sev-error .issue-sev { background: var(--krds-color-danger-subtle); color: var(--krds-color-danger); }
   .sev-warning .issue-sev { background: var(--color-warning-10); color: var(--color-warning-50); }
   .sev-info .issue-sev { background: var(--color-info-10); color: var(--color-info-50); }
-  .issue-cat { font-size: 12px; font-weight: 600; color: var(--text-muted); }
-  .issue-pos { font-size: 11px; color: var(--color-text-disabled); margin-left: auto; }
-  .issue-msg { font-size: 13px; margin-top: 4px; color: var(--text); }
+  .issue-cat { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+  .issue-pos { font-size: 13px; color: var(--color-text-disabled); margin-left: auto; }
+  .issue-msg { font-size: 13px; margin-top: 5px; color: var(--text); line-height: 1.5; }
   .issue-match {
-    display: inline-block; font-size: 12px; font-weight: 700;
+    display: inline-block; font-size: 13px; font-weight: 700;
     padding: 1px 6px; border-radius: 4px; margin: 0 2px;
     background: var(--krds-color-danger-subtle); color: var(--krds-color-danger);
     font-family: monospace;
   }
-  .issue-suggest { font-size: 12px; color: var(--color-success-50); margin-top: 4px; }
+  .issue-suggest { font-size: 13px; color: var(--color-success-50); margin-top: 5px; }
 
   /* ── 빈 상태 ── */
-  .empty-state { text-align: center; padding: 32px 16px; color: var(--text-muted); }
-  .empty-icon { font-size: 32px; margin-bottom: 8px; }
-  .empty-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .empty-state { text-align: center; padding: 36px 16px; color: var(--text-muted); }
+  .empty-icon { display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; width: 48px; height: 48px; }
+  .empty-icon svg { width: 48px; height: 48px; }
+  .empty-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
   .empty-desc { font-size: 13px; }
   .empty-success .empty-icon { font-size: 40px; }
 
   /* ── 샘플 텍스트 버튼 ── */
   .sample-btn {
-    font-size: 12px; color: var(--accent); cursor: pointer;
+    font-size: 13px; color: var(--accent); cursor: pointer;
     text-decoration: underline; text-decoration-color: transparent;
     background: none; border: none; padding: 0; font-family: inherit;
     transition: text-decoration-color .12s;
@@ -313,16 +316,17 @@
     padding: 10px 0 0; border-top: 1px solid var(--border);
     margin-top: 12px; flex-wrap: wrap;
   }
-  .export-label { font-size: 12px; color: var(--text-muted); flex: 1; }
+  .export-label { font-size: 13px; color: var(--text-muted); flex: 1; }
 
   /* ── 푸터 ── */
   .footer {
     background: var(--color-surface-inverse);
     color: #9ea8b3;
     text-align: center;
-    padding: 20px;
-    font-size: 12px;
-    margin-top: 40px;
+    padding: 24px 20px;
+    font-size: 13px;
+    margin-top: 48px;
+    line-height: 1.7;
   }
   .footer a { color: var(--color-primary-30); text-decoration: none; }
 
@@ -454,7 +458,17 @@
       <div class="card-title">품질 점수</div>
       <div class="score-section" id="scoreSection">
         <div class="empty-state">
-          <div class="empty-icon" aria-hidden="true">📋</div>
+          <div class="empty-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="4" width="28" height="36" rx="4" stroke="currentColor" stroke-width="2" fill="none" opacity="0.3"/>
+              <rect x="12" y="14" width="16" height="2" rx="1" fill="currentColor" opacity="0.5"/>
+              <rect x="12" y="20" width="20" height="2" rx="1" fill="currentColor" opacity="0.5"/>
+              <rect x="12" y="26" width="12" height="2" rx="1" fill="currentColor" opacity="0.5"/>
+              <rect x="14" y="2" width="16" height="6" rx="2" stroke="currentColor" stroke-width="2" fill="var(--bg)" opacity="0.9"/>
+              <circle cx="37" cy="37" r="8" fill="var(--accent)" opacity="0.15"/>
+              <path d="M33 37l3 3 5-5" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
           <div class="empty-title">텍스트를 입력하고 검사해 주세요</div>
           <div class="empty-desc">품질 점수와 이슈 목록이 여기에 표시됩니다</div>
         </div>
@@ -467,12 +481,10 @@
   <div class="card" id="highlightCard" style="margin-top:16px; display:none;">
     <div class="card-title">텍스트 하이라이트</div>
     <div class="highlighted-text" id="highlightedText" aria-live="polite"></div>
-    <div style="margin-top:8px; font-size:12px; color:var(--text-muted);">
-      <span style="background:rgba(212,58,47,.18); border-bottom:2px solid #d9342b; padding:1px 6px; border-radius:2px;">■</span> 오류
-      &nbsp;
-      <span style="background:rgba(146,88,10,.14); border-bottom:2px solid #92580a; padding:1px 6px; border-radius:2px;">■</span> 경고
-      &nbsp;
-      <span style="background:rgba(21,101,192,.12); border-bottom:2px solid #1565c0; padding:1px 6px; border-radius:2px;">■</span> 안내
+    <div style="margin-top:10px; font-size:13px; color:var(--text-muted); display:flex; gap:16px; flex-wrap:wrap;">
+      <span><span style="background:rgba(212,58,47,.18); border-bottom:2px solid #d9342b; padding:1px 6px; border-radius:2px;">■</span> 오류</span>
+      <span><span style="background:rgba(146,88,10,.14); border-bottom:2px solid #92580a; padding:1px 6px; border-radius:2px;">■</span> 경고</span>
+      <span><span style="background:rgba(21,101,192,.12); border-bottom:2px solid #1565c0; padding:1px 6px; border-radius:2px;">■</span> 안내</span>
     </div>
   </div>
 
@@ -491,13 +503,13 @@
 
     <div class="export-bar">
       <span class="export-label">검사 결과를 내보낼 수 있습니다</span>
-      <button class="btn btn-secondary" id="copyBtn" style="font-size:12px; padding:6px 12px;">
+      <button class="btn btn-secondary" id="copyBtn" style="font-size:13px; padding:7px 14px;">
         <span aria-hidden="true">📋</span> 결과 복사
       </button>
-      <button class="btn btn-secondary" id="downloadBtn" style="font-size:12px; padding:6px 12px;">
+      <button class="btn btn-secondary" id="downloadBtn" style="font-size:13px; padding:7px 14px;">
         <span aria-hidden="true">⬇️</span> CSV 내보내기
       </button>
-      <button class="btn btn-secondary" id="shareLinkBtn" style="font-size:12px; padding:6px 12px;" disabled>
+      <button class="btn btn-secondary" id="shareLinkBtn" style="font-size:13px; padding:7px 14px;" disabled>
         <span aria-hidden="true">🔗</span> 결과 링크 복사
       </button>
     </div>
@@ -507,7 +519,7 @@
   <div class="card" id="improvedCard" style="margin-top:16px; display:none;">
     <div class="issues-header">
       <div class="issues-title">✏️ 개선 텍스트</div>
-      <button class="btn btn-secondary" id="copyImprovedBtn" style="font-size:12px; padding:6px 12px;">
+      <button class="btn btn-secondary" id="copyImprovedBtn" style="font-size:13px; padding:7px 14px;">
         <span aria-hidden="true">📋</span> 개선문 복사
       </button>
     </div>
@@ -518,7 +530,7 @@
   <div class="card" id="historyCard" style="margin-top:16px; display:none;">
     <div class="issues-header">
       <div class="issues-title">🕐 이전 검사 이력</div>
-      <button class="btn btn-secondary" id="clearHistoryBtn" style="font-size:12px; padding:6px 12px;">이력 삭제</button>
+      <button class="btn btn-secondary" id="clearHistoryBtn" style="font-size:13px; padding:7px 14px;">이력 삭제</button>
     </div>
     <div id="historyList" style="display:flex; flex-direction:column; gap:8px; margin-top:8px;"></div>
   </div>
@@ -533,7 +545,7 @@
       </div>
       <button id="cliBannerClose" aria-label="배너 닫기" style="background:none; border:none; cursor:pointer; font-size:18px; color:var(--text-muted); padding:0 0 0 12px;">✕</button>
     </div>
-    <button class="btn btn-secondary" id="copyCliBtn" style="margin-top:12px; font-size:12px; padding:6px 12px;">
+    <button class="btn btn-secondary" id="copyCliBtn" style="margin-top:12px; font-size:13px; padding:7px 14px;">
       <span aria-hidden="true">📋</span> 설치 명령어 복사
     </button>
   </div>
