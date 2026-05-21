@@ -12,11 +12,11 @@
 |------|------------|----------|-----------|
 | `index.html` | `--bg`, `--text`, `--accent` (시맨틱) | 56px | 가장 오래된 기반 |
 | `before-after.html` | `--bg`, `--text`, `--accent` (시맨틱) | 60px | 2026-05-21 /design-review 완료, WCAG 최신 준수 |
-| `lint.html` | `--krds-surface-default`, `--krds-text-primary` (KRDS 접두사) | — | shadow-card 토큰 |
-| `archive.html` | `--krds-surface-default`, `--krds-color-primary` (KRDS 접두사) | — | 다크모드에서 success/danger 값 다름 |
+| `lint.html` | `--bg`, `--text`, `--accent` (시맨틱) ✅ | — | shadow-card 토큰, `--krds-color-danger` 보존 |
+| `archive.html` | `--bg`, `--text`, `--accent` (시맨틱) ✅ | — | `--krds-color-danger` 보존, `--text-muted`=`--krds-text-tertiary`에서 전환 |
 
-> **Phase 2 TODO**: 전체 파일 시맨틱 토큰 `--bg`/`--text`/`--accent` 체계로 통일 예정.
-> 현재는 각 파일이 자체 `:root`를 보유하며, 이 문서가 공통 진실의 기준점.
+> **Phase 2 완료**: 2026-05-21 전체 4개 파일 시맨틱 토큰 `--bg`/`--text`/`--accent` 체계 통일 완료.
+> 각 파일이 자체 `:root`를 보유하며 (색상값은 파일별 상이), 이 문서가 공통 진실의 기준점.
 
 ---
 
@@ -112,9 +112,11 @@
 
 ---
 
-## 3. KRDS 접두사 토큰 (lint.html, archive.html)
+## 3. KRDS 접두사 토큰 ~~(lint.html, archive.html)~~ — ✅ 2026-05-21 통일 완료
 
-이 두 파일은 별도의 KRDS 공식 접두사 체계를 사용함.
+~~이 두 파일은 별도의 KRDS 공식 접두사 체계를 사용함.~~
+> **마이그레이션 완료**: lint.html + archive.html 모두 `--bg/--text/--accent/--border` 시맨틱 토큰 체계로 전환. `--krds-color-danger` 등 상태 전용 토큰은 보존.
+> 아래 표는 마이그레이션 참조용 히스토리.
 
 | 토큰 | 라이트 값 | 다크 값 | 시맨틱 상당 |
 |------|-----------|---------|------------|
@@ -388,7 +390,7 @@ index.html / before-after.html: shadow 최소화, border 기반 depth.
 |------|-----------|------|
 | ~~GNB 높이~~ | ~~index.html 56px / before-after.html 60px~~ | ✅ 2026-05-21 60px 통일 완료 |
 | ~~GNB 아이콘 버튼 터치 타겟~~ | ~~index.html `padding:6px` (미준수)~~ | ✅ 2026-05-21 44×44px 완료 |
-| 토큰 접두사 | `--bg/--text` vs `--krds-*` 혼용 | `--bg/--text` 체계 통일 |
+| ~~토큰 접두사~~ | ~~`--bg/--text` vs `--krds-*` 혼용~~ | ✅ 2026-05-21 lint.html(74개) + archive.html(64개) 시맨틱 토큰 통일 완료 |
 | ~~`color-scheme` 선언~~ | ~~before-after.html만 적용~~ | ✅ 2026-05-21 index.html 추가 완료 |
 | ~~`text-wrap: balance`~~ | ~~before-after.html 헤딩만~~ | ✅ 2026-05-21 index.html `.hero-title` 적용 완료 |
 | ~~Warning 다크모드~~ | ~~lint.html만 `#d08000`~~ | ✅ 2026-05-21 index.html + before-after.html 추가 완료 |

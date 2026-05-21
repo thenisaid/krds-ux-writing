@@ -11,7 +11,7 @@
 <style>
   /* ── 디자인 토큰 ── */
   :root {
-    --krds-color-primary: #256ef4;
+    --accent: #256ef4;
     --color-primary-30: #86aff9;
     --color-primary-05: #eef4ff;
     --color-success-50: #228738;
@@ -22,35 +22,35 @@
     --color-warning-10: #fdf3dc;
     --color-info-50: #1565c0;
     --color-info-10: #e3f2fd;
-    --krds-surface-default: #ffffff;
-    --krds-surface-subtle: #f8f7f5;
-    --krds-border-default: #e4e2df;
+    --bg: #ffffff;
+    --bg-subtle: #f8f7f5;
+    --border: #e4e2df;
     --color-border-emphasis: #cdd1d5;
-    --krds-text-primary: #1e2124;
-    --krds-text-secondary: #5a6270;
+    --text: #1e2124;
+    --text-muted: #5a6270;
     --color-text-disabled: #9ea8b3;
     --color-surface-inverse: #1e2124;
     --radius-card: 12px;
     --radius-btn: 8px;
     --radius-badge: 4px;
     --font-sans: 'Pretendard GOV Variable', Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
-    --shadow-card: 0 1px 4px rgba(0,0,0,.06), 0 0 0 1px var(--krds-border-default);
+    --shadow-card: 0 1px 4px rgba(0,0,0,.06), 0 0 0 1px var(--border);
   }
 
   [data-theme="dark"] {
-    --krds-surface-default: #1e2124;
-    --krds-surface-subtle: #262b30;
-    --krds-border-default: #333a42;
+    --bg: #1e2124;
+    --bg-subtle: #262b30;
+    --border: #333a42;
     --color-border-emphasis: #3e4855;
-    --krds-text-primary: #f0f2f5;
-    --krds-text-secondary: #9ea8b3;
+    --text: #f0f2f5;
+    --text-muted: #9ea8b3;
     --color-primary-05: #1a2e54;
     --color-success-10: #0f2a18;
     --krds-color-danger-subtle: #2e1215;
     --color-warning-10: #2a1e06;
     --color-warning-50: #d08000;
     --color-info-10: #0d1e38;
-    --shadow-card: 0 1px 4px rgba(0,0,0,.3), 0 0 0 1px var(--krds-border-default);
+    --shadow-card: 0 1px 4px rgba(0,0,0,.3), 0 0 0 1px var(--border);
   }
 
   /* ── 리셋 & 기본 ── */
@@ -58,8 +58,8 @@
   html { font-size: 16px; }
   body {
     font-family: var(--font-sans);
-    background: var(--krds-surface-subtle);
-    color: var(--krds-text-primary);
+    background: var(--bg-subtle);
+    color: var(--text);
     line-height: 1.6;
     min-height: 100vh;
   }
@@ -69,7 +69,7 @@
     position: sticky; top: 0; z-index: 100;
     background: rgba(248,247,245,.92);
     backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--krds-border-default);
+    border-bottom: 1px solid var(--border);
     height: 60px;
     display: flex; align-items: center;
     padding: 0 24px;
@@ -78,25 +78,25 @@
   [data-theme="dark"] .gnb { background: rgba(30,33,36,.92); }
   .gnb-logo {
     display: flex; align-items: center; gap: 8px;
-    font-size: 15px; font-weight: 700; color: var(--krds-color-primary);
+    font-size: 15px; font-weight: 700; color: var(--accent);
     text-decoration: none;
     letter-spacing: -0.3px;
   }
   .gnb-logo-icon {
     width: 28px; height: 28px; border-radius: 6px;
-    background: var(--krds-color-primary);
+    background: var(--accent);
     display: flex; align-items: center; justify-content: center;
     color: #fff; font-size: 14px; font-weight: 800;
   }
-  .gnb-subtitle { font-size: 13px; color: var(--krds-text-secondary); font-weight: 400; }
+  .gnb-subtitle { font-size: 13px; color: var(--text-muted); font-weight: 400; }
   .gnb-spacer { flex: 1; }
   .gnb-theme-btn {
     border: none; background: transparent; cursor: pointer;
-    color: var(--krds-text-secondary); font-size: 18px; padding: 6px;
+    color: var(--text-muted); font-size: 18px; padding: 6px;
     border-radius: 6px; transition: background .15s;
     display: flex; align-items: center;
   }
-  .gnb-theme-btn:hover { background: var(--krds-border-default); }
+  .gnb-theme-btn:hover { background: var(--border); }
 
   /* ── Hero ── */
   .hero {
@@ -108,14 +108,14 @@
   .hero-badge {
     display: inline-block;
     background: var(--color-primary-05);
-    color: var(--krds-color-primary);
+    color: var(--accent);
     font-size: 12px; font-weight: 600;
     padding: 3px 10px; border-radius: 20px;
     margin-bottom: 12px;
     border: 1px solid rgba(37,110,244,.2);
   }
   .hero h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.3; margin-bottom: 8px; }
-  .hero p { font-size: 15px; color: var(--krds-text-secondary); max-width: 500px; margin: 0 auto; }
+  .hero p { font-size: 15px; color: var(--text-muted); max-width: 500px; margin: 0 auto; }
 
   /* ── 레이아웃 ── */
   .container { max-width: 960px; margin: 0 auto; padding: 24px; }
@@ -124,13 +124,13 @@
 
   /* ── 카드 ── */
   .card {
-    background: var(--krds-surface-default);
-    border: 1px solid var(--krds-border-default);
+    background: var(--bg);
+    border: 1px solid var(--border);
     border-radius: var(--radius-card);
     padding: 20px;
     box-shadow: var(--shadow-card);
   }
-  .card-title { font-size: 14px; font-weight: 700; color: var(--krds-text-primary); margin-bottom: 12px; }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
 
   /* ── 텍스트 에리어 ── */
   .textarea-wrap { position: relative; }
@@ -142,19 +142,19 @@
     font-family: var(--font-sans);
     font-size: 14px;
     line-height: 1.7;
-    color: var(--krds-text-primary);
-    background: var(--krds-surface-default);
+    color: var(--text);
+    background: var(--bg);
     resize: vertical;
     transition: border-color .15s, box-shadow .15s;
   }
   textarea:focus {
-    border-color: var(--krds-color-primary);
+    border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(37,110,244,.12);
-    outline: 2px solid var(--krds-color-primary);
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
   textarea::placeholder { color: var(--color-text-disabled); }
-  .char-count { font-size: 12px; color: var(--krds-text-secondary); text-align: right; margin-top: 4px; }
+  .char-count { font-size: 12px; color: var(--text-muted); text-align: right; margin-top: 4px; }
 
   /* ── 버튼 ── */
   .btn-group { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
@@ -166,16 +166,16 @@
     text-decoration: none; line-height: 1;
   }
   .btn-primary {
-    background: var(--krds-color-primary); color: #fff;
+    background: var(--accent); color: #fff;
     box-shadow: 0 2px 8px rgba(37,110,244,.3);
   }
   .btn-primary:hover { background: #1e5fd8; box-shadow: 0 4px 12px rgba(37,110,244,.4); }
   .btn-secondary {
-    background: var(--krds-surface-default);
-    color: var(--krds-text-primary);
+    background: var(--bg);
+    color: var(--text);
     border: 1px solid var(--color-border-emphasis);
   }
-  .btn-secondary:hover { background: var(--krds-surface-subtle); }
+  .btn-secondary:hover { background: var(--bg-subtle); }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
   /* ── 옵션 체크박스 ── */
@@ -186,14 +186,14 @@
     padding: 4px 10px; border-radius: 20px;
     border: 1px solid var(--color-border-emphasis);
     cursor: pointer; user-select: none;
-    background: var(--krds-surface-default);
-    color: var(--krds-text-secondary);
+    background: var(--bg);
+    color: var(--text-muted);
     transition: all .12s;
   }
   .opt-chip.active {
     background: var(--color-primary-05);
-    border-color: var(--krds-color-primary);
-    color: var(--krds-color-primary);
+    border-color: var(--accent);
+    color: var(--accent);
   }
 
   /* ── 점수 링 ── */
@@ -204,16 +204,16 @@
   }
   .score-ring svg { transform: rotate(-90deg); }
   .score-ring circle { fill: none; stroke-width: 8; }
-  .score-ring .track { stroke: var(--krds-border-default); }
-  .score-ring .fill { stroke: var(--krds-color-primary); stroke-linecap: round; transition: stroke-dashoffset .6s ease; }
+  .score-ring .track { stroke: var(--border); }
+  .score-ring .fill { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset .6s ease; }
   .score-ring .fill.score-danger { stroke: var(--krds-color-danger); }
   .score-ring .fill.score-warning { stroke: var(--color-warning-50); }
   .score-ring .fill.score-good { stroke: var(--color-success-50); }
   .score-num {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    font-size: 22px; font-weight: 800; color: var(--krds-text-primary);
+    font-size: 22px; font-weight: 800; color: var(--text);
   }
-  .score-label { font-size: 13px; color: var(--krds-text-secondary); }
+  .score-label { font-size: 13px; color: var(--text-muted); }
   .score-desc { font-size: 12px; font-weight: 600; margin-top: 4px; }
 
   /* ── 통계 배지 ── */
@@ -221,10 +221,10 @@
   .stat-badge {
     display: flex; flex-direction: column; align-items: center;
     padding: 8px 14px; border-radius: 8px;
-    border: 1px solid var(--krds-border-default);
+    border: 1px solid var(--border);
   }
   .stat-badge .num { font-size: 18px; font-weight: 800; }
-  .stat-badge .lbl { font-size: 11px; color: var(--krds-text-secondary); }
+  .stat-badge .lbl { font-size: 11px; color: var(--text-muted); }
   .stat-error .num { color: var(--krds-color-danger); }
   .stat-warning .num { color: var(--color-warning-50); }
   .stat-info .num { color: var(--color-info-50); }
@@ -238,24 +238,24 @@
   .issues-title { font-size: 14px; font-weight: 700; }
   .filter-tabs { display: flex; gap: 4px; }
   .filter-tab {
-    border: 1px solid var(--krds-border-default);
-    background: var(--krds-surface-default);
-    color: var(--krds-text-secondary);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-muted);
     font-size: 12px; font-weight: 500;
     padding: 4px 10px; border-radius: 20px; cursor: pointer;
     transition: all .12s;
   }
   .filter-tab.active {
-    background: var(--krds-color-primary); color: #fff; border-color: var(--krds-color-primary);
+    background: var(--accent); color: #fff; border-color: var(--accent);
   }
 
   .issue-item {
     position: relative;
-    border: 1px solid var(--krds-border-default);
+    border: 1px solid var(--border);
     border-radius: 8px;
     padding: 12px 14px 12px 28px;
     margin-bottom: 8px;
-    background: var(--krds-surface-default);
+    background: var(--bg);
     transition: box-shadow .12s;
     cursor: pointer;
   }
@@ -280,9 +280,9 @@
   .sev-error .issue-sev { background: var(--krds-color-danger-subtle); color: var(--krds-color-danger); }
   .sev-warning .issue-sev { background: var(--color-warning-10); color: var(--color-warning-50); }
   .sev-info .issue-sev { background: var(--color-info-10); color: var(--color-info-50); }
-  .issue-cat { font-size: 12px; font-weight: 600; color: var(--krds-text-secondary); }
+  .issue-cat { font-size: 12px; font-weight: 600; color: var(--text-muted); }
   .issue-pos { font-size: 11px; color: var(--color-text-disabled); margin-left: auto; }
-  .issue-msg { font-size: 13px; margin-top: 4px; color: var(--krds-text-primary); }
+  .issue-msg { font-size: 13px; margin-top: 4px; color: var(--text); }
   .issue-match {
     display: inline-block; font-size: 12px; font-weight: 700;
     padding: 1px 6px; border-radius: 4px; margin: 0 2px;
@@ -292,28 +292,28 @@
   .issue-suggest { font-size: 12px; color: var(--color-success-50); margin-top: 4px; }
 
   /* ── 빈 상태 ── */
-  .empty-state { text-align: center; padding: 32px 16px; color: var(--krds-text-secondary); }
+  .empty-state { text-align: center; padding: 32px 16px; color: var(--text-muted); }
   .empty-icon { font-size: 32px; margin-bottom: 8px; }
-  .empty-title { font-size: 15px; font-weight: 700; color: var(--krds-text-primary); margin-bottom: 4px; }
+  .empty-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
   .empty-desc { font-size: 13px; }
   .empty-success .empty-icon { font-size: 40px; }
 
   /* ── 샘플 텍스트 버튼 ── */
   .sample-btn {
-    font-size: 12px; color: var(--krds-color-primary); cursor: pointer;
+    font-size: 12px; color: var(--accent); cursor: pointer;
     text-decoration: underline; text-decoration-color: transparent;
     background: none; border: none; padding: 0; font-family: inherit;
     transition: text-decoration-color .12s;
   }
-  .sample-btn:hover { text-decoration-color: var(--krds-color-primary); }
+  .sample-btn:hover { text-decoration-color: var(--accent); }
 
   /* ── 내보내기 ── */
   .export-bar {
     display: flex; gap: 8px; align-items: center;
-    padding: 10px 0 0; border-top: 1px solid var(--krds-border-default);
+    padding: 10px 0 0; border-top: 1px solid var(--border);
     margin-top: 12px; flex-wrap: wrap;
   }
-  .export-label { font-size: 12px; color: var(--krds-text-secondary); flex: 1; }
+  .export-label { font-size: 12px; color: var(--text-muted); flex: 1; }
 
   /* ── 푸터 ── */
   .footer {
@@ -329,7 +329,7 @@
   /* ── 토스트 ── */
   #toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(12px);
-    background: var(--krds-text-primary); color: var(--krds-surface-default);
+    background: var(--text); color: var(--bg);
     font-size: 13px; font-weight: 600;
     padding: 10px 20px; border-radius: 8px;
     opacity: 0; transition: opacity .2s, transform .2s;
@@ -341,17 +341,17 @@
   .improved-text {
     font-size: 14px; line-height: 1.7; white-space: pre-wrap;
     background: var(--color-success-10);
-    border: 1px solid var(--krds-border-default);
+    border: 1px solid var(--border);
     border-radius: 8px; padding: 12px 14px;
-    color: var(--krds-text-primary);
+    color: var(--text);
     max-height: 300px; overflow-y: auto;
   }
 
   /* ── 하이라이트 텍스트 ── */
   .highlighted-text {
     font-size: 13px; line-height: 1.8; white-space: pre-wrap;
-    background: var(--krds-surface-default);
-    border: 1px solid var(--krds-border-default);
+    background: var(--bg);
+    border: 1px solid var(--border);
     border-radius: 8px; padding: 12px 14px;
     max-height: 300px; overflow-y: auto;
   }
@@ -467,7 +467,7 @@
   <div class="card" id="highlightCard" style="margin-top:16px; display:none;">
     <div class="card-title">텍스트 하이라이트</div>
     <div class="highlighted-text" id="highlightedText" aria-live="polite"></div>
-    <div style="margin-top:8px; font-size:12px; color:var(--krds-text-secondary);">
+    <div style="margin-top:8px; font-size:12px; color:var(--text-muted);">
       <span style="background:rgba(212,58,47,.18); border-bottom:2px solid #d9342b; padding:1px 6px; border-radius:2px;">■</span> 오류
       &nbsp;
       <span style="background:rgba(146,88,10,.14); border-bottom:2px solid #92580a; padding:1px 6px; border-radius:2px;">■</span> 경고
@@ -511,7 +511,7 @@
         <span aria-hidden="true">📋</span> 개선문 복사
       </button>
     </div>
-    <div id="improvedText" style="font-size:14px; line-height:1.8; white-space:pre-wrap; padding:12px 0; color:var(--krds-text-primary);"></div>
+    <div id="improvedText" style="font-size:14px; line-height:1.8; white-space:pre-wrap; padding:12px 0; color:var(--text);"></div>
   </div>
 
   <!-- US-L04: 검사 이력 -->
@@ -527,11 +527,11 @@
   <div id="cliBanner" style="display:none; margin-top:16px; background:var(--color-primary-05); border:1px solid var(--color-primary-30); border-radius:12px; padding:16px 20px;">
     <div style="display:flex; justify-content:space-between; align-items:flex-start;">
       <div>
-        <div style="font-weight:700; font-size:14px; color:var(--krds-color-primary); margin-bottom:6px;">💻 파일 전체를 자동 검사하려면 CLI를 사용하세요</div>
-        <div style="font-size:13px; color:var(--krds-text-secondary); margin-bottom:10px;">디렉터리 일괄 검사, CI/CD 연동, JSON 출력 지원</div>
-        <code style="display:block; background:var(--krds-surface-default); border:1px solid var(--krds-border-default); border-radius:6px; padding:8px 12px; font-size:12px; color:var(--krds-text-primary);">npm install -g github:thenisaid/krds-ux-writing</code>
+        <div style="font-weight:700; font-size:14px; color:var(--accent); margin-bottom:6px;">💻 파일 전체를 자동 검사하려면 CLI를 사용하세요</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:10px;">디렉터리 일괄 검사, CI/CD 연동, JSON 출력 지원</div>
+        <code style="display:block; background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:8px 12px; font-size:12px; color:var(--text);">npm install -g github:thenisaid/krds-ux-writing</code>
       </div>
-      <button id="cliBannerClose" aria-label="배너 닫기" style="background:none; border:none; cursor:pointer; font-size:18px; color:var(--krds-text-secondary); padding:0 0 0 12px;">✕</button>
+      <button id="cliBannerClose" aria-label="배너 닫기" style="background:none; border:none; cursor:pointer; font-size:18px; color:var(--text-muted); padding:0 0 0 12px;">✕</button>
     </div>
     <button class="btn btn-secondary" id="copyCliBtn" style="margin-top:12px; font-size:12px; padding:6px 12px;">
       <span aria-hidden="true">📋</span> 설치 명령어 복사
