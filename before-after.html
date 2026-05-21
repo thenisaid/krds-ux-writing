@@ -44,6 +44,7 @@
   --color-danger-50: #d9342b;
   --color-success-50: #228738;
   --color-warning-50: #92580a;
+  --color-warning-10: #fdf3dc;
   --bg:          var(--color-gray-0);
   --bg-subtle:   var(--color-gray-5);
   --bg-strong:   var(--color-gray-90);
@@ -69,6 +70,8 @@
   --text-mid:   var(--color-gray-20);
   --text-muted: var(--color-gray-40);
   --accent:     var(--color-primary-30);
+  --color-warning-50: #d08000;
+  --color-warning-10: #2a1e06;
   color-scheme: dark;
 }
 
@@ -323,7 +326,7 @@ mark.diff.animate{animation-play-state:running}
   border-left-width:3px;
 }
 .lint-issue.error{border-left-color:#d9342b}
-.lint-issue.warning{border-left-color:#92580a}
+.lint-issue.warning{border-left-color:var(--color-warning-50)}
 .lint-issue.info{border-left-color:#256ef4}
 .lint-issue-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
 .lint-issue-cat{
