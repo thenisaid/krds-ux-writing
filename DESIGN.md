@@ -309,6 +309,7 @@
 - 최소 44×44px
 - `.gnb-icon-btn`: before-after.html 44×44px ✅ / index.html 미준수 ⚠️
 - `.gnb-nav-link`: before-after.html height:60px ✅
+- `.gnb-theme-btn` (archive.html): 32×32px → 44×44px ✅ (2026-05-21 수정)
 
 ---
 
@@ -394,3 +395,5 @@ index.html / before-after.html: shadow 최소화, border 기반 depth.
 | ~~`color-scheme` 선언~~ | ~~before-after.html만 적용~~ | ✅ 2026-05-21 index.html 추가 완료 |
 | ~~`text-wrap: balance`~~ | ~~before-after.html 헤딩만~~ | ✅ 2026-05-21 index.html `.hero-title` 적용 완료 |
 | ~~Warning 다크모드~~ | ~~lint.html만 `#d08000`~~ | ✅ 2026-05-21 index.html + before-after.html 추가 완료 |
+| ~~기능 텍스트 13px 미달~~ | ~~전 파일에 10–12px 항목 다수~~ | ✅ 2026-05-21 4개 파일 전수 13px 통일 완료 |
+| ~~archive.html gnb-theme-btn 터치 타겟~~ | ~~32×32px (WCAG 미준수)~~ | ✅ 2026-05-21 44×44px 수정 완료 |
