@@ -96,7 +96,8 @@ a:hover { text-decoration: underline; }
   font-size: .85rem; color: var(--text-muted);
   text-decoration: none; transition: all .15s;
 }
-.gnb-nav-link:hover { color: var(--text); background: var(--bg-subtle); text-decoration: none; }
+.gnb-nav-link:hover { color: var(--text); background: rgba(0,0,0,.06); text-decoration: none; }
+[data-theme="dark"] .gnb-nav-link:hover { background: rgba(255,255,255,.08); }
 .gnb-nav-link.active { color: var(--accent); font-weight: 600; }
 .gnb-theme-btn {
   width: 44px; height: 44px; border-radius: 8px;
@@ -251,7 +252,7 @@ a:hover { text-decoration: underline; }
 }
 .arc-card-title {
   font-size: .9rem; font-weight: 600; color: var(--text);
-  margin-bottom: 10px; line-height: 1.4;
+  margin-bottom: 10px; line-height: 1.5;
 }
 .arc-card-row {
   display: flex; gap: 8px; margin-bottom: 6px;

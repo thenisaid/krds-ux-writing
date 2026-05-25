@@ -94,7 +94,8 @@
     border: none; background: transparent; cursor: pointer;
     color: var(--text-muted); font-size: 18px; padding: 6px;
     border-radius: 6px; transition: background .15s;
-    display: flex; align-items: center;
+    display: flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px;
   }
   .gnb-theme-btn:hover { background: var(--border); }
 
@@ -483,7 +484,7 @@
     <div class="highlighted-text" id="highlightedText" aria-live="polite"></div>
     <div style="margin-top:10px; font-size:13px; color:var(--text-muted); display:flex; gap:16px; flex-wrap:wrap;">
       <span><span style="background:rgba(212,58,47,.18); border-bottom:2px solid #d9342b; padding:1px 6px; border-radius:2px;">■</span> 오류</span>
-      <span><span style="background:rgba(146,88,10,.14); border-bottom:2px solid #92580a; padding:1px 6px; border-radius:2px;">■</span> 경고</span>
+      <span><span style="background:var(--color-warning-10); border-bottom:2px solid var(--color-warning-50); padding:1px 6px; border-radius:2px;">■</span> 경고</span>
       <span><span style="background:rgba(21,101,192,.12); border-bottom:2px solid #1565c0; padding:1px 6px; border-radius:2px;">■</span> 안내</span>
     </div>
   </div>
@@ -541,7 +542,7 @@
       <div>
         <div style="font-weight:700; font-size:14px; color:var(--accent); margin-bottom:6px;">💻 파일 전체를 자동 검사하려면 CLI를 사용하세요</div>
         <div style="font-size:13px; color:var(--text-muted); margin-bottom:10px;">디렉터리 일괄 검사, CI/CD 연동, JSON 출력 지원</div>
-        <code style="display:block; background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:8px 12px; font-size:12px; color:var(--text);">npm install -g github:thenisaid/krds-ux-writing</code>
+        <code style="display:block; background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:8px 12px; font-size:13px; color:var(--text);">npm install -g github:thenisaid/krds-ux-writing</code>
       </div>
       <button id="cliBannerClose" aria-label="배너 닫기" style="background:none; border:none; cursor:pointer; font-size:18px; color:var(--text-muted); padding:0 0 0 12px;">✕</button>
     </div>
