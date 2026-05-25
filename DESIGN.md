@@ -215,8 +215,7 @@
 | `.gnb-icon-btn` | 44×44px (WCAG 2.5.5 AAA), border-radius:var(--radius-sm) |
 | `.gnb-badge` | font-size:11px, padding:3px 8px, border-radius:100px |
 
-> **index.html 미적용 항목**: `.gnb-icon-btn`이 `padding:6px`만 있어 터치 타겟 <44px.
-> Phase 2 통일 시 before-after.html 스펙으로 맞출 것.
+> **전 파일 준수**: `.gnb-icon-btn` (index.html) 및 `.gnb-theme-btn` (archive.html) 모두 44×44px 적용 완료 (2026-05-21).
 
 ### 버튼
 
@@ -307,7 +306,7 @@
 
 **터치 타겟** (WCAG 2.5.5):
 - 최소 44×44px
-- `.gnb-icon-btn`: before-after.html 44×44px ✅ / index.html 미준수 ⚠️
+- `.gnb-icon-btn`: before-after.html ✅ / index.html ✅ (2026-05-21 44×44px 통일)
 - `.gnb-nav-link`: before-after.html height:60px ✅
 - `.gnb-theme-btn` (archive.html): 32×32px → 44×44px ✅ (2026-05-21 수정)
 
