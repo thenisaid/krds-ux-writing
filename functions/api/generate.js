@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------------------
 const RATE_LIMIT_MAX = 5;
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1시간
+const RATE_LIMIT_MAP_MAX = 1000;
 const rateLimitMap = new Map();
 
 const ALLOWED_ORIGINS = [
@@ -94,6 +95,14 @@ function getClientIp(request) {
 
 function checkRateLimit(ip) {
   const now = Date.now();
+
+  if (rateLimitMap.size >= RATE_LIMIT_MAP_MAX) {
+    for (const [k, v] of rateLimitMap) {
+      if (now - v.windowStart > RATE_LIMIT_WINDOW_MS) rateLimitMap.delete(k);
+      if (rateLimitMap.size < RATE_LIMIT_MAP_MAX) break;
+    }
+  }
+
   const entry = rateLimitMap.get(ip);
 
   if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
