@@ -98,7 +98,7 @@ function checkRateLimit(ip) {
 
   if (rateLimitMap.size >= RATE_LIMIT_MAP_MAX) {
     for (const [k, v] of rateLimitMap) {
-      if (now - v.windowStart > RATE_LIMIT_WINDOW_MS) rateLimitMap.delete(k);
+      rateLimitMap.delete(k);
       if (rateLimitMap.size < RATE_LIMIT_MAP_MAX) break;
     }
   }
