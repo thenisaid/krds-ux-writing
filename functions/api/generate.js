@@ -97,7 +97,7 @@ function checkRateLimit(ip) {
   const now = Date.now();
 
   if (rateLimitMap.size >= RATE_LIMIT_MAP_MAX) {
-    for (const [k, v] of rateLimitMap) {
+    for (const [k] of rateLimitMap) {
       rateLimitMap.delete(k);
       if (rateLimitMap.size < RATE_LIMIT_MAP_MAX) break;
     }
