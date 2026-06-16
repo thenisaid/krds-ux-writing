@@ -7,11 +7,7 @@
 <meta name="description" content="KRDS UX Writing 3대 원칙 — 실제 텍스트에 원칙이 어떻게 적용되는지 Before/After로 확인하세요.">
 <title>원칙 Before/After — KRDS UX Writing</title>
 
-<script>(function(){
-  var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
-  if(t!=='light'&&t!=='dark')t='light';
-  document.documentElement.setAttribute('data-theme',t);
-})();</script>
+<script>(function(){var prefersDark=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches;var t='light';try{t=localStorage.getItem('krds-theme')||(prefersDark?'dark':'light');}catch(e){t=prefersDark?'dark':'light';}if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
 
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" crossorigin="anonymous"
@@ -137,7 +133,30 @@ body{
 }
 .gnb-icon-btn:hover{background:var(--bg-subtle);color:var(--text)}
 .gnb-mobile-btn{display:none}
-@media(max-width:640px){.gnb-mobile-btn{display:flex}.gnb-nav{display:none}}
+@media(max-width:640px){
+  .gnb{
+    height:auto;
+    padding:12px 16px;
+    flex-wrap:wrap;
+    row-gap:10px;
+  }
+  .gnb-nav{
+    display:flex;
+    order:3;
+    flex-basis:100%;
+    overflow-x:auto;
+    gap:8px;
+    padding-bottom:2px;
+    scrollbar-width:none;
+  }
+  .gnb-nav::-webkit-scrollbar{display:none}
+  .gnb-nav-link{
+    height:auto;
+    padding:8px 12px;
+    flex-shrink:0;
+  }
+  .gnb-badge{display:none}
+}
 
 /* ─── Page Hero ─── */
 .page-hero{
@@ -747,7 +766,7 @@ footer{
   <div class="container">
     <div class="footer-inner">
       <div>
-        <a href="/" class="footer-logo">
+        <a href="/krds-ux-writing/" class="footer-logo">
           <span style="width:20px;height:20px;border-radius:4px;background:#256ef4;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800" aria-hidden="true">K</span>
           KRDS UX Writing 가이드라인
         </a>
@@ -791,6 +810,8 @@ footer{
   </div>
 </div>
 
+<script src="shared/base-path.js"></script>
+<script src="jargon-dictionary.js"></script>
 <script src="krds-lint.js"></script>
 <script>
 (function () {
@@ -803,6 +824,9 @@ footer{
   var MOON = 'M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2zm0 1.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9z';
   function updateThemeIcon(theme) {
     if (themeIcon) themeIcon.setAttribute('d', theme === 'dark' ? SUN : MOON);
+    if (themeToggle) {
+      themeToggle.setAttribute('aria-label', theme === 'dark' ? '라이트모드 전환' : '다크모드 전환');
+    }
   }
   var currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
   updateThemeIcon(currentTheme);
@@ -810,7 +834,7 @@ footer{
     themeToggle.addEventListener('click', function () {
       currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', currentTheme);
-      localStorage.setItem('krds-theme', currentTheme);
+      try { localStorage.setItem('krds-theme', currentTheme); } catch (e) {}
       updateThemeIcon(currentTheme);
     });
   }
@@ -839,8 +863,8 @@ footer{
     btn.addEventListener('click', function () { activateTab(btn); });
     btn.addEventListener('keydown', function (e) {
       var idx = Array.from(tabBtns).indexOf(btn);
-      if (e.key === 'ArrowRight') { tabBtns[(idx + 1) % tabBtns.length].focus(); tabBtns[(idx + 1) % tabBtns.length].click(); }
-      if (e.key === 'ArrowLeft')  { tabBtns[(idx - 1 + tabBtns.length) % tabBtns.length].focus(); tabBtns[(idx - 1 + tabBtns.length) % tabBtns.length].click(); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); tabBtns[(idx + 1) % tabBtns.length].focus(); tabBtns[(idx + 1) % tabBtns.length].click(); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); tabBtns[(idx - 1 + tabBtns.length) % tabBtns.length].focus(); tabBtns[(idx - 1 + tabBtns.length) % tabBtns.length].click(); }
     });
   });
 
@@ -894,6 +918,13 @@ footer{
   var slides = [];
   var slideIdx = 0;
 
+  function getSeminarFocusable() {
+    if (!seminarOverlay || typeof seminarOverlay.querySelectorAll !== 'function') return [];
+    return Array.from(seminarOverlay.querySelectorAll(
+      'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    ));
+  }
+
   function renderSeminarSlide() {
     var s = slides[slideIdx];
     if (!s) return;
@@ -925,17 +956,20 @@ footer{
   }
 
   function openSeminar() {
+    if (!seminarOverlay || !seminarSlide) return;
     slides = collectSlides();
+    if (!slides.length) return;
     slideIdx = 0;
     renderSeminarSlide();
     seminarOverlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    if (document.body && document.body.style) document.body.style.overflow = 'hidden';
     if (seminarClose) seminarClose.focus();
   }
 
   function closeSeminar() {
+    if (!seminarOverlay) return;
     seminarOverlay.classList.remove('active');
-    document.body.style.overflow = '';
+    if (document.body && document.body.style) document.body.style.overflow = '';
     if (seminarBtn) seminarBtn.focus();
   }
 
@@ -945,10 +979,30 @@ footer{
   if (seminarNext)  seminarNext.addEventListener('click', function () { if (slideIdx < slides.length - 1) { slideIdx++; renderSeminarSlide(); } });
 
   document.addEventListener('keydown', function (e) {
-    if (!seminarOverlay.classList.contains('active')) return;
+    if (!seminarOverlay || !seminarOverlay.classList || !seminarOverlay.classList.contains('active')) return;
+    if (e.key === 'Tab') {
+      var focusable = getSeminarFocusable();
+      if (!focusable.length) {
+        e.preventDefault();
+        return;
+      }
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+      var active = document.activeElement;
+      if (e.shiftKey) {
+        if (active === first || focusable.indexOf(active) === -1) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else if (active === last || focusable.indexOf(active) === -1) {
+        e.preventDefault();
+        first.focus();
+      }
+      return;
+    }
     if (e.key === 'Escape') { closeSeminar(); return; }
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { if (slideIdx < slides.length - 1) { slideIdx++; renderSeminarSlide(); } }
-    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { if (slideIdx > 0) { slideIdx--; renderSeminarSlide(); } }
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); if (slideIdx < slides.length - 1) { slideIdx++; renderSeminarSlide(); } }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); if (slideIdx > 0) { slideIdx--; renderSeminarSlide(); } }
   });
 
   /* ── Risk 3: Lint Integration ── */
@@ -957,16 +1011,45 @@ footer{
   var lintClearBtn = document.getElementById('lintClearBtn');
   var lintResults = document.getElementById('lintResults');
 
+  function resetLintResults() {
+    if (!lintResults) return;
+    lintResults.classList.remove('visible');
+    lintResults.innerHTML = '';
+  }
+
   function runLint() {
     if (!lintInput || !lintResults) return;
     var text = lintInput.value.trim();
     if (!text) { renderLintEmpty('텍스트를 입력해 주세요.'); return; }
-    if (typeof KRDSLint === 'undefined') { renderLintEmpty('린팅 엔진을 불러오는 중입니다.'); return; }
-    var result = KRDSLint.lint(text);
+    if (typeof KRDSLint === 'undefined' || !KRDSLint || typeof KRDSLint.lint !== 'function') {
+      renderLintEmpty('린팅 엔진을 불러오는 중입니다.');
+      return;
+    }
+    var result;
+    try {
+      result = KRDSLint.lint(text);
+    } catch (e) {
+      renderLintEmpty('린팅 엔진 오류가 발생했습니다. 다시 시도해 주세요.');
+      return;
+    }
+    if (!isValidLintResult(result)) {
+      renderLintEmpty('린팅 엔진 오류가 발생했습니다. 다시 시도해 주세요.');
+      return;
+    }
     renderLintResult(result);
   }
 
+  function isValidLintResult(result) {
+    if (!result || typeof result !== 'object') return false;
+    if (!Array.isArray(result.issues)) return false;
+    if (!result.summary || typeof result.summary !== 'object') return false;
+    return typeof result.summary.errors === 'number' &&
+      typeof result.summary.warnings === 'number' &&
+      typeof result.summary.infos === 'number';
+  }
+
   function renderLintResult(result) {
+    if (!lintResults) return;
     var score = result.score;
     var scoreClass = score >= 80 ? 'good' : score >= 50 ? 'ok' : 'bad';
     var issueHtml = '';
@@ -1004,6 +1087,7 @@ footer{
   }
 
   function renderLintEmpty(msg) {
+    if (!lintResults) return;
     lintResults.innerHTML = '<div class="lint-empty">' + escHtml(msg) + '</div>';
     lintResults.classList.add('visible');
   }
@@ -1011,13 +1095,16 @@ footer{
   if (lintRunBtn)   lintRunBtn.addEventListener('click', runLint);
   if (lintClearBtn) lintClearBtn.addEventListener('click', function () {
     if (lintInput) lintInput.value = '';
-    lintResults.classList.remove('visible');
-    lintResults.innerHTML = '';
+    resetLintResults();
     if (lintInput) lintInput.focus();
   });
   if (lintInput) {
+    lintInput.addEventListener('input', resetLintResults);
     lintInput.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) runLint();
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        runLint();
+      }
     });
   }
 

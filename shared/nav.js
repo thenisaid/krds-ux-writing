@@ -5,25 +5,44 @@
 (function () {
   'use strict';
 
+  var sharedNav = window.KRDSSharedNav || (window.KRDSSharedNav = {});
+  var basePath = window.KRDSBasePath || null;
+  function toSiteRelativePath(pathname) {
+    if (basePath && typeof basePath.toSiteRelativePath === 'function') {
+      return basePath.toSiteRelativePath(pathname);
+    }
+    return String(pathname || '/').replace(/\/krds-ux-writing/, '');
+  }
+  function buildSitePath(pathname) {
+    if (basePath && typeof basePath.buildSitePath === 'function') {
+      return basePath.buildSitePath(pathname);
+    }
+    var value = pathname || '/';
+    if (value === '/') return '/krds-ux-writing/';
+    return '/krds-ux-writing' + (value.charAt(0) === '/' ? value : '/' + value);
+  }
+
+  function resolveCurrentSection(pathname) {
+    var comparablePath = normalizeComparablePath(pathname);
+    if (!comparablePath || comparablePath === '/') return '';
+
+    var trimmedPath = comparablePath.replace(/^\/+/, '');
+    if (!trimmedPath) return '';
+
+    var firstSlashIndex = trimmedPath.indexOf('/');
+    var firstSegment = firstSlashIndex === -1
+      ? trimmedPath
+      : trimmedPath.slice(0, firstSlashIndex);
+
+    return firstSegment.replace(/\.html$/i, '');
+  }
+
   /* ── 1. GNB section nav: highlight current section ── */
-  var path = window.location.pathname;
+  var currentSection = resolveCurrentSection(window.location.pathname);
   var navLinks = document.querySelectorAll('.gnb-nav-link[data-section]');
   navLinks.forEach(function (link) {
     var section = link.getAttribute('data-section');
-    if (section && path.indexOf('/' + section) === 0 || path.indexOf('/' + section + '/') !== -1) {
-      link.classList.add('active');
-    }
-    // Exact section root match
-    if (path.replace(/\/$/, '').split('/').pop() === section) {
-      link.classList.add('active');
-    }
-  });
-  // More reliable: match by startsWith on cleaned path
-  var cleanPath = path.replace(/\/krds-ux-writing/, '');
-  navLinks.forEach(function (link) {
-    var section = link.getAttribute('data-section');
-    if (!section) return;
-    if (cleanPath.indexOf('/' + section) === 0) {
+    if (section === currentSection) {
       link.classList.add('active');
     }
   });
@@ -31,9 +50,26 @@
   /* ── 2. Dark mode toggle ── */
   var themeKey = 'krds-theme';
   var themeBtn = document.getElementById('themeToggle');
-  function applyTheme(t) {
+  var themeMediaQuery = typeof window.matchMedia === 'function'
+    ? window.matchMedia('(prefers-color-scheme: dark)')
+    : null;
+  function readStoredTheme() {
+    try {
+      var value = localStorage.getItem(themeKey);
+      return value === 'dark' || value === 'light' ? value : null;
+    } catch (e) {
+      return null;
+    }
+  }
+  function persistTheme(t) {
+    try {
+      localStorage.setItem(themeKey, t);
+    } catch (e) {}
+  }
+  function applyTheme(t, options) {
+    var shouldPersist = !!(options && options.persist);
     document.documentElement.setAttribute('data-theme', t);
-    localStorage.setItem(themeKey, t);
+    if (shouldPersist) persistTheme(t);
     if (themeBtn) {
       themeBtn.setAttribute('aria-label', t === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환');
       themeBtn.innerHTML = t === 'dark'
@@ -41,12 +77,27 @@
         : '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13.5 10A6 6 0 0 1 6 2.5a6.002 6.002 0 1 0 7.5 7.5z" fill="currentColor"/></svg>';
     }
   }
+  function resolveTheme() {
+    var storedTheme = readStoredTheme();
+    if (storedTheme) return storedTheme;
+    return themeMediaQuery && themeMediaQuery.matches ? 'dark' : 'light';
+  }
+  function syncSystemTheme() {
+    if (readStoredTheme()) return;
+    applyTheme(resolveTheme(), { persist: false });
+  }
+  applyTheme(resolveTheme(), { persist: false });
+  if (themeMediaQuery) {
+    if (typeof themeMediaQuery.addEventListener === 'function') {
+      themeMediaQuery.addEventListener('change', syncSystemTheme);
+    } else if (typeof themeMediaQuery.addListener === 'function') {
+      themeMediaQuery.addListener(syncSystemTheme);
+    }
+  }
   if (themeBtn) {
-    var currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-    applyTheme(currentTheme);
     themeBtn.addEventListener('click', function () {
       var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      applyTheme(next);
+      applyTheme(next, { persist: true });
     });
   }
 
@@ -55,6 +106,12 @@
   var backdrop = document.querySelector('.sidebar-backdrop');
   var hamburger = document.getElementById('gnbHamburger');
   var _trapHandler = null;
+
+  function syncHamburgerState(isOpen) {
+    if (!hamburger) return;
+    hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    hamburger.setAttribute('aria-label', isOpen ? '메뉴 닫기' : '메뉴 열기');
+  }
 
   function trapSidebarFocus(el) {
     var focusable = Array.from(el.querySelectorAll(
@@ -74,27 +131,127 @@
     el.addEventListener('keydown', _trapHandler);
   }
 
-  function releaseSidebarFocus(el) {
+  function releaseSidebarFocus(el, shouldRestoreFocus) {
     if (_trapHandler) { el.removeEventListener('keydown', _trapHandler); _trapHandler = null; }
-    if (hamburger) hamburger.focus();
+    if (shouldRestoreFocus !== false && hamburger) hamburger.focus();
   }
+
+  function isTextEntryTarget(target) {
+    if (!target || !target.tagName) return !!(target && target.isContentEditable === true);
+    var tag = String(target.tagName).toUpperCase();
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable === true;
+  }
+
+  function focusSidebarAnchorTarget(target) {
+    if (!target) return;
+    var hadTabIndex = typeof target.getAttribute === 'function' && target.getAttribute('tabindex') !== null;
+    if (!hadTabIndex && typeof target.setAttribute === 'function') {
+      target.setAttribute('tabindex', '-1');
+    }
+    if (typeof target.focus === 'function') {
+      target.focus();
+    }
+    if (typeof window.scrollTo === 'function' && typeof target.getBoundingClientRect === 'function') {
+      window.scrollTo({
+        top: target.getBoundingClientRect().top + window.scrollY,
+        behavior: 'auto',
+      });
+    }
+  }
+
+  function normalizeComparablePath(pathname) {
+    var value = toSiteRelativePath(pathname || '/');
+    if (!value) return '/';
+    if (value.charAt(0) !== '/') value = '/' + value;
+    value = value.replace(/\/+$/, '');
+    value = value.replace(/\/index\.html$/i, '');
+    return value || '/';
+  }
+
+  function stripOrigin(pathname) {
+    var value = String(pathname || '');
+    var protocolIndex = value.indexOf('://');
+    if (protocolIndex !== -1) {
+      var slashIndex = value.indexOf('/', protocolIndex + 3);
+      return slashIndex === -1 ? '/' : value.slice(slashIndex);
+    }
+    if (value.indexOf('//') === 0) {
+      var slashIndex2 = value.indexOf('/', 2);
+      return slashIndex2 === -1 ? '/' : value.slice(slashIndex2);
+    }
+    return value;
+  }
+
+  function splitPathAndSearch(pathname) {
+    var value = String(pathname || '');
+    var queryIndex = value.indexOf('?');
+    if (queryIndex === -1) {
+      return { path: value, search: '' };
+    }
+    return {
+      path: value.slice(0, queryIndex),
+      search: value.slice(queryIndex),
+    };
+  }
+
+  function getCurrentLocationSearch() {
+    return window.location && typeof window.location.search === 'string'
+      ? window.location.search
+      : '';
+  }
+
+  function resolveSamePageSidebarAnchorId(link) {
+    if (!link || typeof link.getAttribute !== 'function') return '';
+    var href = link.getAttribute('href') || '';
+    if (!href || href === '#') return '';
+
+    var hashIndex = href.indexOf('#');
+    if (hashIndex === -1 || hashIndex === href.length - 1) return '';
+    if (hashIndex === 0) return href.slice(1);
+
+    var targetLocation = splitPathAndSearch(stripOrigin(href.slice(0, hashIndex)));
+    var currentPath = window.location && window.location.pathname ? window.location.pathname : '/';
+    var comparableTargetPath = normalizeComparablePath(targetLocation.path || currentPath);
+    if (
+      comparableTargetPath !== normalizeComparablePath(currentPath) ||
+      targetLocation.search !== getCurrentLocationSearch()
+    ) {
+      return '';
+    }
+    return href.slice(hashIndex + 1);
+  }
+
+  function handleMobileSidebarLinkClick(link, event) {
+    if (!link || window.innerWidth > 900) return;
+    var targetId = resolveSamePageSidebarAnchorId(link);
+    var target = targetId ? document.getElementById(targetId) : null;
+    if (target) {
+      if (event && typeof event.preventDefault === 'function') event.preventDefault();
+      closeSidebar(false);
+      focusSidebarAnchorTarget(target);
+      return;
+    }
+    closeSidebar(false);
+  }
+  sharedNav.handleMobileSidebarLinkClick = handleMobileSidebarLinkClick;
 
   function openSidebar() {
     if (!sidebar) return;
     sidebar.classList.add('open');
     if (backdrop) backdrop.classList.add('open');
-    if (hamburger) hamburger.setAttribute('aria-expanded', 'true');
+    syncHamburgerState(true);
     document.body.style.overflow = 'hidden';
     trapSidebarFocus(sidebar);
   }
-  function closeSidebar() {
-    if (!sidebar) return;
+  function closeSidebar(restoreFocus) {
+    if (!sidebar || !sidebar.classList.contains('open')) return;
     sidebar.classList.remove('open');
     if (backdrop) backdrop.classList.remove('open');
-    if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
+    syncHamburgerState(false);
     document.body.style.overflow = '';
-    releaseSidebarFocus(sidebar);
+    releaseSidebarFocus(sidebar, restoreFocus);
   }
+  syncHamburgerState(false);
   if (hamburger) {
     hamburger.addEventListener('click', function () {
       var isOpen = sidebar && sidebar.classList.contains('open');
@@ -107,8 +264,8 @@
   // Close on sidebar link click (mobile)
   if (sidebar) {
     sidebar.querySelectorAll('.sidebar-link').forEach(function (link) {
-      link.addEventListener('click', function () {
-        if (window.innerWidth <= 900) closeSidebar();
+      link.addEventListener('click', function (e) {
+        if (window.innerWidth <= 900) handleMobileSidebarLinkClick(link, e);
       });
     });
   }
@@ -116,6 +273,13 @@
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeSidebar();
   });
+  if (typeof window.addEventListener === 'function') {
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 900) {
+        closeSidebar(false);
+      }
+    });
+  }
 
   /* ── 4. GNB 키보드 내비게이션 ── */
   var gnbNav = document.querySelector('.gnb-nav');
@@ -144,20 +308,27 @@
   /* ── 5. Ctrl+K 검색 단축키 ── */
   document.addEventListener('keydown', function (e) {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-      e.preventDefault();
+      if (isTextEntryTarget(e.target)) return;
       var searchBtn = document.getElementById('gnbSearch');
+      var pageSearchInput = document.getElementById('searchInput');
       if (searchBtn) {
+        e.preventDefault();
         searchBtn.click();
-      } else {
+      } else if (pageSearchInput) {
+        e.preventDefault();
+        pageSearchInput.focus();
+        if (typeof pageSearchInput.select === 'function') pageSearchInput.select();
+      } else if (currentSection === 'principles') {
+        e.preventDefault();
         // principles 서브페이지: 검색 UI 없음 → 메인 페이지로 이동
-        window.location.href = '/krds-ux-writing/';
+        window.location.href = buildSitePath('/');
       }
     }
   });
 
   /* ── 6. Sidebar active link on scroll ── */
   var sidebarLinks = sidebar ? sidebar.querySelectorAll('.sidebar-link[href^="#"]') : [];
-  if (sidebarLinks.length > 0) {
+  if (sidebarLinks.length > 0 && typeof IntersectionObserver === 'function') {
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;
@@ -184,16 +355,104 @@
 (function () {
   'use strict';
 
+  var sharedNav = window.KRDSSharedNav || {};
   var tree = document.querySelector('.lnb-tree');
   if (!tree) return;
 
-  var cleanPath = window.location.pathname.replace(/\/krds-ux-writing/, '');
+  var basePath = window.KRDSBasePath || null;
+  function toSiteRelativePath(pathname) {
+    if (basePath && typeof basePath.toSiteRelativePath === 'function') {
+      return basePath.toSiteRelativePath(pathname);
+    }
+    return String(pathname || '/').replace(/\/krds-ux-writing/, '');
+  }
+
+  var cleanPath = toSiteRelativePath(window.location.pathname);
+  var currentComparablePath = normalizeHashComparablePath(window.location.pathname);
   var items = Array.from(tree.querySelectorAll('.lnb-item'));
+
+  function normalizeHashComparablePath(pathname) {
+    var value = toSiteRelativePath(pathname || '/');
+    if (!value) return '/';
+    if (value.charAt(0) !== '/') value = '/' + value;
+    value = value.replace(/\/+$/, '');
+    value = value.replace(/\/index\.html$/i, '');
+    return value || '/';
+  }
+
+  function stripHashLinkOrigin(pathname) {
+    var value = String(pathname || '');
+    var protocolIndex = value.indexOf('://');
+    if (protocolIndex !== -1) {
+      var slashIndex = value.indexOf('/', protocolIndex + 3);
+      return slashIndex === -1 ? '/' : value.slice(slashIndex);
+    }
+    if (value.indexOf('//') === 0) {
+      var slashIndex2 = value.indexOf('/', 2);
+      return slashIndex2 === -1 ? '/' : value.slice(slashIndex2);
+    }
+    return value;
+  }
+
+  function splitHashLinkPathAndSearch(pathname) {
+    var value = String(pathname || '');
+    var queryIndex = value.indexOf('?');
+    if (queryIndex === -1) {
+      return { path: value, search: '' };
+    }
+    return {
+      path: value.slice(0, queryIndex),
+      search: value.slice(queryIndex),
+    };
+  }
+
+  function getCurrentLocationSearch() {
+    if (window.location && typeof window.location.search === 'string') {
+      return window.location.search;
+    }
+    return typeof location !== 'undefined' && typeof location.search === 'string'
+      ? location.search
+      : '';
+  }
+
+  function parseCurrentPageHashHref(href) {
+    var value = String(href || '');
+    var hashIndex = value.indexOf('#');
+    if (hashIndex === -1 || hashIndex === value.length - 1) return null;
+    if (hashIndex === 0) {
+      return {
+        hash: value.slice(hashIndex + 1),
+      };
+    }
+
+    var targetLocation = splitHashLinkPathAndSearch(stripHashLinkOrigin(value.slice(0, hashIndex)));
+    var currentPath = window.location && window.location.pathname ? window.location.pathname : '/';
+    var comparableTargetPath = normalizeHashComparablePath(targetLocation.path || currentPath);
+    if (
+      comparableTargetPath !== normalizeHashComparablePath(currentPath) ||
+      targetLocation.search !== getCurrentLocationSearch()
+    ) {
+      return null;
+    }
+
+    return {
+      hash: value.slice(hashIndex + 1),
+    };
+  }
 
   function getTogLabel(tog, action) {
     var base = (tog.getAttribute('aria-label') || '')
       .replace(/\s*(펼치기\/접기|펼치기|접기)$/, '').trim();
     return base + ' ' + action;
+  }
+
+  function closestIfPossible(node, selector) {
+    return node && typeof node.closest === 'function' ? node.closest(selector) : null;
+  }
+
+  function hasClass(node, className) {
+    return !!(node && node.classList && typeof node.classList.contains === 'function' &&
+      node.classList.contains(className));
   }
 
   function expand(item) {
@@ -219,9 +478,20 @@
   }
 
   /* Initialize aria-expanded on toggle buttons */
-  items.forEach(function (item) {
+  items.forEach(function (item, index) {
     var tog = item.querySelector('.lnb-tog');
-    if (tog) tog.setAttribute('aria-expanded', item.getAttribute('aria-expanded') || 'false');
+    var sub = item.querySelector('.lnb-sub');
+    if (sub && !sub.id) {
+      var key = (item.getAttribute('data-path') || 'section-' + index)
+        .replace(/[^a-z0-9]+/gi, '-')
+        .replace(/^-+|-+$/g, '')
+        .toLowerCase();
+      sub.id = 'lnb-sub-' + key;
+    }
+    if (tog) {
+      tog.setAttribute('aria-expanded', item.getAttribute('aria-expanded') || 'false');
+      if (sub && sub.id) tog.setAttribute('aria-controls', sub.id);
+    }
   });
 
   /* Auto-expand active chapter based on URL */
@@ -229,7 +499,10 @@
   items.forEach(function (item) { item.setAttribute('aria-selected', 'false'); });
   items.forEach(function (item) {
     var p = item.getAttribute('data-path') || '';
-    if (p && cleanPath.indexOf(p) === 0) {
+    var comparableItemPath = normalizeHashComparablePath(p);
+    if (comparableItemPath &&
+        (currentComparablePath === comparableItemPath ||
+         currentComparablePath.indexOf(comparableItemPath + '/') === 0)) {
       expand(item);
       item.setAttribute('aria-selected', 'true');
       var link = item.querySelector('.lnb-item-a');
@@ -254,6 +527,7 @@
   function restoreState() {
     var saved;
     try { saved = JSON.parse(sessionStorage.getItem(SS_KEY) || '[]'); } catch (e) { return; }
+    if (!Array.isArray(saved)) return;
     items.forEach(function (item) {
       var dp = item.getAttribute('data-path') || '';
       if (saved.indexOf(dp) !== -1 && item.getAttribute('aria-expanded') !== 'true') {
@@ -287,15 +561,9 @@
     /* Close sidebar on mobile when a link inside is clicked */
     var allLinks = item.querySelectorAll('.lnb-item-a, .lnb-sub-a');
     allLinks.forEach(function (a) {
-      a.addEventListener('click', function () {
-        if (window.innerWidth <= 900) {
-          var sidebar = document.querySelector('.sidebar');
-          var backdrop = document.querySelector('.sidebar-backdrop');
-          var hamburger = document.getElementById('gnbHamburger');
-          if (sidebar) sidebar.classList.remove('open');
-          if (backdrop) backdrop.classList.remove('open');
-          if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
-          document.body.style.overflow = '';
+      a.addEventListener('click', function (e) {
+        if (window.innerWidth <= 900 && typeof sharedNav.handleMobileSidebarLinkClick === 'function') {
+          sharedNav.handleMobileSidebarLinkClick(a, e);
         }
       });
     });
@@ -310,11 +578,12 @@
     var focusable = Array.from(
       tree.querySelectorAll('.lnb-item-a, .lnb-tog, .lnb-sub-a')
     ).filter(function (el) {
-      var sub = el.closest('.lnb-sub');
+      var sub = closestIfPossible(el, '.lnb-sub');
       return !sub || !sub.hasAttribute('hidden');
     });
 
-    var idx = focusable.indexOf(document.activeElement);
+    var activeEl = document.activeElement || null;
+    var idx = focusable.indexOf(activeEl);
 
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -324,12 +593,12 @@
       if (idx > 0) focusable[idx - 1].focus();
     } else if (e.key === 'ArrowRight') {
       e.preventDefault();
-      var item = document.activeElement.closest('.lnb-item');
+      var item = closestIfPossible(activeEl, '.lnb-item');
       if (item) {
         if (item.getAttribute('aria-expanded') === 'false') {
           /* 닫힌 treeitem: 열기 */
           var tog = item.querySelector('.lnb-tog');
-          if (tog) tog.click();
+          if (tog && typeof tog.click === 'function') tog.click();
         } else {
           /* 열린 treeitem: 첫 번째 자식으로 포커스 이동 */
           var firstChild = item.querySelector('.lnb-sub:not([hidden]) .lnb-sub-a');
@@ -338,25 +607,25 @@
       }
     } else if (e.key === 'ArrowLeft') {
       e.preventDefault();
-      if (document.activeElement.classList.contains('lnb-sub-a')) {
+      if (hasClass(activeEl, 'lnb-sub-a')) {
         /* 자식 링크: 부모 treeitem 링크로 포커스 이동 */
-        var parentItem = document.activeElement.closest('.lnb-item');
+        var parentItem = closestIfPossible(activeEl, '.lnb-item');
         if (parentItem) {
           var parentLink = parentItem.querySelector('.lnb-item-a');
           if (parentLink) parentLink.focus();
         }
       } else {
-        var item2 = document.activeElement.closest('.lnb-item');
+        var item2 = closestIfPossible(activeEl, '.lnb-item');
         if (item2 && item2.getAttribute('aria-expanded') === 'true') {
           /* 열린 treeitem: 닫기 */
           var tog2 = item2.querySelector('.lnb-tog');
-          if (tog2) tog2.click();
+          if (tog2 && typeof tog2.click === 'function') tog2.click();
         }
       }
     } else if ((e.key === 'Enter' || e.key === ' ') &&
-               document.activeElement.classList.contains('lnb-tog')) {
+               hasClass(activeEl, 'lnb-tog')) {
       e.preventDefault();
-      document.activeElement.click();
+      if (activeEl && typeof activeEl.click === 'function') activeEl.click();
     }
   });
 
@@ -367,21 +636,22 @@
   if (location.hash && subLinks.length > 0) {
     var hashId = location.hash.slice(1);
     subLinks.forEach(function (a) {
-      if ((a.getAttribute('href') || '').split('#')[1] === hashId) {
+      var parsedHref = parseCurrentPageHashHref(a.getAttribute('href') || '');
+      if (parsedHref && parsedHref.hash === hashId) {
         a.classList.add('active');
         a.setAttribute('aria-current', 'location');
       }
     });
   }
 
-  if (subLinks.length > 0) {
+  if (subLinks.length > 0 && typeof IntersectionObserver === 'function') {
     var obs = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;
         var id = entry.target.id;
         subLinks.forEach(function (a) {
-          var href = a.getAttribute('href') || '';
-          var isActive = href.split('#')[1] === id;
+          var parsedHref = parseCurrentPageHashHref(a.getAttribute('href') || '');
+          var isActive = !!(parsedHref && parsedHref.hash === id);
           a.classList.toggle('active', isActive);
           if (isActive) {
             a.setAttribute('aria-current', 'location');
@@ -393,10 +663,9 @@
     }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
 
     subLinks.forEach(function (a) {
-      var href = a.getAttribute('href') || '';
-      var hash = href.split('#')[1];
-      if (hash) {
-        var target = document.getElementById(hash);
+      var parsedHref = parseCurrentPageHashHref(a.getAttribute('href') || '');
+      if (parsedHref && parsedHref.hash) {
+        var target = document.getElementById(parsedHref.hash);
         if (target) obs.observe(target);
       }
     });
@@ -405,7 +674,7 @@
   /* Reference footer link active state */
   document.querySelectorAll('.lnb-footer-a').forEach(function (a) {
     var href = a.getAttribute('href') || '';
-    var refPath = href.replace(/\/krds-ux-writing/, '').replace(/\/$/, '');
+    var refPath = toSiteRelativePath(href).replace(/\/$/, '');
     var curPath = cleanPath.replace(/\/$/, '');
     if (refPath && curPath.indexOf(refPath) === 0) a.classList.add('active');
   });

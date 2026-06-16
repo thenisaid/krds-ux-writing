@@ -2,7 +2,7 @@
 'use strict';
 
 /**
- * scripts/extract-jargon.js — principles.md 2.1 행정어 사전 → jargon-dictionary.json 변환
+ * scripts/extract-jargon.js — principles.md 2.1 행정어 사전 → jargon-dictionary.{json,js} 변환
  *
  * 사용법:
  *   node scripts/extract-jargon.js
@@ -18,6 +18,12 @@ const path = require('path');
 const ROOT          = path.join(__dirname, '..');
 const PRINCIPLES_MD = path.join(ROOT, 'principles.md');
 const OUTPUT_JSON   = path.join(ROOT, 'jargon-dictionary.json');
+const OUTPUT_JS     = path.join(ROOT, 'jargon-dictionary.js');
+const DEFAULT_OUTPUT_META = {
+  version: '1.0.0',
+  source: 'principles.md § 2.1',
+  note: 'scripts/extract-jargon.js 로 자동 생성. 직접 편집 대신 principles.md를 수정 후 재실행하세요.',
+};
 
 // ─── 카테고리 헤더 → cat 코드 매핑 ─────────────────────────────────────────────
 const CAT_MAP = {
@@ -105,28 +111,188 @@ function parse(md) {
   return entries;
 }
 
-// ─── 실행 ────────────────────────────────────────────────────────────────────────
-const args   = process.argv.slice(2);
-const dryRun = args.includes('--dry-run');
+function readExistingOutput(outputPath = OUTPUT_JSON) {
+  if (!fs.existsSync(outputPath)) return null;
 
-const md      = fs.readFileSync(PRINCIPLES_MD, 'utf8');
-const entries = parse(md);
-
-const output = {
-  version:   '1.0.0',
-  generated: new Date().toISOString().slice(0, 10),
-  source:    'principles.md § 2.1',
-  note:      'scripts/extract-jargon.js 로 자동 생성. 직접 편집 대신 principles.md를 수정 후 재실행하세요.',
-  entries,
-};
-
-const json = JSON.stringify(output, null, 2);
-
-if (dryRun) {
-  process.stdout.write(json + '\n');
-  process.stderr.write(`[dry-run] 총 ${entries.length}개 항목 추출 (파일 저장 안 함)\n`);
-} else {
-  fs.writeFileSync(OUTPUT_JSON, json, 'utf8');
-  process.stderr.write(`✅ jargon-dictionary.json 생성 완료 — ${entries.length}개 항목\n`);
-  process.stderr.write(`   저장 위치: ${OUTPUT_JSON}\n`);
+  try {
+    return JSON.parse(fs.readFileSync(outputPath, 'utf8'));
+  } catch (error) {
+    return null;
+  }
 }
+
+function readExistingText(filePath) {
+  if (!fs.existsSync(filePath)) return null;
+
+  try {
+    return fs.readFileSync(filePath, 'utf8');
+  } catch (error) {
+    return null;
+  }
+}
+
+function hasSameEntries(existingOutput, entries) {
+  return Array.isArray(existingOutput && existingOutput.entries)
+    && JSON.stringify(existingOutput.entries) === JSON.stringify(entries);
+}
+
+function normalizeEntryKeyPart(value) {
+  return String(value || '')
+    .replace(/^~+/, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function normalizeBannedKey(value) {
+  return String(value || '')
+    .replace(/~/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function createEntryKey(entry) {
+  return [
+    normalizeEntryKeyPart(entry && entry.banned),
+    normalizeEntryKeyPart(entry && entry.alt),
+    normalizeEntryKeyPart(entry && entry.cat),
+    normalizeEntryKeyPart(entry && entry.context),
+  ].join('\u0000');
+}
+
+function isMoreDescriptiveEntry(candidate, current) {
+  const candidateAltLength = normalizeEntryKeyPart(candidate && candidate.alt).length;
+  const currentAltLength = normalizeEntryKeyPart(current && current.alt).length;
+  if (candidateAltLength !== currentAltLength) return candidateAltLength > currentAltLength;
+
+  const candidateContextLength = normalizeEntryKeyPart(candidate && candidate.context).length;
+  const currentContextLength = normalizeEntryKeyPart(current && current.context).length;
+  if (candidateContextLength !== currentContextLength) return candidateContextLength > currentContextLength;
+
+  return false;
+}
+
+function mergeEntries(entries) {
+  const seenExactEntries = new Set();
+  const mergedByBanned = new Map();
+  const orderedBannedKeys = [];
+
+  entries.forEach((entry) => {
+    const key = createEntryKey(entry);
+    if (seenExactEntries.has(key)) return;
+    seenExactEntries.add(key);
+
+    const bannedKey = normalizeBannedKey(entry && entry.banned);
+    if (!bannedKey) return;
+
+    if (!mergedByBanned.has(bannedKey)) {
+      mergedByBanned.set(bannedKey, entry);
+      orderedBannedKeys.push(bannedKey);
+      return;
+    }
+
+    const current = mergedByBanned.get(bannedKey);
+    if (isMoreDescriptiveEntry(entry, current)) {
+      mergedByBanned.set(bannedKey, entry);
+    }
+  });
+
+  return orderedBannedKeys.map((bannedKey) => mergedByBanned.get(bannedKey));
+}
+
+function buildOutput({ entries, existingOutput = null, date = new Date().toISOString().slice(0, 10) }) {
+  const mergedEntries = mergeEntries(entries, existingOutput);
+  const sameEntries = hasSameEntries(existingOutput, mergedEntries);
+
+  return {
+    version: typeof (existingOutput && existingOutput.version) === 'string'
+      ? existingOutput.version
+      : DEFAULT_OUTPUT_META.version,
+    generated: sameEntries && typeof (existingOutput && existingOutput.generated) === 'string'
+      ? existingOutput.generated
+      : date,
+    source: typeof (existingOutput && existingOutput.source) === 'string'
+      ? existingOutput.source
+      : DEFAULT_OUTPUT_META.source,
+    note: typeof (existingOutput && existingOutput.note) === 'string'
+      ? existingOutput.note
+      : DEFAULT_OUTPUT_META.note,
+    entries: mergedEntries,
+  };
+}
+
+function buildBrowserBundle(output) {
+  return [
+    '/* Auto-generated by scripts/extract-jargon.js. Do not edit manually. */',
+    '(function (root) {',
+    "  'use strict';",
+    '  root.KRDS_JARGON_DICT = ' + JSON.stringify(output, null, 2) + ';',
+    "})(typeof globalThis !== 'undefined' ? globalThis : this);",
+    '',
+  ].join('\n');
+}
+
+function syncJargonDictionary({
+  md,
+  dryRun = false,
+  date = new Date().toISOString().slice(0, 10),
+  outputPath = OUTPUT_JSON,
+  browserOutputPath = OUTPUT_JS,
+  existingOutput = readExistingOutput(outputPath),
+  existingBrowserBundle = readExistingText(browserOutputPath),
+  writeFile = fs.writeFileSync,
+  stdout = process.stdout,
+  stderr = process.stderr,
+}) {
+  const entries = parse(md);
+  const output = buildOutput({ entries, existingOutput, date });
+  const json = JSON.stringify(output, null, 2);
+  const browserBundle = buildBrowserBundle(output);
+  const existingJson = existingOutput ? JSON.stringify(existingOutput, null, 2) : null;
+  const extractedCount = entries.length;
+  const totalCount = output.entries.length;
+  const jsonChanged = existingJson !== json;
+  const browserBundleChanged = existingBrowserBundle !== browserBundle;
+
+  if (dryRun) {
+    stdout.write(json + '\n');
+    stderr.write(`[dry-run] 원본 ${extractedCount}개 추출, 총 ${totalCount}개 항목 출력 (파일 저장 안 함)\n`);
+    return { changed: jsonChanged || browserBundleChanged, extractedCount, totalCount, output };
+  }
+
+  if (!jsonChanged && !browserBundleChanged) {
+    stderr.write(`ℹ️ jargon-dictionary assets already up to date — 원본 ${extractedCount}개, 총 ${totalCount}개 항목\n`);
+    return { changed: false, extractedCount, totalCount, output };
+  }
+
+  if (jsonChanged) writeFile(outputPath, json, 'utf8');
+  if (browserBundleChanged) writeFile(browserOutputPath, browserBundle, 'utf8');
+
+  stderr.write(`✅ jargon dictionary assets 생성 완료 — 원본 ${extractedCount}개, 총 ${totalCount}개 항목\n`);
+  if (jsonChanged) stderr.write(`   JSON 저장 위치: ${outputPath}\n`);
+  if (browserBundleChanged) stderr.write(`   브라우저 번들 저장 위치: ${browserOutputPath}\n`);
+  return { changed: true, extractedCount, totalCount, output };
+}
+
+function main(args = process.argv.slice(2)) {
+  const dryRun = args.includes('--dry-run');
+  const md = fs.readFileSync(PRINCIPLES_MD, 'utf8');
+  syncJargonDictionary({ md, dryRun });
+  return 0;
+}
+
+if (require.main === module) {
+  process.exit(main());
+}
+
+module.exports = {
+  DEFAULT_OUTPUT_META,
+  OUTPUT_JS,
+  parse,
+  readExistingOutput,
+  readExistingText,
+  mergeEntries,
+  buildOutput,
+  buildBrowserBundle,
+  syncJargonDictionary,
+  main,
+};

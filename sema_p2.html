@@ -22,7 +22,7 @@ body{background:#ede9e2;overflow:hidden;height:100vh;font-family:'Pretendard Var
 .nav-center{text-align:center}
 .slide-counter{font-size:10px;color:#999;letter-spacing:.12em;display:block;margin-bottom:4px}
 .nav-dots{display:flex;gap:5px;justify-content:center}
-.dot{width:6px;height:6px;border-radius:50%;background:#ccc;cursor:pointer;transition:background .15s}
+.dot{width:6px;height:6px;border-radius:50%;background:#ccc;cursor:pointer;transition:background .15s;border:none;padding:0;appearance:none;-webkit-appearance:none}
 .dot.active{background:#1a1a1a}
 .cover{flex-direction:row}
 .cover-bar{width:8px;background:#1a1a1a;flex-shrink:0}
@@ -684,7 +684,7 @@ body{background:#ede9e2;overflow:hidden;height:100vh;font-family:'Pretendard Var
   <nav class="nav-bar">
     <button class="nav-btn" id="btn-prev" onclick="go(-1)" disabled>← 이전</button>
     <div class="nav-center">
-      <span class="slide-counter" id="counter">01 / 14</span>
+      <span class="slide-counter" id="counter">01 / 15</span>
       <div class="nav-dots" id="dots"></div>
     </div>
     <button class="nav-btn" id="btn-next" onclick="go(1)">다음 →</button>
@@ -692,16 +692,24 @@ body{background:#ede9e2;overflow:hidden;height:100vh;font-family:'Pretendard Var
 </div>
 
 <script>
+(function(){
+const root=typeof window!=='undefined'?window:globalThis;
+root.go=function(){};
+root.goTo=function(){};
 const wrapper=document.getElementById('wrapper');
 const slides=document.querySelectorAll('.slide');
 const counter=document.getElementById('counter');
 const btnPrev=document.getElementById('btn-prev');
 const btnNext=document.getElementById('btn-next');
 const dotsEl=document.getElementById('dots');
+if(!wrapper||!counter||!btnPrev||!btnNext||!dotsEl||!slides.length)return;
 let cur=0;
 slides.forEach((_,i)=>{
-  const d=document.createElement('div');
+  const d=document.createElement('button');
+  d.type='button';
   d.className='dot'+(i===0?' active':'');
+  d.setAttribute('aria-label',(i+1)+'번 슬라이드로 이동');
+  d.setAttribute('aria-current',i===0?'true':'false');
   d.onclick=()=>goTo(i);
   dotsEl.appendChild(d);
 });
@@ -715,18 +723,31 @@ window.addEventListener('resize',scale);scale();
 function update(){
   counter.textContent=String(cur+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
   btnPrev.disabled=cur===0;btnNext.disabled=cur===slides.length-1;
-  dotsEl.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+  dotsEl.querySelectorAll('.dot').forEach((d,i)=>{
+    d.classList.toggle('active',i===cur);
+    d.setAttribute('aria-current',i===cur?'true':'false');
+  });
 }
+update();
 function go(dir){goTo(cur+dir);}
 function goTo(idx){
   if(idx<0||idx>=slides.length)return;
   slides[cur].classList.remove('active');cur=idx;
   slides[cur].classList.add('active');update();
 }
+function isInteractiveTarget(target){
+  if(!target||!target.tagName)return false;
+  const tag=target.tagName.toUpperCase();
+  return tag==='BUTTON'||tag==='A'||tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA'||tag==='SUMMARY'||target.isContentEditable===true;
+}
+root.go=go;
+root.goTo=goTo;
 document.addEventListener('keydown',e=>{
+  if(isInteractiveTarget(e.target))return;
   if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(1);}
   if(e.key==='ArrowLeft'){e.preventDefault();go(-1);}
 });
+})();
 </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-v/cuj//HOqH5xv1Hiz5v/fyEPlwcz2JPTVokYL/AUr8=' 'sha256-xuWCQxECReFCNv5s5ptn9MUWdQO/yWdkhvwmc6DWTJo='; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-OesehxV/0tdfNHpD6TWq3YItSgoeYKUmPJGY6PB4dR8=' 'sha256-nPF8POT6+ZpAMM9WVPTgrW5dcahsoFI0h1MMYRkOfvo='; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self';">
 <meta name="description" content="KRDS UX Writing 프롬프트 라이브러리 — AI 도구에 바로 붙여넣는 10개 실무 프롬프트">
 <meta property="og:type" content="website">
 <meta property="og:title" content="프롬프트 라이브러리 — KRDS UX Writing 가이드라인">
@@ -12,7 +12,7 @@
 <link rel="canonical" href="https://thenisaid.github.io/krds-ux-writing/prompt-library.html">
 <title>프롬프트 라이브러리 — KRDS UX Writing 가이드라인</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
-<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<script>(function(){var prefersDark=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches;var t='light';try{t=localStorage.getItem('krds-theme')||(prefersDark?'dark':'light');}catch(e){t=prefersDark?'dark':'light';}if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" as="style" crossorigin="anonymous"
   href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
@@ -21,10 +21,58 @@
 <style>
 /* ── Prompt Library page ── */
 .pl-hero {
-  background: linear-gradient(160deg, #eef4ff 0%, #f8f7f5 60%);
-  padding: 64px 24px 48px;
-  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(37,110,244,0.2), transparent 26%),
+    radial-gradient(circle at 82% 12%, rgba(34,135,56,0.14), transparent 24%),
+    linear-gradient(155deg, #ebf3ff 0%, #f5f1ea 46%, #eef4ff 100%);
+  padding: 56px 24px 48px;
   border-bottom: 1px solid var(--border);
+}
+.pl-hero::before,
+.pl-hero::after {
+  content: '';
+  position: absolute;
+  inset: auto;
+  pointer-events: none;
+}
+.pl-hero::before {
+  width: 260px;
+  height: 260px;
+  right: -80px;
+  bottom: -90px;
+  border-radius: 50%;
+  border: 1px solid rgba(37,110,244,0.12);
+  background: rgba(255,255,255,0.26);
+}
+.pl-hero::after {
+  width: 180px;
+  height: 180px;
+  left: -50px;
+  top: 18px;
+  transform: rotate(18deg);
+  border: 1px solid rgba(37,110,244,0.08);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.04));
+}
+.pl-hero-grid {
+  position: relative;
+  z-index: 1;
+  max-width: 1120px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  gap: 28px;
+  align-items: stretch;
+}
+.pl-hero-copy {
+  padding: 36px 38px 34px;
+  border-radius: 28px;
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(37,110,244,0.12);
+  box-shadow: 0 18px 40px rgba(18, 44, 84, 0.08);
+  backdrop-filter: blur(12px);
 }
 .pl-hero-badge {
   display: inline-flex; align-items: center; gap: 6px;
@@ -36,21 +84,172 @@
 .pl-hero-title {
   font-size: clamp(24px, 4vw, 36px); font-weight: 800;
   letter-spacing: -0.03em; color: var(--text); margin-bottom: 12px;
+  max-width: 10ch;
+  text-wrap: balance;
 }
 .pl-hero-sub {
-  font-size: 16px; color: var(--text-mid); max-width: 560px;
-  margin: 0 auto 32px; line-height: 1.7;
+  font-size: 16px; color: var(--text-mid); max-width: 58ch;
+  margin: 0 0 24px; line-height: 1.8;
 }
 .pl-how {
-  display: flex; justify-content: center; gap: 32px; flex-wrap: wrap;
+  display: flex; gap: 10px; flex-wrap: wrap;
   font-size: 13px; color: var(--text-muted);
 }
-.pl-how-step { display: flex; align-items: center; gap: 6px; }
+.pl-how-step {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(248,247,245,0.92);
+  border: 1px solid rgba(37,110,244,0.08);
+}
 .pl-how-num {
   width: 20px; height: 20px; border-radius: 50%;
   background: var(--accent); color: #fff;
   font-size: 11px; font-weight: 700;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.pl-hero-marks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 24px;
+}
+.pl-hero-mark {
+  min-height: 110px;
+  padding: 16px 16px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(37,110,244,0.1);
+  background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(239,244,255,0.8));
+}
+.pl-hero-mark-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.pl-hero-mark-label--a { background: #e8f0fe; color: #1a56c4; }
+.pl-hero-mark-label--b { background: #eaf7ed; color: #1a6b35; }
+.pl-hero-mark-label--c { background: #fff2eb; color: #b45309; }
+.pl-hero-mark-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+.pl-hero-mark-desc {
+  font-size: 12.5px;
+  color: var(--text-mid);
+  line-height: 1.65;
+}
+.pl-hero-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.pl-preview-card {
+  position: relative;
+  padding: 24px 24px 22px;
+  border-radius: 28px;
+  border: 1px solid rgba(18,44,84,0.08);
+  background:
+    linear-gradient(150deg, rgba(17,31,56,0.98), rgba(31,65,122,0.94) 55%, rgba(15,88,139,0.9) 100%);
+  color: #f6f8fb;
+  box-shadow: 0 22px 44px rgba(18, 44, 84, 0.16);
+}
+.pl-preview-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.72);
+  margin-bottom: 10px;
+}
+.pl-preview-title {
+  font-size: clamp(20px, 2.6vw, 28px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  margin-bottom: 10px;
+  text-wrap: balance;
+}
+.pl-preview-text {
+  font-size: 14px;
+  line-height: 1.75;
+  color: rgba(255,255,255,0.86);
+  max-width: 34ch;
+}
+.pl-preview-rail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.pl-preview-chip {
+  padding: 14px 14px 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(37,110,244,0.14);
+  background: rgba(255,255,255,0.78);
+}
+.pl-preview-chip-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.pl-preview-chip-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.5;
+}
+.pl-preview-list {
+  padding: 18px 20px;
+  border-radius: 24px;
+  background: rgba(255,255,255,0.82);
+  border: 1px solid rgba(37,110,244,0.1);
+}
+.pl-preview-list-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.pl-preview-items {
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+.pl-preview-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
+}
+.pl-preview-item-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(37,110,244,0.12);
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+.pl-preview-item-copy {
+  font-size: 13px;
+  color: var(--text-mid);
+  line-height: 1.7;
 }
 
 /* ── Filter bar ── */
@@ -76,6 +275,20 @@
   gap: 24px;
 }
 @media (max-width: 880px) { .pl-grid { grid-template-columns: 1fr; } }
+@media (max-width: 960px) {
+  .pl-hero-grid {
+    grid-template-columns: 1fr;
+  }
+  .pl-hero-copy {
+    padding: 32px 24px 28px;
+  }
+}
+@media (max-width: 720px) {
+  .pl-hero-marks,
+  .pl-preview-rail {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* ── Card ── */
 .pl-card {
@@ -209,27 +422,89 @@
   </nav>
 </aside>
 
-<section class="pl-hero" aria-label="프롬프트 라이브러리 소개">
-  <div class="pl-hero-badge">✦ AI 프롬프트 라이브러리</div>
-  <h1 class="pl-hero-title">공공 UX Writing 프롬프트 10선</h1>
-  <p class="pl-hero-sub">
-    KRDS 3대 원칙을 AI 도구에서 바로 쓸 수 있는 실무 프롬프트.
-    복사해서 Claude·ChatGPT에 붙여넣으세요.
-  </p>
-  <div class="pl-how" aria-label="사용 방법">
-    <div class="pl-how-step"><div class="pl-how-num">1</div> 프롬프트 복사</div>
-    <div class="pl-how-step"><div class="pl-how-num">2</div> AI 도구에 붙여넣기</div>
-    <div class="pl-how-step"><div class="pl-how-num">3</div> 대괄호 부분에 내 텍스트 입력</div>
+<section class="pl-hero" aria-labelledby="pl-hero-title">
+  <div class="pl-hero-grid">
+    <div class="pl-hero-copy">
+      <div class="pl-hero-badge">✦ AI 프롬프트 라이브러리</div>
+      <h1 class="pl-hero-title" id="pl-hero-title">공공 UX Writing 프롬프트 10선</h1>
+      <p class="pl-hero-sub">
+        KRDS 3대 원칙을 AI 도구에 바로 붙여 넣고, 결과를 다시 공공 문장 기준으로 검토할 수 있도록
+        프롬프트와 예시를 한 번에 묶었습니다. 화면 하나를 다듬을 때도, 기관별 초안을 시작할 때도 같은 기준으로 출발할 수 있습니다.
+      </p>
+      <div class="pl-hero-marks" aria-label="핵심 활용 축">
+        <div class="pl-hero-mark">
+          <div class="pl-hero-mark-label pl-hero-mark-label--a">원칙 01</div>
+          <div class="pl-hero-mark-title">행정어를 시민 언어로 바로 바꾸기</div>
+          <div class="pl-hero-mark-desc">명일·귀하·기표 같은 표현을 실무 문장 안에서 곧바로 정리합니다.</div>
+        </div>
+        <div class="pl-hero-mark">
+          <div class="pl-hero-mark-label pl-hero-mark-label--b">원칙 02</div>
+          <div class="pl-hero-mark-title">결론, 일정, 다음 행동을 먼저 남기기</div>
+          <div class="pl-hero-mark-desc">안내문과 결과 문장에서 핵심만 먼저 남기고 군더더기를 걷어냅니다.</div>
+        </div>
+        <div class="pl-hero-mark">
+          <div class="pl-hero-mark-label pl-hero-mark-label--c">원칙 03</div>
+          <div class="pl-hero-mark-title">오류와 완료 뒤에도 불안 없이 이어가기</div>
+          <div class="pl-hero-mark-desc">무슨 일인지, 왜 그런지, 지금 할 일을 같은 문장 흐름으로 맞춥니다.</div>
+        </div>
+      </div>
+      <div class="pl-how" aria-label="사용 방법">
+        <div class="pl-how-step"><div class="pl-how-num">1</div> 프롬프트 복사</div>
+        <div class="pl-how-step"><div class="pl-how-num">2</div> AI 도구에 붙여넣기</div>
+        <div class="pl-how-step"><div class="pl-how-num">3</div> 대괄호 부분에 내 텍스트 입력</div>
+      </div>
+    </div>
+    <div class="pl-hero-preview" aria-label="프롬프트 적용 예시">
+      <div class="pl-preview-card">
+        <div class="pl-preview-eyebrow">오늘 바로 붙여넣는 운영 흐름</div>
+        <div class="pl-preview-title">초안 정리, 오류 문구 점검, 기관별 파생 초안까지 한 번에</div>
+        <p class="pl-preview-text">
+          한 화면을 다듬을 때는 무번역 → 핵심 정보화 → 심리적 안전망 순서로 확인하고,
+          결과가 기관 운영 기준까지 이어져야 하면 마지막 파생 가이드 프롬프트로 넘어갑니다.
+        </p>
+      </div>
+      <div class="pl-preview-rail">
+        <div class="pl-preview-chip">
+          <div class="pl-preview-chip-label">복사</div>
+          <div class="pl-preview-chip-value">10개 프롬프트</div>
+        </div>
+        <div class="pl-preview-chip">
+          <div class="pl-preview-chip-label">검토</div>
+          <div class="pl-preview-chip-value">Before / After 예시</div>
+        </div>
+        <div class="pl-preview-chip">
+          <div class="pl-preview-chip-label">확장</div>
+          <div class="pl-preview-chip-value">기관별 Layer 3 초안</div>
+        </div>
+      </div>
+      <div class="pl-preview-list">
+        <div class="pl-preview-list-title">추천 시작 순서</div>
+        <ul class="pl-preview-items">
+          <li class="pl-preview-item">
+            <span class="pl-preview-item-num">1</span>
+            <span class="pl-preview-item-copy">짧은 버튼·폼 문장은 무번역과 레이블 프롬프트부터 붙입니다.</span>
+          </li>
+          <li class="pl-preview-item">
+            <span class="pl-preview-item-num">2</span>
+            <span class="pl-preview-item-copy">완료·오류·빈 상태 화면은 심리적 안전망 프롬프트로 다시 다듬습니다.</span>
+          </li>
+          <li class="pl-preview-item">
+            <span class="pl-preview-item-num">3</span>
+            <span class="pl-preview-item-copy">기관 전체 초안이 필요하면 마지막 카드에서 파생 가이드까지 이어서 만듭니다.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </section>
 
 <div class="pl-filter" role="group" aria-label="원칙별 필터">
   <span class="pl-filter-label">필터:</span>
-  <button class="pl-chip active" data-filter="all">전체 10개</button>
-  <button class="pl-chip" data-filter="no-translation">무번역</button>
-  <button class="pl-chip" data-filter="core-info">핵심 정보화</button>
-  <button class="pl-chip" data-filter="safety-net">심리적 안전망</button>
-  <button class="pl-chip" data-filter="general">범용</button>
+  <button class="pl-chip active" data-filter="all" aria-pressed="true">전체 10개</button>
+  <button class="pl-chip" data-filter="no-translation" aria-pressed="false">무번역</button>
+  <button class="pl-chip" data-filter="core-info" aria-pressed="false">핵심 정보화</button>
+  <button class="pl-chip" data-filter="safety-net" aria-pressed="false">심리적 안전망</button>
+  <button class="pl-chip" data-filter="general" aria-pressed="false">범용</button>
 </div>
 
 <main id="main-content" class="pl-main">
@@ -652,39 +927,11 @@
   </div>
 </footer>
 
+<script src="shared/base-path.js"></script>
 <script src="shared/nav.js"></script>
+<script src="shared/prompt-copy.js"></script>
 <script>
 (function () {
-  // Copy buttons
-  document.addEventListener('click', function (e) {
-    var btn = e.target.closest('.pl-copy-btn');
-    if (!btn) return;
-    var pre = document.getElementById(btn.dataset.target);
-    if (!pre) return;
-    var text = pre.textContent;
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(text).then(function () { flash(btn); });
-    } else {
-      var ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed'; ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      flash(btn);
-    }
-  });
-
-  function flash(btn) {
-    btn.textContent = '복사됨!';
-    btn.classList.add('copied');
-    setTimeout(function () {
-      btn.textContent = '복사';
-      btn.classList.remove('copied');
-    }, 1800);
-  }
-
   // Filter chips
   var chips = document.querySelectorAll('.pl-chip');
   var cards = document.querySelectorAll('.pl-card');
@@ -692,8 +939,12 @@
 
   chips.forEach(function (chip) {
     chip.addEventListener('click', function () {
-      chips.forEach(function (c) { c.classList.remove('active'); });
+      chips.forEach(function (c) {
+        c.classList.remove('active');
+        c.setAttribute('aria-pressed', 'false');
+      });
       chip.classList.add('active');
+      chip.setAttribute('aria-pressed', 'true');
       var filter = chip.dataset.filter;
       var visible = 0;
       cards.forEach(function (card) {
@@ -701,7 +952,7 @@
         card.style.display = show ? '' : 'none';
         if (show) visible++;
       });
-      countEl.textContent = visible;
+      if (countEl) countEl.textContent = String(visible);
     });
   });
 })();

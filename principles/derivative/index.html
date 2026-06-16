@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="기관별 파생 가이드 — KRDS Layer 2 위에서 기관 고유 공백만 채우는 Layer 3 파생 가이드 제작 방법.">
+<meta name="description" content="기관별 파생 가이드 — 대표 사이트 순회 뒤 공통 원칙 후보와 기관 특화 공백을 가르는 Layer 2·Layer 3 판정 기준과 KRDS 연계 방법.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="기관별 파생 가이드 — KRDS UX Writing 가이드라인">
-  <meta property="og:description" content="기관별 파생 가이드 — KRDS Layer 2 위에서 기관 고유 공백만 채우는 Layer 3 파생 가이드 제작 방법.">
+  <meta property="og:description" content="기관별 파생 가이드 — 대표 사이트 순회 뒤 공통 원칙 후보와 기관 특화 공백을 가르는 Layer 2·Layer 3 판정 기준과 KRDS 연계 방법.">
   <meta property="og:url" content="https://thenisaid.github.io/krds-ux-writing/principles/derivative/">
   <link rel="canonical" href="https://thenisaid.github.io/krds-ux-writing/principles/derivative/">
 <title>기관별 파생 가이드 — KRDS UX Writing 가이드라인</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
-<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<script>(function(){var prefersDark=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches;var t='light';try{t=localStorage.getItem('krds-theme')||(prefersDark?'dark':'light');}catch(e){t=prefersDark?'dark':'light';}if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" as="style" crossorigin="anonymous"
   href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
@@ -309,16 +309,31 @@
       <span class="chapter-badge">제5장 · Derivative Guide</span>
       <h1 class="content-title">기관별 파생 가이드 템플릿</h1>
       <p class="content-headline">KRDS 가이드를 우리 기관에 맞게 맞춤화하기</p>
-      <p class="content-desc">
-        기관마다 가이드를 처음부터 만들지 않고, 검증된 구조(Layer 2) 위에서 기관 고유의 공백만 채웁니다.
-        이 장은 Layer 3 파생 가이드를 만드는 방법과 바로 쓸 수 있는 빈 양식을 제공합니다.
-      </p>
+      <p class="content-desc">대표 사이트 8종을 같은 화면 단계로 다시 본 뒤, 세 대표 사이트 이상에서 반복되는 UX Writing 문제는 Layer 2 공통 원칙 후보로 올리고 기관 고유 맥락만 Layer 3에 남깁니다. 이 장은 그 판정 기준과 KRDS 연계 방식, 바로 쓸 수 있는 빈 양식을 제공합니다.</p>
     </div>
 
     <!-- 5.1 파생 가이드란 -->
     <section class="article-section" id="what-is" aria-labelledby="what-is-title">
       <h2 class="article-section-heading" id="what-is-title">5.1 파생 가이드란 무엇인가</h2>
-      <p class="article-section-lead">공공기관 UX 라이팅은 세 가지 레이어가 쌓이는 구조로 운영됩니다.</p>
+      <p class="article-section-lead">공공기관 UX 라이팅은 세 가지 레이어가 쌓이는 구조로 운영되며, 파생 가이드는 새 문서를 만드는 작업이 아니라 대표 사이트 순회 결과를 공통 패턴과 기관 특화 공백으로 가르는 운영 절차입니다.</p>
+
+      <div class="sub-h3" style="margin-top:24px">이번 라운드 판정 흐름</div>
+      <p style="font-size:14px;line-height:1.9;color:var(--text-mid);margin-bottom:16px;">
+        대표 사이트 8종을 같은 화면 단계로 다시 본 뒤, 같은 UX Writing 문제가 세 대표 사이트 이상에서 반복되는지, KRDS 컴포넌트 조합까지 함께 검수해야 하는지, 기관 전용 맥락만 남는지 순서대로 봅니다. 이 단계가 끝나야 Layer 2 승격과 Layer 3 유지가 섞이지 않습니다.
+      </p>
+      <table class="data-table">
+        <thead><tr><th>단계</th><th>먼저 묻는 질문</th><th>바로 연결할 자산</th></tr></thead>
+        <tbody>
+          <tr><td><strong>대표 사이트 순회</strong></td><td>정부24·홈택스·복지로·국민건강보험·국민신문고·고용24·전자가족관계등록시스템·서울특별시 응답소와 대한민국법원 보조 표본에서 같은 과업 단계가 반복되는가?</td><td>코퍼스 로그 + 사례 후보</td></tr>
+          <tr><td><strong>공통 패턴 판정</strong></td><td>세 대표 사이트 이상에서 같은 실패 패턴과 같은 바꿀 문장이 반복되는가?</td><td>Layer 2 원칙 + 2.1 사전 + CASE + 7장 컴포넌트</td></tr>
+          <tr><td><strong>기관 특화 판정</strong></td><td>기관 이름과 도메인 맥락을 빼면 과업 의미와 톤이 무너지는가?</td><td>Layer 3 추가 사전 + 톤·매너 + 에러 시나리오</td></tr>
+          <tr><td><strong>KRDS 연계</strong></td><td>Button, Structured list, Notice banner 같은 조합까지 함께 검수했는가?</td><td>7장 컴포넌트 + QA 체크리스트 + 테스트</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>운영 규칙</strong>: Layer 3는 <code>기관이 다르다</code>는 이유로 만드는 문서가 아닙니다. 대표 사이트 순회에서 공통 근거가 약하거나, 같은 표현이 특정 도메인 안에서만 살아 있을 때만 Layer 3로 보냅니다.
+      </div>
 
       <pre class="layer-diagram" role="img" aria-label="3계층 구조 다이어그램">┌─────────────────────────────────────────────┐
 │  Layer 1 — KRDS (선언)                       │
@@ -345,7 +360,7 @@
         </thead>
         <tbody>
           <tr><td>3대 원칙</td><td>상속 (변경 불가)</td><td>상속 (변경 불가)</td></tr>
-          <tr><td>행정어 사전</td><td>150개 공통</td><td>기관 전문어 10~30개 추가</td></tr>
+          <tr><td>행정어 사전</td><td>274개 공통</td><td>기관 전문어 10~30개 추가</td></tr>
           <tr><td>톤·매너</td><td>4단계 매트릭스 제공</td><td>기관별 주력 톤 선택·정의</td></tr>
           <tr><td>에러 메시지</td><td>3단 구조 제공</td><td>기관 주요 오류 5개 작성</td></tr>
           <tr><td>체크리스트</td><td>23개 항목 제공</td><td>기관 적용 항목 선택·조정</td></tr>
@@ -356,6 +371,10 @@
       <p style="font-size:14px;line-height:1.9;color:var(--text-mid);margin-bottom:16px;">
         서울시립미술관(SeMA)은 Layer 2 가이드를 기반으로 문화예술 기관 특성을 반영한 Layer 3 파생 가이드를 적용했습니다.
       </p>
+
+      <div class="info-box">
+        <strong>운영 메모</strong>: SeMA는 대표 사이트 8종 순회 대상이 아니라 <code>Layer 3 검증용 기관 예시</code>입니다. 공통 순회는 정부24·홈택스·복지로·국민건강보험·국민신문고·고용24·전자가족관계등록시스템·서울특별시 응답소를 먼저 돌고, 대한민국법원은 권리구제·완료 뒤 후속 흐름 검증용 보조 표본으로 함께 봅니다. 그 뒤에도 기관 고유 맥락이 남을 때만 SeMA 같은 Layer 3 예시로 보냅니다.
+      </div>
 
       <h4 class="sub-h4">① 전문용어 추가 사전 (일부)</h4>
       <table class="data-table">
@@ -388,6 +407,79 @@
 선택하신 시간대가 마감되었습니다.
 다른 시간대를 선택하거나 [대기 신청하기]를 눌러 주세요.</div>
       <p style="font-size:13px;color:var(--text-muted);">→ 3단 구조(무슨 일 / 왜 / 어떻게) + SeMA 특화 CTA("대기 신청하기") 적용</p>
+
+      <div class="sub-h3" style="margin-top:24px">대표 서비스 관찰 — 먼저 Layer 2 공통 패턴인지, Layer 3 기관 특화인지 가른다</div>
+      <p style="font-size:14px;line-height:1.9;color:var(--text-mid);margin-bottom:16px;">
+        최근 라운드에서 <strong>확정일자</strong>, <strong>상속포기</strong>, <strong>지급명령 신청</strong>, <strong>이행권고결정</strong>, <strong>장기요양인정</strong>, <strong>국적 회복</strong>, <strong>협의이혼 의사확인</strong>, <strong>개명 허가</strong>, <strong>진정</strong>, <strong>청원</strong>, <strong>제안</strong>, <strong>신고</strong>, <strong>휴업</strong>, <strong>폐업</strong>, <strong>개인회생</strong>, <strong>파산</strong>은 처음엔 특정 기관 전용 용어처럼 보였지만, 실제로는 <strong>중대한 결정 안내</strong>, <strong>심사·판정 절차</strong>, <strong>혜택·의무 안내</strong>, <strong>복수 조건 체크리스트</strong>, <strong>절차 선택 안내</strong>처럼 세 대표 사이트에 공통으로 반복되는 UX Writing 문제였습니다. 반대로 <strong>도슨트</strong>, <strong>오프닝 리셉션</strong>, <strong>소장품 검색</strong>은 문화예술 기관 맥락에서만 의미가 살아 있으므로 Layer 3에 남겨야 합니다.
+      </p>
+      <table class="data-table">
+        <thead><tr><th>후보</th><th>먼저 던질 질문</th><th>판정</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>확정일자 / 상속포기</strong></td><td>효력·기한·취소 불가·대안 절차를 첫 화면에서 같이 보여줘야 하는가?</td><td>Layer 2 공통 패턴</td><td>3장 core-info + 4장 safety-net + 7장 컴포넌트 + 사례 카드</td></tr>
+          <tr><td><strong>지급명령 신청 / 이행권고결정</strong></td><td>확정 효력, 2주 이의 기간, 소송 전환 또는 강제집행 가능성을 첫 화면에서 같이 보여줘야 하는가?</td><td>Layer 2 공통 패턴</td><td>3장 core-info + 4장 safety-net + 7장 컴포넌트 + 사례 카드</td></tr>
+          <tr><td><strong>장기요양인정 / 개명 허가</strong></td><td>판정 기준·단계·결과 뒤 행동을 구조화해 먼저 보여줘야 하는가?</td><td>Layer 2 공통 패턴</td><td>3장 core-info + 4장 safety-net + 7장 컴포넌트 + 사례 카드</td></tr>
+          <tr><td><strong>국적 회복 / 협의이혼 의사확인</strong></td><td>별도 신고 의무나 모두 충족 조건을 체크리스트로 먼저 보여줘야 하는가?</td><td>Layer 2 공통 패턴</td><td>3장 core-info + 4장 safety-net + 7장 컴포넌트 + 사례 카드</td></tr>
+          <tr><td><strong>민원 유형 / 휴업·폐업 / 개인회생·파산 / 후견 유형</strong></td><td>어떤 상황에 어떤 절차가 맞는지, 잘못 고르면 어디서 다시 판단해야 하는지 먼저 보여줘야 하는가?</td><td>Layer 2 공통 패턴</td><td>3장 core-info + 4장 safety-net + 7장 컴포넌트 + 사례 카드</td></tr>
+          <tr><td><strong>도슨트 / 오프닝 리셉션 / 소장품 검색</strong></td><td>특정 문화예술 기관 서비스에서만 쓰이는 고유 용어·과업인가?</td><td>Layer 3 기관 특화</td><td>기관별 추가 사전 + 기관 톤·매너 + 기관 에러 시나리오</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>판정 규칙</strong>: 용어를 기준으로 보지 말고 <strong>UX Writing 문제 단위</strong>로 봅니다. 세 대표 사이트에서 같은 실패 패턴이 반복되면 Layer 2로 승격하고, 한 기관의 도메인 맥락에서만 의미가 살아 있으면 Layer 3에 남깁니다.
+      </div>
+
+      <div class="sub-h3" style="margin-top:24px">대표 사이트 기반 Layer 2·Layer 3 판정 우선순위</div>
+      <p style="font-size:14px;line-height:1.9;color:var(--text-mid);margin-bottom:16px;">
+        이제 6장의 다음 라운드는 기관 예시를 더 붙이는 일보다, 순회에서 새로 잡힌 표현이 <code>공통 원칙 후보</code>인지 <code>기관 특화 후보</code>인지 먼저 가르는 데 초점을 둡니다. 아래 네 묶음은 실제 대표 사이트 순회 뒤 가장 먼저 다시 판정할 축입니다.
+      </p>
+      <table class="data-table">
+        <thead><tr><th>우선 판정 묶음</th><th>먼저 볼 대표 사이트·화면</th><th>먼저 확인할 질문</th><th>먼저 둘 위치</th></tr></thead>
+        <tbody>
+          <tr><td><strong>중대한 결정·권리 영향</strong></td><td>정부24 확정일자 신청, 홈택스 현금영수증 발급, 대한민국법원 상속포기 신고</td><td>효력·기한·되돌릴 수 없는 결과·대안 절차가 세 서비스에서 같은 구조로 필요한가?</td><td>Layer 2 CASE 52 / 3장 core-info / 4장 safety-net / 7장 컴포넌트</td></tr>
+          <tr><td><strong>심사·판정·허가</strong></td><td>정부24 장기요양인정 신청, 홈택스 종합소득세 신고 도움, 대한민국법원 개명 허가 신청</td><td>판정 기준·심사 단계·결과 뒤 행동을 구조화해 먼저 보여줘야 하는가?</td><td>Layer 2 CASE 55 / 3장 core-info / 4장 safety-net / 7장 컴포넌트</td></tr>
+          <tr><td><strong>절차 선택·분기</strong></td><td>국민신문고 민원 유형 선택, 홈택스 휴업·폐업 신고, 대한민국법원 개인회생·파산</td><td>내 상황별 선택 기준, 잘못 고를 때 비용, 비교·상담 경로가 공통으로 필요한가?</td><td>Layer 2 CASE 60 / 3장 core-info / 4장 safety-net / 7장 컴포넌트</td></tr>
+          <tr><td><strong>기관 전용 문화·관람 과업</strong></td><td>SeMA 도슨트 예약, 오프닝 리셉션 신청, 소장품 검색</td><td>다른 대표 사이트로 옮기면 과업 이름·대상·톤이 그대로 유지되지 않는가?</td><td>Layer 3 기관별 추가 사전 / 톤·매너 / 에러 시나리오</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h4">순회 판정 로그 한 행 예시</div>
+      <p style="font-size:14px;line-height:1.9;color:var(--text-mid);margin-bottom:16px;">
+        실제 순회에서는 표현 1개를 바로 Layer 3 사전에 올리지 않습니다. 같은 라운드에서 <code>대표 사이트 근거</code>, <code>같은 UX Writing 문제</code>, <code>승격 또는 유지 위치</code>, <code>같이 갱신할 자산</code>을 한 줄에 적어 두어야 나중에 Layer 2 승격 근거와 Layer 3 보류 근거가 섞이지 않습니다.
+      </p>
+      <table class="data-table">
+        <thead><tr><th>후보 묶음</th><th>대표 사이트 근거</th><th>같은 UX Writing 문제</th><th>판정</th><th>같은 라운드에서 같이 갱신할 자산</th></tr></thead>
+        <tbody>
+          <tr><td><strong>확정일자 신청 / 현금영수증 발급 / 상속포기 신고</strong></td><td>정부24 / 홈택스 / 대한민국법원</td><td>효력·기한·취소 불가·대안 절차가 첫 블록에 함께 필요함</td><td>Layer 2 CASE 52 승격</td><td>사례 카드, 3장 core-info, 4장 safety-net, 7장 컴포넌트, 부록 D, 코퍼스·테스트</td></tr>
+          <tr><td><strong>장기요양인정 신청 / 종합소득세 신고 도움 / 개명 허가 신청</strong></td><td>정부24 / 홈택스 / 대한민국법원</td><td>판정 기준·심사 단계·결과 뒤 행동이 공통으로 필요함</td><td>Layer 2 CASE 55 승격</td><td>사례 카드, 3장 core-info, 4장 safety-net, 7장 컴포넌트, 부록 D, 코퍼스·테스트</td></tr>
+          <tr><td><strong>민원 유형 선택 / 휴업·폐업 신고 / 개인회생·파산</strong></td><td>국민신문고 / 홈택스 / 대한민국법원</td><td>절차 선택 기준·오선택 위험·비교 또는 상담 경로가 공통으로 필요함</td><td>Layer 2 CASE 60 승격</td><td>사례 카드, 3장 core-info, 4장 safety-net, 7장 컴포넌트, 부록 D, 코퍼스·테스트</td></tr>
+          <tr><td><strong>도슨트 예약 / 오프닝 리셉션 신청 / 소장품 검색</strong></td><td>SeMA 전시 예약 / 행사 안내 / 소장품 탐색</td><td>문화예술 기관 맥락 밖에서는 과업 이름·대상·톤이 유지되지 않음</td><td>Layer 3 기관 특화 유지</td><td>기관별 추가 사전, 기관 톤·매너, 기관 에러 시나리오, 자가진단 체크리스트</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>실행 규칙</strong>: 한 행에 대표 사이트 근거가 2곳 이상 모이지 않으면 Layer 2 후보로 올리지 않습니다. 먼저 Layer 3 로그로 남기고, 다음 순회에서 같은 실패가 다른 기관에서도 반복되는지 확인합니다.
+      </div>
+
+      <div class="sub-h4">상대적으로 얇은 대표 사이트 빠른 분기 예시</div>
+      <p style="font-size:14px;line-height:1.9;color:var(--text-mid);margin-bottom:16px;">
+        국민건강보험, 고용24, 서울특별시 응답소, 전자가족관계등록시스템 국적 화면은 근거가 상대적으로 얇아 보여도 곧바로 Layer 3로 보내지 않습니다. 먼저 <code>검색 범위</code>, <code>행동 날짜</code>, <code>결과 재확인</code>, <code>허가 뒤 후속 의무</code>처럼 공통으로 반복되는 UX Writing 문제를 Layer 2 CASE에 붙이고, 그 뒤에도 남는 제도 이름·기관 맥락만 Layer 3 보충 메모로 남깁니다.
+      </p>
+      <table class="data-table">
+        <thead><tr><th>대표 사이트·화면</th><th>Layer 2로 먼저 붙일 공통 문제</th><th>Layer 3에 남길 기관 맥락</th><th>같은 라운드에서 같이 갱신할 자산</th></tr></thead>
+        <tbody>
+          <tr><td><strong>국민건강보험 <code>질병명·병원 이름 검색</code>, <code>보험료 산정</code></strong></td><td>입력 범위, 재검색 단서, 계산 기준·적용 시점·다시 확인 CTA는 <code>CASE 10·42·53</code> 공통 문제로 먼저 묶습니다.</td><td><code>피부양자</code>, <code>산정특례</code>, 보험료 부과 체계처럼 건강보험 제도 설명은 기관 추가 사전·도움말로 남깁니다.</td><td>2장 무번역, 3장 core-info, 7장 Search/Table 규칙, CASE 10·42, 코퍼스·테스트</td></tr>
+          <tr><td><strong>고용24 <code>실업인정 인터넷 신청</code>, <code>조기재취업수당 안내</code>, <code>훈련 검색</code></strong></td><td><code>실업급여를 확인하는 날</code>, 이번 회차 재취업 활동, <code>취업한 날</code> 기준, 조기재취업 대상 여부·확인 서류, 놓쳤을 때 결과와 다시 확인 경로는 <code>CASE 6·8·45·56</code> 공통 문제로 먼저 묶습니다.</td><td><code>조기재취업수당</code>, <code>실업인정</code>, <code>통신판매중개자 / 노무제공플랫폼사업자</code>, 훈련 제도 분류처럼 고용보험 제도 이름과 급여 맥락은 기관 추가 사전·도움말로 남깁니다.</td><td>2장 무번역, 4장 safety-net, 7장 Notice/Search 규칙, CASE 6·8 KRDS/Figma handoff, 코퍼스·테스트</td></tr>
+          <tr><td><strong>서울특별시 응답소 <code>질의응답·답변원문</code>, <code>민원 신청하기</code>, <code>결과보기</code></strong></td><td>상태 첫 줄, <code>답변 예정일</code>, 결과 재확인 경로, CTA 위계는 <code>CASE 3·5·9</code> 공통 문제로 먼저 묶습니다.</td><td>서울시 민원 분류, 부서·자치구 결과 맥락, 현장 민원 재접수 규칙은 기관 파생 가이드 메모로 남깁니다.</td><td>3장 core-info, 5장 표기, 7장 Result page/Button 규칙, CASE 3·5·9, 코퍼스·테스트</td></tr>
+          <tr><td><strong>전자가족관계등록시스템 <code>국적 회복 허가</code>, <code>국적 이탈 신고</code></strong></td><td>허가 뒤 <code>1년 내 외국 국적 포기</code>, <code>외국국적불행사서약 대상 여부</code>, 외국 국적 포기 증명서 제출 경로, <code>신고 방법 / 요건 확인</code> CTA는 <code>CASE 32·45·46·57</code> 공통 문제로 먼저 묶습니다.</td><td><code>국적 회복</code>, <code>국적 이탈</code>, <code>외국 국적 포기 절차</code>, <code>외국국적불행사서약 대상 여부</code>, 병역·복수 국적 법제 맥락은 기관 추가 사전·도움말로 남깁니다.</td><td>2장 무번역, 3장 core-info, 4장 safety-net, 7장 Result page/Checklist 규칙, CASE 32·45·46·57, 코퍼스·테스트</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box">
+        <strong>전자가족관계등록시스템 분기 메모</strong>: Layer 2 로그에는 <code>한국 국적 다시 받기 허가 결과 → 1년 내 외국 국적 포기 → 외국국적불행사서약 대상 여부 → 외국 국적 포기 증명서 제출 경로</code>, <code>국적 이탈 가능 기한 → 병역 조건 → 기한 경과 뒤 상태</code>, <code>신고 방법 보기 / 요건 확인</code>를 먼저 적고, Layer 3에는 <code>국적 회복</code>, <code>국적 이탈</code>, <code>외국 국적 포기 절차</code>, <code>외국국적불행사서약 대상 여부</code>, <code>복수 국적</code>, <code>병역 의무</code> 같은 법제 맥락만 남깁니다.
+      </div>
+
+      <div class="info-box">
+        <strong>실행 규칙</strong>: 얇은 대표 사이트도 한 화면에서 <code>Layer 2 공통 문제</code>와 <code>Layer 3 기관 맥락</code>을 동시에 적습니다. 공통 패턴이 세 대표 사이트 이상으로 늘어나면 즉시 Layer 2 승격으로 옮기고, 끝까지 기관 맥락만 남으면 그때 Layer 3 추가 가이드로 굳힙니다.
+      </div>
     </section>
 
     <!-- 5.2 체크리스트 -->
@@ -409,6 +501,16 @@
         <div class="step-item">
           <div class="step-num">2</div>
           <div>
+            <div class="step-title">공통 원칙 승격 여부 먼저 판정</div>
+            <div class="step-desc">
+              세 대표 사이트에서 같은 UX Writing 문제로 반복되면 Layer 2 후보로 올림<br>
+              한 기관에서만 반복되면 Layer 3 파생 가이드에 남김 (부록 D-9·D-10 기록)
+            </div>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div>
             <div class="step-title">기관 고유 행정어·전문용어 추가 목록 작성</div>
             <div class="step-desc">
               최소 10개, 권장 20~30개<br>
@@ -417,7 +519,7 @@
           </div>
         </div>
         <div class="step-item">
-          <div class="step-num">3</div>
+          <div class="step-num">4</div>
           <div>
             <div class="step-title">기관별 톤·매너 정의</div>
             <div class="step-desc">
@@ -428,7 +530,7 @@
           </div>
         </div>
         <div class="step-item">
-          <div class="step-num">4</div>
+          <div class="step-num">5</div>
           <div>
             <div class="step-title">주요 에러 시나리오 5개 선별 + 3단 구조 적용</div>
             <div class="step-desc">
@@ -439,7 +541,7 @@
           </div>
         </div>
         <div class="step-item">
-          <div class="step-num">5</div>
+          <div class="step-num">6</div>
           <div>
             <div class="step-title">자가진단 체크리스트 기관 맞춤 수정</div>
             <div class="step-desc">
@@ -451,7 +553,7 @@
       </div>
 
       <div class="warn-box">
-        <strong>완료 기준</strong>: 5개 Step 모두 체크 시 Layer 3 파생 가이드 초안 완성으로 간주합니다.
+        <strong>완료 기준</strong>: 6개 Step 모두 체크 시 Layer 3 파생 가이드 초안 완성으로 간주합니다.
       </div>
     </section>
 
@@ -567,10 +669,11 @@
 
       <div class="final-check">
         <div class="final-check-title">파생 가이드 배포 전 최종 확인</div>
-        <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">아래 세 질문에 모두 "예"여야 Layer 3 파생 가이드를 배포합니다.</p>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">아래 네 질문에 모두 "예"여야 Layer 3 파생 가이드를 배포합니다.</p>
         <ol>
           <li>Layer 2(이 가이드) 공통 규칙을 한 항목도 삭제하지 않았는가?</li>
           <li>추가한 용어·톤 기준이 Layer 2와 모순되지 않는가?</li>
+          <li>새로 찾은 표현 중 세 대표 사이트 공통 패턴 후보를 Layer 3 예시로만 덮어쓰지 않았는가?</li>
           <li>기관 내 최소 2명(UX 라이터 + 실무 담당자)이 검토했는가?</li>
         </ol>
       </div>
@@ -611,6 +714,7 @@
   </div>
 </div>
 
+<script src="../../shared/base-path.js"></script>
 <script src="../../shared/nav.js"></script>
 </body>
 </html>

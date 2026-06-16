@@ -485,8 +485,8 @@ body {
 </div><!-- /viewport -->
 
 <!-- 도움말 -->
-<div class="help-overlay" id="help-overlay">
-  <div class="help-box">
+<div class="help-overlay" id="help-overlay" role="dialog" aria-modal="true" aria-label="키보드 단축키 도움말">
+  <div class="help-box" id="help-box" tabindex="-1">
     <strong>키보드 단축키</strong><br>
     → / Space : 다음<br>
     ← : 이전<br>
@@ -500,9 +500,16 @@ body {
 (function () {
   'use strict';
 
+  /* ── 필수 DOM ── */
+  var stage = document.querySelector('.slide-stage');
+  var container   = document.getElementById('slide-container');
+  var slides      = Array.from(document.querySelectorAll('.slide'));
+  var helpOverlay = document.getElementById('help-overlay');
+  var helpBox     = document.getElementById('help-box');
+  if (!stage || !container || !helpOverlay || slides.length === 0) return;
+
   /* ── 스케일 ── */
   function scaleSlideStage() {
-    var stage = document.querySelector('.slide-stage');
     var scale = Math.min(window.innerWidth / 1024, window.innerHeight / 576);
     stage.style.transform = 'scale(' + scale + ')';
   }
@@ -510,11 +517,10 @@ body {
   scaleSlideStage();
 
   /* ── 상태 ── */
-  var container   = document.getElementById('slide-container');
-  var slides      = Array.from(document.querySelectorAll('.slide'));
   var total       = slides.length;
   var current     = 0;
   var isAnimating = false;
+  var lastHelpFocus = null;
 
   /* build-item 인덱스 수집 */
   function getBuildItems(slideIndex) {
@@ -528,13 +534,21 @@ body {
 
   function waitForTransition(el, ms) {
     return new Promise(function (resolve) {
-      var tid = setTimeout(resolve, (ms || 600) + 80);
-      el.addEventListener('transitionend', function h(e) {
-        if (e.target !== el) return;
-        clearTimeout(tid);
+      var done = false;
+      var tid = null;
+      function finish() {
+        if (done) return;
+        done = true;
+        if (tid !== null) clearTimeout(tid);
         el.removeEventListener('transitionend', h);
         resolve();
-      });
+      }
+      function h(e) {
+        if (e.target !== el) return;
+        finish();
+      }
+      el.addEventListener('transitionend', h);
+      tid = setTimeout(finish, (ms || 600) + 80);
     });
   }
 
@@ -549,8 +563,15 @@ body {
   }
 
   function goTo(index, showAll) {
-    if (isAnimating || index === current) return;
     if (index < 0 || index >= total) return;
+    if (index === current) {
+      if (showAll) {
+        showAllSlide(index);
+        slides[index].focus({ preventScroll: true });
+      }
+      return;
+    }
+    if (isAnimating) return;
     isAnimating = true;
 
     resetSlide(current);
@@ -585,14 +606,36 @@ body {
 
   /* ── 키보드 ── */
   document.addEventListener('keydown', function (e) {
+    var isHelpVisible = helpOverlay.classList.contains('visible');
+    if (isHelpVisible) {
+      switch (e.key) {
+        case 'Tab':
+          e.preventDefault();
+          focusHelpBox();
+          return;
+        case '?':
+          e.preventDefault();
+          toggleHelp();
+          return;
+        case 'Escape':
+          e.preventDefault();
+          closeHelp();
+          return;
+        case 'ArrowRight': case 'ArrowDown': case ' ':
+        case 'ArrowLeft': case 'ArrowUp':
+        case 'Home': case 'End':
+          e.preventDefault();
+          return;
+      }
+    }
     switch (e.key) {
       case 'ArrowRight': case 'ArrowDown': case ' ':
         e.preventDefault(); next(); break;
       case 'ArrowLeft': case 'ArrowUp':
         e.preventDefault(); prev(); break;
-      case 'Home': goTo(0); break;
-      case 'End':  goTo(total - 1, true); break;
-      case '?':    toggleHelp(); break;
+      case 'Home': e.preventDefault(); goTo(0); break;
+      case 'End':  e.preventDefault(); goTo(total - 1, true); break;
+      case '?':    e.preventDefault(); toggleHelp(); break;
       case 'Escape': closeHelp(); break;
     }
   });
@@ -618,10 +661,34 @@ body {
   })();
 
   /* ── 도움말 ── */
-  var helpOverlay = document.getElementById('help-overlay');
-  function toggleHelp() { helpOverlay.classList.toggle('visible'); }
-  function closeHelp()  { helpOverlay.classList.remove('visible'); }
-  helpOverlay.addEventListener('click', closeHelp);
+  function focusHelpBox() {
+    if (helpBox && typeof helpBox.focus === 'function') helpBox.focus();
+  }
+  function openHelp() {
+    if (helpOverlay.classList.contains('visible')) return;
+    lastHelpFocus = document.activeElement;
+    helpOverlay.classList.add('visible');
+    focusHelpBox();
+  }
+  function closeHelp()  {
+    if (!helpOverlay.classList.contains('visible')) return;
+    helpOverlay.classList.remove('visible');
+    var restoreTarget = lastHelpFocus && typeof lastHelpFocus.focus === 'function'
+      ? lastHelpFocus
+      : slides[current];
+    if (restoreTarget && typeof restoreTarget.focus === 'function') {
+      restoreTarget.focus({ preventScroll: true });
+    }
+    lastHelpFocus = null;
+  }
+  function toggleHelp() {
+    if (helpOverlay.classList.contains('visible')) closeHelp();
+    else openHelp();
+  }
+  helpOverlay.addEventListener('click', function (e) {
+    if (e.target !== helpOverlay) return;
+    closeHelp();
+  });
 
 })();
 </script>

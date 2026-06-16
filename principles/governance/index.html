@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="거버넌스 — 단일 진실 공급원·Living Glossary·QA 의무화·라이팅 자동화·Figma 컴포넌트 결합. KRDS UX Writing 가이드라인.">
+<meta name="description" content="거버넌스 — 대표 사이트 순회, 사례 승격, Living Glossary, UX/UI 검수, 10분 판정, KRDS/Figma 결합을 운영하는 기준.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="거버넌스 — KRDS UX Writing 가이드라인">
-  <meta property="og:description" content="거버넌스 — 단일 진실 공급원·Living Glossary·QA 의무화·라이팅 자동화·Figma 컴포넌트 결합. KRDS UX Writing 가이드라인.">
+  <meta property="og:description" content="대표 사이트 순회, 사례 승격, Living Glossary, UX/UI 검수, 10분 판정, KRDS/Figma 결합을 운영하는 기준입니다.">
   <meta property="og:url" content="https://thenisaid.github.io/krds-ux-writing/principles/governance/">
   <link rel="canonical" href="https://thenisaid.github.io/krds-ux-writing/principles/governance/">
 <title>거버넌스 — KRDS UX Writing 가이드라인</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
-<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<script>(function(){var prefersDark=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches;var t='light';try{t=localStorage.getItem('krds-theme')||(prefersDark?'dark':'light');}catch(e){t=prefersDark?'dark':'light';}if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" as="style" crossorigin="anonymous"
   href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
@@ -307,7 +307,7 @@
       <h1 class="content-title">거버넌스<br><span style="font-size:0.55em;color:var(--text-muted);font-weight:600"> (UX Writing Governance)</span></h1>
       <p class="content-headline">규칙만으로는 부족하다 — 체계가 일관성을 만든다</p>
       <p class="content-desc">
-        좋은 글쓰기 원칙은 문서 속에 머물러서는 안 됩니다. 조직의 도구·프로세스·문화에 내재화되어야 비로소 일관된 시민 경험이 만들어집니다. 6가지 운영 조건이 그 체계입니다.
+        좋은 글쓰기 원칙은 문서 속에 머물러서는 안 됩니다. 조직의 도구·프로세스·문화에 내재화되어야 비로소 일관된 시민 경험이 만들어집니다. 6가지 운영 조건에 더해 대표 사이트 순회, 사례 승격, 새 실화면 10분 판정, UX/UI 검수 질문을 같은 운영 체계로 묶습니다.
       </p>
     </div>
 
@@ -434,6 +434,51 @@
         </div>
       </div>
 
+      <div class="sub-h3" style="margin-top:24px">승격된 사례를 KRDS/Figma 자산으로 넘기는 체크리스트</div>
+      <table class="data-table">
+        <thead><tr><th>수집한 근거</th><th>Figma/KRDS에 고정할 것</th><th>같은 라운드 동기화 자산</th></tr></thead>
+        <tbody>
+          <tr><td><strong>메뉴·CTA 이름</strong><br><code>민원 신청하기</code>, <code>환급 계좌 등록하기</code>처럼 버튼이 바로 행동을 말함</td><td>Button 기본 레이블, Description의 버튼 공식, 결과 뒤 CTA 예시</td><td>2.3 버튼, 7.1 버튼, 사례 카드, Figma Button set</td></tr>
+          <tr><td><strong>입력·검색 도움말</strong><br>입력 범위, 형식 제한, 무검색 뒤 재검색 단서가 한 묶음으로 필요함</td><td>Text input/Search supporting text, placeholder 금지 예시, 결과 없음 기본 문구</td><td>2.2 입력, 7장 Search, 사례 카드, Figma Input/Search set</td></tr>
+          <tr><td><strong>상태·결과·후속 흐름</strong><br>상태 1문장, 예정일, 다음 행동, 자동/별도, 이의 기한이 함께 보여야 함</td><td>Result page와 Structured list의 필수 슬롯, Notice banner 보조 문구, 상태 배지 예시</td><td>3장 core-info, 4장 safety-net, 7장 Result page/Table, Figma Result/Status set</td></tr>
+          <tr><td><strong>중대한 결정·비가역 경고</strong><br>효력, 기한, 취소 불가, 대안 절차가 같은 첫 블록에 있어야 함</td><td>Notice banner severity, 경고 제목 공식, 보조 Link/Helper text 자리</td><td>4장 safety-net, 7장 배너, CASE 52, Figma Banner/Alert set</td></tr>
+          <tr><td><strong>접근성·숨은 텍스트</strong><br>보이는 레이블과 스크린리더 레이블이 같은 목적·상태를 말해야 함</td><td>숨은 레이블 규칙, 새 창·토글·상태 안내 문장, QA 체크리스트 항목</td><td>5장 표기, 7장 버튼·링크·아코디언, CASE 51, QA checklist</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h4">이번 라운드 KRDS/Figma 반영 예시</div>
+      <table class="data-table">
+        <thead><tr><th>대표 사이트·화면</th><th>KRDS 조합</th><th>Description에 꼭 남길 문장</th><th>기본 예시 문구</th><th>숨은 레이블 메모</th></tr></thead>
+        <tbody>
+          <tr><td>국민건강보험 <code>질병명·병원 이름 검색</code>, <code>피부양자·산정특례 안내</code>, <code>보험료 산정</code></td><td>Search + Auto-complete + Helper text + Accordion + Table + Button</td><td>Description에는 <code>질병명 또는 병원 이름</code> 입력 범위·재검색 단서와, 부양가족 등록·해제 대상, 중증질환 본인부담 감면 대상, 이번 달 보험료 계산 기준, 변동 신고·경감 신청·임의계속가입 CTA를 함께 적습니다.</td><td>질병명 또는 병원 이름을 입력해 다시 찾아보세요 / 부양가족으로 등록하거나 해제할 가족인지 먼저 확인해 주세요 / 중증질환 본인부담 감면 대상인지 확인 / 이번 달 보험료 계산 기준 보기 / 변동 신고하기</td><td>병원 이름이나 질병명으로 다시 검색하기 / 부양가족 등록·해제 대상 확인하기 / 중증질환 본인부담 감면 요건 보기 / 현재 보험료 계산 기준 보기 / 보험료 변동 신고하기 / 보험료 경감 신청 가능 여부 자가 진단하기 / 퇴직 뒤 예전 직장 보험료 계속 가입 확인하기</td></tr>
+          <tr><td>고용24 <code>실업인정 인터넷 신청</code>, <code>조기재취업수당 안내</code></td><td>Notice banner + Structured list + Disclosure + Button</td><td>Description에는 실업급여를 확인하는 날, 이번 회차 재취업 활동, 취업한 날 기준, 조기재취업 대상 여부·확인 서류, 놓쳤을 때 결과와 다시 확인 경로를 함께 적습니다.</td><td>실업급여를 확인하는 날까지 재취업 활동을 등록해 주세요 / 빨리 다시 취업했을 때 받는 수당 대상과 확인 서류 보기 / 놓쳤다면 다음 회차와 보완 경로 확인</td><td>실업인정일까지 필요한 활동 보기 / 취업한 날 기준 확인하기 / 조기재취업수당 대상과 확인 서류 보기 / 실업인정일을 놓쳤을 때 다시 확인하기</td></tr>
+          <tr><td>서울특별시 응답소 <code>질의응답·답변원문</code>, <code>결과보기</code></td><td>Result page + Status badge + Button + Link</td><td>Description에는 답변 준비 상태, 답변 예정일, 나의 민원 재확인, 답변원문이 등록되면 민원 결과보기, 같은 건이 아니면 새 민원 신청 위계를 함께 적습니다.</td><td>담당 기관에서 답변을 준비하고 있습니다 / 답변 예정일 2026.06.12 / 나의 민원에서 다시 확인 / 답변원문이 등록되면 민원 결과보기 / 같은 건이 아니면 새 민원 신청하기</td><td>현재 답변 상태와 예정일 확인하기 / 나의 민원에서 다시 확인하기 / 기존 민원 결과 확인하기 / 같은 건이 아니면 새 민원 신청 시작하기</td></tr>
+          <tr><td>전자가족관계등록시스템 <code>국적 회복 허가</code></td><td>Result page + Notice banner + Checklist + Button</td><td>Description에는 <code>한국 국적 다시 받기</code> 같은 시민 언어 헤더와 공식 용어 병기, <code>1년 내 외국 국적 포기</code>, <code>외국국적불행사서약 대상 여부</code>, <code>외국 국적 포기 증명서</code> 제출 경로, <code>[요건 확인]</code>·<code>[신고 방법 보기]</code> CTA를 함께 적습니다.</td><td>한국 국적 다시 받기 허가 결과를 먼저 확인해 주세요 / 1년 내 외국 국적 포기와 외국국적불행사서약 대상 여부를 확인해 주세요 / 외국 국적 포기 증명서 제출 경로 확인 / 신고 방법 보기</td><td>국적 회복 허가 결과 확인하기 / 외국 국적 포기 기한과 서약 대상 확인하기 / 외국 국적 포기 증명서 제출 경로 확인하기 / 국적 신고 방법 보기</td></tr>
+          <tr><td>정부24 <code>전자증명서안내</code>, 홈택스 <code>부가가치세예정신고</code>, 대한민국법원 <code>가족관계등록부정정 허가</code></td><td>Tab + Navigation + Card + Link</td><td>Description에는 단어 경계, 행동 동사, 대상, 공식 용어 병기 기준을 함께 적습니다.</td><td>무엇을 하는 메뉴인지 먼저 읽히게 하기 / 신고하기·발급하기 동사 분리</td><td>전자증명서 안내 메뉴 열기 / 부가가치세 예정 신고 바로 가기 / 가족관계 기록 정정 허가 자세히 보기</td></tr>
+          <tr><td>정부24 <code>긴급복지지원 신청</code>, 홈택스 <code>근로장려금 신청</code>, 전자가족관계등록시스템 <code>국적 이탈 신고</code></td><td>Structured list + Notice banner + Badge + Helper text + Button</td><td>Description에는 조건 목록, 기준값, 탈락 시 영향, 자가 확인 CTA를 함께 적습니다.</td><td>모든 조건을 먼저 확인해 주세요 / 소득·재산·기한 기준 보기 / 자가 확인 시작</td><td>지원 요건 자가 확인하기 / 가구 유형별 기준 보기 / 국적 이탈 요건 확인하기</td></tr>
+          <tr><td>정부24 <code>병적증명서 발급</code>, 홈택스 <code>세무대리인 수임 동의</code>, 전자가족관계등록시스템 <code>소송 대리인 등록</code></td><td>Structured list + Helper text + Notice banner + Button</td><td>Description에는 대리 가능 대상, 증빙, 권한 범위, 해지·해임 경로를 함께 적습니다.</td><td>누가 대신할 수 있는지 먼저 확인해 주세요 / 위임 범위와 종료 경로 보기 / 해지 또는 해임 확인</td><td>대리 발급 요건 확인하기 / 위임 범위 자세히 보기 / 수임 해지 또는 해임 방법 보기</td></tr>
+          <tr><td>국민신문고 <code>민원 유형 선택</code>, 홈택스 <code>휴업·폐업 신고</code>, 대한민국법원 <code>개인회생·파산</code></td><td>Radio + Segmented control + Structured list + Helper text + Notice banner + Link</td><td>Description에는 내 상황, 선택 기준, 오선택 위험, 비교·상담 CTA를 함께 적습니다.</td><td>내 상황에 맞는 절차를 먼저 확인해 주세요 / 휴업·폐업·회생·파산 차이 보기 / 무료 상담 연결</td><td>민원 유형 비교하기 / 휴업·폐업 차이 보기 / 개인회생·파산 비교하기</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box" style="margin-top:16px;">
+        <strong>실행 규칙</strong>: 7장 컴포넌트 라이팅에서 대표 사이트 근거가 붙은 문장은 사례 카드나 화면 설명으로 끝내지 않습니다. <code>Description</code>, 기본 예시 문구, 숨은 레이블 메모까지 같은 라운드에서 같이 남겨야 KRDS/Figma 자산으로 바로 재사용할 수 있습니다.
+      </div>
+
+      <div class="sub-h4">Figma 컴포넌트 필드별 반영 규칙</div>
+      <table class="data-table">
+        <thead><tr><th>필드</th><th>무엇을 적는가</th><th>대표 사이트 근거가 들어오는 자리</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Description</strong></td><td>실패 패턴 1문장, 기본 공식, 금지 표현, 연결 URL</td><td>CASE 번호, 대표 사이트 화면 이름, 연결 원칙</td></tr>
+          <tr><td><strong>Variant / Property 이름</strong></td><td><code>default / warning / complete</code>, <code>has_deadline</code>, <code>has_next_action</code>처럼 상태·정보 슬롯을 드러내는 이름</td><td>상태·기한·다음 행동이 실제로 분리돼야 했던 화면 근거</td></tr>
+          <tr><td><strong>기본 예시 문구</strong></td><td>디자이너가 바로 쓸 버튼, 도움말, 결과 문장 1세트</td><td>사례 카드의 After 문구와 대표 사이트 원문 비교</td></tr>
+          <tr><td><strong>보조·숨은 텍스트</strong></td><td>스크린리더용 목적, 새 창 여부, 토글 상태, 결과 재확인 경로</td><td>접근성·숨은 텍스트 축에서 걸린 CASE와 QA 질문</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box" style="margin-top:16px;">
+        <strong>실행 규칙</strong>: 사례 카드만 올라가고 Figma Description, 기본 예시 문구, 숨은 레이블 체크리스트가 비어 있으면 디자인 시스템 반영이 끝난 것으로 보지 않습니다.
+      </div>
+
       <div class="info-box">
         <strong>기본값의 힘</strong>: 사람은 기본값을 바꾸지 않는 경향이 있습니다 (기본값 편향). 올바른 기본값을 설정하면, 규칙을 가르치지 않아도 대부분의 경우 올바른 텍스트가 나옵니다.
       </div>
@@ -485,8 +530,269 @@
         </tbody>
       </table>
 
+      <div class="sub-h3" style="margin-top:24px">전 원칙 재점검 결과</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">최근 라운드에서 전체 가이드라인을 다시 훑어본 결과, 남은 일은 새 원칙 번호를 늘리는 것보다 <strong>각 원칙 축에 어떤 대표 사이트 근거와 KRDS 컴포넌트 연결을 더 붙여야 하는지</strong>를 선명하게 유지하는 데 있습니다. 이 표를 보고 바로 아래 순회 운영법으로 내려가면, 다음 라운드에서 무엇을 먼저 채워야 할지 빠르게 판단할 수 있습니다.</p>
+      <table class="data-table">
+        <thead><tr><th>원칙 축</th><th>현재 판단</th><th>다음 순회에서 먼저 채울 슬롯</th><th>대표 사이트</th><th>KRDS 우선 축</th></tr></thead>
+        <tbody>
+          <tr><td><strong>무번역</strong></td><td>대표 행정어·제도어 사전은 넓게 채워져 있습니다</td><td>복지·고용 복합 제도어, 동의·본인확인 핵심어, 세무·법원 고빈도 메뉴어를 계속 일반화합니다</td><td>복지로, 고용24, 홈택스, 대한민국법원</td><td>Helper text, Accordion, Disclosure, Agreement</td></tr>
+          <tr><td><strong>정보핵심화</strong></td><td>결론 우선과 상태 요약 구조는 견고합니다</td><td>민원·환급·심사 결과 화면의 <code>상태 1문장 + 예정일 + 다음 행동</code>과 완료 뒤 후속 흐름 근거를 더 쌓습니다</td><td>국민신문고, 서울특별시 응답소, 홈택스, 정부24</td><td>Status badge, Timeline, Result page, Table</td></tr>
+          <tr><td><strong>심리적안전망</strong></td><td>오류·완료·대안 경로 기준은 살아 있습니다</td><td>세션 종료, 기한 임박, 비가역 결정, 지연 상태처럼 불안이 큰 흐름을 계속 보강합니다</td><td>정부24, 홈택스, 대한민국법원, 고용24</td><td>Modal, Notice banner, Button, Link</td></tr>
+          <tr><td><strong>표기법·맞춤법</strong></td><td>숫자·기호·복합 명사 규칙은 안정적입니다</td><td>표 헤더, 상태 배지, 메뉴명에서 반복되는 기호·띄어쓰기·단위 표기를 린트 규칙과 연결합니다</td><td>정부24, 홈택스, 국민신문고</td><td>Table, Badge, Search, Linter</td></tr>
+          <tr><td><strong>컴포넌트 라이팅</strong></td><td>주요 KRDS 컴포넌트 공식은 대부분 마련됐습니다</td><td>Button/Search/Modal/Table/Structured list/Result page에서 대표 사이트 근거를 더 직접 연결합니다</td><td>정부24, 홈택스, 국민신문고, 전자가족관계등록시스템</td><td>Button, Search, Modal, Structured list, Table, Result page</td></tr>
+          <tr><td><strong>거버넌스·부록 D</strong></td><td>순회·승격·동기화 규칙은 정리됐습니다</td><td>전 원칙 재점검 결과, 다음 라운드 우선 슬롯, 테스트·코퍼스 동기화를 공개 문서에 계속 맞춥니다</td><td>대표 사이트 8종 전체</td><td>Corpus sync, QA checklist, Test sync</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>핵심 판단</strong>: 다음 라운드 우선순위는 "새 용어 몇 개를 더 찾는가"보다 "어느 원칙 축을 어떤 화면 단계와 KRDS 컴포넌트로 더 증명할 것인가"입니다. 무번역은 자격·동의·메뉴, 정보핵심화는 상태·결과·완료 뒤 후속 흐름, 심리적안전망은 오류·기한·비가역 행동을 먼저 봅니다.
+      </div>
+
+      <div class="sub-h3" style="margin-top:24px">대표 서비스 관찰 — 승격된 사례는 사전·사례 카드·원칙·컴포넌트를 함께 갱신한다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">최근 라운드에서 <strong>확정일자</strong>, <strong>상속포기</strong>, <strong>지급명령 신청</strong>, <strong>이행권고결정</strong>, <strong>장기요양인정</strong>, <strong>국적 회복</strong>, <strong>협의이혼 의사확인</strong>, <strong>개명 허가</strong>, <strong>진정·청원·제안·신고</strong>, <strong>휴업·폐업</strong>, <strong>개인회생·파산</strong>을 다시 보면, 새 용어 1개를 사전에 추가하는 것만으로는 운영이 끝나지 않았습니다. 같은 실패 패턴이 반복될 때는 <strong>사전 후보 등록</strong>, <strong>사례 카드 작성</strong>, <strong>관련 원칙 보강</strong>, <strong>KRDS 컴포넌트 연결</strong>을 같은 묶음으로 갱신해야 다음 팀도 같은 기준으로 판단할 수 있습니다.</p>
+      <table class="data-table">
+        <thead><tr><th>용어 묶음</th><th>같이 갱신할 자산</th><th>우선 묻는 질문</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>확정일자 / 상속포기</strong></td><td>2.1 사전, CASE 52, 3장 core-info, 4장 safety-net, 7장 컴포넌트</td><td>효력·기한·취소 불가·대안 절차가 첫 화면에서 보이는가?</td><td>Notice banner, Structured list, Helper text, Link</td></tr>
+          <tr><td><strong>지급명령 신청 / 이행권고결정</strong></td><td>CASE 52, 3장 core-info, 4장 safety-net, 7장 컴포넌트</td><td>확정 효력, 2주 이의 기간, 소송 전환 또는 강제집행 가능성이 첫 화면에서 보이는가?</td><td>Notice banner, Structured list, Helper text, Link</td></tr>
+          <tr><td><strong>장기요양인정 / 개명 허가</strong></td><td>2.1 사전, CASE 55, 3장 core-info, 4장 safety-net, 7장 컴포넌트</td><td>판정 기준·단계·결과 뒤 행동이 한 흐름으로 이어지는가?</td><td>Step indicator, Structured list, Notice banner, Button</td></tr>
+          <tr><td><strong>국적 회복 / 국적 이탈</strong></td><td>2.1 사전, CASE 32·45·46·57, 3장 core-info, 4장 safety-net, 7장 컴포넌트</td><td>허가 뒤 1년 내 외국 국적 포기, 외국국적불행사서약 대상 여부, 외국 국적 포기 증명서 제출 경로, 복수 국적·병역 조건이 같은 화면 묶음으로 보이는가?</td><td>Result page, Notice banner, Checklist, Button</td></tr>
+          <tr><td><strong>전입신고 완료 / 장애 정도 결정 / 지급명령 이의신청</strong></td><td>CASE 31·32·33, 3장 core-info, 4장 safety-net, 7장 컴포넌트</td><td>결과 직후 후속 행동·자동/별도·이의 기한이 한 블록에서 함께 보이는가?</td><td>Result page, Structured list, Notice banner, Link, Button</td></tr>
+          <tr><td><strong>협의이혼 의사확인</strong></td><td>2.1 사전, CASE 57·18, 4장 safety-net, 7장 컴포넌트</td><td>모두 충족 조건·필수 서류·기한이 체크리스트로 먼저 보이는가?</td><td>Structured list, Helper text, File upload, Button</td></tr>
+          <tr><td><strong>민원 유형 / 휴업·폐업 / 개인회생·파산 / 후견 유형</strong></td><td>CASE 60, 3장 core-info, 4장 safety-net, 7장 컴포넌트</td><td>어떤 상황에 맞는 절차, 선택 기준, 잘못 고를 때 재판단해야 하는 비용이 먼저 보이는가?</td><td>Radio, Segmented control, Structured list, Helper text, Notice banner, Link</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>운영 규칙</strong>: 용어 1개 = 사전 1행이 아닙니다. 세 대표 사이트에서 같은 UX Writing 문제로 묶이면 <code>사전 등록 → 사례 카드 → 관련 원칙·컴포넌트 보강 → QA 반영</code>을 같은 PR이나 같은 스프린트 묶음으로 처리합니다.
+        <br><br>
+        <strong>흡수 규칙</strong>: <code>부동산 거래 신고</code>, <code>공동사업장 등록</code>, <code>협의이혼 의사확인</code>처럼 공동 신청 주체가 핵심인 화면은 새 규칙 번호보다 <code>신청인 유형별 추가 서류</code>, <code>복수 조건 체크리스트</code> 보강 대상으로 먼저 분류합니다. KRDS에서는 <code>Fieldset/Radio + Helper text + Structured list + Notice banner</code> 조합을 우선 검토합니다.
+        <br><br>
+        <strong>결합 규칙</strong>: <code>전입신고</code>, <code>사업자 등록 사항 정정 신청</code>, <code>가족관계등록부 정정</code>처럼 온라인 가능 여부와 관할 기관이 함께 갈리는 화면은 새 규칙 번호보다 <code>온라인/방문 분기</code>, <code>담당 기관·관할</code> 보강 대상으로 먼저 분류합니다. KRDS에서는 <code>Radio + Helper text + Structured list + Badge + Button</code> 조합을 우선 검토합니다.
+      </div>
+
+      <div class="sub-h3">라운드 종료 동기화 체크리스트</div>
+      <ul class="checklist" role="list">
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>코퍼스 상태표를 실제 산출물 기준으로 갱신했다.</span>
+        </li>
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>승격된 항목은 사전·사례 카드·원칙·컴포넌트를 같은 라운드에서 함께 반영했다.</span>
+        </li>
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>관련 테스트(<code>tests/principles-pages-content.test.js</code>)를 함께 갱신했다.</span>
+        </li>
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>이번 라운드에서 Layer 2 공통 패턴인지 Layer 3 기관 특화인지 판정 근거를 기록했다.</span>
+        </li>
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>사례 카드까지 올라간 항목인데 코퍼스 상태가 아직 <code>원칙·웹·사전 반영 완료</code>라면 라운드 종료로 보지 않는다.</span>
+        </li>
+      </ul>
+
       <div class="warn-box">
         <strong>Living Glossary 실패 패턴</strong>: 용어집이 특정 담당자의 개인 파일에 있으면 그 사람이 퇴사하는 순간 사라집니다. 반드시 조직이 소유하는 공용 저장소에 관리합니다.
+      </div>
+
+      <div class="sub-h3">대표 사이트 순회 운영법</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">대표 사이트 조사는 생각날 때 한 번 보는 방식이 아니라, 같은 순서로 반복하는 라운드 로빈 순회로 운영합니다. 한 라운드에서는 사이트별로 깊게 파기보다 같은 과업 단계와 KRDS 컴포넌트를 맞춰 비교해야 공통 원칙 후보를 더 빨리 찾을 수 있습니다.</p>
+      <table class="data-table">
+        <thead><tr><th>순서</th><th>사이트</th><th>이번 루프 우선 과업</th><th>우선 확인 컴포넌트</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><strong>정부24</strong></td><td>신청 상세, 증명서 발급</td><td>Structured list, Table, Button</td></tr>
+          <tr><td>2</td><td><strong>홈택스</strong></td><td>신고, 납부, 경고 메시지</td><td>Form, Stepper, Modal</td></tr>
+          <tr><td>3</td><td><strong>복지로</strong></td><td>자격 판정, 모의계산</td><td>Accordion, Helper text, Banner</td></tr>
+          <tr><td>4</td><td><strong>국민건강보험</strong></td><td>자격·급여 설명</td><td>Table, Tooltip, Notice</td></tr>
+          <tr><td>5</td><td><strong>전자가족관계등록시스템</strong></td><td>발급, 대리인/관계인 안내</td><td>Consent, Modal, Certificate flow</td></tr>
+          <tr><td>6</td><td><strong>국민신문고</strong></td><td>민원 상태, 답변 확인</td><td>Status badge, Timeline, Table</td></tr>
+          <tr><td>7</td><td><strong>고용24</strong></td><td>수당·훈련 안내, 실업인정</td><td>Card, Disclosure, Search</td></tr>
+          <tr><td>8</td><td><strong>서울특별시 응답소</strong></td><td>결과 안내, 민원 흐름</td><td>Result page, Alert, Button</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box" style="margin-top:16px;">
+        <strong>사법 영역 운영 메모</strong>: 대표 사이트 8종 목록은 <code>전자가족관계등록시스템</code>을 고정점으로 유지합니다. 다만 <code>완료 뒤 후속 흐름</code>처럼 결과 직후의 기한·권리구제 문구를 봐야 하는 라운드에서는 <code>대한민국법원</code> 화면 1개를 보조 표본으로 함께 기록합니다. 이번 라운드의 보조 표본은 <code>지급명령 이의신청</code>입니다.
+      </div>
+
+      <div class="sub-h4">대표 사이트 순회 캔버스</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">실제 사례 추가는 새 사이트를 끝까지 읽는 방식보다, 아래 다섯 접근 방식 중 하나로 먼저 묶는 편이 빠릅니다. 각 행에서 <code>대표 사이트 시작점</code>, <code>사전에서 먼저 채울 표현</code>, <code>UX/UI 질문</code>, <code>CASE·원칙 도착지</code>, <code>KRDS/Figma handoff</code>를 한 줄로 같이 적습니다.</p>
+      <table class="data-table">
+        <thead><tr><th>접근 방식</th><th>대표 사이트 시작점</th><th>사전에서 먼저 채울 표현</th><th>먼저 던질 UX/UI 질문</th><th>먼저 붙일 CASE·원칙</th><th>KRDS/Figma handoff</th></tr></thead>
+        <tbody>
+          <tr><td><strong>레이블·도움말 수집형</strong></td><td>국민건강보험 <code>피부양자·산정특례 안내</code>, 고용24 <code>조기재취업수당 안내</code>, 전자가족관계등록시스템 <code>국적 이탈 신고</code></td><td><code>부양가족 등록</code>, <code>중증질환 본인부담 감면</code>, <code>취업한 날</code>, <code>1년 내 외국 국적 포기</code>, <code>외국국적불행사서약 대상 여부</code></td><td>첫 레이블과 도움말만 읽어도 대상, 기한, 준비 서류가 보이는가?</td><td>CASE 2·6·57 / 2장 무번역</td><td>Helper text + Notice banner + Structured list + Checklist</td></tr>
+          <tr><td><strong>결과 첫 블록 재구성형</strong></td><td>서울특별시 응답소 <code>질의응답·답변원문 / 결과보기</code>, 국민건강보험 <code>보험료 산정</code>, 홈택스 <code>국세 환급금 조회</code></td><td><code>답변 예정일</code>, <code>계산 기준</code>, <code>예상 입금일</code>, <code>민원 결과보기</code></td><td>상태 또는 금액, 예정일, 다시 확인 CTA가 같은 첫 블록에 모이는가?</td><td>CASE 3·42·56 / 3장 정보핵심화 + 7장 Result page</td><td>Result page + Status badge + Table + Button</td></tr>
+          <tr><td><strong>후속 의무·권리구제형</strong></td><td>전자가족관계등록시스템 <code>국적 회복 허가</code>, 정부24 <code>전입신고 완료</code>, 대한민국법원 <code>지급명령 이의신청</code></td><td><code>1년 내 외국 국적 포기</code>, <code>외국국적불행사서약 대상 여부</code>, <code>자동 반영 / 별도 변경</code>, <code>2주 이내 이의신청</code></td><td>결과 뒤 남은 의무, 기한, 미이행 위험 또는 권리구제 경로가 한 흐름으로 이어지는가?</td><td>CASE 31·32·33·46 / 3장 정보핵심화 + 4장 심리적안전망</td><td>Notice banner + Structured list + Link + Button</td></tr>
+          <tr><td><strong>검색·분기·재검색형</strong></td><td>국민건강보험 <code>질병명·병원 이름 검색</code>, 고용24 <code>훈련 검색</code>, 국민신문고 <code>민원 유형 선택</code></td><td><code>질병명 또는 병원 이름</code>, <code>배우고 싶은 기술·자격증</code>, <code>진정 / 청원 / 제안 / 신고</code></td><td>입력 범위나 선택 기준, 잘못 고를 때 영향, 재검색 단서가 클릭 전에 보이는가?</td><td>CASE 10·49·60 / 5장 표기법·맞춤법 + 7장 컴포넌트 라이팅</td><td>Search + Radio + Segmented control + Helper text</td></tr>
+          <tr><td><strong>기관 특화 보류형</strong></td><td>SeMA (Layer 3 확인용) <code>도슨트 예약</code>, <code>오프닝 리셉션 신청</code>, <code>소장품 검색</code></td><td><code>도슨트</code>, <code>오프닝 리셉션</code>, <code>소장품 검색</code></td><td>공통 문제를 걷어낸 뒤에도 기관 고유 과업 이름과 톤이 남는가?</td><td>Layer 3 보류 / 6장 기관별 파생 가이드</td><td>공통 KRDS 조합 유지 + 기관별 추가 사전</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box" style="margin-top:16px;">
+        <strong>실행 규칙</strong>: 한 화면을 수집할 때도 먼저 이 다섯 행 가운데 어디에 들어가는지 고르고, 같은 줄의 <code>사전 표현</code>, <code>UX/UI 질문</code>, <code>CASE·원칙</code>, <code>KRDS/Figma handoff</code>를 같이 적습니다. 이렇게 해야 사전만 채우고 사례·원칙·컴포넌트를 나중으로 미루는 일을 줄일 수 있습니다.
+      </div>
+
+      <div class="sub-h4">이번 라운드에서 바로 다시 볼 실제 화면</div>
+      <table class="data-table">
+        <thead><tr><th>사이트</th><th>바로 다시 볼 화면</th><th>이번 라운드에서 먼저 확인할 질문</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>정부24</strong></td><td><code>전입신고 완료</code></td><td>자동 반영과 별도 변경, 다음 기관, 체크리스트 CTA가 첫 블록에 함께 보이는가?</td><td>Result page, Structured list, Link</td></tr>
+          <tr><td><strong>홈택스</strong></td><td><code>국세 환급금 조회</code></td><td>환급 결정 상태, 예상 입금일, 계좌 등록 또는 변경 CTA, 지연 시 확인 경로가 한 영역에 모이는가?</td><td>Result page, Notice banner, Button</td></tr>
+          <tr><td><strong>전자가족관계등록시스템</strong></td><td><code>전자 발급본 안내</code></td><td>효력, 문서확인번호, 제출처 주의, 재출력·진위확인 경로가 첫 목록에 모이는가?</td><td>Structured list, Notice banner, Button</td></tr>
+          <tr><td><strong>대한민국법원 (보조 표본)</strong></td><td><code>지급명령 이의신청</code></td><td>2주 기한, 제출처, 소송 전환 가능성, 다음 CTA가 첫 블록에서 함께 읽히는가?</td><td>Result page, Notice banner, Link, Button</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h4">사례 카드 최소 기록 양식</div>
+      <table class="data-table">
+        <thead><tr><th>필드</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td><strong>원문</strong></td><td>실제 노출 문구 또는 표 헤더</td></tr>
+          <tr><td><strong>문제 패턴</strong></td><td>행정어 / 결론 후치 / 상태 모호 / CTA 모호 등</td></tr>
+          <tr><td><strong>연결 원칙</strong></td><td>무번역 / 정보핵심화 / 심리적안전망 중 어느 축에 속하는가</td></tr>
+          <tr><td><strong>KRDS 컴포넌트</strong></td><td>Search / Button / Table / Banner / Modal 등</td></tr>
+          <tr><td><strong>개선 문구</strong></td><td>시민 언어로 다시 쓴 문장</td></tr>
+          <tr><td><strong>이유</strong></td><td>왜 이 개선이 더 빠르게 이해되는가</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h4">화면 유형별 최소 기록 질문</div>
+      <table class="data-table">
+        <thead><tr><th>화면 유형</th><th>반드시 남길 판단 정보</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>자격·조건</strong></td><td>대상 여부 / 기준값 / 탈락 조건 / 자가 확인 경로</td><td>Structured list, Helper text, Banner</td></tr>
+          <tr><td><strong>상태·결과</strong></td><td>현재 단계 / 예정일 또는 남은 기간 / 지연 시 문의 경로 / 다음 CTA</td><td>Status badge, Timeline, Result page</td></tr>
+          <tr><td><strong>완료 뒤 후속 흐름</strong></td><td>후속 행동 / 자동 반영과 별도 신청·신고 / 이의·재심사 기한 / 권리구제 경로</td><td>Result page, Structured list, Notice banner, Button</td></tr>
+          <tr><td><strong>긴급·병행</strong></td><td>먼저 연결할 채널 / 같이 해야 할 외부 절차 / 복귀 경로 / 누락·중복 확인 경로</td><td>Notice banner, Link, Structured list</td></tr>
+          <tr><td><strong>대리·관할</strong></td><td>처리 기관 또는 관할 / 대리 가능 대상 / 권한 범위 / 해지·예외 경로</td><td>Structured list, Helper text, Button</td></tr>
+          <tr><td><strong>조회·발급·공개 범위</strong></td><td>포함 항목 / 빠지는 항목 / 효력 또는 유효기간 / 별도 확인 경로</td><td>Table, Disclosure, Helper text</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h4" id="ux-ui-review">UX/UI 검수 보조 질문</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">문장만 따로 떼어 검수하지 않습니다. 같은 문장도 어디에 놓였는지, 무엇과 같이 묶였는지, 다음 행동이 바로 이어지는지에 따라 이해 속도가 달라집니다. 아래 5개 축을 같이 보면 텍스트 검수를 화면 검수와 같은 언어로 운영할 수 있습니다.</p>
+      <table class="data-table">
+        <thead><tr><th>검수 축</th><th>바로 볼 질문</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>정보 위계</strong></td><td>제목·상태·기한·다음 행동 가운데 지금 가장 먼저 봐야 할 1문장이 첫 블록에 올라와 있는가?</td><td>Notice banner, Result page, Structured list</td></tr>
+          <tr><td><strong>선택·분기</strong></td><td>라디오·탭·세그먼트만 읽어도 옵션 차이, 대상 조건, 잘못 고를 때 불이익이 보이는가?</td><td>Radio, Segmented control, Tabs, Helper text</td></tr>
+          <tr><td><strong>입력·첨부</strong></td><td>해당자만 필수인지, 형식·용량 제한이 무엇인지, 실패 뒤 어디서 다시 제출하는지가 입력 바로 옆에 붙어 있는가?</td><td>Text input, File upload, Helper text, Button</td></tr>
+          <tr><td><strong>상태·안심</strong></td><td>남은 시간, 처리 단계, 지연 시 문의 경로, 자동 로그아웃·자동 반영 여부가 한 흐름으로 이어지는가?</td><td>Modal, Status badge, Timeline, Notice banner</td></tr>
+          <tr><td><strong>접근성·숨은 텍스트</strong></td><td>버튼·링크·배너가 스크린리더에도 목적과 상태를 함께 읽어 주는가? 새 창·순번·토글 여부만 남지 않았는가?</td><td>Button, Link, Accordion, Tooltip</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>검수 규칙</strong>: 텍스트가 좋아 보여도 첫 시선에서 결론이 안 잡히거나, CTA가 떨어져 있거나, 숨은 텍스트가 목적을 설명하지 못하면 UX/UI 검수에서 다시 엽니다. 반대로 표현 하나가 약해 보여도 위계·분기·복구 경로가 살아 있으면 사전 승격보다 컴포넌트 조합 개선으로 먼저 다룹니다.
+      </div>
+
+      <div class="sub-h4">순회 로그 한 행 예시</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">기록 양식만 보면 실제로 무엇을 한 줄에 묶어야 하는지 감이 늦게 옵니다. 아래 예시는 이번 라운드에서 바로 다시 보는 실화면을 같은 형식으로 적은 것입니다. 한 행 안에 <code>원문 3개</code>, <code>화면 유형에 맞는 판단 정보</code>, <code>UX/UI 검수 축</code>, <code>먼저 붙일 CASE</code>, <code>KRDS 조합</code>, <code>같은 라운드에서 같이 갱신할 자산</code>을 함께 남기면 수집 결과가 사전·사례·원칙·컴포넌트 갱신으로 바로 이어집니다.</p>
+      <table class="data-table">
+        <thead><tr><th>사이트·화면</th><th>화면 유형</th><th>원문·판단 정보 묶음</th><th>실패 패턴</th><th>UX/UI 검수 축</th><th>먼저 붙일 CASE</th><th>KRDS 조합</th><th>같은 라운드에서 같이 갱신할 자산</th></tr></thead>
+        <tbody>
+          <tr><td><strong>정부24 <code>전입신고 완료</code></strong></td><td>완료 뒤 후속 흐름</td><td><code>전입신고가 완료되었습니다</code> / <code>주소 변경이 완료됐습니다</code> / <code>자동 반영: 국민연금·건강보험 / 별도 변경: 자동차등록·금융기관 [변경 체크리스트]</code></td><td>완료 사실만 먼저 보이고 자동 반영과 별도 변경, 다음 기관이 흩어짐</td><td>정보 위계</td><td>CASE 31·32·33</td><td>Result page + Structured list + Link</td><td>사례 카드, 4.2 성공·완료 메시지, 7장 Result page, 부록 D, 코퍼스·테스트</td></tr>
+          <tr><td><strong>홈택스 <code>국세 환급금 조회</code></strong></td><td>상태·결과</td><td><code>국세 환급금 조회</code> / <code>환급금 120,000원 — 연말정산 과납으로 발생 / 체납 세금 20,000원 먼저 충당 / 잔액 100,000원 입금 예정</code> / <code>환급 계좌가 없으면 [계좌 등록하기], 30일 넘게 지연되면 [환급 지연 이자 안내]</code></td><td>숫자만 보이거나 계좌 등록·지연 대응이 결과와 떨어져 보임</td><td>상태·안심</td><td>CASE 42·32·56</td><td>Result page + Notice banner + Button</td><td>사례 카드, 3장 결과 구조, 7장 Result page, 부록 D, 코퍼스·테스트</td></tr>
+          <tr><td><strong>전자가족관계등록시스템 <code>전자 발급본 안내</code></strong></td><td>조회·발급·공개 범위</td><td><code>문서확인번호 / QR로 진위 확인</code> / <code>전자 발급본도 출력 시 원본과 동일 효력 / 공공 마이데이터 제출 또는 PDF 첨부</code> / <code>전자 발급본이 공문서와 동일한 효력 / 제출 전 증명서 진위확인 가능</code></td><td>발급 완료만 보이고 효력, 제출 경로, 진위확인이 흩어짐</td><td>정보 위계</td><td>CASE 27</td><td>Structured list + Notice banner + Link</td><td>사례 카드, 2.1 사전, 7.12 표·결과, 부록 D, 코퍼스·테스트</td></tr>
+          <tr><td><strong>대한민국법원 <code>지급명령 이의신청</code></strong></td><td>완료 뒤 후속 흐름</td><td><code>지급명령 이의신청</code> / <code>지급명령에 동의하지 않으면 2주 이내 이의신청하세요</code> / <code>이후 민사소송으로 전환되며 답변서 제출이 필요합니다. [이의신청 바로 가기]</code></td><td>2주 기한, 제출처, 민사소송 전환, 바로 가기 CTA가 따로 놀음</td><td>정보 위계</td><td>CASE 33</td><td>Result page + Notice banner + Link</td><td>사례 카드, 4장 결과 불복·재심사, 7장 Result page, 부록 D, 코퍼스·테스트</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>실행 규칙</strong>: 한 행을 다 채우지 못하면 새 CASE 번호부터 만들지 않습니다. 먼저 같은 행 안에서 실패 패턴, 바꿀 문장, KRDS 조합, 같은 라운드 동기화 자산을 확정합니다.
+      </div>
+
+      <div class="sub-h4">한 번의 순회 최소 산출물</div>
+      <ul class="checklist" role="list">
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>새 사전 후보 3개 이상</span>
+        </li>
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>사례 카드 후보 2개 이상</span>
+        </li>
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>KRDS 컴포넌트 보강 포인트 1개 이상</span>
+        </li>
+        <li>
+          <span class="checklist-icon" aria-hidden="true"></span>
+          <span>공통 원칙 승격 여부 또는 Layer 3 유지 판정 1개 이상</span>
+        </li>
+      </ul>
+
+      <div class="sub-h4">수집 직후 분류 표</div>
+      <table class="data-table">
+        <thead><tr><th>수집한 근거</th><th>우선 분류</th><th>바로 할 일</th></tr></thead>
+        <tbody>
+          <tr><td>금지 표현 1개와 대체어가 또렷하다</td><td><strong>2.1 사전 후보</strong></td><td><code>principles.md</code> 2.1, <code>jargon-dictionary</code>, <code>dictionary</code> 초안을 먼저 만든다</td></tr>
+          <tr><td>Before/After 한 세트로 실패 패턴이 설명된다</td><td><strong>사례 카드 후보</strong></td><td><code>case-studies</code>와 archive 카드 초안을 같은 라운드에서 만든다</td></tr>
+          <tr><td>세 대표 사이트에서 같은 실패 패턴이 반복된다</td><td><strong>공통 원칙 후보</strong></td><td><code>principles.md</code> 본문 + <code>principles/components</code> + QA 기준까지 함께 보강한다</td></tr>
+          <tr><td>특정 기관의 제도·업무에만 강하게 묶인다</td><td><strong>Layer 3 파생 가이드</strong></td><td>공통 원칙 수정은 보류하고 기관별 파생 가이드로 넘긴다</td></tr>
+          <tr><td><code>처리 중</code>, <code>승인</code>처럼 짧은 상태값만 보인다</td><td><strong>컴포넌트 규칙 후보</strong></td><td>사전보다 상태 배지·도움말·결과 화면 규칙으로 먼저 검토한다</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h4">새 실화면을 받은 직후 10분 판정 루틴</div>
+      <table class="data-table">
+        <thead><tr><th>시점</th><th>바로 할 일</th><th>반드시 남길 기록</th><th>우선 도착지</th></tr></thead>
+        <tbody>
+          <tr><td><strong>1분</strong></td><td>화면 유형 1개를 먼저 고른다</td><td>자격·조건 / 상태·결과 / 완료 뒤 후속 흐름 / 긴급·병행 / 대리·관할 / 조회·발급·공개 범위</td><td>화면 유형별 최소 기록 질문</td></tr>
+          <tr><td><strong>3분</strong></td><td>원문 3개와 CTA 1개를 적는다</td><td>첫 블록 문장, 상태값, 버튼 이름처럼 판단을 멈추게 하는 텍스트</td><td>사례 카드 최소 기록 양식</td></tr>
+          <tr><td><strong>5분</strong></td><td>UX/UI 검수 축 1개를 고른다</td><td>정보 위계 / 선택·분기 / 입력·첨부 / 상태·안심 / 접근성·숨은 텍스트 중 가장 크게 실패한 축 1개</td><td>KRDS 조합 초안</td></tr>
+          <tr><td><strong>7분</strong></td><td>우선 도착지를 고른다</td><td><code>2.1 사전 후보</code> / <code>사례 카드 후보</code> / <code>공통 원칙 후보</code> / <code>Layer 3 파생 가이드</code> 가운데 하나</td><td>수집 직후 분류 표</td></tr>
+          <tr><td><strong>10분</strong></td><td>같은 라운드 동기화 자산을 확정한다</td><td><code>사전 / CASE / principles.md / principles/components / 부록 D / 코퍼스·테스트</code> 가운데 같이 움직일 묶음</td><td>같은 PR 또는 같은 스프린트 범위</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>실행 규칙</strong>: 10분 안에 판단을 끝내지 못해도 괜찮지만 <code>화면 유형 + 실패 패턴 + 바꿀 문장 + KRDS 조합 + 다음 자산</code> 다섯 칸이 비어 있으면 새 사례로 올리지 않습니다.
+      </div>
+
+      <div class="sub-h4">아카이브에서 기존 CASE 묶음으로 넘어가는 운영 경로</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">이슈 아카이브는 출발점이지 최종 승격 자산이 아닙니다. 대표 사이트 순회에서는 정부24·홈택스·전자가족관계등록시스템 3개 기관 deep archive를 먼저 대조하고, 새 실화면에서도 같은 판단 근거를 다시 적은 뒤 기존 CASE 묶음과 원칙·KRDS 자산으로 이어 붙입니다.</p>
+      <table class="data-table">
+        <thead><tr><th>단계</th><th>바로 할 일</th><th>같은 라운드에서 남길 근거</th></tr></thead>
+        <tbody>
+          <tr><td><strong>1. archive 대조</strong></td><td><code>이슈 아카이브</code>에서 비슷한 실패를 먼저 찾고, 정부24·홈택스·전자가족관계등록시스템 3개 기관 deep archive를 기준점으로 같은 화면 단계 실패가 이미 있는지 본다</td><td>대표 사이트 3기관 deep archive 기준점, 같은 화면 단계 여부</td></tr>
+          <tr><td><strong>2. 새 화면 재기록</strong></td><td>새 화면에서도 <code>원문 3개+CTA 1개</code>, 상태·기한·관할 같은 판단 정보 1묶음, KRDS 조합 1개를 다시 적는다</td><td>새 화면 원문, 판단 정보, KRDS 조합</td></tr>
+          <tr><td><strong>3. 기존 CASE 우선</strong></td><td>새 CASE 번호부터 만들지 말고 기존 CASE 묶음에 먼저 붙인다. <code>CASE 18·58</code>, <code>CASE 31·32·33</code>, <code>CASE 52·55·56</code>처럼 현재 묶음에서 먼저 맞는 자리를 찾는다</td><td>기존 CASE 번호, 실패 패턴, 바꿀 문장</td></tr>
+          <tr><td><strong>4. 승격·동기화</strong></td><td>세 대표 사이트에서 반복되면 사전·원칙·7장·Figma·코퍼스·테스트를 같은 라운드에서 같이 갱신하고, 기관 고유 제도면 Layer 3 파생 가이드로 남긴다</td><td>Layer 2 / Layer 3 판정, 같은 라운드 동기화 자산</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>실행 규칙</strong>: 아카이브에 비슷한 카드가 있어도 새 화면 원문 없이 바로 승격하지 않습니다. 승격 단위는 <code>용어 1개</code>가 아니라 <code>화면 단계 묶음</code>입니다.
+      </div>
+
+      <div class="warn-box">
+        <strong>사전 승격 보류 기준</strong>: 사전에 올리지 않는 이유를 세 가지로 나눠 먼저 공개합니다. 용어 하나만 떼어내지 않고, <code>사전 대신 먼저 둘 곳</code>과 <code>KRDS 우선 조합</code>까지 같이 판단합니다.
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>분류</th><th>대표 묶음</th><th>왜 사전에 바로 올리지 않나</th><th>우선 도착지</th></tr></thead>
+        <tbody>
+          <tr><td><strong>구조 규칙 우선</strong></td><td><code>전입신고 / 사업자 등록 사항 정정 신청 / 집행문 부여 신청</code>, <code>전입신고 / 사업자 등록 사항 정정 신청 / 가족관계등록부 정정</code></td><td>핵심 문제는 용어 자체보다 <code>온라인/방문 분기</code>와 <code>담당 기관·관할</code>이 첫 분기 영역에서 숨는 구조입니다.</td><td><code>7.3 선택지</code>, <code>담당 기관·관할</code>, KRDS <code>Radio + Helper text + Structured list + Badge + Button</code></td></tr>
+          <tr><td><strong>일반화 후 재판정</strong></td><td><code>이메일 / 전자고지(송달) 신청 및 해지 / 민사 등 사건진행 알림서비스</code></td><td>채널 이름만으로는 약하고 <code>무엇이 오고</code>, <code>언제 또는 언제부터 오고</code>, <code>완료·상태가 어떻게 바뀌는지</code>, <code>어디서 다시 확인하는지</code>를 함께 봐야 오탐이 줄어듭니다.</td><td>KRDS <code>Checkbox/Radio + Helper text</code>, <code>Notice banner + Structured list</code>, <code>Result page + Link</code></td></tr>
+          <tr><td><strong>긍정 사례·원칙 유지</strong></td><td><code>민원 신청하기 / 검색어 / 구조화 목록 / 비회원 이용 / 발급 보관 90일 / 기간 제한 / 유지 조건 / 기한 임박 / 예상·확정 차이 / 이용권·포인트</code></td><td>이미 긍정 사례·원칙·컴포넌트 규칙으로 기능해 사전보다 사례 카드 가치가 큽니다.</td><td><code>사례 카드 + KRDS 컴포넌트 보강</code>, <code>사전 비대상</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>보류 규칙</strong>: <code>홍길동</code>, <code>2026.01~2026.12</code>, <code>30일</code>처럼 사람 이름·기간·예시 수치가 들어간 개선안은 일반화 전에는 사전에 올리지 않습니다.
+      </div>
+
+      <div class="info-box">
+        <strong>이번 라운드 승격 메모</strong>: <code>외국인등록번호 *</code>, <code>영세율 신고</code>는 <code>해당자만 필수</code>, <code>해당 거래만 필수</code>가 드러나는 공통 문장으로 일반화해 2.1 사전에 이미 승격했습니다.
+      </div>
+
+      <div class="info-box">
+        <strong>실무 원칙</strong>: 화면 전체를 복사하지 말고 과업 단계별로 끊어서 기록합니다. 모든 항목을 다 적으려 하지 말고 화면 유형에 맞는 판단 정보 4개만 남깁니다. 한 사례 카드에는 실패 패턴 1개만 남기고, 실제 Before/After 작성 예시는 <a href="/krds-ux-writing/case-studies/" style="color:var(--accent)">사례 페이지</a>와 함께 봅니다.
       </div>
     </section>
 
@@ -550,6 +856,16 @@
           <span>숫자 단위가 밀착 표기(15,000원, 30일)인가?</span>
         </li>
       </ul>
+
+      <div class="sub-h3">사례 승격 QA 발동 신호</div>
+      <table class="data-table">
+        <thead><tr><th>신호</th><th>바로 할 일</th><th>판정</th></tr></thead>
+        <tbody>
+          <tr><td><strong>세 대표 사이트에서 같은 실패 패턴 반복</strong></td><td>사례 카드 2개 이상을 묶어 리뷰하고, 관련 원칙·컴포넌트 보강 QA를 엽니다</td><td>공통 원칙 승격 후보</td></tr>
+          <tr><td><strong>특정 기관에서만 반복</strong></td><td>Layer 3 파생 가이드에 추가하고 공통 원칙 수정은 보류합니다</td><td>기관별 파생 가이드</td></tr>
+          <tr><td><strong>비가역 결정·절차 선택·심사·복수 조건처럼 실패 비용이 큼</strong></td><td>배너·체크리스트·단계 표시기·분기 선택지 등 KRDS 컴포넌트 연결까지 함께 검수합니다</td><td>고위험 공통 패턴</td></tr>
+        </tbody>
+      </table>
 
       <div class="info-box">
         <strong>QA를 티켓으로 만들어라</strong>: UX Writing QA를 "담당자가 알아서"가 아니라 Jira/GitHub 이슈로 트래킹합니다. 배포 전 해결되지 않은 UX Writing 이슈는 P1 버그와 동등하게 취급합니다.
@@ -778,6 +1094,7 @@
   </div>
 </div>
 
+<script src="../../shared/base-path.js"></script>
 <script src="../../shared/nav.js"></script>
 </body>
 </html>

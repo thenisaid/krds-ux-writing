@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="표기법과 맞춤법 — 존칭·피동형 해체, 행정 부사 통제, 숫자·변수 표기, 기호 위계. KRDS UX Writing 가이드라인.">
+<meta name="description" content="표기법과 맞춤법 — 존칭·피동형 해체, 행정 부사 통제, 숫자·변수 표기, 기호 위계. 대표 사이트 순회에서 표 헤더·탐색 레이블·접근성 레이블을 같은 표기 QA 축으로 다룹니다. KRDS UX Writing 가이드라인.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="표기법과 맞춤법 — KRDS UX Writing 가이드라인">
-  <meta property="og:description" content="표기법과 맞춤법 — 존칭·피동형 해체, 행정 부사 통제, 숫자·변수 표기, 기호 위계. KRDS UX Writing 가이드라인.">
+  <meta property="og:description" content="표기법과 맞춤법 — 존칭·피동형 해체, 행정 부사 통제, 숫자·변수 표기, 기호 위계. 대표 사이트 순회에서 표 헤더·탐색 레이블·접근성 레이블을 같은 표기 QA 축으로 다룹니다. KRDS UX Writing 가이드라인.">
   <meta property="og:url" content="https://thenisaid.github.io/krds-ux-writing/principles/notation/">
   <link rel="canonical" href="https://thenisaid.github.io/krds-ux-writing/principles/notation/">
 <title>표기법과 맞춤법 — KRDS UX Writing 가이드라인</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
-<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<script>(function(){var prefersDark=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches;var t='light';try{t=localStorage.getItem('krds-theme')||(prefersDark?'dark':'light');}catch(e){t=prefersDark?'dark':'light';}if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" as="style" crossorigin="anonymous"
   href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
@@ -295,7 +295,7 @@
       <h1 class="content-title">표기법과 맞춤법<br><span style="font-size:0.55em;color:var(--text-muted);font-weight:600"> (Notation &amp; Style)</span></h1>
       <p class="content-headline">규칙이 일관성을 만든다</p>
       <p class="content-desc">
-        표기법 통일은 브랜드 신뢰의 기초입니다. 존칭·부사·숫자·기호에 대한 명확한 규칙을 정해 조직 전체가 같은 목소리로 소통합니다.
+        표기법 통일은 브랜드 신뢰의 기초입니다. 존칭·부사·숫자·기호에 대한 명확한 규칙을 정해 조직 전체가 같은 목소리로 소통합니다. 대표 사이트 순회에서는 표 헤더, 탐색 레이블, 접근성 레이블을 같은 표기 QA 축으로 묶고 반복되면 사례 승격과 린터 기준까지 함께 갱신합니다. 10분 판정 뒤에는 표기 QA를 사례 승격, <code>krds-lint</code>, KRDS/Figma handoff, Layer 3 보류까지 같은 라운드로 연결합니다.
       </p>
     </div>
 
@@ -310,6 +310,51 @@
           <tr><td><strong>3.2 행정 부사 통제</strong></td><td>빠르게/이미/지금/너무 등 주관 부사 삭제</td></tr>
           <tr><td><strong>3.3 숫자·변수 표기</strong></td><td>단위 밀착, [대괄호] 변수, 보조용언 띄어쓰기</td></tr>
           <tr><td><strong>3.4 기호 위계</strong></td><td>대괄호(버튼·경로) vs 따옴표(행정상태값) 구분</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h3" style="margin-top:24px">대표 사이트 순회 운영 — 표기 QA를 사례 승격과 Layer 2·Layer 3 판정까지 연결한다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">정부24·홈택스·복지로·국민건강보험·국민신문고·고용24·전자가족관계등록시스템·서울특별시 응답소 대표 사이트 순회와 대한민국법원 보조 표본에서는 표기 문제를 띄어쓰기 검수로 끝내지 않습니다. 새 실화면을 받은 직후 10분 판정 루틴에서는 표기 문제를 <code>표 헤더</code>, <code>상태표 레이블</code>, <code>탐색 레이블</code>, <code>숨은 레이블</code>, <code>기호 압축</code> 다섯 묶음 중 하나로 먼저 고릅니다. 표기 QA는 <code>10분 판정 → 사례 승격 → krds-lint → KRDS/Figma handoff → Layer 3 보류</code> 흐름으로 이어집니다. SeMA는 대표 사이트 순회 대상이 아니라 <code>Layer 3 검증용 기관 예시</code>입니다.</p>
+      <table class="data-table">
+        <thead><tr><th>화면 묶음</th><th>먼저 묶을 표기 문제</th><th>UX/UI 검수 보조 질문</th><th>우선 도착지</th></tr></thead>
+        <tbody>
+          <tr><td><strong>정부24 신청 상세</strong></td><td><code>신청자격 / 구비서류 / 처리기간</code></td><td>헤더만 읽어도 대상·준비물·처리 시간이 보이는가?</td><td>Layer 2 표·구조화 정보 규칙</td></tr>
+          <tr><td><strong>국민신문고·서울특별시 응답소 상태표</strong></td><td><code>처리기관 / 답변예정일 / 등록일</code></td><td>상태 1문장과 표 헤더가 같은 목적을 말하는가?</td><td>Layer 2 상태·결과 규칙</td></tr>
+          <tr><td><strong>홈택스·정부24·대한민국법원 탐색/접근성 레이블</strong></td><td><code>전자증명서안내 / 서비스 상세 이동 / 1번째 배너 / AI 켜기 / ... 새창</code></td><td>클릭 전에도 무엇을 여는지, 현재 상태가 무엇인지, 새 창 여부가 읽히는가?</td><td><code>krds-lint</code> + KRDS/Figma + 사례 카드</td></tr>
+          <tr><td><strong>기관 전용 문화·관람 과업</strong></td><td><code>도슨트 / 오프닝 리셉션 / 소장품 검색</code></td><td>다른 대표 사이트로 옮겨도 같은 표기 실패 패턴으로 일반화되는가?</td><td>Layer 3 기관 특화 사전</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>사례 승격 규칙</strong>: 세 대표 사이트 이상에서 같은 표기 실패가 반복되면 표기 규칙만 고치지 않습니다. <code>사례 승격</code>, <code>principles/components</code>, <code>case-studies</code>, <code>krds-lint</code>, <code>research/public-service-corpus.md</code>, 테스트와 KRDS/Figma 기본 텍스트를 같은 라운드에서 같이 갱신하고, 한 기관 맥락에만 묶이면 Layer 3 후보로 남깁니다.
+      </div>
+      <div class="info-box">
+        <strong>10분 판정 뒤 처리 흐름</strong>: 표 헤더·상태표 레이블·탐색 레이블·숨은 레이블·기호 압축 중 어디에 걸리는지 먼저 고른 뒤, 세 대표 사이트 반복이면 <code>Layer 2</code> 후보로 올려 <code>krds-lint</code> 규칙과 KRDS/Figma 기본 텍스트를 같이 고치고, 기관 고유 제도면 <code>Layer 3</code> 표기 메모로 보류합니다.
+      </div>
+
+      <div class="sub-h3" style="margin-top:24px">표기 QA 축별 바로 붙일 CASE·KRDS·krds-lint</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">표기 문제를 발견했으면 띄어쓰기만 손보지 말고 어떤 사례 묶음과 KRDS 조합, 어떤 린터 규칙까지 같이 움직일지 바로 정해야 합니다. 아래 표는 표기 QA를 UX/UI 검수 축으로 다시 묶어, CASE·KRDS·<code>krds-lint</code>를 같은 라운드에서 어떻게 붙일지 빠르게 고르게 돕습니다.</p>
+      <table class="data-table">
+        <thead><tr><th>표기 QA 축</th><th>먼저 보는 신호</th><th>먼저 붙일 CASE 묶음</th><th>KRDS 조합</th><th><code>krds-lint</code>·handoff 메모</th></tr></thead>
+        <tbody>
+          <tr><td><strong>표 헤더</strong></td><td>헤더만 읽어도 대상·준비물·처리 시간이 보이는가?</td><td>CASE 4</td><td>Table + Structured list + Button</td><td><code>신청자격 / 구비서류 / 처리기간</code> 같은 압축 헤더를 fixture로 유지하고, Description에는 헤더를 시민 언어로 푼 이름과 요약 첫 문장을 함께 적습니다.</td></tr>
+          <tr><td><strong>상태표 레이블</strong></td><td>상태 1문장과 표 헤더가 같은 목적을 말하는가?</td><td>CASE 5</td><td>Result page + Status badge + Timeline + Table</td><td><code>처리기관 / 답변예정일 / 등록일</code> 압축 패턴을 린터 회귀에 묶고, Description에는 상태 요약과 <code>담당 기관 / 답변 예정일 / 접수한 날</code> 우선순위를 적습니다.</td></tr>
+          <tr><td><strong>탐색 레이블</strong></td><td>메뉴 이름만 읽어도 지금 하는 일과 대상이 보이는가?</td><td>CASE 49</td><td>Navigation + Tab + Card + Link</td><td><code>전자증명서안내 / 부가가치세예정신고 / 증명서발급</code>처럼 공백 없는 메뉴명을 린터로 먼저 잡고, handoff에는 단어 경계·행동 동사·대상을 같이 남깁니다.</td></tr>
+          <tr><td><strong>숨은 레이블</strong></td><td>보이는 이름과 숨은 텍스트가 같은 목적·상태·다음 행동을 읽히게 하는가?</td><td>CASE 51</td><td>Button + Toggle + Link + Carousel</td><td><code>서비스 상세 이동 / 1번째 배너 / AI 켜기 / ... 새창</code>은 접근성 레이블 fixture로 고정하고, 숨은 레이블 메모에는 무엇을 여는지·현재 상태·새 탭 여부를 같이 적습니다.</td></tr>
+          <tr><td><strong>기호 압축</strong></td><td>괄호·슬래시·화살표를 빼면 의미가 무너지는가?</td><td>CASE 39·40·49</td><td>Button group + Radio + Tabs + Structured list + Link</td><td><code>전자고지(송달) 신청 및 해지 / 국선대리인 신청(불복청구서 제출전)/(제출후) / 전자(세금)계산서</code>를 린터와 사례 카드에 함께 고정하고, 분기 구조와 새 기본 텍스트를 같은 메모에 남깁니다.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h3" style="margin-top:24px">이번 라운드 표기 KRDS/Figma 연결 예시</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">표기 QA는 맞춤법 교정으로 끝나지 않습니다. 어떤 이름을 먼저 읽히게 할지 정했다면 같은 순서를 KRDS 컴포넌트 이름, Figma Description, 숨은 레이블 메모, 린터 fixture에 같이 남겨야 다음 라운드 회귀 검수와 재사용이 쉬워집니다.</p>
+      <table class="data-table">
+        <thead><tr><th>대표 사이트·화면</th><th>무엇을 먼저 읽히게 바꾸는가</th><th>KRDS 조합</th><th>Description·숨은 레이블 메모</th><th>기본 예시 문구</th></tr></thead>
+        <tbody>
+          <tr><td><strong>정부24 신청 상세</strong></td><td><code>신청자격 / 구비서류 / 처리기간</code>보다 신청 가능 대상·준비 서류·처리 시간을 먼저 읽힙니다.</td><td>Table + Structured list + Button</td><td>Description에는 <code>신청할 수 있는 사람</code>, <code>준비할 서류</code>, <code>처리까지 걸리는 시간</code> 순서를 적고, 표 요약 첫 문장도 같은 순서를 따르게 합니다.</td><td>신청할 수 있는 사람과 준비할 서류를 먼저 확인하세요 / 처리까지 걸리는 시간 보기</td></tr>
+          <tr><td><strong>국민신문고·서울특별시 응답소 상태표</strong></td><td><code>처리기관 / 답변예정일 / 등록일</code>보다 현재 상태·담당 기관·답변 예정일을 먼저 읽힙니다.</td><td>Result page + Status badge + Timeline + Table</td><td>Description에는 상태 1문장과 <code>담당 기관</code>, <code>답변 예정일</code>, <code>접수한 날</code>을 적고, 숨은 레이블은 결과 재확인 행동까지 함께 읽게 합니다.</td><td>담당 기관에서 답변을 준비하고 있습니다 / 답변 예정일 확인 / 민원 결과보기</td></tr>
+          <tr><td><strong>홈택스·정부24 탐색 메뉴</strong></td><td><code>전자증명서안내 / 부가가치세예정신고 / 증명서발급</code>보다 지금 하는 일과 대상을 먼저 읽힙니다.</td><td>Navigation + Tab + Card + Link</td><td>Description에는 단어 경계, 행동 동사, 대상을 순서대로 적고, 숨은 레이블 메모에는 클릭 뒤 도착 화면을 함께 적습니다.</td><td>전자증명서 안내 / 부가가치세 예정 신고 / 증명서 발급</td></tr>
+          <tr><td><strong>정부24·홈택스·대한민국법원 숨은 레이블</strong></td><td><code>서비스 상세 이동 / 1번째 배너 / AI 켜기 / ... 새창</code>보다 무엇을 여는지, 현재 상태, 새 창 여부를 먼저 읽힙니다.</td><td>Button + Toggle + Link + Carousel</td><td>Description에는 무엇을 여는지, 현재 상태 또는 다음 행동, 새 창 여부를 적고, 숨은 레이블 메모에는 보이는 이름과 같은 목적을 읽히게 적습니다.</td><td>창업 초기 지원 서비스 자세히 보기 / 부가가치세 신고 기간 안내 배너 보기 / AI 검색 사용 중 — 끄려면 클릭 / 가족관계 영문증명서 발급 안내 새 창에서 열기</td></tr>
+          <tr><td><strong>대한민국법원·홈택스 분기/기호 압축</strong></td><td><code>국선대리인 신청(불복청구서 제출전)/(제출후)</code>, <code>전자고지(송달) 신청 및 해지</code>보다 단계 선택과 반대 행동을 먼저 읽힙니다.</td><td>Radio + Button group + Tabs + Structured list</td><td>Description에는 분기 기준, 현재 단계, 반대 행동을 순서대로 적고, 숨은 레이블 메모에는 선택지 목적과 다음 화면을 같이 적습니다.</td><td>국선대리인 신청 후 단계 선택: [불복청구서 제출 전] [제출 후] / 전자 고지서 받기 / 우편으로 다시 받기</td></tr>
         </tbody>
       </table>
     </section>
@@ -403,6 +448,21 @@
           가입한 계정이 있다면...
         </div>
       </div>
+
+      <div class="sub-h3" style="margin-top:24px">대표 서비스 관찰 — '간편하게'보다 가능 조건·기한을 먼저 쓴다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">정부24의 <code>온라인으로 간편하게 신청할 수 있으며</code>, 정부24 앱의 <code>더 편리하게 이용하세요</code>, 사망·이혼 화면에서 피해야 하는 <code>즉시</code>, <code>신속히</code> 같은 표현은 모두 공급자의 평가나 압박입니다. 시민은 편리한지보다 <strong>지금 무엇이 가능하고</strong>, <strong>언제까지 해야 하며</strong>, <strong>어떤 조건이 필요한지</strong>를 먼저 알아야 합니다.</p>
+      <table class="data-table">
+        <thead><tr><th>상황</th><th>🚫 관찰된 표현</th><th>✅ 바꿔야 할 정보</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>정부24 전입신고+</strong></td><td class="strike">온라인으로 간편하게 신청할 수 있으며</td><td class="ok">전입한 날부터 14일 이내 신고 / 온라인 신청 가능 / 요금감면 대상이면 함께 신청할 수 있습니다</td><td>Notice banner, Structured list</td></tr>
+          <tr><td><strong>정부24 앱 안내</strong></td><td class="strike">정부24 앱으로 더 편리하게 이용하세요</td><td class="ok">앱에서는 모바일 신분증 발급·알림 수신·간편인증이 가능해요. [앱 열기]</td><td>Notice banner, Button</td></tr>
+          <tr><td><strong>사망·이혼 등 민감 화면</strong></td><td class="strike">즉시 / 신속히 / 빠르게</td><td class="ok">사망 후 3개월 이내 신청 / 숙려기간 뒤 확인기일 출석처럼 기한과 조건을 수치로 밝힙니다</td><td>Alert, Checklist, Date field</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>실무 규칙</strong>: 주관 부사를 쓰고 싶다면 대부분 <code>기한</code>, <code>대상</code>, <code>가능 조건</code>, <code>단계 수</code> 중 하나가 빠져 있다는 신호입니다.
+      </div>
     </section>
 
     <div class="article-divider"></div>
@@ -444,6 +504,21 @@
         </tbody>
       </table>
       <div class="info-box">동 조사(<code>이(가)</code>, <code>을(를)</code>, <code>은(는)</code>)는 동적 값 뒤에 병기합니다. 시스템이 자동으로 처리하지 않는 한, 안전한 쪽으로 병기형을 유지합니다.</div>
+
+      <div class="sub-h3" style="margin-top:24px">대표 서비스 관찰 — 숫자·기한·계산 관계는 떨어뜨리지 말고 의미를 먼저 설명한다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">최근에 승격한 개명 허가, 국적 회복, 상속포기, 장기요양인정 사례를 보면 숫자는 장식이 아니라 효력과 행동을 결정하는 핵심 단서입니다. <strong>1개월</strong>, <strong>1년 내</strong>, <strong>3개월 이내</strong>, <strong>7~10일</strong>, <strong>30일</strong>, <strong>15일 이내</strong>처럼 단위와 기한을 붙여 쓰고, <code>취득세 + 채권 매입 예상액</code>, <code>인지대 + 송달료 자동 계산</code>처럼 계산 관계를 자연어로 먼저 설명해야 합니다.</p>
+      <table class="data-table">
+        <thead><tr><th>상황</th><th>🚫 끊긴 표기</th><th>✅ 의미가 살아 있는 표기</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>후속 기한 안내</strong></td><td class="strike">1 개월 이내 / 2 년 이내 / 3 개월 이내</td><td class="ok">개명 허가 후 1개월 이내 신고 / 국적 회복 허가 뒤 1년 내 외국 국적 포기 확인 / 사망 후 3개월 이내 신청</td><td>Notice banner, Result page, Alert</td></tr>
+          <tr><td><strong>절차 기간 안내</strong></td><td class="strike">7 ~ 10 일 / 30 일</td><td class="ok">방문 조사 7~10일 / 판정위원회 심의 30일</td><td>Step indicator, Structured list</td></tr>
+          <tr><td><strong>계산형 화면</strong></td><td class="strike">취득세·채권 / 인지대·송달료</td><td class="ok">취득가액 입력 → 취득세 + 채권 매입 예상액 자동 표시 / 청구금액 입력 → 인지대 + 송달료 자동 계산</td><td>Input, Helper text, Calculator CTA</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>실무 규칙</strong>: 숫자를 쓰는 순간 단위를 붙이고, 날짜를 쓰는 순간 기준 시점을 붙이고, 계산값을 보여주는 순간 포함 항목과 다음 행동을 붙입니다.
+      </div>
     </section>
 
     <div class="article-divider"></div>
@@ -473,6 +548,53 @@
           <tr><td>취소선 일반 안내</td><td>삭제 의미로 혼동</td><td>텍스트 직접 제거</td></tr>
         </tbody>
       </table>
+
+      <div class="sub-h3" style="margin-top:24px">대표 서비스 관찰 — 기호는 장식이 아니라 분기·상태·예외만 맡긴다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">홈택스와 정부24를 보면 기호 문제는 맞춤법이 아니라 정보 구조 문제입니다. <code>전자고지(송달) 신청 및 해지</code>, <code>국선대리인 신청(불복청구서 제출전)/(제출후)</code>, <code>전자(세금)계산서</code>, <code>이용약관개인정보처리방침저작권정책비회원확인서비스</code>, <code>2026년 1기 예정 부가가치세 신고·납부 안내 →</code>처럼 괄호, 슬래시, 화살표를 문장 대신 쓰면 시민과 스크린 리더 모두 관계를 추론해야 합니다. 기호는 의미가 이미 분명할 때만 보조적으로 씁니다.</p>
+      <table class="data-table">
+        <thead><tr><th>상황</th><th>🚫 기호로 압축한 표기</th><th>✅ 의미가 드러나는 표기</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>반대 행동 한 줄 병합</strong></td><td class="strike">전자고지(송달) 신청 및 해지</td><td class="ok">전자 고지서 설정 / 전자 고지서 받기 / 우편으로 다시 받기</td><td>Button group, Link, Structured list</td></tr>
+          <tr><td><strong>단계 분기 괄호 처리</strong></td><td class="strike">국선대리인 신청(불복청구서 제출전)/(제출후)</td><td class="ok">국선대리인 신청 후 단계 선택: [불복청구서 제출 전] [제출 후]</td><td>Radio, Tabs, Step indicator</td></tr>
+          <tr><td><strong>유형 선택 괄호 압축</strong></td><td class="strike">전자(세금)계산서</td><td class="ok">세금계산서 / 계산서</td><td>Tabs, Radio</td></tr>
+          <tr><td><strong>연속 링크·장식 화살표</strong></td><td class="strike">이용약관개인정보처리방침저작권정책비회원확인서비스 / 2026년 1기 예정 부가가치세 신고·납부 안내 →</td><td class="ok">이용약관 | 개인정보처리방침 | 저작권정책 | 비회원 확인 서비스 / 화살표는 CSS 아이콘으로만 처리하고 링크 텍스트는 제목 그대로 씁니다</td><td>Link list, Footer, Link</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box"><strong>실무 규칙</strong>: 기호를 빼도 의미가 유지돼야 합니다. 대괄호는 실제 선택지, 작은따옴표는 행정 상태, 소괄호는 짧은 보조 설명에만 쓰고, 분기·조건·예외는 자연어와 KRDS 컴포넌트 구조로 풉니다.</div>
+
+      <div class="sub-h3" style="margin-top:24px">대표 사이트 표기 QA — 표 헤더·탐색 레이블·숨은 레이블을 같은 축으로 본다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">표기법 검수는 띄어쓰기만 보는 일이 아닙니다. 정부24 신청 상세의 <code>신청자격 / 구비서류</code>, 국민신문고 상태표의 <code>답변예정일</code>, 정부24·홈택스·대한민국법원의 <code>서비스 상세 이동 / 1번째 배너 / AI 켜기 / ... 새창</code>, 공백 없는 메뉴명은 모두 <strong>첫 읽기에서 뜻이 보이는가</strong>를 묻는 같은 표기 QA 묶음입니다.</p>
+      <table class="data-table">
+        <thead><tr><th>화면</th><th>먼저 볼 표기 문제</th><th>권장 정리</th><th>KRDS 연결</th><th>관련 사례</th></tr></thead>
+        <tbody>
+          <tr><td><strong>정부24 신청 상세</strong></td><td><code>신청자격 / 구비서류 / 발급서류 / 처리기간</code></td><td><span class="ok">신청할 수 있는 사람 / 준비할 서류 / 발급되는 서류 / 처리까지 걸리는 시간</span></td><td>Structured list, Table</td><td>CASE 4</td></tr>
+          <tr><td><strong>국민신문고 상태표</strong></td><td><code>처리기관 / 답변예정일 / 등록일</code></td><td><span class="ok">상단 상태 1문장 + 담당 기관 / 답변 예정일 / 접수한 날</span></td><td>Status badge, Timeline, Table</td><td>CASE 5</td></tr>
+          <tr><td><strong>탐색 메뉴·탭·카드</strong></td><td><code>전자증명서안내 / 부가가치세예정신고 / 증명서발급 / 가족관계등록부정정 허가</code></td><td><span class="ok">단어 경계 + 지금 하는 일 + 대상이 먼저 보이게 분해</span></td><td>Navigation, Tab, Card, Link</td><td>CASE 49</td></tr>
+          <tr><td><strong>숨은 접근성 레이블</strong></td><td><code>서비스 상세 이동 / 1번째 배너 / AI 켜기 / 가족관계에 관한 영문증명서 발급 서비스 시행 안내 새창</code></td><td><span class="ok">무엇을 여는지 + 현재 상태 또는 다음 행동 + 새 탭 여부</span></td><td>Button, Toggle, Link, Carousel</td><td>CASE 51</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>표기 QA 빠른 기준</strong>: 표기 검수는 보이는 텍스트와 숨은 텍스트를 같이 봅니다. 표 헤더·상태 배지·메뉴명·접근성 레이블이 모두 첫 읽기에서 같은 목적을 말하는지 확인하고, 고칠 때는 띄어쓰기만 손보지 말고 KRDS 컴포넌트 구조까지 함께 재구성합니다.
+      </div>
+      <div class="info-box">
+        <strong>린터 연결</strong>: <code>신청자격</code>, <code>답변예정일</code>, <code>전자증명서안내</code>, <code>전자고지(송달) 신청 및 해지</code> 같은 대표 사이트 표기 문제는 <code>krds-lint</code> 1차 자동 점검 대상으로 함께 유지합니다. 린터는 표 헤더·공백 없는 메뉴명·기호 압축을 먼저 잡고, 리뷰에서는 상태 요약·분기 구조까지 함께 봅니다. 세 대표 사이트 반복이면 린터 규칙과 Figma 기본 텍스트까지 같이 수정하고, 기관 고유 제도면 Layer 3 메모만 남깁니다.
+      </div>
+
+      <div class="sub-h3" style="margin-top:24px">상대적으로 얇은 대표 사이트 표기 직접화</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">표기 QA가 큰 대표 사이트의 헤더·메뉴·접근성 레이블 예시에만 머물면 국민건강보험·고용24·서울특별시 응답소·전자가족관계등록시스템처럼 실제 과업에서 자주 보는 표기 리듬을 놓치기 쉽습니다. 이 화면군은 띄어쓰기 하나보다도 <strong>입력 대상</strong>, <strong>상태 확인 행동</strong>, <strong>행동 날짜와 준비물</strong>, <strong>후속 의무와 확인 CTA</strong>가 첫 읽기에서 바로 보이는지를 먼저 확인해야 합니다.</p>
+      <table class="data-table">
+        <thead><tr><th>대표 사이트·화면</th><th>먼저 흔들리는 표기</th><th>첫 읽기 기준 권장 정리</th><th>KRDS 연결</th><th>먼저 붙일 CASE</th></tr></thead>
+        <tbody>
+          <tr><td><strong>국민건강보험 <code>질병명·병원 이름 검색</code>, <code>피부양자·산정특례 안내</code>, <code>보험료 산정</code></strong></td><td><code>질병명·병원 이름</code>, <code>피부양자</code>, <code>산정특례</code>, <code>보험료 산정</code></td><td><span class="ok"><code>질병명 또는 병원 이름</code>, <code>부양가족 등록·해제 대상</code>, <code>중증질환 본인부담 감면 대상</code>, <code>이번 달 보험료 계산 기준</code>처럼 검색 대상, 대상 여부, 계산 기준을 먼저 읽힙니다.</span></td><td>Search + Auto-complete + Helper text + Accordion + Table + Button</td><td>CASE 10 / CASE 2 / CASE 42</td></tr>
+          <tr><td><strong>서울특별시 응답소 <code>질의응답·답변원문</code>, <code>결과보기</code></strong></td><td><code>질의응답·답변원문</code>, <code>답변예정일</code></td><td><span class="ok"><code>질문과 답변 내용</code>, <code>답변 예정일</code>, <code>민원 결과보기</code>처럼 상태 확인과 결과 재확인 행동을 바로 구분합니다.</span></td><td>Result page + Status badge + Table + Button</td><td>CASE 5 / CASE 9</td></tr>
+          <tr><td><strong>고용24 <code>실업인정 인터넷 신청</code>, <code>조기재취업수당 안내</code></strong></td><td><code>실업인정일</code>, <code>적극적인 재취업활동</code>, <code>증빙서류</code>, <code>조기재취업수당</code></td><td><span class="ok"><code>실업급여를 확인하는 날</code>, <code>이번 회차 재취업 활동</code>, <code>취업한 날 기준</code>, <code>활동을 확인하는 서류</code>, <code>조기재취업수당 대상과 확인 서류 보기</code>처럼 날짜·행동·대상 여부를 첫 블록에서 읽히게 씁니다.</span></td><td>Notice banner + Disclosure + Structured list + Button</td><td>CASE 8 / CASE 6</td></tr>
+          <tr><td><strong>전자가족관계등록시스템 <code>국적 회복 허가</code>, <code>국적 이탈 신고</code></strong></td><td><code>국적 회복</code>, <code>국적 이탈</code>, <code>1년 내 외국 국적 포기</code>, <code>외국국적불행사서약 대상 여부</code></td><td><span class="ok"><code>한국 국적 다시 받기</code>, <code>한국 국적 포기 신고</code>, <code>1년 내 외국 국적 포기</code>, <code>외국국적불행사서약 대상 여부</code>, <code>[요건 확인]</code>, <code>[신고 방법 보기]</code>처럼 첫 레이블, 기한, 확인 행동을 함께 읽힙니다.</span></td><td>Helper text + Notice banner + Checklist + Button</td><td>CASE 2 / CASE 32 / CASE 57</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box">
+        <strong>직접화 규칙</strong>: <code>답변예정일</code>처럼 띄어쓰기 오류가 먼저 보이는 항목은 <code>krds-lint</code> 회귀 대상으로 고정하고, <code>질병명·병원 이름</code>, <code>실업인정일</code>, <code>국적 회복</code>처럼 의미 압축이 큰 표기는 5장 표기 QA에서 시작하더라도 실제 수정은 <code>2장 사전</code>, <code>CASE 2·5·8·10·42</code>, <code>7장 Description·숨은 레이블 메모</code>를 같은 라운드에서 같이 움직입니다.
+      </div>
 
       <div class="sub-h3">다른 챕터 보기</div>
       <div class="other-principles">
@@ -507,6 +629,7 @@
   </div>
 </div>
 
+<script src="../../shared/base-path.js"></script>
 <script src="../../shared/nav.js"></script>
 </body>
 </html>

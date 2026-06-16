@@ -30,7 +30,7 @@ body{background:#111;font-family:'Pretendard Variable',Pretendard,sans-serif;ove
 
 /* ── Nav ── */
 .nav{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:10}
-.dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.3);transition:all .3s;cursor:pointer}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.3);transition:all .3s;cursor:pointer;border:none;padding:0;appearance:none;-webkit-appearance:none}
 .dot.active{background:#fff;width:16px;border-radius:3px}
 .dot.dark{background:rgba(30,33,36,.2)}
 .dot.dark.active{background:var(--n90)}
@@ -287,13 +287,13 @@ body{background:#111;font-family:'Pretendard Variable',Pretendard,sans-serif;ove
       <div class="role-num">02</div>
       <div class="role-icon">📖</div>
       <div class="role-title">사전을 제공합니다</div>
-      <div class="role-desc">행정어·전문용어 대체어 사전 150개. "불가" → "할 수 없습니다", "신청인" → "신청하신 분" 등 즉시 교체 가능한 표현.</div>
+      <div class="role-desc">행정어·전문용어 대체어 사전 162개. "불가" → "할 수 없습니다", "신청인" → "신청하신 분" 등 즉시 교체 가능한 표현.</div>
     </div>
     <div class="role-card b" style="transition-delay:.2s">
       <div class="role-num">03</div>
       <div class="role-icon">🔧</div>
       <div class="role-title">기관별 확장을 지원합니다</div>
-      <div class="role-desc">Layer 3 파생 가이드 템플릿 제공. 기관 고유 보이스·예외 규칙을 KRDS 위에 쌓아 올릴 수 있습니다.</div>
+      <div class="role-desc">Layer 3 파생 가이드 템플릿 제공. 대표 사이트 순회에서 분리한 기관 고유 보이스·예외 규칙을 KRDS 위에 쌓아 올릴 수 있습니다.</div>
     </div>
   </div>
 </section>
@@ -305,7 +305,7 @@ body{background:#111;font-family:'Pretendard Variable',Pretendard,sans-serif;ove
   <div class="chapter-grid">
     <div class="ch b"><div class="ch-num">0장</div><div class="ch-title">적용 범위</div><div class="ch-sub">표준형·확장형·토큰 연계</div></div>
     <div class="ch b" style="transition-delay:.06s"><div class="ch-num">1장</div><div class="ch-title">파운데이션</div><div class="ch-sub">비전·주권자·3원칙·보이스</div></div>
-    <div class="ch highlight b" style="transition-delay:.12s"><div class="ch-num">2장</div><div class="ch-title">무번역의 원칙</div><div class="ch-sub">사전 150개·폼·버튼·표기법</div></div>
+    <div class="ch highlight b" style="transition-delay:.12s"><div class="ch-num">2장</div><div class="ch-title">무번역의 원칙</div><div class="ch-sub">사전 162개·폼·버튼·표기법</div></div>
     <div class="ch highlight b" style="transition-delay:.18s"><div class="ch-num">3장</div><div class="ch-title">정보핵심화의 원칙</div><div class="ch-sub">역피라미드·청킹·알림</div></div>
     <div class="ch highlight b" style="transition-delay:.24s"><div class="ch-num">4장</div><div class="ch-title">심리적안전망의 원칙</div><div class="ch-sub">에러 3단·완료·빈 화면</div></div>
     <div class="ch b" style="transition-delay:.3s"><div class="ch-num">5장</div><div class="ch-title">보이스·톤</div><div class="ch-sub">경어체·주어·스펙트럼</div></div>
@@ -367,7 +367,7 @@ body{background:#111;font-family:'Pretendard Variable',Pretendard,sans-serif;ove
     <div class="dict-chip b" style="transition-delay:.35s"><strong>신청인 →</strong> 신청하신 분</div>
     <div class="dict-chip b" style="transition-delay:.4s"><strong>접수 →</strong> 신청</div>
     <div class="dict-chip b" style="transition-delay:.45s"><strong>처리 완료 →</strong> 완료했습니다</div>
-    <div class="dict-chip b" style="transition-delay:.5s" >+ 150개 수록</div>
+    <div class="dict-chip b" style="transition-delay:.5s" >+ 162개 수록</div>
   </div>
 </section>
 
@@ -447,12 +447,12 @@ body{background:#111;font-family:'Pretendard Variable',Pretendard,sans-serif;ove
     <div class="layer l2 b" style="transition-delay:.12s">
       <div class="layer-badge">Layer 2</div>
       <div class="layer-name">이 가이드라인 — KRDS UX Writing</div>
-      <div class="layer-desc">선언을 실행으로. 행동 기준 · 사전 · 컴포넌트 패턴 제공</div>
+      <div class="layer-desc">선언을 실행으로. 대표 사이트 순회, 새 실화면을 받은 직후 10분 판정 루틴, 사례 승격 기준과 KRDS 컴포넌트 패턴 제공</div>
     </div>
     <div class="layer l3 b" style="transition-delay:.24s">
       <div class="layer-badge">Layer 3</div>
       <div class="layer-name">기관별 파생 가이드</div>
-      <div class="layer-desc">SeMA · 병원 · 지자체 등 기관 고유 보이스·예외 규칙을 Layer 2 위에 정의</div>
+      <div class="layer-desc">SeMA · 병원 · 지자체 등 기관 고유 보이스·예외 규칙을 Layer 2 위에 정의. 한 기관에서만 반복되는 표현은 여기에 유지</div>
     </div>
   </div>
 </section>
@@ -467,7 +467,7 @@ body{background:#111;font-family:'Pretendard Variable',Pretendard,sans-serif;ove
       <div class="case-title">SeMA UX Writing 가이드</div>
       <ul class="case-list">
         <li>KRDS 3대 원칙 → SeMA 문화예술 맥락으로 번역</li>
-        <li>날짜·시간 표기 SeMA 적용 기준 수립</li>
+        <li>대표 사이트 순회에서 Layer 2 공통 원칙과 분리된 문화예술 전용 표현 정리</li>
         <li>예약·신청·전시 도메인 전용 패턴</li>
         <li>해요체 허용 (문화기관 특성 반영)</li>
       </ul>
@@ -478,8 +478,8 @@ body{background:#111;font-family:'Pretendard Variable',Pretendard,sans-serif;ove
       <ul class="case-list">
         <li>4파트 · 51슬라이드 · 3~4시간 워크숍</li>
         <li>SeMA 사이트 현장 분석 8개 발견</li>
-        <li>Before/After 실습 3문항</li>
-        <li>즉시 실행 체크리스트 + 레퍼런스 카드</li>
+        <li>새 실화면을 받은 직후 10분 판정 루틴 실습</li>
+        <li>사례 승격 후보와 Layer 2·Layer 3 분리 연습</li>
       </ul>
     </div>
   </div>
@@ -551,13 +551,17 @@ body{background:#111;font-family:'Pretendard Variable',Pretendard,sans-serif;ove
   const pbar=document.getElementById('pbar');
   const snum=document.getElementById('snum');
   const dotsEl=document.getElementById('dots');
+  if(!sc||!stage||!pbar||!snum||!dotsEl||!slides.length)return;
   const total=slides.length;
   let cur=0,anim=false;
 
   /* dots */
   slides.forEach((_,i)=>{
-    const d=document.createElement('div');
+    const d=document.createElement('button');
+    d.type='button';
     d.className='dot'+(i===0?' active':'');
+    d.setAttribute('aria-label',(i+1)+'번 슬라이드로 이동');
+    d.setAttribute('aria-current',i===0?'true':'false');
     d.addEventListener('click',()=>goTo(i));
     dotsEl.appendChild(d);
   });
@@ -575,6 +579,7 @@ body{background:#111;font-family:'Pretendard Variable',Pretendard,sans-serif;ove
   function updateTheme(idx){
     [...dotsEl.children].forEach((d,i)=>{
       d.className='dot'+(darkSlides.has(idx)?'':' dark')+(i===idx?' active':'');
+      d.setAttribute('aria-current',i===idx?'true':'false');
     });
     snum.className='slide-num'+(darkSlides.has(idx)?'':' dark');
   }
@@ -604,16 +609,31 @@ body{background:#111;font-family:'Pretendard Variable',Pretendard,sans-serif;ove
 
   function waitTr(ms=550){
     return new Promise(r=>{
-      const tid=setTimeout(r,ms+80);
-      sc.addEventListener('transitionend',function h(e){
+      let done=false;
+      let tid=null;
+      function finish(){
+        if(done)return;
+        done=true;
+        if(tid!==null)clearTimeout(tid);
+        sc.removeEventListener('transitionend',h);
+        r();
+      }
+      function h(e){
         if(e.target!==sc)return;
-        clearTimeout(tid);sc.removeEventListener('transitionend',h);r();
-      });
+        finish();
+      }
+      sc.addEventListener('transitionend',h);
+      tid=setTimeout(finish,ms+80);
     });
   }
 
   async function goTo(idx,showAll=false){
-    if(anim||idx===cur)return;
+    if(idx<0||idx>=total)return;
+    if(idx===cur){
+      if(showAll)showAllBuilds(idx);
+      return;
+    }
+    if(anim)return;
     anim=true;
     resetBuilds(cur);
     cur=idx;buildIdx=-1;
@@ -636,12 +656,19 @@ body{background:#111;font-family:'Pretendard Variable',Pretendard,sans-serif;ove
     if(cur>0)goTo(cur-1,true);
   }
 
+  function isInteractiveTarget(target){
+    if(!target||!target.tagName)return false;
+    const tag=target.tagName.toUpperCase();
+    return tag==='BUTTON'||tag==='A'||tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA'||tag==='SUMMARY'||target.isContentEditable===true;
+  }
+
   document.addEventListener('keydown',e=>{
+    if(isInteractiveTarget(e.target))return;
     switch(e.key){
       case 'ArrowRight':case 'ArrowDown':case ' ':e.preventDefault();next();break;
       case 'ArrowLeft':case 'ArrowUp':e.preventDefault();prev();break;
-      case 'Home':goTo(0);break;
-      case 'End':goTo(total-1,true);break;
+      case 'Home':e.preventDefault();goTo(0);break;
+      case 'End':e.preventDefault();goTo(total-1,true);break;
     }
   });
 
@@ -651,18 +678,18 @@ body{background:#111;font-family:'Pretendard Variable',Pretendard,sans-serif;ove
 
   window.addEventListener('hashchange',()=>{
     const m=location.hash.match(/slide-(\d+)/);
-    if(m)goTo(+m[1]-1);
+    if(m)goTo(+m[1]-1,true);
   });
 
   /* init */
   const initHash=location.hash.match(/slide-(\d+)/);
-  if(initHash){cur=Math.min(+initHash[1]-1,total-1);}
+  if(initHash){cur=Math.max(0,Math.min(+initHash[1]-1,total-1));}
   sc.style.transition='none';
   sc.style.transform=`translateX(-${cur*100}%)`;
   requestAnimationFrame(()=>{ sc.style.transition=''; updateUI(); });
 
-  /* show all builds on cover immediately */
-  showAllBuilds(0);
+  /* show all builds on the initially selected slide */
+  showAllBuilds(cur);
 })();
 </script>
 </body>

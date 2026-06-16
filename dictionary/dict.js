@@ -9,8 +9,24 @@
   const rows = Array.from(document.querySelectorAll('#dictBody tr'));
   const filterBtns = document.querySelectorAll('.filter-btn');
 
-  let currentCat = 'all';
-  let currentQuery = '';
+  if (!searchInput || !searchClear || !resultCount || !emptyState || !tableWrap || rows.length === 0 || filterBtns.length === 0) {
+    return;
+  }
+
+  const activeFilterBtn = Array.from(filterBtns).find(function (btn) {
+    return btn.classList.contains('active');
+  });
+
+  let currentCat = activeFilterBtn ? (activeFilterBtn.dataset.cat || 'all') : 'all';
+  let currentQuery = searchInput.value.trim();
+
+  function syncActiveFilter(activeBtn) {
+    filterBtns.forEach(function (btn) {
+      var isActive = btn === activeBtn;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+  }
 
   function normalize(s) {
     return s.toLowerCase().replace(/\s+/g, '');
@@ -36,8 +52,7 @@
 
   filterBtns.forEach(function (btn) {
     btn.addEventListener('click', function () {
-      filterBtns.forEach(function (b) { b.classList.remove('active'); });
-      btn.classList.add('active');
+      syncActiveFilter(btn);
       currentCat = btn.dataset.cat;
       applyFilters();
     });
@@ -57,12 +72,7 @@
     applyFilters();
   });
 
-  // Dark mode sync
-  function syncTheme() {
-    const sys = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const stored = localStorage.getItem('krds-theme');
-    document.documentElement.setAttribute('data-theme', stored || (sys ? 'dark' : 'light'));
-  }
-  syncTheme();
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncTheme);
+  searchClear.style.display = currentQuery ? 'block' : 'none';
+  syncActiveFilter(activeFilterBtn || filterBtns[0]);
+  applyFilters();
 })();
