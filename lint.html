@@ -493,14 +493,14 @@
   <div class="card" id="issuesCard" style="margin-top:16px; display:none;">
     <div class="issues-header">
       <div class="issues-title" id="issuesTitle">이슈 목록</div>
-      <div class="filter-tabs" role="tablist" aria-label="심각도 필터">
-        <button class="filter-tab active" data-filter="all" role="tab" aria-selected="true">전체</button>
-        <button class="filter-tab" data-filter="error" role="tab" aria-selected="false">오류</button>
-        <button class="filter-tab" data-filter="warning" role="tab" aria-selected="false">경고</button>
-        <button class="filter-tab" data-filter="info" role="tab" aria-selected="false">안내</button>
+      <div class="filter-tabs" role="group" aria-label="심각도 필터">
+        <button class="filter-tab active" type="button" data-filter="all" aria-pressed="true" aria-controls="issuesList">전체</button>
+        <button class="filter-tab" type="button" data-filter="error" aria-pressed="false" aria-controls="issuesList">오류</button>
+        <button class="filter-tab" type="button" data-filter="warning" aria-pressed="false" aria-controls="issuesList">경고</button>
+        <button class="filter-tab" type="button" data-filter="info" aria-pressed="false" aria-controls="issuesList">안내</button>
       </div>
     </div>
-    <div id="issuesList" role="list" aria-live="polite"></div>
+    <div id="issuesList" role="list" aria-live="polite" aria-labelledby="issuesTitle"></div>
 
     <div class="export-bar">
       <span class="export-label">검사 결과를 내보낼 수 있습니다</span>
@@ -564,6 +564,7 @@
 </footer>
 
 <div id="toast" role="status" aria-live="polite"></div>
+<script src="./jargon-dictionary.js"></script>
 <script src="./krds-lint.js"></script>
 <script src="./lint-ui.js"></script>
 </body>

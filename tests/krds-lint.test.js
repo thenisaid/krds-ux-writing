@@ -25,6 +25,22 @@ describe('lint() — admin jargon detection', () => {
     expect(issue.suggestion).toContain('내일까지');
   });
 
+  it('detects placeholder-based jargon entries without requiring a literal "~"', () => {
+    const result = KRDSLint.lint('문의하여 주시기 바랍니다.');
+    const issue = result.issues.find(i => i.match === '문의하여 주시기 바랍니다');
+    expect(issue).toBeDefined();
+    expect(issue.suggestion).toContain('문의해 주세요');
+    expect(issue.suggestion).not.toContain('~');
+  });
+
+  it('detects generic placeholder suffixes from the dictionary in real sentences', () => {
+    const result = KRDSLint.lint('납부하여야 합니다.');
+    const issue = result.issues.find(i => i.match === '하여야 합니다');
+    expect(issue).toBeDefined();
+    expect(issue.suggestion).toContain('해야 합니다');
+    expect(issue.suggestion).not.toContain('~');
+  });
+
   it('does not report false positive on clean text', () => {
     const result = KRDSLint.lint('내일까지 서류를 제출해 주세요.');
     expect(result.issues.filter(i => i.type === 'admin-jargon')).toHaveLength(0);
@@ -50,6 +66,238 @@ describe('lint() — admin jargon detection', () => {
     const cols = issues.map(i => i.col);
     const uniqueCols = [...new Set(cols)];
     expect(uniqueCols).toHaveLength(cols.length);
+  });
+
+  it('prefers the longer specific jargon entry when it overlaps a generic suffix pattern', () => {
+    const result = KRDSLint.lint('제출하시기 바랍니다.');
+    const adminIssues = result.issues.filter(i => i.type === 'admin-jargon');
+    expect(adminIssues).toHaveLength(1);
+    expect(adminIssues[0].match).toBe('제출하시기 바랍니다');
+    expect(adminIssues[0].suggestion).toContain('제출하세요');
+  });
+
+  it('detects newly promoted consent-screen jargon from public-service sites', () => {
+    const result = KRDSLint.lint('실명확인 후 자료제공동의를 완료해 주세요.');
+    const identityIssue = result.issues.find(i => i.match === '실명확인');
+    const consentIssue = result.issues.find(i => i.match === '자료제공동의');
+
+    expect(identityIssue).toBeDefined();
+    expect(identityIssue.suggestion).toContain('본인 확인');
+    expect(consentIssue).toBeDefined();
+    expect(consentIssue.suggestion).toContain('자료 제공 동의');
+  });
+
+  it('detects newly promoted tax, pension, and court jargon from public-service flows', () => {
+    const text = '간주임대료와 예정 고지, 임의가입, 추납, 인지대, 송달료, 강제집행 기준을 확인하세요.';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '간주임대료')?.suggestion).toContain('보증금을 이자로 계산한 임대수입');
+    expect(result.issues.find(i => i.match === '예정 고지')?.suggestion).toContain('미리 청구');
+    expect(result.issues.find(i => i.match === '임의가입')?.suggestion).toContain('원하면 직접 가입');
+    expect(result.issues.find(i => i.match === '추납')?.suggestion).toContain('못 낸 기간 보험료');
+    expect(result.issues.find(i => i.match === '인지대')?.suggestion).toContain('법원에 내는 수수료');
+    expect(result.issues.find(i => i.match === '송달료')?.suggestion).toContain('서류를 보내는 우편 비용');
+    expect(result.issues.find(i => i.match === '강제집행')?.suggestion).toContain('강제로 받는 절차');
+  });
+
+  it('detects newly promoted accessibility-label jargon from public-service controls', () => {
+    const text = '서비스 상세 이동, 1번째 배너, AI 켜기, 새창';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '서비스 상세 이동')?.suggestion).toContain('서비스 이름 + 자세히 보기');
+    expect(result.issues.find(i => i.match === '1번째 배너')?.suggestion).toContain('배너 제목 + 보기');
+    expect(result.issues.find(i => i.match === 'AI 켜기')?.suggestion).toContain('AI 검색');
+    expect(result.issues.find(i => i.match === '새창')?.suggestion).toContain('새 탭에서 열림');
+  });
+
+  it('detects newly promoted certificate and disclosure-scope jargon from public-service choices', () => {
+    const text = '주민등록등본, 상세증명서, 납세증명서 (금융거래용), 개인정보 제공 범위 선택, 말소 사항 포함, 세무정보 열람권한 부여';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '주민등록등본')?.suggestion).toContain('가족 전체 주민등록증명서');
+    expect(result.issues.find(i => i.match === '상세증명서')?.suggestion).toContain('상세 가족관계증명서');
+    expect(result.issues.find(i => i.match === '납세증명서 (금융거래용)')?.suggestion).toContain('은행·대출 제출');
+    expect(result.issues.find(i => i.match === '개인정보 제공 범위 선택')?.suggestion).toContain('주민번호 뒷자리는 제외');
+    expect(result.issues.find(i => i.match === '말소 사항 포함')?.suggestion).toContain('현재 유효만');
+    expect(result.issues.find(i => i.match === '세무정보 열람권한 부여')?.suggestion).toContain('마이페이지에서 해제');
+  });
+
+  it('detects newly promoted upload-constraint jargon from public-service forms', () => {
+    const text = '파일을 첨부하세요. 증빙서류 파일 첨부. PDF 형식만 가능';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '파일을 첨부하세요')?.suggestion).toContain('허용 형식');
+    expect(result.issues.find(i => i.match === '증빙서류 파일 첨부')?.suggestion).toContain('판독 불가 시 재제출');
+    expect(result.issues.find(i => i.match === 'PDF 형식만 가능')?.suggestion).toContain('HWP는 PDF 변환 후 제출');
+  });
+
+  it('detects newly promoted electronic-issuance jargon from public-service certificate flows', () => {
+    const text = '문서확인번호, 전자 발급본도 출력 시 원본과 동일 효력, 전자 발급본이 공문서와 동일한 효력';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '문서확인번호')?.suggestion).toContain('진위 확인용 문서 번호');
+    expect(result.issues.find(i => i.match === '전자 발급본도 출력 시 원본과 동일 효력')?.suggestion).toContain('공공 마이데이터 제출');
+    expect(result.issues.find(i => i.match === '전자 발급본이 공문서와 동일한 효력')?.suggestion).toContain('증명서 진위 확인');
+  });
+
+  it('detects newly promoted issuance-restriction jargon from public-service certificate flows', () => {
+    const text = '온라인은 대리인 신청 불가. 발급일 현재 징수유예액 또는 체납처분유예액을 제외하고는 다른 국세를 체납한 사실이 없음을 증명. 집행문 부여 신청.';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '온라인은 대리인 신청 불가')?.suggestion).toContain('본인만 신청할 수 있습니다');
+    expect(result.issues.find(i => i.match === '발급일 현재 징수유예액 또는 체납처분유예액을 제외하고는 다른 국세를 체납한 사실이 없음을 증명')?.suggestion).toContain('미납한 국세');
+    expect(result.issues.find(i => i.match === '집행문 부여 신청')?.suggestion).toContain('제1심법원');
+  });
+
+  it('detects newly promoted correction-result jargon from public-service follow-up flows', () => {
+    const text = '판독 불가. 신고 불수리 통지 조회.';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '판독 불가')?.suggestion).toContain('재제출 바로 가기');
+    expect(result.issues.find(i => i.match === '신고 불수리 통지 조회')?.suggestion).toContain('신고 반려 통지 확인');
+  });
+
+  it('detects newly promoted alert-channel jargon from public-service notification settings', () => {
+    const text = '전자고지(송달) 신청 및 해지';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '전자고지(송달) 신청 및 해지')?.suggestion).toContain('우편으로 다시 받기');
+  });
+
+  it('detects newly promoted split-task jargon from public-service multi-action menus', () => {
+    const text = '지급명세서 제출·수정·삭제 현금영수증 발급·취소·수정 국선대리인 신청(불복청구서 제출전)/(제출후) 전자(세금)계산서';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '지급명세서 제출·수정·삭제')?.suggestion).toContain('제출 내역 수정');
+    expect(result.issues.find(i => i.match === '현금영수증 발급·취소·수정')?.suggestion).toContain('발급 정보 수정');
+    expect(result.issues.find(i => i.match === '국선대리인 신청(불복청구서 제출전)/(제출후)')?.suggestion).toContain('[불복청구서 제출 전] [제출 후]');
+    expect(result.issues.find(i => i.match === '전자(세금)계산서')?.suggestion).toContain('세금계산서 / 계산서');
+  });
+
+  it('detects newly promoted notation QA jargon from public-service table headers', () => {
+    const text = '신청자격 구비서류 발급서류 처리기간 처리기관 답변예정일 등록일';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '신청자격')?.suggestion).toContain('신청할 수 있는 사람');
+    expect(result.issues.find(i => i.match === '구비서류')?.suggestion).toContain('준비할 서류');
+    expect(result.issues.find(i => i.match === '발급서류')?.suggestion).toContain('발급되는 서류');
+    expect(result.issues.find(i => i.match === '처리기간')?.suggestion).toContain('처리까지 걸리는 시간');
+    expect(result.issues.find(i => i.match === '처리기관')?.suggestion).toContain('담당 기관');
+    expect(result.issues.find(i => i.match === '답변예정일')?.suggestion).toContain('답변 예정일');
+    expect(result.issues.find(i => i.match === '등록일')?.suggestion).toContain('접수한 날');
+  });
+
+  it('detects newly promoted notation QA jargon from compact navigation labels', () => {
+    const text = '전자증명서안내 부가가치세예정신고 증명서발급';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '전자증명서안내')?.suggestion).toContain('전자증명서 안내');
+    expect(result.issues.find(i => i.match === '부가가치세예정신고')?.suggestion).toContain('부가가치세 예정 신고');
+    expect(result.issues.find(i => i.match === '증명서발급')?.suggestion).toContain('증명서 발급');
+  });
+
+  it('detects newly promoted eligibility-entry jargon from public-service qualification screens', () => {
+    const text = '세대주 변경 신고. 사업장 현황 신고. 개명 허가 신청.';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '세대주 변경 신고')?.suggestion).toContain('기존 세대주의 동의 필요');
+    expect(result.issues.find(i => i.match === '사업장 현황 신고')?.suggestion).toContain('면세 사업자 신고');
+    expect(result.issues.find(i => i.match === '개명 허가 신청')?.suggestion).toContain('불복 방법');
+  });
+
+  it('detects newly promoted navigation-label jargon from compact court menus', () => {
+    const text = '가족관계등록부정정 허가';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '가족관계등록부정정 허가')?.suggestion).toContain('가족관계 기록 정정 허가');
+  });
+
+  it('detects newly promoted applicant-type jargon from public-service entry screens', () => {
+    const text = '건강보험 피부양자 등록 신청. 연말정산 간소화. 소송 기록 열람·복사 신청.';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '건강보험 피부양자 등록 신청')?.suggestion).toContain('가족관계증명서 + 소득 확인서');
+    expect(result.issues.find(i => i.match === '연말정산 간소화')?.suggestion).toContain('부양가족 자료는 온라인 동의');
+    expect(result.issues.find(i => i.match === '소송 기록 열람·복사 신청')?.suggestion).toContain('제3자는 법원 방문 신청');
+  });
+
+  it('detects newly promoted conditional-required jargon from public-service forms', () => {
+    const text = '외국인등록번호 *\n영세율 신고';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '외국인등록번호 *')?.suggestion).toContain('해당자만 필수');
+    expect(result.issues.find(i => i.match === '영세율 신고')?.suggestion).toContain('해당 거래만 필수');
+  });
+
+  it('detects newly promoted proxy-and-review jargon from delegated or high-friction flows', () => {
+    const text = '병적증명서 발급. 세무대리인 수임 동의. 소송 대리인 등록. 협의이혼 의사확인 신청.';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '병적증명서 발급')?.suggestion).toContain('위임장 지참 대리인');
+    expect(result.issues.find(i => i.match === '세무대리인 수임 동의')?.suggestion).toContain('세금 업무 맡기기 동의');
+    expect(result.issues.find(i => i.match === '소송 대리인 등록')?.suggestion).toContain('제한 위임·해임 신고 안내');
+    expect(result.issues.find(i => i.match === '협의이혼 의사확인 신청')?.suggestion).toContain('숙려기간 뒤 확인기일 출석');
+  });
+
+  it('detects newly promoted completion-screen jargon from public-service result screens', () => {
+    const text = '민원이 접수되었습니다. 귀하의 종합소득세 신고서가 접수되었습니다. 신고서가 정상적으로 접수되었습니다.';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '민원이 접수되었습니다')?.suggestion).toContain('나의 민원 확인하기');
+    expect(result.issues.find(i => i.match === '귀하의 종합소득세 신고서가 접수되었습니다')?.suggestion).toContain('지금 납부하기');
+    expect(result.issues.find(i => i.match === '신고서가 정상적으로 접수되었습니다')?.suggestion).toContain('처리 현황 조회');
+  });
+
+  it('detects newly promoted wait-state jargon from public-service refund status screens', () => {
+    const text = '환급금: 120,000원\n환급금: 30만원';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '환급금: 120,000원')?.suggestion).toContain('예상 입금일 확인');
+    expect(result.issues.find(i => i.match === '환급금: 120,000원')?.suggestion).toContain('계좌 등록하기');
+    expect(result.issues.find(i => i.match === '환급금: 30만원')?.suggestion).toContain('지연 사유 조회');
+  });
+
+  it('detects newly promoted session-termination jargon from public-service timeout flows', () => {
+    const text = '개인정보 보호를 위해 로그인 후 약 0분 동안 서비스 이용이 없어 자동 로그아웃 됩니다. 세션이 만료되었습니다. 처음부터 다시 시작하세요. 로그아웃 되었습니다.';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '개인정보 보호를 위해 로그인 후 약 0분 동안 서비스 이용이 없어 자동 로그아웃 됩니다.')?.suggestion).toContain('임시 저장됩니다');
+    expect(result.issues.find(i => i.match === '세션이 만료되었습니다. 처음부터 다시 시작하세요.')?.suggestion).toContain('다시 로그인하면 이어서 작성');
+    expect(result.issues.find(i => i.match === '로그아웃 되었습니다.')?.suggestion).toContain('메인으로 가기');
+  });
+
+  it('detects newly promoted service-unavailable jargon from public-service outage flows', () => {
+    const text = '서비스 이용이 일시적으로 중단되었습니다. 지방세 연계 납부';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '서비스 이용이 일시적으로 중단되었습니다.')?.suggestion).toContain('다시 열리는 시각');
+    expect(result.issues.find(i => i.match === '지방세 연계 납부')?.suggestion).toContain('위택스에서 별도 신고·납부');
+  });
+
+  it('detects newly promoted emergency-link and parallel-procedure jargon from public-service flows', () => {
+    const text = '친권 상실 청구 소상공인 정책자금 신청 부재자 재산 관리인 선임 청구';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '친권 상실 청구')?.suggestion).toContain('112 또는 1577-1391로 먼저 연락');
+    expect(result.issues.find(i => i.match === '소상공인 정책자금 신청')?.suggestion).toContain('보증서 필요 여부 먼저 확인');
+    expect(result.issues.find(i => i.match === '부재자 재산 관리인 선임 청구')?.suggestion).toContain('가압류·가처분 병행');
+  });
+
+  it('detects newly promoted environment-guidance jargon from public-service device notices', () => {
+    const text = '정부24 앱으로 더 편리하게 이용하세요. 해당 서비스는 PC 홈택스에서만 이용하실 수 있습니다 증명서발급과 인터넷신고는 PC를 이용하여 주시기 바랍니다.';
+    const result = KRDSLint.lint(text);
+
+    expect(result.issues.find(i => i.match === '정부24 앱으로 더 편리하게 이용하세요.')?.suggestion).toContain('앱 열기');
+    expect(result.issues.find(i => i.match === '해당 서비스는 PC 홈택스에서만 이용하실 수 있습니다')?.suggestion).toContain('QR코드 보기');
+    expect(result.issues.find(i => i.match === '증명서발급과 인터넷신고는 PC를 이용하여 주시기 바랍니다.')?.suggestion).toContain('PC에서 다시 접속');
+  });
+
+  it('uses the more descriptive replacement when duplicate dictionary entries share the same banned phrase', () => {
+    const result = KRDSLint.lint('창설적 신분행위');
+    const issue = result.issues.find(i => i.match === '창설적 신분행위');
+    expect(issue).toBeDefined();
+    expect(issue.category).toBe('전문 용어');
+    expect(issue.suggestion).toContain('결혼, 입양 등');
   });
 });
 
@@ -81,6 +329,26 @@ describe('lint() — pattern rule detection', () => {
     const issue = result.issues.find(i => i.type === 'forbidden-char-note');
     expect(issue).toBeDefined();
     expect(issue.severity).toBe('warning');
+  });
+
+  it('detects common Korean double-negative templates like "하지 않으면 안 됩니다"', () => {
+    const result = KRDSLint.lint('제출하지 않으면 안 됩니다.');
+    const issue = result.issues.find(i => i.type === 'double-negative');
+    expect(issue).toBeDefined();
+    expect(issue.severity).toBe('error');
+    expect(issue.match).toContain('않으면 안');
+  });
+
+  it('detects litotes-style double negatives like "없지 않습니다"', () => {
+    const result = KRDSLint.lint('문제가 없지 않습니다.');
+    const issue = result.issues.find(i => i.type === 'double-negative');
+    expect(issue).toBeDefined();
+    expect(issue.match).toBe('없지 않습니다');
+  });
+
+  it('does not confuse a single negative condition with a double negative', () => {
+    const result = KRDSLint.lint('로그인하지 않으면 이용할 수 없습니다.');
+    expect(result.issues.filter(i => i.type === 'double-negative')).toHaveLength(0);
   });
 
   it('skips pattern check when checkPatterns: false', () => {
@@ -151,6 +419,20 @@ describe('lint() multiline input', () => {
   it('handles text with only whitespace as no-issue', () => {
     const result = KRDSLint.lint('   \n  \n  ');
     expect(result.summary.total).toBe(0);
+  });
+
+  it('treats nullish input as empty text instead of throwing', () => {
+    expect(() => KRDSLint.lint(null)).not.toThrow();
+    expect(() => KRDSLint.lint(undefined)).not.toThrow();
+    expect(KRDSLint.lint(null)).toEqual(KRDSLint.lint(''));
+    expect(KRDSLint.lint(undefined)).toEqual(KRDSLint.lint(''));
+  });
+
+  it('coerces primitive non-string input to text instead of throwing', () => {
+    expect(() => KRDSLint.lint(404)).not.toThrow();
+    expect(() => KRDSLint.lint(false)).not.toThrow();
+    expect(KRDSLint.lint(404)).toEqual(KRDSLint.lint('404'));
+    expect(KRDSLint.lint(false)).toEqual(KRDSLint.lint('false'));
   });
 });
 

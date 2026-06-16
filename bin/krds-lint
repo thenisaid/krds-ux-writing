@@ -3,12 +3,13 @@
 
 /**
  * bin/krds-lint — KRDS UX Writing 린터 CLI 래퍼
- * stdin 또는 파일을 받아 krds-lint.js 엔진으로 검사합니다.
+ * stdin, 파일, 디렉터리를 받아 krds-lint.js 엔진으로 검사합니다.
  *
  * 사용법:
  *   echo "귀하" | node bin/krds-lint
  *   node bin/krds-lint ./텍스트.txt
- *   node bin/krds-lint --json ./텍스트.txt
+ *   node bin/krds-lint ./docs/
+ *   node bin/krds-lint --json ./docs/
  */
 
 const path = require('path');
@@ -19,7 +20,8 @@ const KRDSLint = require(path.join(__dirname, '..', 'krds-lint.js'));
 const args = process.argv.slice(2);
 const jsonMode = args.includes('--json');
 const helpMode = args.includes('--help') || args.includes('-h');
-const files = args.filter(a => !a.startsWith('--'));
+const inputs = args.filter(a => !a.startsWith('--'));
+const SKIP_DIRS = new Set(['.git', 'node_modules']);
 
 if (helpMode) {
   process.stdout.write([
@@ -28,7 +30,9 @@ if (helpMode) {
     '사용법:',
     '  echo "텍스트" | krds-lint',
     '  krds-lint <파일경로>',
-    '  krds-lint --json <파일경로>',
+    '  krds-lint <디렉터리경로>',
+    '  krds-lint <파일/디렉터리 ...>',
+    '  krds-lint --json <파일/디렉터리>',
     '',
     '옵션:',
     '  --json   결과를 JSON 형식으로 출력',
@@ -48,23 +52,150 @@ function readStdin() {
   });
 }
 
-// ─── 메인 ────────────────────────────────────────────────────────────────────
-async function main() {
-  let text;
-
-  if (files.length > 0) {
-    // 파일 모드
-    const filePath = path.resolve(files[0]);
-    if (!fs.existsSync(filePath)) {
-      process.stderr.write('오류: 파일을 찾을 수 없습니다 — ' + filePath + '\n');
-      process.exit(1);
+function isProbablyBinary(filePath) {
+  const fd = fs.openSync(filePath, 'r');
+  try {
+    const sample = Buffer.alloc(1024);
+    const bytesRead = fs.readSync(fd, sample, 0, sample.length, 0);
+    for (let i = 0; i < bytesRead; i++) {
+      if (sample[i] === 0) return true;
     }
-    text = fs.readFileSync(filePath, 'utf8');
-  } else {
-    // stdin 모드
-    text = await readStdin();
+    return false;
+  } finally {
+    fs.closeSync(fd);
+  }
+}
+
+function toDisplayPath(filePath) {
+  return path.relative(process.cwd(), filePath) || path.basename(filePath);
+}
+
+function collectTargets(targetPath, collected) {
+  const resolved = path.resolve(targetPath);
+  if (!fs.existsSync(resolved)) {
+    throw new Error('파일 또는 디렉터리를 찾을 수 없습니다 — ' + resolved);
   }
 
+  const stat = fs.statSync(resolved);
+  if (stat.isDirectory()) {
+    fs.readdirSync(resolved, { withFileTypes: true })
+      .sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+      .forEach((entry) => {
+        if (entry.isDirectory() && SKIP_DIRS.has(entry.name)) return;
+        collectTargets(path.join(resolved, entry.name), collected);
+      });
+    return;
+  }
+
+  if (!stat.isFile() || isProbablyBinary(resolved)) return;
+  collected.push(resolved);
+}
+
+function buildAggregateSummary(fileResults) {
+  return fileResults.reduce((summary, entry) => {
+    summary.totalFiles += 1;
+    summary.totalIssues += entry.result.summary.total;
+    summary.errors += entry.result.summary.errors;
+    summary.warnings += entry.result.summary.warnings;
+    summary.infos += entry.result.summary.infos;
+    if (entry.result.summary.total > 0) summary.filesWithIssues += 1;
+    return summary;
+  }, {
+    totalFiles: 0,
+    filesWithIssues: 0,
+    totalIssues: 0,
+    errors: 0,
+    warnings: 0,
+    infos: 0,
+  });
+}
+
+function formatMultiCLI(fileResults, summary) {
+  const sections = fileResults.map((entry) => {
+    return [
+      '파일: ' + toDisplayPath(entry.path),
+      KRDSLint.formatCLI(entry.result),
+    ].join('\n');
+  });
+
+  sections.push([
+    '─'.repeat(50),
+    '검사 파일: ' + summary.totalFiles + '개',
+    '이슈 있는 파일: ' + summary.filesWithIssues + '개',
+    '총 이슈: ' + summary.totalIssues +
+      ' (오류 ' + summary.errors +
+      ' / 경고 ' + summary.warnings +
+      ' / 안내 ' + summary.infos + ')',
+  ].join('\n'));
+
+  return sections.join('\n\n');
+}
+
+// ─── 메인 ────────────────────────────────────────────────────────────────────
+async function main() {
+  if (inputs.length > 0) {
+    const targets = [];
+    let directoryMode = false;
+
+    inputs.forEach((input) => {
+      const resolved = path.resolve(input);
+      if (fs.existsSync(resolved) && fs.statSync(resolved).isDirectory()) {
+        directoryMode = true;
+      }
+      collectTargets(input, targets);
+    });
+
+    if (targets.length === 0) {
+      process.stderr.write('오류: 검사할 텍스트 파일이 없습니다.\n');
+      process.exit(1);
+    }
+
+    const uniqueTargets = Array.from(new Set(targets));
+
+    const fileResults = uniqueTargets
+      .sort((a, b) => a.localeCompare(b, 'ko'))
+      .map((filePath) => ({
+        path: filePath,
+        result: KRDSLint.lint(fs.readFileSync(filePath, 'utf8')),
+      }));
+
+    const singleFileMode = !directoryMode && inputs.length === 1 && fileResults.length === 1;
+    const summary = buildAggregateSummary(fileResults);
+
+    if (jsonMode) {
+      if (singleFileMode) {
+        process.stdout.write(JSON.stringify(fileResults[0].result, null, 2) + '\n');
+      } else {
+        process.stdout.write(JSON.stringify({
+          files: fileResults.map((entry) => ({
+            path: toDisplayPath(entry.path),
+            issues: entry.result.issues,
+            summary: entry.result.summary,
+            score: entry.result.score,
+          })),
+          summary,
+        }, null, 2) + '\n');
+      }
+    } else {
+      process.stdout.write(
+        singleFileMode
+          ? KRDSLint.formatCLI(fileResults[0].result) + '\n'
+          : formatMultiCLI(fileResults, summary) + '\n'
+      );
+    }
+
+    if (summary.errors > 0) {
+      process.exit(1);
+    }
+    return;
+  }
+
+  if (process.stdin.isTTY) {
+    process.stderr.write('오류: 검사할 파일, 디렉터리 또는 stdin 텍스트를 제공해 주세요.\n');
+    process.exit(1);
+  }
+
+  const text = await readStdin();
   if (!text.trim()) {
     process.stderr.write('오류: 검사할 텍스트가 없습니다.\n');
     process.exit(1);

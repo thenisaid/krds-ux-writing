@@ -1,0 +1,757 @@
+import { describe, expect, it, vi } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+
+const SOURCE = fs.readFileSync(path.join(process.cwd(), 'lint-ui.js'), 'utf8');
+
+function createClassList(initial = []) {
+  const classes = new Set(initial);
+  return {
+    add(...values) {
+      values.forEach((value) => classes.add(value));
+    },
+    remove(...values) {
+      values.forEach((value) => classes.delete(value));
+    },
+    contains(value) {
+      return classes.has(value);
+    },
+    toggle(value, force) {
+      if (force === undefined) {
+        if (classes.has(value)) {
+          classes.delete(value);
+          return false;
+        }
+        classes.add(value);
+        return true;
+      }
+      if (force) classes.add(value);
+      else classes.delete(value);
+      return force;
+    },
+  };
+}
+
+function createElement(options = {}) {
+  const listeners = new Map();
+  const attributes = new Map(Object.entries(options.attributes || {}));
+  return {
+    value: options.value || '',
+    textContent: options.textContent || '',
+    innerHTML: options.innerHTML || '',
+    disabled: !!options.disabled,
+    title: options.title || '',
+    dataset: options.dataset || {},
+    style: options.style || {},
+    classList: createClassList(options.classes || []),
+    addEventListener(type, handler) {
+      const arr = listeners.get(type) || [];
+      arr.push(handler);
+      listeners.set(type, arr);
+    },
+    dispatch(type, event = {}) {
+      const handlers = listeners.get(type) || [];
+      handlers.forEach((handler) => handler.call(this, {
+        preventDefault() {},
+        stopPropagation() {},
+        target: this,
+        currentTarget: this,
+        ...event,
+      }));
+    },
+    setAttribute(name, value) {
+      attributes.set(name, String(value));
+    },
+    getAttribute(name) {
+      return attributes.has(name) ? attributes.get(name) : null;
+    },
+    focus: vi.fn(),
+    select: vi.fn(),
+    closest(selector) {
+      if (selector === '[data-idx]' && this.dataset.idx != null) return this;
+      return null;
+    },
+  };
+}
+
+function buildContext(options = {}) {
+  const optChips = [
+    createElement({ dataset: { opt: 'checkAdminJargon' }, classes: ['opt-chip', 'active'] }),
+    createElement({ dataset: { opt: 'checkPatterns' }, classes: ['opt-chip', 'active'] }),
+  ];
+  const filterTabs = [
+    createElement({ dataset: { filter: 'all' }, classes: ['filter-tab', 'active'], attributes: { 'aria-pressed': 'true' } }),
+    createElement({ dataset: { filter: 'error' }, classes: ['filter-tab'], attributes: { 'aria-pressed': 'false' } }),
+    createElement({ dataset: { filter: 'warning' }, classes: ['filter-tab'], attributes: { 'aria-pressed': 'false' } }),
+    createElement({ dataset: { filter: 'info' }, classes: ['filter-tab'], attributes: { 'aria-pressed': 'false' } }),
+  ];
+  const elements = {
+    themeToggle: createElement(),
+    inputText: createElement(),
+    sampleBtn: createElement(),
+    clearBtn: createElement(),
+    scoreSection: createElement(),
+    highlightCard: createElement({ style: { display: 'none' } }),
+    issuesCard: createElement({ style: { display: 'none' } }),
+    improvedCard: createElement({ style: { display: 'none' } }),
+    highlightedText: createElement(),
+    issuesList: createElement(),
+    issuesTitle: createElement({ textContent: '이슈 목록' }),
+    lintBtn: createElement(),
+    copyBtn: createElement(),
+    downloadBtn: createElement(),
+    shareLinkBtn: createElement({ disabled: true }),
+    improvedText: createElement(),
+    copyImprovedBtn: createElement(),
+    historyCard: createElement({ style: { display: 'none' } }),
+    historyList: createElement(),
+    clearHistoryBtn: createElement(),
+    cliBanner: createElement({ style: { display: 'none' } }),
+    cliBannerClose: createElement(),
+    copyCliBtn: createElement(),
+    charCount: createElement({ textContent: '0' }),
+    toast: createElement(),
+  };
+
+  const storage = new Map();
+  const timers = new Map();
+  let nextTimerId = 1;
+  const context = {
+    document: {
+      documentElement: {
+        theme: 'light',
+        setAttribute(name, value) {
+          if (name === 'data-theme') this.theme = String(value);
+        },
+        getAttribute(name) {
+          return name === 'data-theme' ? this.theme : null;
+        },
+      },
+      body: {
+        appendChild() {},
+        removeChild() {},
+      },
+      getElementById(id) {
+        return elements[id] || null;
+      },
+      querySelectorAll(selector) {
+        if (selector === '.opt-chip') return optChips;
+        if (selector === '.filter-tab') return filterTabs;
+        return [];
+      },
+      createElement() {
+        return createElement();
+      },
+    },
+    window: {
+      location: {
+        href: 'https://example.com/lint.html',
+        search: '',
+      },
+      matchMedia() {
+        return { matches: false };
+      },
+    },
+    navigator: {},
+    localStorage: {
+      getItem(key) {
+        return storage.has(key) ? storage.get(key) : null;
+      },
+      setItem(key, value) {
+        storage.set(key, String(value));
+      },
+      removeItem(key) {
+        storage.delete(key);
+      },
+    },
+    URLSearchParams,
+    URL: {
+      createObjectURL() { return 'blob:test'; },
+      revokeObjectURL() {},
+    },
+    Blob,
+    KRDSLint: {
+      lint: vi.fn(() => options.lintResult || ({
+        score: 82,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1,
+          col: 1,
+          severity: 'error',
+          category: '행정어',
+          message: '"귀하"는 어려운 표현입니다.',
+          match: '귀하',
+          suggestion: '→ 당신',
+          type: 'admin-jargon',
+        }],
+      })),
+      formatCLI: vi.fn(() => 'formatted'),
+    },
+    setTimeout(fn, delay) {
+      if (options.manualTimers) {
+        const id = nextTimerId++;
+        timers.set(id, { fn, delay });
+        return id;
+      }
+      fn();
+      return 1;
+    },
+    clearTimeout(id) {
+      if (options.manualTimers) timers.delete(id);
+    },
+    console,
+    Array,
+    JSON,
+    globalThis: null,
+  };
+  context.globalThis = context;
+
+  return { context, elements, timers };
+}
+
+describe('lint-ui stale result handling', () => {
+  it('does not throw when the lint page DOM is incomplete', () => {
+    const context = {
+      document: {
+        getElementById() { return null; },
+        querySelectorAll() { return []; },
+      },
+      window: {
+        matchMedia() {
+          return { matches: false };
+        },
+      },
+      localStorage: {
+        getItem() { return null; },
+      },
+      Array,
+      JSON,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    expect(() => vm.runInNewContext(SOURCE, context)).not.toThrow();
+  });
+
+  it('invalidates stale analysis when the input text changes after linting', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.shareLinkBtn.disabled).toBe(false);
+    expect(elements.scoreSection.innerHTML).toContain('82');
+    expect(elements.highlightCard.style.display).toBe('block');
+    expect(elements.issuesCard.style.display).toBe('block');
+    expect(elements.improvedCard.style.display).toBe('block');
+
+    elements.inputText.value = '수정된 문장입니다.';
+    elements.inputText.dispatch('input');
+
+    expect(elements.shareLinkBtn.disabled).toBe(true);
+    expect(elements.shareLinkBtn.title).toBe('텍스트가 변경되었습니다. 다시 검사해 주세요');
+    expect(elements.scoreSection.innerHTML).toContain('텍스트를 입력하고 검사해 주세요');
+    expect(elements.highlightCard.style.display).toBe('none');
+    expect(elements.issuesCard.style.display).toBe('none');
+    expect(elements.improvedCard.style.display).toBe('none');
+    expect(elements.issuesTitle.textContent).toBe('이슈 목록');
+  });
+
+  it('clears stale lint results and shows an error toast when the lint engine throws', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.scoreSection.innerHTML).toContain('82');
+    expect(elements.highlightCard.style.display).toBe('block');
+    expect(elements.issuesCard.style.display).toBe('block');
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.shareLinkBtn.disabled).toBe(false);
+
+    context.KRDSLint.lint = vi.fn(() => {
+      throw new Error('engine exploded');
+    });
+
+    expect(() => elements.lintBtn.dispatch('click')).not.toThrow();
+    expect(elements.scoreSection.innerHTML).toContain('텍스트를 입력하고 검사해 주세요');
+    expect(elements.highlightCard.style.display).toBe('none');
+    expect(elements.issuesCard.style.display).toBe('none');
+    expect(elements.improvedCard.style.display).toBe('none');
+    expect(elements.shareLinkBtn.disabled).toBe(true);
+    expect(elements.toast.textContent).toBe('❌ 검사 중 오류가 발생했습니다. 다시 시도해 주세요');
+  });
+
+  it('treats malformed lint-engine responses as recoverable failures', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.scoreSection.innerHTML).toContain('82');
+    expect(elements.highlightCard.style.display).toBe('block');
+    expect(elements.issuesCard.style.display).toBe('block');
+    expect(elements.improvedCard.style.display).toBe('block');
+
+    context.KRDSLint.lint = vi.fn(() => ({
+      score: 82,
+      summary: null,
+      issues: null,
+    }));
+
+    expect(() => elements.lintBtn.dispatch('click')).not.toThrow();
+    expect(elements.scoreSection.innerHTML).toContain('텍스트를 입력하고 검사해 주세요');
+    expect(elements.highlightCard.style.display).toBe('none');
+    expect(elements.issuesCard.style.display).toBe('none');
+    expect(elements.improvedCard.style.display).toBe('none');
+    expect(elements.shareLinkBtn.disabled).toBe(true);
+    expect(elements.toast.textContent).toBe('❌ 검사 중 오류가 발생했습니다. 다시 시도해 주세요');
+  });
+
+  it('synchronizes the theme toggle label and icon with the restored theme on load', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-theme', 'dark');
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(context.document.documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(elements.themeToggle.textContent).toBe('☀️');
+    expect(elements.themeToggle.getAttribute('aria-label')).toBe('라이트모드 전환');
+  });
+
+  it('hides the CLI recommendation banner after the source text changes', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 42,
+        summary: { errors: 3, warnings: 1, infos: 0 },
+        issues: [{
+          line: 1,
+          col: 1,
+          severity: 'error',
+          category: '행정어',
+          message: '"귀하"는 어려운 표현입니다.',
+          match: '귀하',
+          suggestion: '→ 당신',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+    expect(elements.cliBanner.style.display).toBe('block');
+
+    elements.inputText.value = '수정된 문장입니다.';
+    elements.inputText.dispatch('input');
+
+    expect(elements.cliBanner.style.display).toBe('none');
+  });
+
+  it('treats severity filters as pressed buttons and updates the filtered list', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 60,
+        summary: { errors: 1, warnings: 1, infos: 1 },
+        issues: [
+          {
+            line: 1,
+            col: 1,
+            severity: 'error',
+            category: '행정어',
+            message: '"귀하"는 어려운 표현입니다.',
+            match: '귀하',
+            suggestion: '→ 당신',
+            type: 'admin-jargon',
+          },
+          {
+            line: 2,
+            col: 1,
+            severity: 'warning',
+            category: '패턴',
+            message: '"되어지다"는 이중 피동 표현입니다.',
+            match: '되어지다',
+            suggestion: '→ 되다',
+            type: 'double-passive',
+          },
+          {
+            line: 3,
+            col: 1,
+            severity: 'info',
+            category: '안내',
+            message: '"잠시" 표현을 구체화해 보세요.',
+            match: '잠시',
+            suggestion: '→ 3분 뒤',
+            type: 'vague-time',
+          },
+        ],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하\n되어지다\n잠시';
+    elements.lintBtn.dispatch('click');
+
+    const warningTab = context.document.querySelectorAll('.filter-tab')[2];
+    warningTab.dispatch('click');
+
+    expect(warningTab.classList.contains('active')).toBe(true);
+    expect(warningTab.getAttribute('aria-pressed')).toBe('true');
+    expect(context.document.querySelectorAll('.filter-tab')[0].getAttribute('aria-pressed')).toBe('false');
+    expect(elements.issuesList.innerHTML).toContain('되어지다');
+    expect(elements.issuesList.innerHTML).not.toContain('귀하');
+    expect(elements.issuesList.innerHTML).not.toContain('잠시');
+  });
+
+  it('falls back safely when clipboard.writeText is unavailable and reports copy failure truthfully', () => {
+    const { context, elements } = buildContext();
+    context.navigator.clipboard = {};
+    context.document.execCommand = vi.fn(() => false);
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    expect(() => elements.copyImprovedBtn.dispatch('click')).not.toThrow();
+    expect(context.document.execCommand).toHaveBeenCalledWith('copy');
+    expect(elements.toast.textContent).toBe('❌ 개선문 복사에 실패했습니다');
+  });
+
+  it('keeps the latest copy-button feedback visible when the result is copied repeatedly', async () => {
+    const { context, elements, timers } = buildContext({ manualTimers: true });
+    context.navigator.clipboard = {
+      writeText: vi.fn(() => Promise.resolve()),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    elements.copyBtn.dispatch('click');
+    await Promise.resolve();
+
+    const firstResetTimerId = [...timers.entries()].find(([, timer]) => timer.delay === 2000)?.[0];
+    expect(firstResetTimerId).toBeDefined();
+    expect(elements.copyBtn.textContent).toBe('✅ 복사됨');
+
+    elements.copyBtn.dispatch('click');
+    await Promise.resolve();
+
+    const staleResetTimer = timers.get(firstResetTimerId);
+    if (staleResetTimer) {
+      timers.delete(firstResetTimerId);
+      staleResetTimer.fn();
+    }
+
+    expect(elements.copyBtn.textContent).toBe('✅ 복사됨');
+
+    const latestResetTimer = [...timers.entries()].find(([, timer]) => timer.delay === 2000);
+    expect(latestResetTimer).toBeDefined();
+    latestResetTimer[1].fn();
+
+    expect(elements.copyBtn.innerHTML).toBe('<span aria-hidden="true">📋</span> 결과 복사');
+  });
+
+  it('keeps the latest successful result-copy feedback when an older async copy fails later', async () => {
+    let settleFirst;
+    let callCount = 0;
+    const { context, elements } = buildContext({ manualTimers: true });
+    context.navigator.clipboard = {
+      writeText: vi.fn(() => {
+        callCount += 1;
+        if (callCount === 1) {
+          return new Promise((resolve, reject) => {
+            settleFirst = { resolve, reject };
+          });
+        }
+        return Promise.resolve();
+      }),
+    };
+    context.document.execCommand = vi.fn(() => false);
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    elements.copyBtn.dispatch('click');
+    elements.copyBtn.dispatch('click');
+    await Promise.resolve();
+
+    expect(elements.copyBtn.textContent).toBe('✅ 복사됨');
+
+    settleFirst.reject(new Error('denied'));
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(elements.copyBtn.textContent).toBe('✅ 복사됨');
+    expect(context.document.execCommand).toHaveBeenCalledWith('copy');
+  });
+
+  it('falls back to a built-in text formatter when KRDSLint.formatCLI is unavailable', async () => {
+    const { context, elements } = buildContext();
+    context.navigator.clipboard = {
+      writeText: vi.fn(() => Promise.resolve()),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    context.KRDSLint.formatCLI = undefined;
+
+    await expect(async () => {
+      elements.copyBtn.dispatch('click');
+      await Promise.resolve();
+    }).not.toThrow();
+
+    expect(context.navigator.clipboard.writeText).toHaveBeenCalledTimes(1);
+    expect(context.navigator.clipboard.writeText.mock.calls[0][0]).toContain('KRDS UX Writing 검사 결과');
+    expect(context.navigator.clipboard.writeText.mock.calls[0][0]).toContain('품질 점수: 82/100');
+    expect(elements.copyBtn.textContent).toBe('✅ 복사됨');
+  });
+
+  it('uses only the first slash-separated suggestion when rendering improved text', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1,
+          col: 3,
+          severity: 'error',
+          category: '과도한 경어',
+          message: '행정어/금지어: "하여야 합니다"',
+          match: '하여야 합니다',
+          suggestion: '→ 해야 합니다 / 하세요',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '납부하여야 합니다.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).toBe('납부해야 합니다.');
+  });
+
+  it('replaces only the detected jargon occurrence when the same term appears multiple times', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1,
+          col: 1,
+          severity: 'error',
+          category: '행정어',
+          message: '행정어/금지어: "귀하"',
+          match: '귀하',
+          suggestion: '→ 고객님',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하 안내 후 귀하 서명해 주세요.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).toBe('고객님 안내 후 귀하 서명해 주세요.');
+  });
+
+  it('does not split replacement text on commas that are inside explanatory parentheses', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1,
+          col: 1,
+          severity: 'error',
+          category: '전문 용어',
+          message: '행정어/금지어: "창설적 신분행위"',
+          match: '창설적 신분행위',
+          suggestion: '→ 법적 신분 변경 (결혼, 입양 등)',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '창설적 신분행위가 필요합니다.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).toBe('법적 신분 변경 (결혼, 입양 등)이 필요합니다.');
+  });
+
+  it('keeps the particle "로" after replacement text that ends with final rieul', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1,
+          col: 1,
+          severity: 'error',
+          category: '행정어',
+          message: '행정어/금지어: "서류"',
+          match: '서류',
+          suggestion: '→ 파일',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '서류로 제출해 주세요.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).toBe('파일로 제출해 주세요.');
+  });
+
+  it('shows a failure toast when CSV download APIs are unavailable', () => {
+    const { context, elements } = buildContext();
+    context.URL = {
+      revokeObjectURL() {},
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    expect(() => elements.downloadBtn.dispatch('click')).not.toThrow();
+    expect(elements.toast.textContent).toBe('❌ CSV 다운로드에 실패했습니다');
+  });
+
+  it('shows a failure toast when link sharing falls back and copy still fails', async () => {
+    const { context, elements } = buildContext();
+    context.navigator.clipboard = {
+      writeText: vi.fn(() => Promise.reject(new Error('denied'))),
+    };
+    context.document.execCommand = vi.fn(() => false);
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+    elements.shareLinkBtn.dispatch('click');
+
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(context.navigator.clipboard.writeText).toHaveBeenCalledTimes(1);
+    expect(context.document.execCommand).toHaveBeenCalledWith('copy');
+    expect(elements.toast.textContent).toBe('❌ 링크 복사에 실패했습니다');
+  });
+
+  it('builds share URLs from the page location without leaving the query string behind the hash', async () => {
+    const { context, elements } = buildContext();
+    context.window.location.href = 'https://example.com/lint.html#examples';
+    context.window.location.search = '';
+    context.navigator.clipboard = {
+      writeText: vi.fn(() => Promise.resolve()),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+    elements.shareLinkBtn.dispatch('click');
+
+    await Promise.resolve();
+
+    expect(context.navigator.clipboard.writeText).toHaveBeenCalledWith(
+      'https://example.com/lint.html?t=' + encodeURIComponent('귀하의 신청이 접수되었습니다.'),
+    );
+    expect(elements.toast.textContent).toBe('✅ 링크가 클립보드에 복사되었습니다');
+  });
+
+  it('keeps the latest successful toast when an older async copy action fails later', async () => {
+    let settleFirst;
+    let callCount = 0;
+    const { context, elements } = buildContext({ manualTimers: true });
+    context.navigator.clipboard = {
+      writeText: vi.fn(() => {
+        callCount += 1;
+        if (callCount === 1) {
+          return new Promise((resolve, reject) => {
+            settleFirst = { resolve, reject };
+          });
+        }
+        return Promise.resolve();
+      }),
+    };
+    context.document.execCommand = vi.fn(() => false);
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    elements.copyImprovedBtn.dispatch('click');
+    elements.copyImprovedBtn.dispatch('click');
+    await Promise.resolve();
+
+    expect(elements.toast.textContent).toBe('✅ 개선문이 복사되었습니다');
+
+    settleFirst.reject(new Error('denied'));
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(elements.toast.textContent).toBe('✅ 개선문이 복사되었습니다');
+    expect(context.document.execCommand).toHaveBeenCalledWith('copy');
+  });
+
+  it('recovers from corrupted saved history and stores the latest lint result', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-lint-history', '{"oops":true}');
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    const history = JSON.parse(context.localStorage.getItem('krds-lint-history'));
+    expect(Array.isArray(history)).toBe(true);
+    expect(history).toHaveLength(1);
+    expect(history[0].fullText).toBe('귀하의 신청이 접수되었습니다.');
+    expect(history[0].text).toBe('귀하의 신청이 접수되었습니다.');
+    expect(elements.historyCard.style.display).toBe('block');
+    expect(elements.historyList.innerHTML).toContain('이슈 1개');
+  });
+
+  it('ignores non-element history click targets without throwing', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      {
+        date: '2026. 6. 9.',
+        score: 82,
+        text: '귀하의 신청이 접수되었습니다.',
+        fullText: '귀하의 신청이 접수되었습니다.',
+        issueCount: 1,
+      },
+    ]));
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(() => {
+      elements.historyList.dispatch('click', { target: { nodeType: 3 } });
+    }).not.toThrow();
+    expect(elements.inputText.value).toBe('');
+  });
+});
