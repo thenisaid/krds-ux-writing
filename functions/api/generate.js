@@ -1,3 +1,5 @@
+import { buildApiEndpoint, getAnthropicApiKey } from '../../api/shared/anthropic-edge.js';
+
 // ---------------------------------------------------------------------------
 // 상수
 // ---------------------------------------------------------------------------
@@ -6,25 +8,24 @@ const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1시간
 const RATE_LIMIT_MAP_MAX = 1000;
 const rateLimitMap = new Map();
 
-const ALLOWED_ORIGINS = [
+const ALLOWED_ORIGINS = new Set([
   'https://thenisaid.github.io',
-  'http://localhost:8300',
   'http://localhost:3000',
-];
-
-function getCorsOrigin(request) {
-  const origin = request.headers.get('Origin') || '';
-  return ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-}
+  'http://127.0.0.1:3000',
+  'http://localhost:8300',
+  'http://127.0.0.1:8300',
+]);
 
 const VALID_AGENCY_TYPES = [
-  '시청/군청/구청 (지방자치단체)',
-  '광역시도청 (광역자치단체)',
-  '중앙행정기관 (부/처/청)',
-  '공공기관/공기업 (공사/공단/공단)',
-  '교육기관 (교육청/대학교)',
-  '기타 공공기관',
+  '지방자치단체',
+  '광역자치단체',
+  '중앙행정기관',
+  '공공기관',
+  '교육기관',
+  '기타공공기관',
 ];
+const SERVICE_CONFIG_ERROR =
+  'AI 서비스 구성이 완료되지 않았습니다. 관리자에게 문의해 주세요.';
 
 const KRDS_SYSTEM_PROMPT = `당신은 KRDS(Korea Reference Design System) UX Writing 전문가입니다.
 다음 KRDS 3대 원칙에 근거하여, 입력받은 기관 정보와 샘플 텍스트를 분석한 뒤 해당 기관 맞춤 UX Writing 가이드라인 초안을 작성하세요.
@@ -101,37 +102,60 @@ const KRDS_SYSTEM_PROMPT = `당신은 KRDS(Korea Reference Design System) UX Wri
 // ---------------------------------------------------------------------------
 // 유틸
 // ---------------------------------------------------------------------------
-function jsonResponse(data, status) {
+function jsonResponse(data, status, extraHeaders) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(extraHeaders || {}),
+    },
   });
 }
 
 function getClientIp(request) {
-  return (
-    request.headers.get('cf-connecting-ip') ||          // Cloudflare 전용 헤더
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    request.headers.get('x-real-ip') ||
-    'unknown'
-  );
+  const cfIp = request.headers.get('cf-connecting-ip');
+  if (cfIp) return cfIp.trim();
+  const realIp = request.headers.get('x-real-ip')?.trim();
+  if (realIp) return realIp;
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    const clientIp = forwarded
+      .split(',')
+      .map((part) => part.trim())
+      .find(Boolean);
+    if (clientIp) return clientIp;
+  }
+  return 'unknown';
+}
+
+function getCorsHeaders(origin) {
+  const allowed = ALLOWED_ORIGINS.has(origin) ? origin : null;
+  return {
+    ...(allowed ? { 'Access-Control-Allow-Origin': allowed } : {}),
+    'Vary': 'Origin',
+  };
+}
+
+function isRequestPayloadObject(body) {
+  return !!body && typeof body === 'object' && !Array.isArray(body);
 }
 
 function checkRateLimit(ip) {
   const now = Date.now();
-
-  if (rateLimitMap.size >= RATE_LIMIT_MAP_MAX) {
-    for (const [k] of rateLimitMap) {
-      rateLimitMap.delete(k);
-      if (rateLimitMap.size < RATE_LIMIT_MAP_MAX) break;
-    }
-  }
-
   const entry = rateLimitMap.get(ip);
 
   if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
-    rateLimitMap.set(ip, { windowStart: now, count: 1 });
-    return true;
+    if (rateLimitMap.size >= RATE_LIMIT_MAP_MAX) {
+      for (const [k, v] of rateLimitMap) {
+        if (now - v.windowStart > RATE_LIMIT_WINDOW_MS) rateLimitMap.delete(k);
+        if (rateLimitMap.size < RATE_LIMIT_MAP_MAX) break;
+      }
+    }
+    if (rateLimitMap.size < RATE_LIMIT_MAP_MAX) {
+      rateLimitMap.set(ip, { windowStart: now, count: 1 });
+      return true;
+    }
+    return false;
   }
 
   if (entry.count >= RATE_LIMIT_MAX) {
@@ -146,26 +170,29 @@ function checkRateLimit(ip) {
 // Cloudflare Pages Functions 핸들러
 // ---------------------------------------------------------------------------
 export async function onRequestOptions(context) {
+  const origin = context.request.headers.get('Origin') || context.request.headers.get('origin') || '';
   return new Response(null, {
     status: 204,
     headers: {
-      'Access-Control-Allow-Origin': getCorsOrigin(context.request),
+      ...getCorsHeaders(origin),
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
-      'Vary': 'Origin',
     },
   });
 }
 
 export async function onRequestPost(context) {
   const { request, env } = context;
+  const origin = request.headers.get('Origin') || request.headers.get('origin') || '';
+  const corsHeaders = getCorsHeaders(origin);
 
   // 레이트 리밋
   const ip = getClientIp(request);
   if (!checkRateLimit(ip)) {
     return jsonResponse(
       { error: '요청 한도를 초과했습니다. 1시간 후 다시 시도해 주세요.' },
-      429
+      429,
+      corsHeaders
     );
   }
 
@@ -174,7 +201,11 @@ export async function onRequestPost(context) {
   try {
     body = await request.json();
   } catch {
-    return jsonResponse({ error: '요청 형식이 올바르지 않습니다.' }, 400);
+    return jsonResponse({ error: '요청 형식이 올바르지 않습니다.' }, 400, corsHeaders);
+  }
+
+  if (!isRequestPayloadObject(body)) {
+    return jsonResponse({ error: '요청 형식이 올바르지 않습니다.' }, 400, corsHeaders);
   }
 
   const { agencyName, agencyType, samples } = body;
@@ -187,21 +218,32 @@ export async function onRequestPost(context) {
   ) {
     return jsonResponse(
       { error: '기관명은 1~50자 사이여야 합니다.' },
-      400
+      400,
+      corsHeaders
     );
   }
 
   if (!VALID_AGENCY_TYPES.includes(agencyType)) {
     return jsonResponse(
       { error: '올바른 기관 유형을 선택해 주세요.' },
-      400
+      400,
+      corsHeaders
     );
   }
 
   if (!Array.isArray(samples) || samples.length === 0) {
     return jsonResponse(
       { error: '샘플 텍스트를 1개 이상 입력해 주세요.' },
-      400
+      400,
+      corsHeaders
+    );
+  }
+
+  if (samples.length > 3) {
+    return jsonResponse(
+      { error: '샘플 텍스트는 최대 3개까지 입력할 수 있습니다.' },
+      400,
+      corsHeaders
     );
   }
 
@@ -212,7 +254,8 @@ export async function onRequestPost(context) {
   if (validSamples.length === 0) {
     return jsonResponse(
       { error: '유효한 샘플 텍스트를 1개 이상 입력해 주세요.' },
-      400
+      400,
+      corsHeaders
     );
   }
 
@@ -220,9 +263,23 @@ export async function onRequestPost(context) {
     if (s.trim().length > 500) {
       return jsonResponse(
         { error: '각 샘플 텍스트는 500자 이하여야 합니다.' },
-        400
+        400,
+        corsHeaders
       );
     }
+  }
+
+  const anthropicApiKey = getAnthropicApiKey(
+    env.ANTHROPIC_BASE_URL,
+    env.ANTHROPIC_API_KEY
+  );
+
+  if (!anthropicApiKey) {
+    return jsonResponse(
+      { error: SERVICE_CONFIG_ERROR },
+      503,
+      corsHeaders
+    );
   }
 
   // 샘플 구성
@@ -249,12 +306,12 @@ ${samplesText}
   (async () => {
     try {
       const claudeResponse = await fetch(
-        'https://api.anthropic.com/v1/messages',
+        buildApiEndpoint(env.ANTHROPIC_BASE_URL),
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-api-key': env.ANTHROPIC_API_KEY,   // Cloudflare Secret
+            'x-api-key': anthropicApiKey,
             'anthropic-version': '2023-06-01',
           },
           body: JSON.stringify({
@@ -280,6 +337,55 @@ ${samplesText}
       const reader = claudeResponse.body.getReader();
       const decoder = new TextDecoder('utf-8');
       let buffer = '';
+      let sawContent = false;
+
+      function getSseDataPayload(line) {
+        const trimmed = String(line || '').trim();
+        if (!trimmed.startsWith('data:')) return null;
+
+        const data = trimmed.slice(5);
+        return data.startsWith(' ') ? data.slice(1) : data;
+      }
+
+      function processClaudeLine(line) {
+        const jsonStr = getSseDataPayload(line);
+        if (jsonStr === null) return false;
+        if (jsonStr === '[DONE]') return false;
+
+        let evt;
+        try {
+          evt = JSON.parse(jsonStr);
+        } catch {
+          return false;
+        }
+
+        if (
+          evt.type === 'content_block_delta' &&
+          evt.delta?.type === 'text_delta'
+        ) {
+          sawContent = true;
+          writeSSE({ type: 'chunk', text: evt.delta.text });
+          return false;
+        }
+
+        if (evt.type === 'message_stop') {
+          writeSSE({ type: 'done' });
+          writer.close();
+          return true;
+        }
+
+        if (evt.type === 'error') {
+          writeSSE({
+            type: 'error',
+            message:
+              'AI 처리 중 오류가 발생했습니다. 다시 시도하거나 기본 양식을 사용해 주세요.',
+          });
+          writer.close();
+          return true;
+        }
+
+        return false;
+      }
 
       try {
         while (true) {
@@ -291,42 +397,24 @@ ${samplesText}
           buffer = lines.pop();
 
           for (const line of lines) {
-            const trimmed = line.trim();
-
-            if (trimmed.startsWith('data: ')) {
-              const jsonStr = trimmed.slice(6);
-              if (jsonStr === '[DONE]') continue;
-
-              let evt;
-              try {
-                evt = JSON.parse(jsonStr);
-              } catch {
-                continue;
-              }
-
-              if (
-                evt.type === 'content_block_delta' &&
-                evt.delta?.type === 'text_delta'
-              ) {
-                writeSSE({ type: 'chunk', text: evt.delta.text });
-              } else if (evt.type === 'message_stop') {
-                writeSSE({ type: 'done' });
-                writer.close();
-                return;
-              } else if (evt.type === 'error') {
-                writeSSE({
-                  type: 'error',
-                  message:
-                    'AI 처리 중 오류가 발생했습니다. 다시 시도하거나 기본 양식을 사용해 주세요.',
-                });
-                writer.close();
-                return;
-              }
-            }
+            if (processClaudeLine(line)) return;
           }
         }
 
-        writeSSE({ type: 'done' });
+        buffer += decoder.decode();
+        if (buffer.trim()) {
+          if (processClaudeLine(buffer)) return;
+        }
+
+        if (sawContent) {
+          writeSSE({ type: 'done' });
+        } else {
+          writeSSE({
+            type: 'error',
+            message:
+              'AI 서비스 연결에 실패했습니다. 잠시 후 다시 시도하거나 기본 양식을 사용해 주세요.',
+          });
+        }
         writer.close();
       } catch {
         writeSSE({
@@ -351,8 +439,7 @@ ${samplesText}
     headers: {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
-      'Access-Control-Allow-Origin': getCorsOrigin(request),
-      'Vary': 'Origin',
+      ...corsHeaders,
     },
   });
 }

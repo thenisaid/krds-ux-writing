@@ -143,6 +143,8 @@ lsof -ti:8300 | xargs kill -9 2>/dev/null
 | `principles.md` | KRDS UX Writing 3대 원칙 (무번역·정보핵심화·심리적안전망) 가이드라인 본문 |
 | `krds-site-analysis.md` | KRDS 공식 사이트 UX Writing 관점 분석 보고서 (2026-04-08) |
 | `response-strategy.md` | KRDS 대응 방안 전략 (Depth Extension 프레임, 10개 공백 매핑) |
+| `dry-run-protocol.md` | MVP 내부 검증(Dry-run) 진행 가이드 — 30분 세션 스크립트, Before/After 기록 양식 |
+| `dry-run-samples.md` | Dry-run 테스트용 샘플 AI 시스템 프롬프트 3개 — 린터 검출 패턴 포함, 검증 완료 |
 
 ---
 
