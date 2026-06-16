@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="행정어 대체어 사전 전체 공개본. 대표 코퍼스에서 정리한 274개 용어 전체를 검색·필터와 함께 공개합니다.">
+  <title>행정어 대체어 사전 전체 공개본 | KRDS UX Writing</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
+  <script>(function(){var prefersDark=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches;var t='light';try{t=localStorage.getItem('krds-theme')||(prefersDark?'dark':'light');}catch(e){t=prefersDark?'dark':'light';}if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #256ef4;
+      --color-primary-hover: #1a5ed8;
+      --color-bg: #f8f7f5;
+      --color-surface: #ffffff;
+      --color-border: #e0ddd8;
+      --color-border-light: #ede9e3;
+      --color-text: #1a1a1a;
+      --color-text-muted: #666;
+      --color-text-subtle: #999;
+      --font: 'Pretendard GOV Variable', Pretendard, -apple-system, sans-serif;
+    }
+    [data-theme="dark"] {
+      --color-bg: #0f1117;
+      --color-surface: #1a1d24;
+      --color-border: #2a2d35;
+      --color-border-light: #222530;
+      --color-text: #f0f0f0;
+      --color-text-muted: #9ca3af;
+      --color-text-subtle: #6b7280;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.5;
+      background: var(--color-bg);
+      color: var(--color-text);
+    }
+    .skip-link {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      transform: translateY(-200%);
+      padding: 12px 20px;
+      background: var(--color-primary);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 6px;
+      text-decoration: none;
+      z-index: 9999;
+      transition: transform 0.15s ease;
+    }
+    .skip-link:focus {
+      transform: translateY(0);
+      outline: 3px solid #ffffff;
+      outline-offset: -3px;
+    }
+    .gnb {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(248,247,245,.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--color-border);
+      height: 60px;
+      display: flex; align-items: center;
+      padding: 0 24px; gap: 0;
+    }
+    [data-theme="dark"] .gnb { background: rgba(15,17,23,.92); }
+    .gnb-logo {
+      font-size: 13px; font-weight: 700; color: var(--color-text);
+      display: flex; align-items: center; gap: 8px;
+      flex-shrink: 0; text-decoration: none;
+      margin-right: 24px;
+    }
+    .gnb-logo:hover { text-decoration: none; }
+    .gnb-logo-mark {
+      width: 24px; height: 24px; border-radius: 5px;
+      background: var(--color-primary); color: #fff;
+      font-size: 11px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .gnb-nav { display: flex; align-items: center; gap: 2px; flex: 1; }
+    .gnb-nav-link {
+      font-size: 13px; font-weight: 500; color: var(--color-text-muted);
+      padding: 6px 12px; border-radius: 6px;
+      text-decoration: none; transition: color 0.15s, background 0.15s;
+      white-space: nowrap;
+    }
+    .gnb-nav-link:hover { color: var(--color-text); text-decoration: none; }
+    .gnb-nav-link.active { color: var(--color-primary); font-weight: 700; background: rgba(37,110,244,0.06); }
+    .gnb-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
+    .gnb-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+      padding: 2px 8px; border-radius: 3px;
+      border: 1px solid var(--color-border); color: var(--color-text-muted);
+    }
+    .gnb-icon-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--color-text-muted); display: flex; align-items: center;
+      padding: 6px; border-radius: 6px; transition: background 0.15s, color 0.15s;
+    }
+    .gnb-icon-btn:hover { color: var(--color-text); }
+    @media (max-width: 720px) {
+      .gnb {
+        height: auto;
+        padding: 12px 16px;
+        flex-wrap: wrap;
+        row-gap: 10px;
+      }
+      .gnb-logo { margin-right: 0; }
+      .gnb-nav {
+        flex-basis: 100%;
+        order: 3;
+        overflow-x: auto;
+        gap: 8px;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+      }
+      .gnb-nav::-webkit-scrollbar { display: none; }
+      .gnb-nav-link { flex-shrink: 0; }
+      .gnb-badge { display: none; }
+    }
+    .hero {
+      padding: 56px 24px 40px;
+      text-align: center;
+      border-bottom: 1px solid var(--color-border-light);
+      background:
+        radial-gradient(circle at top, rgba(37,110,244,0.08), transparent 42%),
+        linear-gradient(180deg, rgba(255,255,255,0.7), transparent);
+    }
+    [data-theme="dark"] .hero {
+      background:
+        radial-gradient(circle at top, rgba(134,175,249,0.12), transparent 44%),
+        linear-gradient(180deg, rgba(26,29,36,0.9), transparent);
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 700; letter-spacing: .04em;
+      color: var(--color-primary);
+      background: rgba(37,110,244,.08);
+      padding: 5px 14px; border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(28px, 4vw, 38px);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .hero p {
+      font-size: 16px;
+      color: var(--color-text-muted);
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      max-width: 720px;
+      margin: 28px auto 0;
+    }
+    .stat {
+      padding: 18px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--color-border-light);
+      background: var(--color-surface);
+    }
+    .stat-num { font-size: 26px; font-weight: 800; color: var(--color-primary); line-height: 1; }
+    .stat-label { font-size: 13px; color: var(--color-text-muted); margin-top: 6px; }
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+    .hero-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .hero-link:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      text-decoration: none;
+      background: rgba(37,110,244,.04);
+    }
+    .main { max-width: 1120px; margin: 0 auto; padding: 32px 24px 80px; }
+    .dataset-note {
+      margin-bottom: 24px;
+      padding: 18px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(37,110,244,.16);
+      background: rgba(37,110,244,.05);
+      color: var(--color-text-muted);
+      line-height: 1.7;
+    }
+    .dataset-note strong { color: var(--color-text); }
+    .dataset-note a {
+      color: var(--color-primary);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .dataset-note a:hover { text-decoration: underline; }
+    .search-wrap { position: relative; margin-bottom: 20px; }
+    .search-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: var(--color-text-muted);
+    }
+    .search-input {
+      width: 100%; height: 46px;
+      padding: 0 44px 0 44px;
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      font-family: var(--font); font-size: 15px;
+      background: var(--color-surface);
+      color: var(--color-text);
+    }
+    .search-clear {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      width: 28px; height: 28px; border: none; border-radius: 999px;
+      background: transparent; color: var(--color-text-muted);
+      font-size: 18px; cursor: pointer; display: none;
+    }
+    .filter-bar {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin-bottom: 16px;
+    }
+    .filter-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text-muted);
+      font-family: var(--font); font-size: 13px; font-weight: 700;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .filter-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    .filter-btn.active {
+      color: var(--color-primary);
+      border-color: rgba(37,110,244,.28);
+      background: rgba(37,110,244,.08);
+    }
+    .filter-btn .count {
+      min-width: 24px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(37,110,244,.12);
+      color: var(--color-primary);
+      font-size: 12px;
+      text-align: center;
+    }
+    .filter-btn:not(.active) .count {
+      background: rgba(0,0,0,.05);
+      color: var(--color-text-muted);
+    }
+    .result-bar {
+      font-size: 14px;
+      color: var(--color-text-muted);
+      margin-bottom: 16px;
+    }
+    .table-wrap {
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--color-surface);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      padding: 16px 18px;
+      text-align: left;
+      font-size: 13px;
+      color: var(--color-text-muted);
+      background: rgba(37,110,244,.04);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    tbody td {
+      padding: 16px 18px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--color-border-light);
+      vertical-align: top;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    .td-bad { width: 24%; font-weight: 700; color: #b42318; }
+    .td-good { width: 28%; font-weight: 700; color: #027a48; }
+    .td-ctx { color: var(--color-text-muted); line-height: 1.7; }
+    .cat-tag {
+      display: inline-block;
+      margin-right: 8px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      vertical-align: middle;
+    }
+    .cat-admin  { background: #fef3c7; color: #92400e; }
+    .cat-double { background: #fee2e2; color: #991b1b; }
+    .cat-foreign{ background: #e0f2fe; color: #075985; }
+    .cat-ornate { background: #f3e8ff; color: #7c3aed; }
+    .cat-formal { background: #f0fdf4; color: #15803d; }
+    .empty-state {
+      display: none;
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--color-text-muted);
+    }
+    .empty-state svg { margin-bottom: 12px; color: var(--color-text-subtle); }
+    .page-footer {
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--color-text-muted);
+      line-height: 1.8;
+    }
+    .page-footer a { color: var(--color-primary); text-decoration: none; }
+    .page-footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .hero-stats { grid-template-columns: 1fr; }
+      table { min-width: 760px; }
+      .table-wrap { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">본문 바로가기</a>
+
+<header class="gnb">
+  <a href="/krds-ux-writing/" class="gnb-logo" aria-label="KRDS UX Writing 가이드라인 홈">
+    <span class="gnb-logo-mark" aria-hidden="true">K</span>
+    <span>UX Writing</span>
+  </a>
+  <nav class="gnb-nav" aria-label="섹션 내비게이션">
+    <a href="/krds-ux-writing/principles/" class="gnb-nav-link" data-section="principles">원칙</a>
+    <a href="/krds-ux-writing/dictionary/" class="gnb-nav-link" data-section="dictionary">사전</a>
+    <a href="/krds-ux-writing/case-studies/" class="gnb-nav-link" data-section="case-studies">사례</a>
+    <a href="/krds-ux-writing/corpus/" class="gnb-nav-link" data-section="corpus">코퍼스</a>
+  </nav>
+  <div class="gnb-actions">
+    <span class="gnb-badge">Full 274</span>
+    <button class="gnb-icon-btn" id="themeToggle" aria-label="다크 모드로 전환" type="button"></button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-tag">코퍼스 공개본</div>
+  <h1>행정어 대체어 사전 전체 공개본</h1>
+  <p>대표 사이트 8종과 대한민국법원 보조 표본에서 정리한 전체 274개 용어를 그대로 공개합니다.<br>
+     현재 공개 사전 페이지는 선별본 50개를 먼저 보여주고, 여기서는 전체 사전을 검색과 카테고리 필터로 바로 확인할 수 있게 열어 둡니다.</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num" id="fullGlossaryTotal">0</div>
+      <div class="stat-label">전체 공개 용어</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="fullGlossaryCategoryCount">0</div>
+      <div class="stat-label">카테고리</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="fullGlossaryGenerated">-</div>
+      <div class="stat-label">생성 기준일</div>
+    </div>
+  </div>
+  <div class="hero-actions">
+    <a class="hero-link" href="/krds-ux-writing/dictionary/">현재 공개 50개 보기 →</a>
+    <a class="hero-link" href="/krds-ux-writing/corpus/">코퍼스 공개 현황 보기 →</a>
+  </div>
+</section>
+
+<main class="main" id="main-content">
+  <div class="dataset-note">
+    <strong>이 페이지는 전체 공개본입니다.</strong> 현재 <a href="/krds-ux-writing/dictionary/">사전 페이지</a>는 먼저 공개한 선별본 50개를 유지합니다.
+    반대로 이 페이지는 <code>jargon-dictionary.json</code>에 들어 있는 전체 274개 항목을 그대로 공개해,
+    “왜 이렇게 적게 보이느냐”는 질문에 바로 답할 수 있는 원본 보기 역할을 맡습니다.
+  </div>
+
+  <div class="search-wrap">
+    <svg class="search-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <circle cx="9" cy="9" r="6"></circle>
+      <path d="M15 15l3 3"></path>
+    </svg>
+    <input type="search" id="searchInput" class="search-input" placeholder="전체 사전 검색 (예: 귀하, 인지대, 피부양자...)" aria-label="행정어 검색">
+    <button class="search-clear" id="searchClear" aria-label="검색어 지우기">×</button>
+  </div>
+
+  <div class="filter-bar" role="group" aria-label="카테고리 필터">
+    <button class="filter-btn active" data-cat="all" aria-pressed="true">전체 <span class="count">0</span></button>
+    <button class="filter-btn" data-cat="admin" aria-pressed="false">행정관습어 <span class="count">0</span></button>
+    <button class="filter-btn" data-cat="double" aria-pressed="false">이중부정 <span class="count">0</span></button>
+    <button class="filter-btn" data-cat="foreign" aria-pressed="false">외래어·전문용어 <span class="count">0</span></button>
+    <button class="filter-btn" data-cat="ornate" aria-pressed="false">과도한수식 <span class="count">0</span></button>
+    <button class="filter-btn" data-cat="formal" aria-pressed="false">과도한경어 <span class="count">0</span></button>
+  </div>
+
+  <div class="result-bar">
+    <span id="resultCount"><strong>0</strong>개 용어</span>
+  </div>
+
+  <div class="table-wrap">
+    <table aria-label="행정어 대체어 사전 전체 공개본">
+      <thead>
+        <tr>
+          <th scope="col">쓰지 마세요</th>
+          <th scope="col">대신 쓰세요</th>
+          <th scope="col">사용 맥락</th>
+        </tr>
+      </thead>
+      <tbody id="dictBody"></tbody>
+    </table>
+  </div>
+
+  <div class="empty-state" id="emptyState">
+    <svg width="42" height="42" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <circle cx="20" cy="20" r="10"></circle>
+      <path d="M28 28l12 12"></path>
+    </svg>
+    <p>검색 결과가 없습니다.<br>다른 용어 또는 카테고리로 다시 확인해 보세요.</p>
+  </div>
+
+  <p class="page-footer">
+    출처: <a href="/krds-ux-writing/jargon-dictionary.json">jargon-dictionary.json</a> /
+    생성 원본: <a href="/krds-ux-writing/research/public-service-corpus.md">research/public-service-corpus.md</a> /
+    선별본: <a href="/krds-ux-writing/dictionary/">현재 공개 50개</a> /
+    코퍼스 허브: <a href="/krds-ux-writing/corpus/">코퍼스 공개 현황</a>
+  </p>
+</main>
+
+<script src="../jargon-dictionary.js"></script>
+<script src="full.js"></script>
+<script src="../shared/base-path.js"></script>
+<script src="../shared/nav.js"></script>
+</body>
+</html>
