@@ -12,8 +12,9 @@
   var currentMarkdown  = '';
   var currentAgency    = '';
   var abortController  = null;
-  var cancelled        = false;
+  var outputFocusTimer = null;
   var statusTimers     = [];
+  var activeRunToken   = 0;
 
   /* ── DOM 참조 ── */
   var form             = document.getElementById('generator-form');
@@ -36,9 +37,55 @@
   var downloadBtn      = document.getElementById('download-btn');
   var restartBtn       = document.getElementById('restart-btn');
   var downloadError    = document.getElementById('download-error');
+  var dlChevron        = document.getElementById('dl-chevron');
+  var dlMenu           = document.getElementById('dl-menu');
+
+  // HTML 구조가 드리프트해도 페이지 전체가 깨지지 않도록 필수 노드를 검증한다.
+  var requiredNodes = [
+    form,
+    submitBtn,
+    agencyNameEl,
+    agencyTypeEl,
+    sample1El,
+    sample2El,
+    sample3El,
+    formAlert,
+    streamOutput,
+    generatingStatus,
+    generatingError,
+    fallbackArea,
+    cancelBtn,
+    fallbackBtn,
+    outputTitle,
+    outputContent,
+    copyMdBtn,
+    downloadBtn,
+    restartBtn,
+    downloadError,
+    dlChevron,
+    dlMenu
+  ];
+
+  if (requiredNodes.some(function (node) { return !node; })) return;
+
+  function isActiveRun(runToken) {
+    return runToken === activeRunToken;
+  }
+
+  function clearOutputFocusTimer() {
+    if (!outputFocusTimer) return;
+    clearTimeout(outputFocusTimer);
+    outputFocusTimer = null;
+  }
+
+  function clearStatusTimers() {
+    statusTimers.forEach(function (timerId) { clearTimeout(timerId); });
+    statusTimers = [];
+  }
 
   /* ── 화면 전환 ── */
   function showScreen(id) {
+    if (id !== 'screen-output') clearOutputFocusTimer();
     document.querySelectorAll('.screen').forEach(function (s) {
       s.classList.remove('active');
     });
@@ -139,13 +186,33 @@
       .replace(/'/g, '&#39;');
   }
 
+  function renderPlaintextFallback(text) {
+    return '<pre style="white-space:pre-wrap;word-break:break-word;">' +
+      escapeHtml(text) + '</pre>';
+  }
+
   /* ── 클립보드 복사 헬퍼 ── */
   function copyToClipboard(text, btn, label) {
     var origHtml = btn ? btn.textContent : null;
+    var actionId = btn ? ((btn.__copyActionId || 0) + 1) : 0;
+    function isLatestAction() {
+      return !btn || btn.__copyActionId === actionId;
+    }
+    if (btn) btn.__copyActionId = actionId;
+    function queueReset() {
+      if (!btn) return;
+      if (!isLatestAction()) return;
+      if (btn.__copyResetTimer) clearTimeout(btn.__copyResetTimer);
+      btn.__copyResetTimer = setTimeout(function () {
+        btn.textContent = label || origHtml;
+        btn.__copyResetTimer = null;
+      }, 2000);
+    }
     function onSuccess() {
       if (btn) {
+        if (!isLatestAction()) return;
         btn.textContent = '✅ 복사됨';
-        setTimeout(function () { btn.textContent = label || origHtml; }, 2000);
+        queueReset();
       }
     }
     function onFail() {
@@ -158,11 +225,12 @@
       try { ok = document.execCommand('copy'); } catch (_) {}
       document.body.removeChild(ta);
       if (btn) {
+        if (!isLatestAction()) return;
         btn.textContent = ok ? '✅ 복사됨' : '❌ 복사 실패';
-        setTimeout(function () { btn.textContent = label || origHtml; }, 2000);
+        queueReset();
       }
     }
-    if (navigator.clipboard) {
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
       navigator.clipboard.writeText(text).then(onSuccess).catch(onFail);
     } else {
       onFail();
@@ -172,8 +240,7 @@
   /* ── 마크다운 → 안전한 HTML ── */
   function renderMarkdown(text) {
     if (!mdAvailable) {
-      return '<pre style="white-space:pre-wrap;word-break:break-word;">' +
-        escapeHtml(text) + '</pre>';
+      return renderPlaintextFallback(text);
     }
     var raw = md.render(text);
     if (purifyAvailable) {
@@ -187,8 +254,7 @@
       });
     }
     /* DOMPurify CDN 로드 실패 시 plaintext fallback */
-    return '<pre style="white-space:pre-wrap;word-break:break-word;">' +
-      escapeHtml(text) + '</pre>';
+    return renderPlaintextFallback(text);
   }
 
   /* ── Fallback 마크다운 ── */
@@ -243,32 +309,89 @@
 
   /* ── 출력 화면 표시 ── */
   function showOutput(markdownText, agencyName) {
-    statusTimers.forEach(function(t) { clearTimeout(t); });
-    statusTimers = [];
+    clearStatusTimers();
     currentMarkdown = markdownText;
     currentAgency   = agencyName;
     outputTitle.textContent = agencyName + ' UX Writing 가이드라인';
     outputContent.innerHTML = renderMarkdown(markdownText);
     showScreen('screen-output');
     /* 포커스 이동 (스크린리더 알림) */
-    setTimeout(function () { outputTitle.focus(); }, 50);
+    clearOutputFocusTimer();
+    outputFocusTimer = setTimeout(function () {
+      outputFocusTimer = null;
+      var outputScreen = document.getElementById('screen-output');
+      if (!outputScreen || !outputScreen.classList || !outputScreen.classList.contains('active')) return;
+      if (typeof outputTitle.focus === 'function') outputTitle.focus();
+    }, 50);
   }
 
   /* ── 생성 중 에러 표시 ── */
-  function showGeneratingError(msg) {
+  function showGeneratingError(msg, runToken) {
+    if (typeof runToken === 'number' && !isActiveRun(runToken)) return;
     generatingError.textContent = msg || '가이드라인 생성 중 오류가 발생했습니다.';
     generatingError.classList.add('visible');
-    statusTimers.forEach(function(t) { clearTimeout(t); });
-    statusTimers = [];
+    clearStatusTimers();
     generatingStatus.textContent = '오류가 발생했습니다.';
     streamOutput.setAttribute('aria-busy', 'false');
     fallbackArea.style.display = 'block';
   }
 
+  function handleSseEvent(evt, payload, runToken) {
+    if (!evt || typeof evt !== 'object') return false;
+    if (!isActiveRun(runToken)) return true;
+
+    if (evt.type === 'chunk') {
+      currentMarkdown += evt.text || '';
+      streamOutput.textContent = currentMarkdown;
+      return false;
+    }
+
+    if (evt.type === 'done') {
+      streamOutput.setAttribute('aria-busy', 'false');
+      showOutput(currentMarkdown, payload.agencyName);
+      return true;
+    }
+
+    if (evt.type === 'error') {
+      streamOutput.setAttribute('aria-busy', 'false');
+      showGeneratingError(evt.message || '가이드라인 생성 중 오류가 발생했습니다.', runToken);
+      return true;
+    }
+
+    return false;
+  }
+
+  function getSseDataPayload(line) {
+    var trimmed = String(line || '').trim();
+    if (!trimmed.startsWith('data:')) return null;
+
+    var data = trimmed.slice(5);
+    return data.charAt(0) === ' ' ? data.slice(1) : data;
+  }
+
+  function processSseLine(line, payload, runToken) {
+    var jsonStr = getSseDataPayload(line);
+    if (jsonStr === null) return false;
+    try {
+      return handleSseEvent(JSON.parse(jsonStr), payload, runToken);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function getGenerateApiPath() {
+    var basePath = window.KRDSBasePath;
+    if (basePath && typeof basePath.buildSitePath === 'function') {
+      return basePath.buildSitePath('/api/generate');
+    }
+    return '/api/generate';
+  }
+
   /* ── SSE 스트리밍 ── */
   async function startGeneration(payload) {
+    activeRunToken += 1;
+    var runToken = activeRunToken;
     abortController = new AbortController();
-    cancelled       = false;
     currentMarkdown = '';
 
     streamOutput.textContent = '';
@@ -279,16 +402,18 @@
     cancelBtn.textContent = '취소하기';
 
     /* ── US-G03: 단계 메시지 ── */
-    statusTimers.forEach(function(t) { clearTimeout(t); });
     var STATUS_STEPS = [
       { delay: 0,    msg: '기관 정보를 분석하고 있습니다…' },
       { delay: 3000, msg: 'KRDS 3대 원칙을 적용하고 있습니다…' },
       { delay: 8000, msg: '맞춤 가이드라인을 작성하고 있습니다…' },
       { delay: 15000, msg: '거의 다 됐습니다. 마무리 중입니다…' },
     ];
+    clearStatusTimers();
     statusTimers = STATUS_STEPS.map(function(step) {
       return setTimeout(function() {
-        if (generatingStatus) generatingStatus.textContent = step.msg;
+        if (isActiveRun(runToken) && generatingStatus) {
+          generatingStatus.textContent = step.msg;
+        }
       }, step.delay);
     });
 
@@ -297,12 +422,14 @@
     var signal = abortController.signal;
 
     try {
-      var response = await fetch('/api/generate', {
+      var response = await fetch(getGenerateApiPath(), {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(payload),
         signal:  signal
       });
+
+      if (!isActiveRun(runToken)) return;
 
       if (!response.ok) {
         var errData = null;
@@ -317,7 +444,12 @@
             ? errData.error
             : '입력값을 확인해 주세요.';
         }
-        showGeneratingError(errMsg);
+        showGeneratingError(errMsg, runToken);
+        return;
+      }
+
+      if (!response.body || typeof response.body.getReader !== 'function') {
+        showGeneratingError('응답 스트림을 읽을 수 없습니다. 다시 시도해 주세요.', runToken);
         return;
       }
 
@@ -329,6 +461,7 @@
       try {
         while (true) {
           var chunk = await reader.read();
+          if (!isActiveRun(runToken)) return;
           if (chunk.done) break;
 
           buffer += decoder.decode(chunk.value, { stream: true });
@@ -338,45 +471,38 @@
           buffer = lines.pop(); /* 불완전한 마지막 라인 보관 */
 
           for (var i = 0; i < lines.length; i++) {
-            var line = lines[i].trim();
-            if (!line.startsWith('data: ')) continue;
-
-            var jsonStr = line.slice(6);
-            try {
-              var evt = JSON.parse(jsonStr);
-
-              if (evt.type === 'chunk') {
-                currentMarkdown += evt.text;
-                streamOutput.textContent = currentMarkdown;
-
-              } else if (evt.type === 'done') {
-                streamOutput.setAttribute('aria-busy', 'false');
-                showOutput(currentMarkdown, payload.agencyName);
-                return;
-
-              } else if (evt.type === 'error') {
-                streamOutput.setAttribute('aria-busy', 'false');
-                showGeneratingError(evt.message || '가이드라인 생성 중 오류가 발생했습니다.');
-                return;
-              }
-            } catch (_) {
-              /* JSON 파싱 실패는 무시 (부분 청크) */
-            }
+            if (processSseLine(lines[i].trim(), payload, runToken)) return;
           }
         }
-      } catch (readErr) {
+
+        if (!isActiveRun(runToken)) return;
+        buffer += decoder.decode();
+        if (processSseLine(buffer.trim(), payload, runToken)) return;
+
         streamOutput.setAttribute('aria-busy', 'false');
-        if (readErr.name === 'AbortError') return;
+        if (currentMarkdown) {
+          showOutput(currentMarkdown, payload.agencyName);
+        } else {
+          showGeneratingError(
+            '응답을 끝까지 받지 못했습니다. 다시 시도하거나 기본 양식을 사용해 주세요.',
+            runToken
+          );
+        }
+      } catch (readErr) {
+        if (readErr.name === 'AbortError' || !isActiveRun(runToken)) return;
+        streamOutput.setAttribute('aria-busy', 'false');
         showGeneratingError(
-          '연결이 끊겼습니다. 다시 시도하거나 기본 양식을 사용해 주세요.'
+          '연결이 끊겼습니다. 다시 시도하거나 기본 양식을 사용해 주세요.',
+          runToken
         );
       }
 
     } catch (fetchErr) {
-      if (fetchErr.name === 'AbortError') return;
+      if (fetchErr.name === 'AbortError' || !isActiveRun(runToken)) return;
       streamOutput.setAttribute('aria-busy', 'false');
       showGeneratingError(
-        '네트워크 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.'
+        '네트워크 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.',
+        runToken
       );
     }
   }
@@ -427,10 +553,10 @@
       abortController.abort();
       abortController = null;
     }
-    cancelled = false;
+    activeRunToken += 1;
+    currentMarkdown = '';
     streamOutput.setAttribute('aria-busy', 'false');
-    statusTimers.forEach(function(t) { clearTimeout(t); });
-    statusTimers = [];
+    clearStatusTimers();
     showScreen('screen-input');
   });
 
@@ -461,6 +587,7 @@
       document.body.removeChild(a);
       setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
     } catch (_) {
+      downloadError.textContent = 'HTML 다운로드에 실패했습니다. 다시 시도해 주세요.';
       downloadError.classList.add('visible');
     }
   }
@@ -468,12 +595,27 @@
   downloadBtn.addEventListener('click', downloadHtml);
 
   /* ── 다운로드 드롭다운 ── */
-  var dlChevron = document.getElementById('dl-chevron');
-  var dlMenu    = document.getElementById('dl-menu');
-
-  function closeDlMenu() {
+  function closeDlMenu(restoreFocus) {
     dlMenu.classList.remove('open');
     dlChevron.setAttribute('aria-expanded', 'false');
+    if (restoreFocus && typeof dlChevron.focus === 'function') {
+      dlChevron.focus();
+    }
+  }
+
+  function findClosest(target, selector) {
+    return target && typeof target.closest === 'function'
+      ? target.closest(selector)
+      : null;
+  }
+
+  function closeDlMenuForTab(shiftKey) {
+    if (shiftKey) {
+      closeDlMenu(true);
+    } else {
+      closeDlMenu(false);
+      if (typeof restartBtn.focus === 'function') restartBtn.focus();
+    }
   }
 
   dlChevron.addEventListener('click', function (e) {
@@ -490,10 +632,10 @@
   });
 
   dlMenu.addEventListener('click', function (e) {
-    var item = e.target.closest('.dl-menu-item');
+    var item = findClosest(e.target, '.dl-menu-item');
     if (!item) return;
     var fmt = item.dataset.format;
-    closeDlMenu();
+    closeDlMenu(true);
     if (fmt === 'html') {
       downloadHtml();
     } else {
@@ -506,6 +648,16 @@
 
   dlMenu.addEventListener('keydown', function (e) {
     var items = Array.from(dlMenu.querySelectorAll('.dl-menu-item'));
+    if (!items.length) {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        closeDlMenuForTab(e.shiftKey);
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        closeDlMenu(true);
+      }
+      return;
+    }
     var idx   = items.indexOf(document.activeElement);
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -513,14 +665,16 @@
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       items[(idx - 1 + items.length) % items.length].focus();
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      closeDlMenuForTab(e.shiftKey);
     } else if (e.key === 'Escape') {
-      closeDlMenu();
-      dlChevron.focus();
+      closeDlMenu(true);
     }
   });
 
   document.addEventListener('click', function (e) {
-    if (!e.target.closest('.dl-btn-group')) closeDlMenu();
+    if (!findClosest(e.target, '.dl-btn-group')) closeDlMenu();
   });
 
   /* ── 다시 생성하기 ── */
