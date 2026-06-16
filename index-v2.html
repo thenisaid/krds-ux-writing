@@ -13,11 +13,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
 <title>KRDS UX Writing 가이드라인</title>
 
-<script>(function(){
-  var t = localStorage.getItem('krds-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  if (t !== 'light' && t !== 'dark') t = 'light';
-  document.documentElement.setAttribute('data-theme', t);
-})();</script>
+<script>(function(){var prefersDark=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches;var t='light';try{t=localStorage.getItem('krds-theme')||(prefersDark?'dark':'light');}catch(e){t=prefersDark?'dark':'light';}if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
 
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" as="style" crossorigin="anonymous"
@@ -33,6 +29,7 @@
   /* Primary */
   --color-primary-5:  #ecf2fe;
   --color-primary-10: #d8e5fd;
+  --color-primary-30: #86aff9;
   --color-primary-50: #256ef4;
   --color-primary-60: #0b50d0;
   --color-primary-70: #083891;
@@ -42,6 +39,7 @@
   --color-gray-5:   #f4f5f6;
   --color-gray-10:  #e6e8ea;
   --color-gray-20:  #cdd1d5;
+  --color-gray-30:  #aeb4bb;
   --color-gray-40:  #8a949e;
   --color-gray-50:  #6d7882;
   --color-gray-60:  #58616a;
@@ -49,6 +47,8 @@
   --color-gray-80:  #33363d;
   --color-gray-90:  #1e2124;
   --color-gray-95:  #131416;
+  --color-danger-30: #f48771;
+  --color-success-50: #228738;
 
   /* Semantic */
   --bg:          var(--color-gray-0);
@@ -57,12 +57,17 @@
   --border:      var(--color-gray-10);
   --border-mid:  var(--color-gray-20);
   --text:        var(--color-gray-90);
+  --text-primary: var(--text);
   --text-mid:    var(--color-gray-70);
+  --text-secondary: var(--color-gray-70);
   --text-muted:  var(--color-gray-50);
   --text-on-dark: var(--color-gray-0);
   --accent:      var(--color-primary-50);
   --accent-dark: var(--color-primary-70);
   --accent-bg:   var(--color-primary-5);
+  --accent-light: var(--color-primary-5);
+  --surface:     var(--bg);
+  --surface-2:   var(--bg-subtle);
 
   /* Typography */
   --font-sans:  'Pretendard GOV Variable', 'Pretendard Variable', system-ui, -apple-system, sans-serif;
@@ -85,10 +90,16 @@
   --border:     var(--color-gray-80);
   --border-mid: var(--color-gray-70);
   --text:       var(--color-gray-0);
+  --text-primary: var(--text);
   --text-mid:   var(--color-gray-20);
+  --text-secondary: var(--color-gray-20);
   --text-muted: var(--color-gray-40);
   --text-on-dark: var(--color-gray-90);
+  --accent:     var(--color-primary-30);
   --accent-bg:  rgba(37,110,244,0.15);
+  --accent-light: rgba(37,110,244,0.15);
+  --surface:    var(--bg);
+  --surface-2:  var(--bg-subtle);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -966,16 +977,16 @@ footer {
 <header class="gnb" id="gnb" role="banner">
   <div class="container">
     <div class="gnb-inner">
-      <a href="/" class="gnb-logo" aria-label="KRDS UX Writing 가이드라인 홈">
+      <a href="/krds-ux-writing/" class="gnb-logo" aria-label="KRDS UX Writing 가이드라인 홈">
         <span class="gnb-logo-mark" aria-hidden="true">K</span>
         <span>UX Writing</span>
       </a>
 
       <nav class="gnb-nav" aria-label="주요 메뉴">
         <ul style="display:flex;list-style:none;margin:0;padding:0;">
-          <li><a href="/principles/" class="gnb-link">원칙</a></li>
-          <li><a href="/dictionary/" class="gnb-link">사전</a></li>
-          <li><a href="/case-studies/" class="gnb-link">사례</a></li>
+          <li><a href="/krds-ux-writing/principles/" class="gnb-link">원칙</a></li>
+          <li><a href="/krds-ux-writing/dictionary/" class="gnb-link">사전</a></li>
+          <li><a href="/krds-ux-writing/case-studies/" class="gnb-link">사례</a></li>
         </ul>
       </nav>
 
@@ -986,7 +997,7 @@ footer {
             <path id="themeIcon" fill="currentColor" d="M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2zm0 1.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9z"/>
           </svg>
         </button>
-        <button class="gnb-btn gnb-mobile-btn" id="mobileMenuBtn" aria-label="메뉴 열기" aria-expanded="false">
+        <button class="gnb-btn gnb-mobile-btn" id="mobileMenuBtn" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobileMenu">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <rect y="2.5" width="16" height="1.5" fill="currentColor" rx="0.75"/>
             <rect y="7.25" width="16" height="1.5" fill="currentColor" rx="0.75"/>
@@ -1001,9 +1012,9 @@ footer {
 <!-- Mobile Menu -->
 <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
   <nav aria-label="모바일 메뉴">
-    <a href="/principles/" class="mobile-menu-link">원칙 (Principles)</a>
-    <a href="/dictionary/" class="mobile-menu-link">사전 (Dictionary)</a>
-    <a href="/case-studies/" class="mobile-menu-link">사례 연구 (Case Studies)</a>
+    <a href="/krds-ux-writing/principles/" class="mobile-menu-link">원칙 (Principles)</a>
+    <a href="/krds-ux-writing/dictionary/" class="mobile-menu-link">사전 (Dictionary)</a>
+    <a href="/krds-ux-writing/case-studies/" class="mobile-menu-link">사례 연구 (Case Studies)</a>
     <a href="https://www.krds.go.kr/" target="_blank" rel="noopener" class="mobile-menu-link">KRDS 공식 사이트 ↗</a>
   </nav>
 </div>
@@ -1035,8 +1046,8 @@ footer {
           </p>
 
           <div class="hero-cta">
-            <a href="/principles/" class="btn btn-primary btn-arrow">원칙 읽기</a>
-            <a href="/case-studies/" class="btn btn-outline">사례 보기</a>
+            <a href="/krds-ux-writing/principles/" class="btn btn-primary btn-arrow">원칙 읽기</a>
+            <a href="/krds-ux-writing/case-studies/" class="btn btn-outline">사례 보기</a>
           </div>
         </div>
 
@@ -1140,7 +1151,7 @@ footer {
 
       <div class="section-cards">
         <!-- Card 1: Principles -->
-        <a href="/principles/" class="section-card" aria-label="원칙 섹션으로 이동">
+        <a href="/krds-ux-writing/principles/" class="section-card" aria-label="원칙 섹션으로 이동">
           <div class="section-card-num">01 — Principles</div>
           <div class="section-card-icon" aria-hidden="true">
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1167,7 +1178,7 @@ footer {
         </a>
 
         <!-- Card 2: Dictionary -->
-        <a href="/dictionary/" class="section-card" aria-label="사전 섹션으로 이동">
+        <a href="/krds-ux-writing/dictionary/" class="section-card" aria-label="사전 섹션으로 이동">
           <div class="section-card-num">02 — Dictionary</div>
           <div class="section-card-icon" aria-hidden="true">
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1195,7 +1206,7 @@ footer {
         </a>
 
         <!-- Card 3: Case Studies -->
-        <a href="/case-studies/" class="section-card" aria-label="사례 연구 섹션으로 이동">
+        <a href="/krds-ux-writing/case-studies/" class="section-card" aria-label="사례 연구 섹션으로 이동">
           <div class="section-card-num">03 — Case Studies</div>
           <div class="section-card-icon" aria-hidden="true">
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1252,9 +1263,9 @@ footer {
           <h3 class="entry-title">업무에서 바로 쓸<br>표현을 찾고 있어요</h3>
           <p class="entry-desc">민원 안내, 공고문, 앱 알림 문구를 고쳐야 하는데 어디서부터 시작해야 할지 모르겠다면 여기서 시작하세요.</p>
           <div class="entry-links">
-            <a href="/dictionary/" class="entry-link">행정 용어 대체 사전</a>
-            <a href="/case-studies/" class="entry-link">실제 적용 사례 보기</a>
-            <a href="/principles/#checklist" class="entry-link">UX 라이팅 체크리스트</a>
+            <a href="/krds-ux-writing/dictionary/" class="entry-link">행정 용어 대체 사전</a>
+            <a href="/krds-ux-writing/case-studies/" class="entry-link">실제 적용 사례 보기</a>
+            <a href="/krds-ux-writing/principles/derivative/#checklist" class="entry-link">UX 라이팅 체크리스트</a>
           </div>
         </div>
 
@@ -1270,9 +1281,9 @@ footer {
           <h3 class="entry-title">가이드라인 전체를<br>체계적으로 공부하고 싶어요</h3>
           <p class="entry-desc">KRDS 컴포넌트별 UX 라이팅 요구사항, 보이스·톤 원칙, 접근성 기준을 심화 학습하려는 분을 위한 경로입니다.</p>
           <div class="entry-links">
-            <a href="/principles/" class="entry-link">3대 원칙 심화 학습</a>
-            <a href="/principles/#voice-tone" class="entry-link">보이스·톤 가이드</a>
-            <a href="/principles/#component-writing" class="entry-link">컴포넌트별 라이팅</a>
+            <a href="/krds-ux-writing/principles/" class="entry-link">3대 원칙 심화 학습</a>
+            <a href="/krds-ux-writing/principles/foundation/#voice-tone" class="entry-link">보이스·톤 가이드</a>
+            <a href="/krds-ux-writing/principles/components/#overview" class="entry-link">컴포넌트별 라이팅</a>
           </div>
         </div>
 
@@ -1289,9 +1300,9 @@ footer {
           <h3 class="entry-title">에러 메시지·알림 문구<br>기준이 필요해요</h3>
           <p class="entry-desc">오류 메시지, 로딩 상태, 빈 화면, 성공/실패 알림 문구를 KRDS 기준에 맞게 작성하는 방법을 안내합니다.</p>
           <div class="entry-links">
-            <a href="/principles/#error-messages" class="entry-link">오류 메시지 라이팅</a>
-            <a href="/principles/#system-feedback" class="entry-link">시스템 피드백 문구</a>
-            <a href="/dictionary/#technical-terms" class="entry-link">기술 용어 대체 표현</a>
+            <a href="/krds-ux-writing/principles/safety-net/#error-structure" class="entry-link">오류 메시지 라이팅</a>
+            <a href="/krds-ux-writing/principles/safety-net/" class="entry-link">시스템 피드백 문구</a>
+            <a href="/krds-ux-writing/dictionary/" class="entry-link">기술 용어 대체 표현</a>
           </div>
         </div>
       </div>
@@ -1385,7 +1396,7 @@ footer {
       </div>
 
       <div style="text-align:center; margin-top: 40px;">
-        <a href="/case-studies/" class="btn btn-outline">사례 연구 전체 보기 →</a>
+        <a href="/krds-ux-writing/case-studies/" class="btn btn-outline">사례 연구 전체 보기 →</a>
       </div>
     </div>
   </section>
@@ -1469,33 +1480,33 @@ footer {
 
         <ul class="faq-list" aria-label="자주 묻는 질문 목록">
           <li class="faq-item">
-            <button class="faq-question" aria-expanded="false">
+            <button class="faq-question" id="faq-question-1" aria-expanded="false" aria-controls="faq-answer-1">
               <span class="faq-q-mark" aria-hidden="true">Q.</span>
               <span>KRDS UX Writing 가이드라인은 누가 사용해야 하나요?</span>
               <svg class="faq-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
-            <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer" id="faq-answer-1" role="region" aria-labelledby="faq-question-1" aria-hidden="true">
               <p class="faq-answer-inner">
                 공공 서비스를 만들거나 개선하는 모든 분을 위한 가이드입니다.
                 정부기관·공공기관 담당자, UX 디자이너, UX 라이터, 개발자,
                 서비스 기획자 모두 활용할 수 있습니다.
-                특히 <a href="/dictionary/">행정 용어 사전</a>은
+                특히 <a href="/krds-ux-writing/dictionary/">행정 용어 사전</a>은
                 비전문가도 즉시 활용할 수 있도록 구성했습니다.
               </p>
             </div>
           </li>
 
           <li class="faq-item">
-            <button class="faq-question" aria-expanded="false">
+            <button class="faq-question" id="faq-question-2" aria-expanded="false" aria-controls="faq-answer-2">
               <span class="faq-q-mark" aria-hidden="true">Q.</span>
               <span>KRDS 공식 가이드라인과 어떻게 다른가요?</span>
               <svg class="faq-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
-            <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer" id="faq-answer-2" role="region" aria-labelledby="faq-question-2" aria-hidden="true">
               <p class="faq-answer-inner">
                 <a href="https://www.krds.go.kr/" target="_blank" rel="noopener">KRDS 공식 사이트</a>가
                 컴포넌트·시각 디자인 기준을 다룬다면, 이 가이드라인은
@@ -1506,32 +1517,32 @@ footer {
           </li>
 
           <li class="faq-item">
-            <button class="faq-question" aria-expanded="false">
+            <button class="faq-question" id="faq-question-3" aria-expanded="false" aria-controls="faq-answer-3">
               <span class="faq-q-mark" aria-hidden="true">Q.</span>
               <span>UX 라이팅을 전혀 모르는데 어디서 시작해야 하나요?</span>
               <svg class="faq-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
-            <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer" id="faq-answer-3" role="region" aria-labelledby="faq-question-3" aria-hidden="true">
               <p class="faq-answer-inner">
-                <a href="/principles/">원칙 섹션</a>의 '번역 금지' 아티클부터 시작하세요.
+                <a href="/krds-ux-writing/principles/">원칙 섹션</a>의 '번역 금지' 아티클부터 시작하세요.
                 가장 빠르게 실무에 적용할 수 있는 내용입니다.
-                그 다음 <a href="/case-studies/">사례 연구</a>에서 실제 before/after를 보면
+                그 다음 <a href="/krds-ux-writing/case-studies/">사례 연구</a>에서 실제 before/after를 보면
                 개념이 어떻게 현실에서 작동하는지 이해할 수 있습니다.
               </p>
             </div>
           </li>
 
           <li class="faq-item">
-            <button class="faq-question" aria-expanded="false">
+            <button class="faq-question" id="faq-question-4" aria-expanded="false" aria-controls="faq-answer-4">
               <span class="faq-q-mark" aria-hidden="true">Q.</span>
               <span>가이드라인 내용에 오류가 있거나 추가할 사례가 있으면 어떻게 하나요?</span>
               <svg class="faq-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
-            <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer" id="faq-answer-4" role="region" aria-labelledby="faq-question-4" aria-hidden="true">
               <p class="faq-answer-inner">
                 <a href="https://github.com/thenisaid/krds-ux-writing/issues" target="_blank" rel="noopener">GitHub Issues</a>에
                 제보해주세요. 실제 공공 서비스 적용 사례나 개선 제안을 환영합니다.
@@ -1541,18 +1552,18 @@ footer {
           </li>
 
           <li class="faq-item">
-            <button class="faq-question" aria-expanded="false">
+            <button class="faq-question" id="faq-question-5" aria-expanded="false" aria-controls="faq-answer-5">
               <span class="faq-q-mark" aria-hidden="true">Q.</span>
               <span>모바일 공공앱에도 같은 원칙을 적용할 수 있나요?</span>
               <svg class="faq-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
-            <div class="faq-answer" aria-hidden="true">
+            <div class="faq-answer" id="faq-answer-5" role="region" aria-labelledby="faq-question-5" aria-hidden="true">
               <p class="faq-answer-inner">
                 네, 원칙은 채널에 관계없이 동일하게 적용됩니다.
                 다만 모바일 환경은 화면 공간이 제한되어 더욱 간결한 표현이 필요합니다.
-                <a href="/principles/#mobile-writing">모바일 UX 라이팅 섹션</a>에서
+                <a href="/krds-ux-writing/principles/core-info/#notification">모바일 UX 라이팅 섹션</a>에서
                 채널별 최적화 방법을 확인하세요.
               </p>
             </div>
@@ -1569,7 +1580,7 @@ footer {
   <div class="container">
     <div class="footer-inner">
       <div>
-        <a href="/" class="footer-logo">
+        <a href="/krds-ux-writing/" class="footer-logo">
           <span style="width:20px;height:20px;border-radius:4px;background:var(--accent);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800" aria-hidden="true">K</span>
           KRDS UX Writing 가이드라인
         </a>
@@ -1581,9 +1592,9 @@ footer {
       <div class="footer-links">
         <a href="https://www.krds.go.kr/" target="_blank" rel="noopener" class="footer-link">KRDS 공식 사이트 ↗</a>
         <a href="https://github.com/thenisaid/krds-ux-writing" target="_blank" rel="noopener" class="footer-link">GitHub ↗</a>
-        <a href="/principles/" class="footer-link">원칙</a>
-        <a href="/dictionary/" class="footer-link">사전</a>
-        <a href="/case-studies/" class="footer-link">사례</a>
+        <a href="/krds-ux-writing/principles/" class="footer-link">원칙</a>
+        <a href="/krds-ux-writing/dictionary/" class="footer-link">사전</a>
+        <a href="/krds-ux-writing/case-studies/" class="footer-link">사례</a>
       </div>
     </div>
     <p class="footer-legal">
@@ -1593,18 +1604,33 @@ footer {
   </div>
 </footer>
 
+<script src="shared/base-path.js"></script>
 <script>
 (function () {
   'use strict';
 
   /* ── Theme Toggle ── */
   var themeToggle = document.getElementById('themeToggle');
+  var themeIcon = document.getElementById('themeIcon');
+  var SUN = 'M8 1v2M8 13v2M1 8h2M13 8h2M3.22 3.22l1.42 1.42M11.36 11.36l1.42 1.42M3.22 12.78l1.42-1.42M11.36 4.64l1.42-1.42M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z';
+  var MOON = 'M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2zm0 1.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9z';
+  function updateThemeIcon(theme) {
+    if (themeIcon) themeIcon.setAttribute('d', theme === 'dark' ? SUN : MOON);
+    if (themeToggle) {
+      themeToggle.setAttribute('aria-label', theme === 'dark' ? '라이트모드 전환' : '다크모드 전환');
+    }
+  }
+  function closestIfPossible(node, selector) {
+    return node && typeof node.closest === 'function' ? node.closest(selector) : null;
+  }
+  updateThemeIcon(document.documentElement.getAttribute('data-theme') || 'light');
   if (themeToggle) {
     themeToggle.addEventListener('click', function () {
       var current = document.documentElement.getAttribute('data-theme');
       var next = current === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('krds-theme', next);
+      try { localStorage.setItem('krds-theme', next); } catch (e) {}
+      updateThemeIcon(next);
     });
   }
 
@@ -1612,11 +1638,87 @@ footer {
   var mobileMenuBtn = document.getElementById('mobileMenuBtn');
   var mobileMenu = document.getElementById('mobileMenu');
   if (mobileMenuBtn && mobileMenu) {
-    mobileMenuBtn.addEventListener('click', function () {
-      var isOpen = mobileMenu.classList.toggle('open');
+    var mobileMenuTrapHandler = null;
+
+    function releaseMobileMenuFocus() {
+      if (mobileMenuTrapHandler) {
+        mobileMenu.removeEventListener('keydown', mobileMenuTrapHandler);
+        mobileMenuTrapHandler = null;
+      }
+    }
+
+    function trapMobileMenuFocus() {
+      releaseMobileMenuFocus();
+      var focusable = Array.from(
+        mobileMenu.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')
+      );
+      if (!focusable.length) return;
+      mobileMenuTrapHandler = function (e) {
+        if (e.key !== 'Tab') return;
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      };
+      mobileMenu.addEventListener('keydown', mobileMenuTrapHandler);
+    }
+
+    function syncMobileMenuState(isOpen) {
       mobileMenuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      mobileMenuBtn.setAttribute('aria-label', isOpen ? '메뉴 닫기' : '메뉴 열기');
       mobileMenu.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+      if (document.body && document.body.style) {
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+      }
+    }
+
+    function closeMobileMenu(restoreFocus) {
+      if (!mobileMenu.classList.contains('open')) return;
+      releaseMobileMenuFocus();
+      mobileMenu.classList.remove('open');
+      syncMobileMenuState(false);
+      if (restoreFocus !== false && typeof mobileMenuBtn.focus === 'function') {
+        mobileMenuBtn.focus();
+      }
+    }
+
+    syncMobileMenuState(false);
+    mobileMenuBtn.addEventListener('click', function () {
+      var isOpen = mobileMenu.classList.contains('open');
+      if (isOpen) {
+        closeMobileMenu();
+      } else {
+        mobileMenu.classList.add('open');
+        syncMobileMenuState(true);
+        trapMobileMenuFocus();
+        var firstLink = mobileMenu.querySelector('.mobile-menu-link');
+        if (firstLink && typeof firstLink.focus === 'function') firstLink.focus();
+      }
     });
+
+    mobileMenu.addEventListener('click', function (e) {
+      var link = closestIfPossible(e.target, '.mobile-menu-link');
+      if (!link) return;
+      closeMobileMenu(link.getAttribute('target') === '_blank');
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeMobileMenu();
+    });
+    if (typeof window.addEventListener === 'function') {
+      window.addEventListener('resize', function () {
+        if (window.innerWidth > 900) {
+          closeMobileMenu(false);
+        }
+      });
+    }
   }
 
   /* ── FAQ Accordion ── */
@@ -1634,11 +1736,23 @@ footer {
   });
 
   /* ── Active Nav Link ── */
-  var currentPath = window.location.pathname;
+  function normalizePathname(pathname) {
+    var value = String(pathname || '/');
+    if (!value) return '/';
+    if (value.length > 1) {
+      value = value.replace(/\/+$/, '') || '/';
+    }
+    value = value.replace(/\/index\.html$/i, '');
+    return value || '/';
+  }
+
+  var currentPath = normalizePathname(window.location.pathname);
   var navLinks = document.querySelectorAll('.gnb-link');
   navLinks.forEach(function (link) {
-    if (link.getAttribute('href') === currentPath ||
-        (currentPath.startsWith(link.getAttribute('href')) && link.getAttribute('href') !== '/')) {
+    var href = link.getAttribute('href') || '';
+    var hrefPath = normalizePathname(href.split('#')[0] || '/');
+    if (hrefPath === currentPath ||
+        (currentPath.startsWith(hrefPath) && hrefPath !== '/')) {
       link.classList.add('active');
     }
   });
