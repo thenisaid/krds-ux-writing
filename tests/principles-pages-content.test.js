@@ -442,7 +442,7 @@ describe('principles pages content sync', () => {
     expect(html).toContain('첨부 파일 업로드는 제한 조건과 재제출 경로를 먼저 보여준다');
     expect(html).toContain('PDF·JPG·HWP 가능 · 파일당 최대 5MB · 최대 3개');
     expect(html).toContain('PDF 형식만 가능 · 파일당 최대 10MB · 최대 5개 / HWP는 PDF 변환 후 제출');
-    expect(html).toContain('허용 형식: PDF·JPG·HWP | 파일당 5MB | 총 20MB / 판독 불가 시 재제출 바로 가기');
+    expect(html).toContain('허용 형식: PDF·JPG·HWP, 파일당 5MB, 총 20MB / 판독 불가 시 재제출 바로 가기');
     expect(html).toContain('계산 화면은 계산 기준·포함 항목·제외 조건을 같이 쓴다');
     expect(html).toContain('취득가액 입력 → 취득세 + 채권 매입 예상액 자동 표시. 경차·전기차는 취득세 감면 가능, 채권은 즉시 할인 매도할 수 있습니다 [감면 기준 확인]');
     expect(html).toContain('전세 보증금을 받는다면 간주임대료 계산이 필요합니다. 보증금 × 2.9% × 임대 기간/365. 1주택 비과세 여부와 경비 공제도 같이 확인하세요 [간주임대료 계산기]');
@@ -896,7 +896,7 @@ describe('principles pages content sync', () => {
     expect(markdown).toContain('입력 폼 확장 규칙 — 첨부 파일 업로드는 제한 조건과 재제출 경로를 먼저 쓴다');
     expect(markdown).toContain('PDF·JPG·HWP 가능 · 파일당 최대 5MB · 최대 3개');
     expect(markdown).toContain('PDF 형식만 가능 · 파일당 최대 10MB · 최대 5개 / HWP는 PDF 변환 후 제출');
-    expect(markdown).toContain('허용 형식: PDF·JPG·HWP | 파일당 5MB | 총 20MB / 판독 불가 시 재제출 바로 가기');
+    expect(markdown).toContain('허용 형식: PDF·JPG·HWP, 파일당 5MB, 총 20MB / 판독 불가 시 재제출 바로 가기');
     expect(markdown).toContain('재제출 기한 또는 경로');
     expect(markdown).toContain('#### 첨부 파일 업로드 실화면 재점검 표본');
     expect(markdown).toContain('| 홈택스 `증빙서류 파일 첨부` | CASE 24 `첨부 파일 업로드` | 허용 형식, 파일당 5MB, 총 20MB, 판독 불가 시 재제출 바로 가기 경로가 같은 업로드 영역에 보이는가? | File upload + Helper text + Notice banner + Button |');
@@ -937,7 +937,7 @@ describe('principles pages content sync', () => {
     expect(markdown).toContain('대표 서비스 관찰 — 낯선 용어는 번역보다 과업·분기·도움말로 다시 설계한다');
     expect(markdown).toContain('전자고지(송달) 신청 및 해지 / 지급명세서 제출·수정·삭제 / 국선대리인 신청(불복청구서 제출전)/(제출후)');
     expect(markdown).toContain('전자증명서안내 / 부가가치세예정신고 / 이용약관개인정보처리방침저작권정책비회원확인서비스');
-    expect(markdown).toContain('이용약관 \\| 개인정보처리방침 \\| 저작권정책 \\| 비회원 확인 서비스');
+    expect(markdown).toContain('이용약관 · 개인정보처리방침 · 저작권정책 · 비회원 확인 서비스');
     expect(markdown).toContain('과업은 첫 레이블로, 분기는 선택 UI로, 법령 설명은 도움말·접기 영역으로 내립니다.');
     expect(markdown).toContain('이슈 아카이브에서 비슷한 실패를 찾고 `원문 3개+CTA 1개`를 다시 적습니다.');
     expect(markdown).toContain('2장에서는 새 CASE 번호부터 만들지 않고 `CASE 38·11·59`, `CASE 6·7·8`, `CASE 39·40·49` 가운데 기존 묶음부터 대조한 뒤');
@@ -1395,7 +1395,7 @@ describe('principles pages content sync', () => {
     expect(html).toContain('대표 서비스 관찰 — 낯선 용어는 번역보다 과업·분기·도움말로 다시 설계한다');
     expect(html).toContain('전자고지(송달) 신청 및 해지 / 지급명세서 제출·수정·삭제 / 국선대리인 신청(불복청구서 제출전)/(제출후)');
     expect(html).toContain('전자증명서안내 / 부가가치세예정신고 / 이용약관개인정보처리방침저작권정책비회원확인서비스');
-    expect(html).toContain('이용약관 | 개인정보처리방침 | 저작권정책 | 비회원 확인 서비스');
+    expect(html).toContain('이용약관 · 개인정보처리방침 · 저작권정책 · 비회원 확인 서비스');
     expect(html).toContain('과업은 첫 레이블로, 분기는 선택 UI로, 법령 설명은 도움말·접기 영역으로 내립니다.');
     expect(html).toContain('대표 사이트 기반 무번역 점검 우선순위');
     expect(html).toContain('정부24·홈택스·국민신문고 로그인/동의 단계');
