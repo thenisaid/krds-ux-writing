@@ -1,14 +1,31 @@
-'use strict';
+(function () {
+  'use strict';
 
 const GUIDE_URL = 'https://thenisaid.github.io/krds-ux-writing/';
-
-const VALID_SECTIONS = new Set([
-  'voice', 'buttons', 'forms', 'errors', 'onboarding', 'navigation',
-  'labels', 'notifications', 'loading', 'empty-states', 'tables',
-  'search', 'modals', 'tooltips', 'accessibility', 'principles',
-  // also allow the ids present in searchData
-  'tone', 'button', 'form', 'error', 'help', 'checklist',
-]);
+const SECTION_ROUTES = {
+  principles: 'principles/',
+  voice: 'principles/foundation/#voice-tone',
+  tone: 'principles/foundation/#voice-tone',
+  loading: 'principles/foundation/#voice-tone',
+  button: 'principles/components/#button',
+  buttons: 'principles/components/#button',
+  form: 'principles/components/#form',
+  forms: 'principles/components/#form',
+  error: 'principles/safety-net/#error-structure',
+  errors: 'principles/safety-net/#error-structure',
+  help: 'principles/structure/#contextual-help',
+  onboarding: 'principles/structure/#contextual-help',
+  navigation: 'principles/structure/',
+  labels: 'principles/no-translation/#form-labels',
+  accessibility: 'principles/no-translation/#form-labels',
+  notifications: 'principles/core-info/#notification',
+  'empty-states': 'principles/components/#empty',
+  search: 'principles/components/#search',
+  modals: 'principles/components/#modal',
+  tooltips: 'principles/structure/#contextual-help',
+  tables: 'principles/components/',
+  checklist: 'principles/governance/#checklist',
+};
 
 // ===== Search Data =====
 const searchData = [
@@ -89,6 +106,26 @@ const resultsView = document.getElementById('resultsView');
 const tipsView = document.getElementById('tipsView');
 const fullGuideBtn = document.getElementById('fullGuideBtn');
 const openFullBtn = document.getElementById('openFullBtn');
+const categoryChips = document.getElementById('categoryChips');
+
+const requiredNodes = [
+  searchInput,
+  clearBtn,
+  resultsList,
+  resultsView,
+  tipsView,
+  fullGuideBtn,
+  openFullBtn,
+  categoryChips,
+];
+
+if (requiredNodes.some(node => !node)) {
+  return;
+}
+
+function closestIfPossible(node, selector) {
+  return node && typeof node.closest === 'function' ? node.closest(selector) : null;
+}
 
 // ===== Utilities =====
 function escapeHtml(s) {
@@ -96,17 +133,28 @@ function escapeHtml(s) {
 }
 
 function highlight(text, query) {
-  if (!query) return escapeHtml(text);
-  const escaped = escapeHtml(text);
+  const source = String(text || '');
+  if (!query) return escapeHtml(source);
   const re = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-  return escaped.replace(re, m => `<mark>${m}</mark>`);
+  let result = '';
+  let lastIndex = 0;
+  let match;
+
+  while ((match = re.exec(source)) !== null) {
+    const start = match.index;
+    const matchedText = match[0];
+    result += escapeHtml(source.slice(lastIndex, start));
+    result += `<mark>${escapeHtml(matchedText)}</mark>`;
+    lastIndex = start + matchedText.length;
+  }
+
+  result += escapeHtml(source.slice(lastIndex));
+  return result;
 }
 
 function openGuide(sectionId) {
-  if (sectionId && !VALID_SECTIONS.has(sectionId)) {
-    sectionId = null;
-  }
-  const url = sectionId ? `${GUIDE_URL}#${sectionId}` : GUIDE_URL;
+  const route = sectionId ? SECTION_ROUTES[sectionId] : '';
+  const url = route ? new URL(route, GUIDE_URL).toString() : GUIDE_URL;
   chrome.tabs.create({ url });
 }
 
@@ -115,6 +163,7 @@ function doSearch(query) {
   const q = query.trim().toLowerCase();
 
   if (!q) {
+    resultsList.textContent = '';
     resultsView.style.display = 'none';
     tipsView.style.display = 'block';
     clearBtn.classList.remove('visible');
@@ -154,8 +203,9 @@ function doSearch(query) {
   hits.forEach(h => {
     const item = document.createElement('div');
     item.className = 'result-item';
-    item.setAttribute('role', 'option');
+    item.setAttribute('role', 'button');
     item.setAttribute('tabindex', '0');
+    item.setAttribute('aria-label', `${h.tag} 섹션 열기`);
     item.dataset.section = h.id;
     item.title = `${h.tag} 섹션 열기`;
 
@@ -186,7 +236,10 @@ function doSearch(query) {
   resultsList.querySelectorAll('.result-item').forEach(item => {
     item.addEventListener('click', () => openGuide(item.dataset.section));
     item.addEventListener('keydown', e => {
-      if (e.key === 'Enter') openGuide(item.dataset.section);
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openGuide(item.dataset.section);
+      }
       if (e.key === 'ArrowDown') {
         e.preventDefault();
         const next = item.nextElementSibling;
@@ -224,14 +277,18 @@ clearBtn.addEventListener('click', () => {
 });
 
 // Category chips
-document.getElementById('categoryChips').addEventListener('click', e => {
+categoryChips.addEventListener('click', e => {
   e.preventDefault();
-  const chip = e.target.closest('.chip');
+  const chip = closestIfPossible(e.target, '.chip');
   if (!chip) return;
 
   // Toggle active
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.chip').forEach(c => {
+    c.classList.remove('active');
+    c.setAttribute('aria-pressed', 'false');
+  });
   chip.classList.add('active');
+  chip.setAttribute('aria-pressed', 'true');
 
   openGuide(chip.dataset.section);
 });
@@ -246,3 +303,5 @@ openFullBtn.addEventListener('click', () => openGuide(null));
 
 // ===== Init =====
 searchInput.focus();
+
+})();

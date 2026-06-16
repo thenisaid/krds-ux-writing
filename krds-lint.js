@@ -36,12 +36,87 @@
     { banned: '잘못 입력한 항목이 있습니다', alt: '확인이 필요한 항목이 있습니다', cat: '에러 메시지' },
   ];
 
+  function normalizePlaceholderTildes(value) {
+    return String(value || '').replace(/~/g, '').trim();
+  }
+
+  function normalizeJargonEntry(entry) {
+    if (!entry || typeof entry !== 'object') return null;
+
+    var banned = normalizePlaceholderTildes(entry.banned);
+    var alt = normalizePlaceholderTildes(entry.alt);
+    var cat = String(entry.cat || '').trim();
+
+    if (!banned || !alt || !cat) return null;
+
+    return {
+      banned: banned,
+      alt: alt,
+      cat: cat,
+      bannedRegex: buildBannedRegex(banned),
+    };
+  }
+
+  function escapeRegExp(value) {
+    return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function placeholderPattern(label) {
+    var token = String(label || '').trim();
+
+    if (/금액|요금|세액|가격|금전/.test(token)) {
+      return '(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d+)?\\s*(?:원|만원|천원|억원|조원)';
+    }
+    if (/기간|기한|일정|시점|날짜/.test(token)) {
+      return '(?:\\d{4}\\.\\d{2}~\\d{4}\\.\\d{2}|\\d{4}\\.\\d{2}(?:\\.\\d{2})?|\\d+~\\d+\\s*(?:일|개월|년)|\\d+\\s*(?:일|개월|년)(?:\\s*(?:이내|후|남음))?)';
+    }
+    if (/이름|명칭|기관|대상/.test(token)) {
+      return '[\\uAC00-\\uD7A3A-Za-z0-9·\\s]+?';
+    }
+
+    return '[^\\n/]+?';
+  }
+
+  function buildBannedRegex(banned) {
+    var placeholderRe = /\[([^\]]+)\]/g;
+    if (!placeholderRe.test(banned)) return null;
+
+    placeholderRe.lastIndex = 0;
+
+    var source = '';
+    var lastIndex = 0;
+    var match;
+
+    while ((match = placeholderRe.exec(banned)) !== null) {
+      source += escapeRegExp(banned.slice(lastIndex, match.index));
+      source += placeholderPattern(match[1]);
+      lastIndex = match.index + match[0].length;
+    }
+
+    source += escapeRegExp(banned.slice(lastIndex));
+
+    return new RegExp(source, 'g');
+  }
+
+  function buildJargonEntries(entries) {
+    var seen = new Set();
+
+    return entries
+      .map(normalizeJargonEntry)
+      .filter(function (entry) {
+        if (!entry) return false;
+        if (seen.has(entry.banned)) return false;
+        seen.add(entry.banned);
+        return true;
+      });
+  }
+
   // jargon-dictionary.json이 로드되면 INLINE_JARGON을 병합 (dedup by banned)
   const ADMIN_JARGON = (jargonDict && jargonDict.entries)
-    ? [...jargonDict.entries, ...INLINE_JARGON.filter(function(e) {
+    ? buildJargonEntries([...jargonDict.entries, ...INLINE_JARGON.filter(function(e) {
         return !jargonDict.entries.some(function(d) { return d.banned === e.banned; });
-      })]
-    : [
+      })])
+    : buildJargonEntries([
     // 카테고리 1: 행정 관습어 (한자어·관청 은어)
     { banned: '명일까지', alt: '내일까지', cat: '행정 관습어' },
     { banned: '직접 내방하여', alt: '직접 방문하여', cat: '행정 관습어' },
@@ -137,7 +212,11 @@
     { banned: '죄송합니다', alt: '공감 없이 건조하게 상황+행동만 제시', cat: '에러 메시지' },
     { banned: '비밀번호가 틀렸습니다', alt: '비밀번호가 일치하지 않습니다', cat: '에러 메시지' },
     { banned: '잘못 입력한 항목이 있습니다', alt: '확인이 필요한 항목이 있습니다', cat: '에러 메시지' },
-  ];
+  ]);
+
+  const ADMIN_JARGON_MATCH_ORDER = ADMIN_JARGON.slice().sort(function (a, b) {
+    return b.banned.length - a.banned.length;
+  });
 
   // ─── 2. 패턴 기반 규칙 ───────────────────────────────────────────────────────
 
@@ -212,8 +291,8 @@
       id: 'double-negative',
       name: '이중 부정',
       severity: 'error',
-      // 부정어 2개 이상: 아니, 않, 없, 불-, 미-, 비-, 못
-      pattern: /(아니[다고]|않[는아아서]|없[는는다]|불[가능]+|미[비충]|못\s)(.{0,20})(아니[다고]|않[는아서]|없[는다]|불[가능]+|미[비충]|못\s)/g,
+      // 한국어에서 실제로 자주 쓰이는 이중 부정 템플릿만 잡아 과검출을 줄인다.
+      pattern: /(?:[\uac00-\ud7a3A-Za-z0-9_-]+지\s*않(?:으면|는다면?)\s*안\s*(?:됩(?:니다|니까)?|된다|되다|됨|돼요|돼)|없지\s*않(?:습니다|는다|다)|미비하지\s*않(?:으면|습니다|다)|불가능하지\s*않(?:습니다|다))/g,
       message: (match) => `이중 부정 "${match.substring(0,30)}..." — 긍정문으로 전환하세요.`,
       alt: '"모두 준비되면 신청할 수 있습니다" 등 긍정문 사용',
     },
@@ -261,26 +340,70 @@
    */
   function lint(text, options) {
     options = Object.assign({ checkAdminJargon: true, checkPatterns: true }, options || {});
+    text = text == null ? '' : String(text);
 
     const issues = [];
     const lines = text.split('\n');
 
     // 3-1. 행정어 검사
     if (options.checkAdminJargon) {
-      ADMIN_JARGON.forEach(function (entry) {
-        lines.forEach(function (line, lineIdx) {
+      lines.forEach(function (line, lineIdx) {
+        var occupiedRanges = [];
+
+        ADMIN_JARGON_MATCH_ORDER.forEach(function (entry) {
+          if (entry.bannedRegex) {
+            var re = new RegExp(entry.bannedRegex.source, entry.bannedRegex.flags);
+            var match;
+
+            while ((match = re.exec(line)) !== null) {
+              var matchedText = match[0];
+              var start = match.index;
+              var end = start + matchedText.length;
+              var overlaps = occupiedRanges.some(function (range) {
+                return start < range.end && end > range.start;
+              });
+
+              if (!overlaps) {
+                issues.push({
+                  type: 'admin-jargon',
+                  severity: 'error',
+                  category: entry.cat,
+                  line: lineIdx + 1,
+                  col: start + 1,
+                  match: matchedText,
+                  message: '행정어/금지어: "' + matchedText + '"',
+                  suggestion: '→ ' + entry.alt,
+                });
+                occupiedRanges.push({ start: start, end: end });
+              }
+
+              if (matchedText.length === 0) re.lastIndex += 1;
+            }
+
+            return;
+          }
+
           let idx = line.indexOf(entry.banned);
           while (idx !== -1) {
-            issues.push({
-              type: 'admin-jargon',
-              severity: 'error',
-              category: entry.cat,
-              line: lineIdx + 1,
-              col: idx + 1,
-              match: entry.banned,
-              message: '행정어/금지어: "' + entry.banned + '"',
-              suggestion: '→ ' + entry.alt,
+            var end = idx + entry.banned.length;
+            var overlaps = occupiedRanges.some(function (range) {
+              return idx < range.end && end > range.start;
             });
+
+            if (!overlaps) {
+              issues.push({
+                type: 'admin-jargon',
+                severity: 'error',
+                category: entry.cat,
+                line: lineIdx + 1,
+                col: idx + 1,
+                match: entry.banned,
+                message: '행정어/금지어: "' + entry.banned + '"',
+                suggestion: '→ ' + entry.alt,
+              });
+              occupiedRanges.push({ start: idx, end: end });
+            }
+
             idx = line.indexOf(entry.banned, idx + 1);
           }
         });
