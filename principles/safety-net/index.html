@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="안전망 원칙 — 오류 메시지 3단 구조(무슨 일·왜·어떻게), 비난 없는 복구, 비가역 행동 경고 패턴.">
+<meta name="description" content="안전망 원칙 — 대표 사이트 순회에서 세션 종료·조건 미충족·비가역 결정·대기·지연 상태를 같은 안전망 축으로 보고, 오류 3단 구조와 KRDS 경고 배너·확인 모달 기준을 정리합니다.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="4장 심리적안전망의 원칙 — KRDS UX Writing 가이드라인">
-  <meta property="og:description" content="안전망 원칙 — 오류 메시지 3단 구조(무슨 일·왜·어떻게), 비난 없는 복구, 비가역 행동 경고 패턴.">
+  <meta property="og:description" content="안전망 원칙 — 대표 사이트 순회에서 세션 종료·조건 미충족·비가역 결정·대기·지연 상태를 같은 안전망 축으로 보고, 오류 3단 구조와 KRDS 경고 배너·확인 모달 기준을 정리합니다.">
   <meta property="og:url" content="https://thenisaid.github.io/krds-ux-writing/principles/safety-net/">
   <link rel="canonical" href="https://thenisaid.github.io/krds-ux-writing/principles/safety-net/">
 <title>4장 심리적안전망의 원칙 — KRDS UX Writing 가이드라인</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
-<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<script>(function(){var prefersDark=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches;var t='light';try{t=localStorage.getItem('krds-theme')||(prefersDark?'dark':'light');}catch(e){t=prefersDark?'dark':'light';}if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" as="style" crossorigin="anonymous"
   href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
@@ -323,6 +323,7 @@
       <p class="content-headline">실수해도 언제든 궤도를 수정할 수 있다는 확신</p>
       <p class="content-desc">
         공공 서비스에서 오류는 반드시 발생합니다. 문제는 오류 자체가 아니라, 오류를 만났을 때 시민이 어떤 경험을 하느냐입니다. 안전망 원칙은 그 경험을 설계합니다.
+        대표 사이트 순회에서는 세션 종료, 조건 미충족, 비가역 결정, 지연 상태를 같은 안전망 축으로 다시 보고 KRDS 경고 배너·확인 모달·상태 안내 규칙까지 함께 정합니다.
       </p>
     </div>
 
@@ -352,6 +353,65 @@
           </tr>
         </tbody>
       </table>
+
+      <div class="sub-h3" style="margin-top:24px">대표 사이트 순회 운영 — 오류·세션 종료·비가역 결정을 같은 안전망 축으로 본다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">심리적안전망은 오류 문장만 다듬는 장이 아닙니다. 대표 사이트 순회에서는 세션 종료, 조건 미충족, 비가역 결정, 지연 상태를 함께 보며 시민이 어디서 멈추는지와 복구 경로가 첫 화면에 붙어 있는지 확인합니다.</p>
+      <table class="data-table">
+        <thead><tr><th>화면 묶음</th><th>먼저 볼 대표 사이트·화면</th><th>먼저 확인할 질문</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>세션 종료·보안 제한</strong></td><td>국민신문고 로그인·실명확인 정보 120분 유지, 홈택스 세션 종료</td><td>남은 시간, 임시 저장, 다시 로그인 경로가 한 흐름으로 보이는가?</td><td>Modal + Toast + Button</td></tr>
+          <tr><td><strong>조건 미충족·기각 가능성</strong></td><td>협의이혼 의사확인, 개명 허가 신청</td><td>무엇이 부족한지, 지금 보완할 행동, 다시 확인할 경로가 비난 없이 보이는가?</td><td>Checklist + Inline alert + Link</td></tr>
+          <tr><td><strong>비가역 결정·절차 선택</strong></td><td>상속포기 신고, 국적 회복 허가, 개인회생·파산 선택</td><td>위험, 기한, 취소 불가 결과, 대안 비교 경로가 먼저 보이는가?</td><td>Warning banner + Confirmation modal + Comparison CTA</td></tr>
+          <tr><td><strong>대기·지연 상태</strong></td><td>국세청 소득 정보 불러오기, 세금 환급금 조회, 온라인 민원 진행 상태</td><td>현재 단계, 예상 남은 기간, 지연 시 문의 경로, 보완·알림 채널이 한 묶음인가?</td><td>Status badge + Notice banner + Link</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box">
+        <strong>실무 규칙</strong>: 안전망 검수는 사과문 개수나 친절한 어미를 세는 일이 아닙니다. 이유를 숨기지 않는가, 지금 할 행동이 있는가, 손실이 생기기 전에 대안을 보여 주는가를 먼저 봅니다.
+      </div>
+      <div class="sub-h4">상대적으로 얇은 대표 사이트 재검산 메모</div>
+      <table class="data-table">
+        <thead><tr><th>사이트·화면</th><th>공식 화면에서 먼저 확인할 묶음</th><th>안전망 판단</th><th>KRDS 조합</th></tr></thead>
+        <tbody>
+          <tr><td><strong>고용24 <code>실업인정 인터넷 신청</code>, <code>조기재취업수당 안내</code></strong></td><td><code>실업인정일</code>, 준비 서류, <code>조기재취업수당</code> 대상 여부, 재취업 시점, 놓쳤을 때 결과, 다음 행동</td><td>행동 날짜와 불이익, 제도 판단 기준이 제도어보다 먼저 보이는지, 지연·누락 뒤 복구 경로가 같은 블록에 있는지 본다</td><td>Notice banner + Disclosure + Structured list + Button</td></tr>
+          <tr><td><strong>서울특별시 응답소 <code>질의응답·답변원문</code>, <code>결과보기</code></strong></td><td>답변 예정일, 현재 상태, 다시 확인 경로, 새 민원 버튼</td><td>답변이 늦어질 때 어디서 다시 보고 어디로 이동해야 하는지, 기존 결과 확인과 새 민원 행동이 섞이지 않는지 본다</td><td>Status badge + Alert + Link + Button</td></tr>
+          <tr><td><strong>전자가족관계등록시스템 <code>국적 회복 허가</code></strong></td><td><code>허가 결과</code>, <code>1년 내 외국 국적 포기</code>, <code>외국국적불행사서약 대상 여부</code>, 외국 국적 포기 증명서 제출 경로, <code>[신고 방법 보기]</code></td><td>허가 결과보다 먼저 남은 의무와 기한, 후속 제출 의무, 요건 확인 경로가 같은 경고 블록에 보이는지 본다</td><td>Result page + Notice banner + Checklist + Button</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box">
+        <strong>실행 규칙</strong>: 이 세 사이트는 사과문보다 <code>날짜</code>, <code>불이익</code>, <code>복구 경로</code>를 먼저 본다. 같은 화면에서 이 세 요소가 함께 실패해야 4장 사례로 올립니다.
+      </div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-top:16px;">고용24 <code>실업인정 인터넷 신청</code>은 <code>실업인정일</code>, 재취업 활동 등록, 활동 확인 서류, 놓쳤을 때 어디서 다시 확인하는지가 같은 첫 배너에 보여야 합니다. <code>조기재취업수당 안내</code>는 누가 대상인지, 언제 다시 취업했는지, 무엇으로 확인하는지가 접기 전 첫 블록에서 먼저 읽혀야 합니다. 서울특별시 응답소 <code>질의응답·답변원문</code>과 <code>결과보기</code>는 답변이 늦을 때 다시 볼 곳과 새 민원을 넣는 버튼을 섞지 않아야 안전합니다. 전자가족관계등록시스템 <code>국적 회복 허가</code>는 허가 사실만 보여주지 말고, <code>1년 내</code> 외국 국적 포기 절차, 서약 대상 여부, 포기 증명서 제출 경로, <code>[신고 방법 보기]</code>를 첫 경고 블록에 함께 보여줘야 안전합니다.</p>
+      <div class="sub-h4" style="margin-top:24px">이번 라운드 KRDS/Figma 적용 예시</div>
+      <table class="data-table">
+        <thead><tr><th>대표 사이트·화면</th><th>KRDS 조합</th><th>Description에 꼭 남길 문장</th><th>기본 예시 문구</th><th>숨은 레이블 메모</th></tr></thead>
+        <tbody>
+          <tr><td><strong>국민신문고 로그인·실명확인 정보 120분 유지, 홈택스 세션 종료</strong></td><td>Modal + Toast + Button</td><td>Description에는 남은 시간, 임시 저장 여부, 다시 로그인 뒤 이어쓰기 가능 여부를 함께 적습니다.</td><td>5분 뒤 자동으로 로그아웃됩니다. 작성 중인 내용은 임시 저장됩니다. / 로그인 유지하기</td><td>자동 로그아웃 전 남은 시간 확인하기 / 다시 로그인해 이어서 작성하기</td></tr>
+          <tr><td><strong>고용24 실업인정 인터넷 신청, 조기재취업수당 안내</strong></td><td>Notice banner + Disclosure + Structured list + Button</td><td>Description에는 실업급여를 확인하는 날, 이번 회차 재취업 활동, 취업한 날 기준, 조기재취업 대상 여부·확인 서류, 놓쳤을 때 결과와 다시 확인 경로를 함께 적습니다.</td><td>실업급여를 확인하는 날까지 재취업 활동을 등록해 주세요 / 빨리 다시 취업했을 때 받는 수당 대상과 확인 서류 보기 / 놓쳤다면 다음 회차와 보완 경로 확인</td><td>실업인정일까지 필요한 활동 보기 / 취업한 날 기준 확인하기 / 조기재취업수당 대상과 확인 서류 보기 / 실업인정일을 놓쳤을 때 다시 확인하기</td></tr>
+          <tr><td><strong>서울특별시 응답소 질의응답·답변원문, 결과보기</strong></td><td>Status badge + Alert + Link + Button</td><td>Description에는 답변 지연 시 다시 확인 경로, 답변 예정일, 새 민원으로 넘어가는 기준을 함께 적습니다.</td><td>답변 준비 상태를 먼저 확인해 주세요 / 답변이 늦어지면 나의 민원에서 다시 확인해 주세요 / 새 민원 신청하기</td><td>현재 답변 상태와 예정일 다시 보기 / 새 민원 신청 시작하기</td></tr>
+          <tr><td><strong>전자가족관계등록시스템 국적 회복 허가</strong></td><td>Result page + Notice banner + Checklist + Button</td><td>Description에는 1년 내 외국 국적 포기, 외국국적불행사서약 대상 여부, 외국 국적 포기 증명서 제출 경로, 신고 방법·요건 확인 CTA를 함께 적습니다.</td><td>국적 회복이 허가돼도 끝나지 않습니다 / 국적 취득일(회복 허가일)부터 1년 내 외국 국적 포기 절차를 진행해야 하며, 외국국적불행사서약 대상인지 확인해 주세요. 외국 국적을 포기했다면 포기 증명서를 제출해야 합니다 / 신고 방법 보기</td><td>외국 국적 포기 기한과 서약 대상 확인하기 / 외국 국적 포기 증명서 제출 경로와 요건 확인하기</td></tr>
+          <tr><td><strong>정부24 긴급복지지원 신청, 홈택스 지방세 연계 납부, 대한민국법원 친권 상실 청구</strong></td><td>Notice banner + Helper text + Button + Link</td><td>Description에는 즉시 연결 채널, 먼저 움직여야 하는 이유, 온라인 다음 절차, 확인 경로를 함께 적습니다.</td><td>지금 도움받을 채널을 먼저 확인해 주세요 / 위택스 이동 또는 보호 연락처 보기 / 다음 절차 이어서 확인</td><td>129 상담 바로 연결하기 / 위택스로 이동하기 / 긴급 보호 연락처 보기</td></tr>
+          <tr><td><strong>정부24 소상공인 정책자금 신청, 홈택스 지방세 연계 납부, 대한민국법원 부재자 재산 관리인 선임 청구</strong></td><td>Notice banner + Structured list + Button + Link</td><td>Description에는 같이 해야 하는 절차, 처리 기관 또는 연결 사이트, 병행 이유, 복귀 CTA를 함께 적습니다.</td><td>본 신청 전에 병행 절차를 먼저 확인해 주세요 / 보증서·위택스·보전 처분 경로 보기 / 끝난 뒤 돌아오기</td><td>보증서 필요 여부 확인하기 / 위택스로 이동하기 / 보전 처분 안내 보기</td></tr>
+        </tbody>
+      </table>
+      <div class="sub-h4" style="margin-top:24px">D-9-3 우선 보강 공식 — 마감일·놓쳤을 때 결과·복구 경로를 한 블록에 묶는다</div>
+      <table class="data-table">
+        <thead><tr><th>대표 사이트·화면</th><th>첫 블록에 남길 순서</th><th>놓치면 생기는 결과</th><th>복구·다음 행동</th></tr></thead>
+        <tbody>
+          <tr><td><strong>고용24 <code>실업인정 인터넷 신청</code></strong></td><td><code>실업급여를 확인하는 날 (실업인정일)</code> → <code>이번 회차 재취업 활동</code> → <code>활동을 확인하는 서류</code></td><td><code>실업인정일을 놓치면 이번 회차 지급이 미뤄질 수 있습니다</code></td><td><code>[실업인정일을 놓쳤을 때 다시 확인하기]</code> / <code>[조기재취업수당 대상과 확인 서류 보기]</code></td></tr>
+          <tr><td><strong>서울특별시 응답소 <code>질의응답·답변원문</code>, <code>결과보기</code></strong></td><td><code>답변 준비 상태</code> → <code>답변 예정일</code> → <code>나의 민원에서 다시 확인</code></td><td><code>답변원문이 등록되면 민원 결과보기</code> / 같은 건이 아니면 <code>새 민원 신청하기</code></td><td><code>[민원 결과보기]</code> / <code>[새 민원 신청하기]</code> / 보완 요청은 <code>문자·전자문서</code>에서 먼저 확인</td></tr>
+          <tr><td><strong>전자가족관계등록시스템 <code>국적 회복 허가</code>, <code>국적 이탈 신고</code></strong></td><td><code>한국 국적 다시 받기 허가 결과</code> → <code>1년 내 외국 국적 포기</code> → <code>외국국적불행사서약 대상 여부</code> → <code>외국 국적 포기 증명서 제출 경로</code> / <code>국적 이탈 가능 기한</code> → <code>병역 조건</code> → <code>기한 경과 뒤 상태</code></td><td><code>국적 취득일(회복 허가일)부터 1년 내 외국 국적 포기 절차를 진행해야 하며, 외국국적불행사서약 대상인지도 함께 확인해야 합니다. 외국 국적을 포기했다면 포기 증명서를 한국 내 출입국관리사무소에 제출해야 합니다</code> / <code>기한을 넘기면 원칙적으로 병역 이행 또는 면제 후에만 가능하며, 예외적 국적이탈허가 대상은 별도 확인해야 합니다</code></td><td><code>[신고 방법 보기]</code> / <code>[요건 확인]</code> / <code>외국국적불행사서약 대상 여부 확인</code></td></tr>
+        </tbody>
+      </table>
+      <div class="info-box">
+        <strong>우선 보강 규칙</strong>: D-9-3 우선축 화면은 상태 이름만 다듬지 않습니다. 고용24는 <code>마감일 → 놓쳤을 때 결과 → 다시 확인 경로</code>, 서울특별시 응답소는 <code>답변 준비 상태 → 답변 예정일 → 결과 재확인 → 새 민원 전환 기준</code>, 전자가족관계등록시스템은 <code>한국 국적 다시 받기 허가 결과 → 1년 내 외국 국적 포기 → 외국국적불행사서약 대상 여부 → 외국 국적 포기 증명서 제출 경로</code>, <code>국적 이탈 가능 기한 → 병역 조건 → 기한 경과 뒤 상태</code>, <code>요건 확인·신고 방법</code>을 같은 첫 블록으로 묶어야 4장과 CASE 32·45·46·57 근거로 인정합니다.
+      </div>
+      <div class="section-note" style="margin-top:20px;">
+        <strong>공식 재확인 메모</strong><br>
+        고용24 메인 화면은 <code>실업인정 인터넷 신청</code>, <code>온라인 취업특강 (1차 실업인정 교육)</code>, <code>민원처리현황 (실업급여)</code>를 같은 실업급여 흐름으로 두고, 조기재취업수당 안내는 <code>실업의 신고일로부터 14일이 지난 후</code>, <code>재취업한 날 또는 사업을 시작한 날부터 12개월이 경과한 이후</code>, <code>조기재취업수당 청구서 및 관련 증빙서류</code>를 안내합니다. 서울특별시 응답소는 <code>민원신청 바로가기</code>, <code>민원결과 바로가기</code>를 분리하고, FAQ에서 <code>응답소에서 신문고를 통해 이관된 민원은 응답소 "민원결과"에서 확인 가능합니다</code>, <code>민원결과 페이지의 "확인하기" 버튼</code>을 다시 보여 주며, <code>사용자 계정 보호를 위해 30분이 지나면 자동 로그아웃</code>을 알립니다. 그래서 4장 안전망에서는 마감일·답변 예정일만이 아니라 <code>민원처리현황</code>, <code>민원결과</code>, <code>확인하기</code>, 재로그인 경로까지 같은 위험·복구 묶음으로 남겨야 합니다.
+      </div>
+      <div class="info-box">
+        안전망 장에서 다룬 위험·복구 문장도 사례 설명으로만 남기지 않습니다. Description, 기본 예시 문구, 숨은 레이블 메모를 같이 적어야 경고 배너, 세션 만료 모달, 지연 상태 안내를 KRDS/Figma 기본값으로 재사용할 수 있습니다.
+      </div>
 
       <div class="do-dont">
         <div class="do-dont-box dont">
@@ -490,6 +550,21 @@
 <span class="code-ok">✅ 1단  '생년월일'을 입력하지 않았습니다.
    (2단 생략 — 원인이 명확한 경우)
    3단  생년월일을 숫자 8자리로 입력해 주세요. (예: 19900101)</span></div>
+
+      <div class="sub-h3" style="margin-top:24px">대표 서비스 관찰 — 세션 종료는 시간·저장·재진입을 한 흐름으로 쓴다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">국민신문고·홈택스·정부24처럼 보안 시간 제한이 있는 서비스에서는 세션 종료를 단순 오류처럼 쓰면 시민은 억울함과 데이터 손실 불안을 동시에 느낍니다. 국민신문고 FAQ의 `로그인·실명확인 정보 120분 유지` 같은 제한 시간 안내도 종료 뒤가 아니라 만료 전에 드러나야 하며, 남은 시간, 임시 저장 여부, 다시 로그인 또는 메인 복귀 경로를 한 자리에서 이어 알려야 합니다.</p>
+      <table class="data-table">
+        <thead><tr><th>상황</th><th>🚫 금지</th><th>✅ 권장</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>만료 전 경고</strong></td><td class="strike">자동 로그아웃 됩니다.</td><td class="ok">5분 뒤 자동으로 로그아웃됩니다. 작성 중인 내용은 임시 저장됩니다. [로그인 유지하기]</td><td>Modal, Button</td></tr>
+          <tr><td><strong>세션 종료</strong></td><td class="strike">세션이 만료되었습니다. 처음부터 다시 시작하세요.</td><td class="ok">자리를 비운 사이 로그인이 끊겼습니다. 다시 로그인하면 이어서 작성할 수 있습니다. [다시 로그인하기]</td><td>Modal, Toast, Button</td></tr>
+          <tr><td><strong>로그아웃 완료</strong></td><td class="strike">로그아웃 되었습니다.</td><td class="ok">로그아웃 됐습니다. [메인으로 가기] [다시 로그인하기]</td><td>Toast, Button</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>세션 종료 체크포인트</strong>: `남은 시간`, `임시 저장 여부`, `다시 들어가는 방법`을 같은 흐름에서 보여줍니다. 저장이 안 됐다면 그 사실과 대체 경로도 바로 밝혀야 합니다.
+      </div>
     </section>
 
     <div class="article-divider"></div>
@@ -626,6 +701,32 @@
         </tbody>
       </table>
       </div>
+
+      <div class="sub-h3" style="margin-top:24px">대표 서비스 관찰 — 조건 미충족·비가역 결정은 비난 없이 경고한다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">가정법원의 상속포기·협의이혼 의사확인·개명 허가, 홈택스의 휴·폐업 신고, 대한민국법원의 개인회생·파산 선택, 전자가족관계등록의 국적 회복 같은 절차는 단순 오류가 아니라 <strong>조건이 아직 갖춰지지 않았거나, 지금 선택이 나중에 되돌릴 수 없는 결과</strong>로 이어지는 상황입니다. 이때는 "잘못 입력했습니다"가 아니라 <strong>무엇이 아직 부족한지</strong>, <strong>기한을 넘기면 어떤 손실이 생기는지</strong>, <strong>지금 비교하거나 돌아갈 경로가 무엇인지</strong>를 먼저 써야 합니다.</p>
+
+      <div class="sub-h4">조건 미충족·기각 가능성도 비난 없이 쓴다</div>
+      <table class="data-table">
+        <thead><tr><th>상황</th><th>피해야 할 표현</th><th>권장 안내</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>협의이혼 의사확인</strong></td><td class="strike">필수 요건을 확인하세요</td><td class="ok">아직 접수할 수 없습니다. 배우자 두 분이 함께 와야 하고, 미성년 자녀가 있으면 친권·양육 협의서를 먼저 제출해야 합니다. 숙려기간 전에는 확인기일을 잡을 수 없습니다. [절차 확인]</td><td>Checklist, Inline alert, CTA</td></tr>
+          <tr><td><strong>개명 허가 신청</strong></td><td class="strike">사유가 부족합니다</td><td class="ok">이 사유만으로는 허가되지 않을 수 있습니다. 사회생활 불편이나 종교·관습 사유를 구체적으로 적어 주세요. 기각되면 1주일 이내 즉시항고할 수 있습니다. [불복 방법]</td><td>Helper text, Alert, Link</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h4">되돌릴 수 없는 결정 전에는 위험·기한·대안을 먼저 경고한다</div>
+      <table class="data-table">
+        <thead><tr><th>상황</th><th>위험을 먼저 쓴 안내</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>상속포기 신고</strong></td><td class="ok">아직 결정하지 마세요. 사망 사실을 안 날부터 3개월이 지나면 단순 승인으로 볼 수 있고, 지금 포기하면 취소할 수 없습니다. 부채가 다음 순위 상속인에게 넘어갈 수 있으니 [한정승인과 비교] 뒤 선택하세요.</td><td>Warning banner, Confirmation modal, Comparison CTA</td></tr>
+          <tr><td><strong>국적 회복 허가</strong></td><td class="ok">국적 회복이 허가돼도 끝나지 않습니다. 국적 취득일(회복 허가일)부터 1년 내 외국 국적 포기 절차를 진행해야 하며, 외국국적불행사서약 대상이면 서약으로 갈 수 있습니다. 외국 국적을 포기했다면 포기 증명서를 제출해야 합니다. [신고 방법 보기]</td><td>Notice banner, Checklist, Follow-up CTA</td></tr>
+          <tr><td><strong>개인회생 / 파산 선택</strong></td><td class="ok">지금 소득으로 나눠 갚을 수 있다면 개인회생을, 상환이 어렵다면 파산을 먼저 검토하세요. 상황이 맞지 않으면 절차가 달라질 수 있으니 [개인회생·파산 비교]와 [무료 법률 상담]을 먼저 확인하세요.</td><td>Notice banner, Segmented control, Link</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>실무 규칙</strong>: 조건 미충족·기각 가능성은 무엇이 부족한지 → 지금 보완할 행동 → 다시 확인할 경로 순서로 쓰고, 비가역 결정은 KRDS 경고 배너나 확인 모달 상단에서 위험·기한·대안을 먼저 경고합니다.
+      </div>
     </section>
 
     <div class="article-divider"></div>
@@ -647,6 +748,21 @@
           <tr><td><strong>③ 다음 행동</strong></td><td>—</td><td class="ok">[신청 내역 확인하기]</td></tr>
         </tbody>
       </table>
+
+      <div class="sub-h3">완료나 결과 통지를 받은 뒤에도 놓치면 위험한 정보는 첫 블록에서 분리해 보여준다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">완료 메시지는 안심용 문장으로 끝내지 않습니다. 완료나 허가, 결과 통지 뒤에도 `후속 행동`, `자동으로 이어지는 것과 별도로 해야 할 것`, `이의·재심사 기한`이 남아 있으면 완료 확인 바로 아래 첫 블록에서 따로 드러내야 합니다.</p>
+      <table class="data-table">
+        <thead><tr><th>상황</th><th>첫 블록에서 따로 보여줄 정보</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>전입신고 완료</strong></td><td class="ok">주소 변경이 완료됐습니다. 자동 반영: 국민연금·건강보험 / 별도 변경: 자동차등록·금융기관 [변경 체크리스트]</td><td>Result page, Structured list, Link</td></tr>
+          <tr><td><strong>국적 회복 허가</strong></td><td class="ok">국적 회복이 허가됐습니다. 국적 취득일(회복 허가일)부터 1년 내 외국 국적 포기 절차를 진행하고, 외국국적불행사서약 대상인지 확인해 주세요. 외국 국적을 포기했다면 포기 증명서를 제출해야 합니다 [신고 방법 보기]</td><td>Notice banner, Checklist, Follow-up CTA</td></tr>
+          <tr><td><strong>재심사 결과 통지</strong></td><td class="ok">결과에 이의가 있다면 통지일로부터 90일 이내 심사 청구할 수 있습니다. [이의신청 방법]</td><td>Status, Notice banner, Button</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>연결 규칙</strong>: 성공 메시지나 결과 통지 아래 첫 블록에는 `후속 행동`, `자동/별도`, `이의·재심사 기한` 가운데 놓치면 손실이 생기는 정보를 먼저 분리해 둡니다. KRDS에서는 결과 페이지·구조화 목록·배너·버튼을 같이 써서 `끝난 일`과 `아직 남은 일`이 한눈에 갈리게 합니다.
+      </div>
 
       <div class="sub-h3">완료 메시지 유형별 패턴</div>
 
@@ -857,6 +973,8 @@
   </div>
 </div>
 
+<script src="../../shared/base-path.js"></script>
+<script src="../../shared/prompt-copy.js"></script>
 <script src="../../shared/nav.js"></script>
 </body>
 </html>

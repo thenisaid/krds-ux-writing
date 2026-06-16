@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="텍스트 구조화 — 두괄식·시각적 계층화·맞춤형 도움말·능동태 전환. KRDS UX Writing 가이드라인.">
+<meta name="description" content="텍스트 구조화 — 두괄식·시각적 계층화·맞춤형 도움말·능동태 전환. 대표 사이트 순회에서 반복된 자격·상태·결과 패턴을 KRDS 구조로 재구성합니다. KRDS UX Writing 가이드라인.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="텍스트 구조화 — KRDS UX Writing 가이드라인">
-  <meta property="og:description" content="텍스트 구조화 — 두괄식·시각적 계층화·맞춤형 도움말·능동태 전환. KRDS UX Writing 가이드라인.">
+  <meta property="og:description" content="텍스트 구조화 — 두괄식·시각적 계층화·맞춤형 도움말·능동태 전환. 대표 사이트 순회에서 반복된 자격·상태·결과 패턴을 KRDS 구조로 재구성합니다. KRDS UX Writing 가이드라인.">
   <meta property="og:url" content="https://thenisaid.github.io/krds-ux-writing/principles/structure/">
   <link rel="canonical" href="https://thenisaid.github.io/krds-ux-writing/principles/structure/">
 <title>텍스트 구조화 — KRDS UX Writing 가이드라인</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
-<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<script>(function(){var prefersDark=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches;var t='light';try{t=localStorage.getItem('krds-theme')||(prefersDark?'dark':'light');}catch(e){t=prefersDark?'dark':'light';}if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" as="style" crossorigin="anonymous"
   href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
@@ -304,7 +304,7 @@
       <h1 class="content-title">텍스트 구조화<br><span style="font-size:0.55em;color:var(--text-muted);font-weight:600"> (Text Structuring)</span></h1>
       <p class="content-headline">결론부터, 계층으로, 능동으로</p>
       <p class="content-desc">
-        공공 서비스의 텍스트는 시민이 스캔하며 읽습니다. 핵심을 먼저, 구조를 시각화하고, 맥락에 맞는 도움말을 제공하며, 능동태로 전환합니다.
+        공공 서비스의 텍스트는 시민이 스캔하며 읽습니다. 핵심을 먼저, 구조를 시각화하고, 맥락에 맞는 도움말을 제공하며, 능동태로 전환합니다. 대표 사이트 순회에서는 자격·상태·완료 뒤 후속 흐름 화면을 결론·기한·다음 행동 순서로 다시 묶습니다. 새 실화면이 들어오면 <code>원문 3개+CTA 1개</code>와 UX/UI 검수 질문을 먼저 남긴 뒤 사례 승격과 KRDS/Figma handoff를 같은 라운드에서 결정합니다.
       </p>
     </div>
 
@@ -319,6 +319,51 @@
           <tr><td><strong>2.2 시각적 분리와 계층화</strong></td><td>결론/핵심/면책 3구역 분리</td></tr>
           <tr><td><strong>2.3 맞춤형 도움말</strong></td><td>상황별 인라인 헬프 4가지 도구 선택</td></tr>
           <tr><td><strong>2.4 능동태 전환</strong></td><td>행정 피동형 → 능동 행동형</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h3" style="margin-top:24px">대표 사이트 순회 운영 — 새 실화면을 받은 직후 10분 판정 루틴으로 구조 문제부터 고른다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">정부24·홈택스·복지로·국민건강보험·국민신문고·고용24·전자가족관계등록시스템·서울특별시 응답소 대표 사이트 순회와 대한민국법원 보조 표본에서는 문장 길이보다 먼저 구조 실패를 잡습니다. 새 실화면을 받으면 <strong>화면 유형</strong>, <strong>첫 블록 문장</strong>, <strong>CTA</strong>, <strong>다음 기한</strong>을 10분 안에 먼저 분류해야 실제 사례 추가, 사례 승격, KRDS 컴포넌트 보강이 같은 기준으로 이어집니다. 이때 <code>원문 3개+CTA 1개</code>와 UX/UI 검수 보조 질문 1개를 함께 남겨야 실제 사례 추가, 사례 승격, KRDS/Figma 컴포넌트 handoff가 같은 기준으로 이어집니다.</p>
+      <table class="data-table">
+        <thead><tr><th>시점</th><th>구조 검수에서 먼저 할 일</th><th>UX/UI 검수 보조 질문</th><th>우선 도착지</th></tr></thead>
+        <tbody>
+          <tr><td><strong>1분</strong></td><td>자격·조건 / 상태·결과 / 완료 뒤 후속 흐름 중 무엇인지 고릅니다</td><td>제목·상태·기한·다음 행동 가운데 지금 가장 먼저 봐야 할 1문장이 첫 블록에 올라와 있는가?</td><td>화면 유형별 최소 기록 질문</td></tr>
+          <tr><td><strong>3분</strong></td><td>첫 블록 문장 1개, 상태값 1개, CTA 1개를 적습니다</td><td>첫 블록만 읽어도 지금 상태와 바로 해야 할 행동이 이어지는가?</td><td>사례 카드 최소 기록 양식</td></tr>
+          <tr><td><strong>5분</strong></td><td>Notice banner / Structured list / Result page / Timeline 중 먼저 붙일 KRDS 조합을 고릅니다</td><td>결론과 다음 행동이 같은 화면 흐름으로 붙어 있는가?</td><td>KRDS 조합 초안</td></tr>
+          <tr><td><strong>7분</strong></td><td>공통 원칙 후보인지 기관 특화 후보인지 고릅니다</td><td>세 대표 사이트 이상에서 같은 구조 실패가 반복되는가, 아니면 한 기관 맥락에만 묶이는가?</td><td>Layer 2·Layer 3 판정</td></tr>
+          <tr><td><strong>10분</strong></td><td>같은 라운드에서 같이 움직일 문서를 확정합니다</td><td><code>principles.md</code>, <code>principles/components</code>, <code>case-studies</code>, <code>research/public-service-corpus.md</code>, 테스트를 함께 갱신할 범위가 정해졌는가?</td><td>사례 승격 또는 Layer 3 보류</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>사례 승격 규칙</strong>: 세 대표 사이트 이상에서 같은 구조 실패가 반복되면 <code>사례 승격</code> 후보로 올리고 <code>principles.md</code>, <code>principles/components</code>, <code>case-studies</code>, <code>research/public-service-corpus.md</code>, 테스트를 같은 라운드에서 같이 갱신합니다. 한 기관에서만 강하게 반복되면 Layer 3 로그로 남기고 공통 원칙 수정은 보류합니다.
+      </div>
+      <div class="info-box">
+        <strong>구조 handoff 메모</strong>: <code>원문 3개+CTA 1개</code>를 남겼다면 5분 판정에서 고른 KRDS 조합에 맞춰 Figma Description·Helper text·CTA 우선순위까지 같이 적습니다. 세 대표 사이트 반복이면 Layer 2 승격으로, 기관 고유 제도면 Layer 3 보류로 넘깁니다.
+      </div>
+
+      <div class="sub-h3" style="margin-top:24px">구조 검수 축별 바로 붙일 CASE·KRDS 조합</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">구조 문제를 찾았으면 같은 언어로 다음 문서를 바로 정해야 합니다. 아래 표는 UX/UI 검수 축을 구조 페이지 관점에서 다시 묶은 것으로, 어떤 CASE와 KRDS 조합, 어떤 handoff 문장을 함께 적어야 하는지 빠르게 고르게 돕습니다.</p>
+      <table class="data-table">
+        <thead><tr><th>UX/UI 검수 축</th><th>먼저 보는 구조 신호</th><th>먼저 붙일 CASE 묶음</th><th>KRDS 조합</th><th>같이 남길 handoff 메모</th></tr></thead>
+        <tbody>
+          <tr><td><strong>정보 위계</strong></td><td>상태 첫 줄, 계산 기준, 적용 시점, 다시 확인 CTA가 첫 블록에서 이어지는가?</td><td>CASE 5·42·54·55·56</td><td>Result page + Status badge + Structured list + Button</td><td>Description에는 상태 1문장, 예정일 또는 적용 시점, 다음 행동 CTA를 적고 숨은 레이블은 현재 상태와 예정일을 함께 읽게 합니다.</td></tr>
+          <tr><td><strong>선택·분기</strong></td><td>자격, 온라인/방문 가능 여부, 절차 선택 기준이 첫 블록에 붙어 있는가?</td><td>CASE 18·58·60</td><td>Radio + Segmented control + Helper text + Structured list + Button</td><td>Description에는 분기 기준, 잘못 고를 때 영향, 담당 기관 또는 비교 CTA를 적고 버튼 위계를 같이 남깁니다.</td></tr>
+          <tr><td><strong>입력·첨부</strong></td><td>무엇을 입력하는지, 언제 추가 서류가 생기는지, 형식·용량 제한과 재제출 경로가 입력 근처에 붙어 있는가?</td><td>CASE 20·24·38·11·59</td><td>Text input + File upload + Helper text + Notice banner + Button</td><td>Description에는 입력 대상, 조건부 필수, 파일 제한, 실패 뒤 복구 경로를 적고 숨은 레이블은 입력 목적과 재제출 행동을 함께 읽게 합니다.</td></tr>
+          <tr><td><strong>상태·안심</strong></td><td>완료 뒤 남은 의무, 기한, 미이행 영향, 복귀 CTA가 같은 결과 흐름에 붙어 있는가?</td><td>CASE 31·32·33·45·46·56</td><td>Result page + Notice banner + Checklist + Button</td><td>Description에는 후속 행동, 자동/별도, 기한 또는 불복 경로를 순서대로 적고 숨은 레이블은 남은 일과 다시 확인 경로를 함께 읽게 합니다.</td></tr>
+          <tr><td><strong>접근성·숨은 텍스트</strong></td><td>보이는 제목과 숨은 레이블이 같은 목적, 현재 상태, 다음 행동을 말하는가?</td><td>CASE 49·51</td><td>Link + Button + Helper text + Status badge</td><td>Description에는 무엇을 여는지, 새 창 여부, 상태 또는 다음 행동을 적고 숨은 레이블 메모는 보이는 이름과 같은 목적을 읽게 합니다.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h3" style="margin-top:24px">이번 라운드 구조 KRDS/Figma 연결 예시</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">구조 재구성은 문단 순서만 바꾸는 작업이 아닙니다. 첫 블록에서 무엇을 먼저 읽히게 할지 정한 뒤에는 같은 순서를 KRDS 컴포넌트와 Figma Description에도 남겨야 다음 라운드 검수와 재사용이 쉬워집니다.</p>
+      <table class="data-table">
+        <thead><tr><th>대표 사이트·화면</th><th>첫 블록 재구성</th><th>KRDS 조합</th><th>Description에 남길 우선순위</th><th>기본 예시 문구</th></tr></thead>
+        <tbody>
+          <tr><td><strong>서울특별시 응답소 <code>질의응답·답변원문</code>, <code>결과보기</code></strong></td><td>상태 요약 1문장 → 답변 예정일 → 결과 재확인 CTA</td><td>Result page + Status badge + Button</td><td>Description에는 결과 첫 줄, 답변 예정일, 결과보기/민원 신청하기 위계를 순서대로 적습니다.</td><td>담당 기관에서 답변을 준비하고 있습니다 / 답변 예정일 확인 / 민원 결과보기</td></tr>
+          <tr><td><strong>국민건강보험 <code>피부양자·산정특례 안내</code>, <code>보험료 산정</code></strong></td><td>부양가족 등록·해제 대상 → 중증질환 본인부담 감면 대상 → 이번 달 보험료 계산 기준 → 변동 신고·경감 신청·임의계속가입</td><td>Helper text + Accordion + Table + Button</td><td>Description에는 부양가족 등록·해제 대상, 중증질환 본인부담 감면 대상, 이번 달 보험료 계산 기준, 변동 신고·경감 신청·임의계속가입 CTA를 순서대로 적습니다.</td><td>부양가족으로 등록하거나 해제할 가족인지 먼저 확인해 주세요 / 중증질환 본인부담 감면 대상인지 확인 / 이번 달 보험료 계산 기준 보기 / 변동 신고하기</td></tr>
+          <tr><td><strong>고용24 <code>실업인정 인터넷 신청</code>, <code>조기재취업수당 안내</code></strong></td><td>실업급여를 확인하는 날 → 이번 회차 재취업 활동 → 취업한 날 기준 → 조기재취업 대상 여부·확인 서류 → 놓쳤을 때 결과와 다시 확인 경로</td><td>Notice banner + Structured list + Disclosure + Button</td><td>Description에는 실업급여를 확인하는 날, 이번 회차 재취업 활동, 취업한 날 기준, 조기재취업 대상 여부·확인 서류, 놓쳤을 때 결과와 다시 확인 경로를 순서대로 적습니다.</td><td>실업급여를 확인하는 날까지 재취업 활동을 등록해 주세요 / 빨리 다시 취업했을 때 받는 수당 대상과 확인 서류 보기 / 놓쳤다면 다음 회차와 보완 경로 확인</td></tr>
+          <tr><td><strong>전자가족관계등록시스템 <code>국적 회복 허가</code></strong></td><td>한국 국적 다시 받기 허가 결과 → 1년 내 외국 국적 포기 → 외국국적불행사서약 대상 여부 → 외국 국적 포기 증명서 제출 경로 → 신고 방법 보기</td><td>Result page + Notice banner + Checklist + Button</td><td>Description에는 한국 국적 다시 받기 허가 결과, 1년 내 외국 국적 포기, 외국국적불행사서약 대상 여부, 외국 국적 포기 증명서 제출 경로, 신고 방법 CTA를 순서대로 적습니다.</td><td>한국 국적 다시 받기 허가 결과를 먼저 확인해 주세요 / 1년 내 외국 국적 포기와 외국국적불행사서약 대상 여부를 확인해 주세요 / 외국 국적 포기 증명서 제출 경로 확인 / 신고 방법 보기</td></tr>
         </tbody>
       </table>
     </section>
@@ -399,6 +444,22 @@
           신청: 정부24 온라인 / 주민센터 방문<br><br>
           <small style="color:var(--text-muted)">※ 기초생활수급자는 추가 서류 필요</small>
         </div>
+      </div>
+
+      <div class="sub-h3" style="margin-top:24px">대표 서비스 관찰 — 자격·상태·제도 용어는 요약과 도움말로 재구성한다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">정부24 신청 상세, 국민신문고 처리 상태, 복지로 자격 안내, 고용24 실업인정 화면을 다시 보면 시민이 먼저 읽어야 할 것은 공식 용어 자체가 아니라 <strong>내가 지금 해당하는지</strong>, <strong>언제까지 기다리거나 해야 하는지</strong>, <strong>무엇을 먼저 준비해야 하는지</strong>입니다. 따라서 첫 줄은 상태 요약과 시민 언어로 쓰고, 법령 용어는 표 헤더 보조 설명이나 도움말로 내려야 합니다.</p>
+      <table class="data-table">
+        <thead><tr><th>관찰된 표현</th><th>바로 쓰면 생기는 문제</th><th>권장 구조</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>신청자격 / 구비서류 / 처리기간</strong></td><td>신청 전에 자격과 준비물을 판단하는 속도가 늦어진다</td><td>상단 요약 `신청할 수 있는 사람과 준비할 서류를 먼저 확인하세요` + 헤더 `신청할 수 있는 사람`, `준비할 서류`, `처리까지 걸리는 시간`</td><td>Structured list, Table, Button</td></tr>
+          <tr><td><strong>처리기관 / 답변예정일 / 등록일</strong></td><td>상태표를 읽어도 지금 무엇을 기다리는지 바로 이해되지 않는다</td><td>상단 요약 `민원이 접수됐고 답변은 7일 안에 드릴 예정입니다` + 헤더 `담당 기관`, `답변 예정일`, `접수한 날`</td><td>Status badge, Timeline, Table</td></tr>
+          <tr><td><strong>소득인정액 / 수급권자</strong></td><td>법령 용어를 모르면 우리 집이 지원 대상인지 판단이 늦어진다</td><td>상단 요약 `우리 집이 지원 대상인지 먼저 확인하세요` + 도움말 `소득인정액 = 가구 소득·재산 합산액`, `수급권자 = 지원 대상자`</td><td>Helper text, Accordion, Notice banner</td></tr>
+          <tr><td><strong>노무제공플랫폼사업자 / 적극적인 재취업활동 / 실업인정일</strong></td><td>내가 대상인지와 지금 해야 할 행동이 제도 용어 뒤로 밀린다</td><td>상단 요약 `다음 실업인정일까지 재취업 활동 1회를 등록해 주세요` + 도움말 `배달·대리운전처럼 일을 연결하는 플랫폼에서 일했다면 해당할 수 있습니다`, `실업인정일 = 실업급여를 확인하는 날`</td><td>Notice banner, Helper text, Disclosure</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>실무 규칙</strong>: 자격·상태·제도 안내는 `상태 요약 1문장 + 시민 언어 헤더 + 법령 용어 병기` 3단으로 씁니다. 첫 줄에서 `지금 상태`, `다음 기한`, `바로 판단할 것`이 동시에 보여야 합니다.
       </div>
     </section>
 
@@ -496,6 +557,7 @@
   </div>
 </div>
 
+<script src="../../shared/base-path.js"></script>
 <script src="../../shared/nav.js"></script>
 </body>
 </html>

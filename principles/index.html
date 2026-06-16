@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="KRDS UX Writing 원칙 — 5장 체계: 파운데이션, 무번역, 정보핵심화, 심리적안전망, 기관별 파생 가이드. 공공 서비스 UX 라이팅의 기초.">
+<meta name="description" content="KRDS UX Writing 원칙 — 파운데이션, 3대 원칙, 표기법·컴포넌트, 기관별 파생 가이드, 거버넌스 운영. 대표 사이트 순회와 사례 승격, UX/UI 검수까지 다룹니다.">
 <title>원칙 (Principles) — KRDS UX Writing 가이드라인</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
-<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<script>(function(){var prefersDark=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches;var t='light';try{t=localStorage.getItem('krds-theme')||(prefersDark?'dark':'light');}catch(e){t=prefersDark?'dark':'light';}if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" as="style" crossorigin="anonymous"
   href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
@@ -44,6 +44,87 @@
 .quick-link-icon { font-size: 18px; flex-shrink: 0; }
 .quick-link-text { flex: 1; }
 .quick-link-arrow { color: var(--text-muted); font-size: 14px; }
+
+.start-flow {
+  margin: 0 0 48px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--bg-subtle) 0%, var(--bg) 100%);
+}
+
+.start-flow-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.start-flow-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 16px;
+  max-width: 68ch;
+}
+
+.start-flow-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.start-flow-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.start-flow-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 12px rgba(37,110,244,0.07);
+  text-decoration: none;
+}
+
+.start-flow-step {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.start-flow-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.start-flow-card-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.start-flow-card-arrow {
+  font-size: 13px;
+  color: var(--accent);
+}
+
+@media (max-width: 760px) {
+  .start-flow-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
 <body>
@@ -273,12 +354,43 @@
     <div class="content-header">
       <div class="content-eyebrow">Principles</div>
       <h1 class="content-title">원칙</h1>
-      <p class="content-headline">공공 서비스 UX 라이팅의 5장 체계</p>
+      <p class="content-headline">공공 서비스 UX 라이팅의 원칙·실전 가이드·운영 체계</p>
       <p class="content-desc">
-        철학(1장)에서 실행(2~4장)으로, 실행에서 기관 적용(5장)으로. 공공 서비스의 언어가 시민의 편이 되기까지의 완전한 체계를 담습니다.
+        파운데이션과 3대 원칙, 표기법·컴포넌트·기관 파생 가이드, 거버넌스 운영까지. 대표 사이트 순회, 사례 승격, UX/UI 검수를 한 흐름으로 묶어 공공 서비스 언어를 계속 다시 구성합니다.
       </p>
       <a class="content-cta" href="/krds-ux-writing/principles/foundation/">1장 파운데이션부터 시작하기 →</a>
     </div>
+
+    <section class="start-flow" aria-labelledby="start-flow-title">
+      <h2 class="start-flow-title" id="start-flow-title">첫 진입에서 바로 보는 운영 시작 순서</h2>
+      <p class="start-flow-desc">새 원칙 번호를 더 만드는 것보다 이번 라운드의 출발점과 다음 문서를 먼저 고르는 편이 빠릅니다. 전 원칙 재점검 요약, deep archive 기준점, 새 실화면 10분 판정, Layer 2·Layer 3 판정과 KRDS handoff를 아래 순서로 따라가면 됩니다.</p>
+      <div class="start-flow-grid">
+        <a href="/krds-ux-writing/principles/governance/#glossary" class="start-flow-card">
+          <span class="start-flow-step">Step 1</span>
+          <div class="start-flow-card-title">전 원칙 재점검 요약에서 이번 라운드 축 고르기</div>
+          <div class="start-flow-card-desc">전 원칙 재점검 요약에서 어느 장을 먼저 채울지 고릅니다. 대표 사이트 8종과 대한민국법원 보조 표본 가운데 어느 화면 단계와 KRDS 조합이 비었는지 먼저 확인합니다.</div>
+          <span class="start-flow-card-arrow" aria-hidden="true">전 원칙 재점검 요약 보기 →</span>
+        </a>
+        <a href="/krds-ux-writing/archive.html" class="start-flow-card">
+          <span class="start-flow-step">Step 2</span>
+          <div class="start-flow-card-title">정부24·홈택스·전자가족관계등록시스템 deep archive 기준점 대조</div>
+          <div class="start-flow-card-desc">새 실화면이 들어오면 deep archive 기준점에서 비슷한 실패를 먼저 찾습니다. 기존 CASE 묶음과 같은 화면 단계인지 먼저 대조해야 사례를 다시 늘리지 않고 이어 붙일 수 있습니다.</div>
+          <span class="start-flow-card-arrow" aria-hidden="true">이슈 아카이브 열기 →</span>
+        </a>
+        <a href="/krds-ux-writing/case-studies/" class="start-flow-card">
+          <span class="start-flow-step">Step 3</span>
+          <div class="start-flow-card-title">실제 사례 추가 운영 방법에서 10분 판정 실행</div>
+          <div class="start-flow-card-desc">원문 3개+CTA 1개, UX/UI 검수 축 1개, CASE 시작점 1개를 먼저 적습니다. 사전 후보, 사례 카드 후보, 공통 원칙 후보, Layer 3 가운데 우선 도착지도 같이 고릅니다.</div>
+          <span class="start-flow-card-arrow" aria-hidden="true">실제 사례 추가 운영 방법 보기 →</span>
+        </a>
+        <a href="/krds-ux-writing/principles/derivative/" class="start-flow-card">
+          <span class="start-flow-step">Step 4</span>
+          <div class="start-flow-card-title">Layer 2·Layer 3 판정과 KRDS handoff까지 한 번에 결정</div>
+          <div class="start-flow-card-desc">세 대표 사이트에서 반복되면 Layer 2 공통 원칙으로, 기관 고유 제도면 Layer 3로 넘깁니다. 승격된 항목은 사전·원칙·7장 컴포넌트·Figma Description까지 같은 라운드에서 같이 움직입니다.</div>
+          <span class="start-flow-card-arrow" aria-hidden="true">Layer 2·Layer 3 판정 보기 →</span>
+        </a>
+      </div>
+    </section>
 
     <!-- 기초 -->
     <section class="chapter-section" id="foundation-section" aria-labelledby="foundation-section-title">
@@ -290,7 +402,7 @@
             <span class="chapter-card-level foundation">파운데이션</span>
             <div class="chapter-card-title">파운데이션 (Foundation)</div>
             <div class="chapter-card-subtitle">왜 이 가이드라인이 필요한가</div>
-            <p class="chapter-card-desc">공공 서비스 언어의 비전, 주권자(시민) 이해, 3대 원칙 개요, 보이스·톤 기준. 모든 원칙의 철학적 배경을 담습니다.</p>
+            <p class="chapter-card-desc">공공 서비스 언어의 비전, 주권자(시민) 이해, 3대 원칙 개요, 보이스·톤 기준. 대표 사이트 순회에서 완료·전환·오류·대기 화면을 어떤 톤 축으로 다시 볼지 정합니다.</p>
             <div class="chapter-card-sections">
               <span class="chapter-card-section">1.1 비전</span>
               <span class="chapter-card-section">1.2 주권자</span>
@@ -313,9 +425,9 @@
             <span class="chapter-card-level principle">원칙</span>
             <div class="chapter-card-title">무번역의 원칙 (No-Translation)</div>
             <div class="chapter-card-subtitle">행정어를 시민의 언어로</div>
-            <p class="chapter-card-desc">공급자의 행정적 정확성보다 주권자의 즉각적인 이해가 우선입니다. 행정 관습어·이중 부정·외래어 표기 기준과 150개 대체어 사전을 제공합니다.</p>
+            <p class="chapter-card-desc">공급자의 행정적 정확성보다 주권자의 즉각적인 이해가 우선입니다. 행정 관습어·이중 부정·외래어 표기 기준과 274개 공통 행정어 사전을 제공합니다. 대표 사이트 순회에서는 첫 레이블·도움말·메뉴 이름·CTA가 같이 실패하는 화면 단계 묶음을 먼저 찾습니다.</p>
             <div class="chapter-card-sections">
-              <span class="chapter-card-section">2.1 행정어 대체 사전 (150개)</span>
+              <span class="chapter-card-section">2.1 행정어 대체 사전 (274개 공통)</span>
               <span class="chapter-card-section">2.2 폼 레이블·플레이스홀더</span>
               <span class="chapter-card-section">2.3 버튼 레이블</span>
             </div>
@@ -328,7 +440,7 @@
             <span class="chapter-card-level principle">원칙</span>
             <div class="chapter-card-title">정보핵심화의 원칙 (Essentialism)</div>
             <div class="chapter-card-subtitle">결론부터, 핵심만</div>
-            <p class="chapter-card-desc">무작정 글자 수를 줄이는 것이 아니라, 주권자가 핵심에 도달하는 생각의 거리를 물리적으로 줄여주는 '노이즈 제거' 과정입니다.</p>
+            <p class="chapter-card-desc">무작정 글자 수를 줄이는 것이 아니라, 주권자가 핵심에 도달하는 생각의 거리를 물리적으로 줄여주는 '노이즈 제거' 과정입니다. 민원·환급·심사 결과와 완료 뒤 후속 흐름에서 결론·예정일·다음 행동을 먼저 드러내는 규칙을 정리합니다.</p>
             <div class="chapter-card-sections">
               <span class="chapter-card-section">3.1 역피라미드 구조</span>
               <span class="chapter-card-section">3.2 정보 구조 원칙</span>
@@ -343,7 +455,7 @@
             <span class="chapter-card-level principle">원칙</span>
             <div class="chapter-card-title">심리적안전망의 원칙 (Psychological Safety)</div>
             <div class="chapter-card-subtitle">실수해도 괜찮은 경험</div>
-            <p class="chapter-card-desc">실수해도 언제든 궤도를 수정할 수 있다는 확신을 주어 비가역적 공포를 없앱니다. 에러 메시지, 성공·완료 메시지, 빈 상태 텍스트 기준을 담습니다.</p>
+            <p class="chapter-card-desc">실수해도 언제든 궤도를 수정할 수 있다는 확신을 주어 비가역적 공포를 없앱니다. 오류, 세션 종료, 조건 미충족, 비가역 결정에서 원인·복구·기한·대안을 먼저 보여 주는 기준을 담습니다.</p>
             <div class="chapter-card-sections">
               <span class="chapter-card-section">4.1 에러 메시지 3단 구조</span>
               <span class="chapter-card-section">4.2 성공·완료 메시지</span>
@@ -365,7 +477,7 @@
             <span class="chapter-card-level application">심화</span>
             <div class="chapter-card-title">텍스트 구조화 (Text Structuring)</div>
             <div class="chapter-card-subtitle">두괄식·계층화·능동태</div>
-            <p class="chapter-card-desc">핵심어 전면 배치, 결론/핵심/면책 3구역 계층화, 상황별 인라인 도움말, 행정 피동형 → 능동 행동형 전환 기준을 제공합니다.</p>
+            <p class="chapter-card-desc">핵심어 전면 배치, 결론/핵심/면책 3구역 계층화, 상황별 인라인 도움말, 행정 피동형 → 능동 행동형 전환 기준을 제공합니다. 대표 사이트 순회에서 자격·상태·완료 뒤 후속 흐름 화면을 결론·기한·다음 행동 구조로 재구성합니다.</p>
             <div class="chapter-card-sections">
               <span class="chapter-card-section">2.1 핵심어 전면 배치</span>
               <span class="chapter-card-section">2.2 시각적 분리와 계층화</span>
@@ -381,7 +493,7 @@
             <span class="chapter-card-level application">심화</span>
             <div class="chapter-card-title">표기법과 맞춤법 (Notation)</div>
             <div class="chapter-card-subtitle">규칙이 일관성을 만든다</div>
-            <p class="chapter-card-desc">존칭·피동형 해체, 주관 부사 삭제, 숫자·변수 표기 통일, 기호 위계 규칙을 통해 조직 전체가 같은 목소리로 소통합니다.</p>
+            <p class="chapter-card-desc">존칭·피동형 해체, 주관 부사 삭제, 숫자·변수 표기 통일, 기호 위계 규칙을 통해 조직 전체가 같은 목소리로 소통합니다. 표 헤더·탐색 레이블·접근성 레이블을 같은 표기 QA 축으로 보고 린터와 사례 승격으로 연결합니다.</p>
             <div class="chapter-card-sections">
               <span class="chapter-card-section">3.1 존칭·피동형</span>
               <span class="chapter-card-section">3.2 행정 부사 통제</span>
@@ -397,11 +509,11 @@
             <span class="chapter-card-level application">심화</span>
             <div class="chapter-card-title">UI 컴포넌트 라이팅 (Microcopy)</div>
             <div class="chapter-card-subtitle">컴포넌트마다 공식이 있다</div>
-            <p class="chapter-card-desc">버튼·폼·선택지·모달·빈화면·단계표시기·태그·검색창·탭 10개 컴포넌트의 마이크로카피 공식과 Do/Don't를 제공합니다.</p>
+            <p class="chapter-card-desc">대표 사이트 순회에서 반복되는 버튼·검색·세션 종료·상태표·발급 결과·완료 뒤 후속 흐름을 12개 KRDS 컴포넌트와 조합 규칙으로 다시 정리합니다. 사례 승격 기준과 KRDS에 바로 붙일 수 있는 운영 공식을 남깁니다.</p>
             <div class="chapter-card-sections">
               <span class="chapter-card-section">4.1 버튼</span>
               <span class="chapter-card-section">4.2~4.4 폼·선택지·모달</span>
-              <span class="chapter-card-section">4.5~4.10 아코디언·빈화면·태그 등</span>
+              <span class="chapter-card-section">4.5~4.12 검색·표·배너 포함</span>
             </div>
           </div>
           <span class="chapter-card-arrow" aria-hidden="true">→</span>
@@ -411,12 +523,14 @@
           <div class="chapter-card-body">
             <span class="chapter-card-level application">적용</span>
             <div class="chapter-card-title">거버넌스 (Writing Governance)</div>
-            <div class="chapter-card-subtitle">가이드라인이 뿌리내리는 6가지 조건</div>
-            <p class="chapter-card-desc">단일 진실 공급원·디자인시스템 결합·살아있는 용어사전·UX 라이팅 QA·자동화·철학 내재화. 일관성 붕괴를 막는 조직 운영 기준입니다.</p>
+            <div class="chapter-card-subtitle">가이드라인이 뿌리내리는 6가지 조건과 순회 운영</div>
+            <p class="chapter-card-desc">단일 진실 공급원·디자인시스템 결합·살아있는 용어사전·UX 라이팅 QA·자동화·철학 내재화에 더해 전 원칙 재점검, 대표 사이트 순회 운영, 사례 승격 기준까지 다룹니다. 화면 UX/UI 검수 축도 같은 질문 세트로 연결합니다.</p>
             <div class="chapter-card-sections">
               <span class="chapter-card-section">조건1 단일 진실</span>
               <span class="chapter-card-section">조건2 디자인시스템</span>
               <span class="chapter-card-section">조건3~6 QA·자동화·교육</span>
+              <span class="chapter-card-section">전 원칙 재점검·순회</span>
+              <span class="chapter-card-section">UX/UI 검수 축</span>
             </div>
           </div>
           <span class="chapter-card-arrow" aria-hidden="true">→</span>
@@ -434,7 +548,7 @@
             <span class="chapter-card-level application">심화</span>
             <div class="chapter-card-title">기관별 파생 가이드 템플릿 (Derivative Guide)</div>
             <div class="chapter-card-subtitle">Layer 2 → Layer 3 맞춤화</div>
-            <p class="chapter-card-desc">기관마다 가이드를 처음부터 만들지 않고, 검증된 구조 위에서 맞춤화합니다. 3계층 구조 설명, 파생 가이드 제작 체크리스트, 바로 쓰는 빈 양식을 제공합니다.</p>
+            <p class="chapter-card-desc">기관마다 가이드를 처음부터 만들지 않고, 검증된 구조 위에서 맞춤화합니다. 대표 사이트 8종을 같은 화면 단계로 다시 보고 세 대표 사이트 이상 반복되면 Layer 2, 기관 고유 맥락만 Layer 3로 남기며 KRDS 조합까지 함께 맞춥니다.</p>
             <div class="chapter-card-sections">
               <span class="chapter-card-section">5.1 파생 가이드란</span>
               <span class="chapter-card-section">5.2 제작 체크리스트</span>
@@ -450,14 +564,34 @@
     <section class="chapter-section" aria-labelledby="quick-ref-title">
       <h2 class="chapter-section-title" id="quick-ref-title">빠른 참조</h2>
       <div class="quick-links">
-        <a href="/krds-ux-writing/dictionary/" class="quick-link-item">
-          <span class="quick-link-icon">📖</span>
-          <span class="quick-link-text">행정어 대체 사전 — 150개 공통 용어 검색</span>
+        <a href="/krds-ux-writing/principles/governance/#glossary" class="quick-link-item">
+          <span class="quick-link-icon">🧭</span>
+          <span class="quick-link-text">전 원칙 재점검 요약 — 이번 라운드에 어느 축을 먼저 채울지 바로 판단</span>
           <span class="quick-link-arrow">→</span>
         </a>
         <a href="/krds-ux-writing/case-studies/" class="quick-link-item">
-          <span class="quick-link-icon">🔍</span>
-          <span class="quick-link-text">적용 사례 — Before/After 실전 사례</span>
+          <span class="quick-link-icon">🗂️</span>
+          <span class="quick-link-text">실제 사례 추가 운영 방법 — 원칙 축 시작표·CASE 시작점·10분 판정 루틴</span>
+          <span class="quick-link-arrow">→</span>
+        </a>
+        <a href="/krds-ux-writing/principles/derivative/" class="quick-link-item">
+          <span class="quick-link-icon">🧩</span>
+          <span class="quick-link-text">Layer 2·Layer 3 판정 — 공통 원칙 후보와 기관 특화 화면 분리</span>
+          <span class="quick-link-arrow">→</span>
+        </a>
+        <a href="/krds-ux-writing/dictionary/" class="quick-link-item">
+          <span class="quick-link-icon">📖</span>
+          <span class="quick-link-text">행정어 대체 사전 — 274개 공통 용어 검색</span>
+          <span class="quick-link-arrow">→</span>
+        </a>
+        <a href="/krds-ux-writing/archive.html" class="quick-link-item">
+          <span class="quick-link-icon">🗃️</span>
+          <span class="quick-link-text">이슈 아카이브 — 정부24·홈택스·전자가족관계등록시스템 deep archive 기준점</span>
+          <span class="quick-link-arrow">→</span>
+        </a>
+        <a href="/krds-ux-writing/principles/governance/#ux-ui-review" class="quick-link-item">
+          <span class="quick-link-icon">🪟</span>
+          <span class="quick-link-text">UX/UI 검수 보조 질문 — 화면 검수와 같은 언어로 보기</span>
           <span class="quick-link-arrow">→</span>
         </a>
         <a href="/krds-ux-writing/principles/foundation/#voice-tone" class="quick-link-item">
@@ -484,6 +618,7 @@
   </div>
 </div>
 
+<script src="../shared/base-path.js"></script>
 <script src="../shared/nav.js"></script>
 </body>
 </html>

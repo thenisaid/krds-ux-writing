@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="1장 파운데이션 — 시민이 읽는 글, 국가가 쓰는 말. KRDS UX 라이팅 3대 원칙의 철학적 배경과 보이스·톤 기준.">
+<meta name="description" content="1장 파운데이션 — 시민이 읽는 글, 국가가 쓰는 말. 대표 사이트 순회에서 완료·전환·오류·대기 화면의 보이스·톤을 어떻게 판정할지 정하는 KRDS UX 라이팅 기준.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="1장 파운데이션 — KRDS UX Writing 가이드라인">
-  <meta property="og:description" content="1장 파운데이션 — 시민이 읽는 글, 국가가 쓰는 말. KRDS UX 라이팅 3대 원칙의 철학적 배경과 보이스·톤 기준.">
+  <meta property="og:description" content="1장 파운데이션 — 시민이 읽는 글, 국가가 쓰는 말. 대표 사이트 순회에서 완료·전환·오류·대기 화면의 보이스·톤을 어떻게 판정할지 정하는 KRDS UX 라이팅 기준.">
   <meta property="og:url" content="https://thenisaid.github.io/krds-ux-writing/principles/foundation/">
   <link rel="canonical" href="https://thenisaid.github.io/krds-ux-writing/principles/foundation/">
 <title>1장 파운데이션 — KRDS UX Writing 가이드라인</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
-<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<script>(function(){var prefersDark=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches;var t='light';try{t=localStorage.getItem('krds-theme')||(prefersDark?'dark':'light');}catch(e){t=prefersDark?'dark':'light';}if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" as="style" crossorigin="anonymous"
   href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
@@ -320,9 +320,26 @@
       <p class="content-headline">왜 이 가이드라인이 필요한가</p>
       <p class="content-desc">
         공공 서비스의 언어는 국가가 시민에게 보내는 가장 직접적인 신호입니다.
-        3대 원칙의 철학적 배경, 주권자 이해, 보이스·톤 기준을 담습니다.
+        3대 원칙의 철학적 배경, 주권자 이해, 보이스·톤 기준을 담고 대표 사이트 순회에서 완료·전환·오류·대기 화면을 어떤 톤 축으로 다시 볼지 연결합니다.
       </p>
     </div>
+
+    <section class="article-section" id="operating-lens" aria-labelledby="operating-lens-title">
+      <h2 class="article-section-heading" id="operating-lens-title">대표 사이트 순회 운영 관점</h2>
+      <p class="article-section-lead">파운데이션은 추상 철학이 아니라 다음 라운드에서 어떤 화면을 먼저 볼지 정하는 기준입니다. 대표 사이트 순회에서는 완료·결과, 이용 환경 전환, 오류·검증, 대기·세션 종료처럼 감정 곡선이 크게 흔들리는 화면을 먼저 묶고 보이스·톤을 <strong>상태</strong>, <strong>행동</strong>, <strong>기관 책임</strong>, <strong>전환 경로</strong> 기준으로 판정합니다.</p>
+      <table class="data-table">
+        <thead><tr><th>우선 묶음</th><th>먼저 볼 대표 사이트·화면</th><th>먼저 확인할 질문</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>완료·결과 톤</strong></td><td>서울특별시 응답소 결과 안내, 홈택스 종합소득세 신고 완료, 정부24 민원 접수 완료</td><td>인사·감사보다 상태, 접수번호, 다음 일정이 먼저 보이는가?</td><td>Result page + Status badge + Button</td></tr>
+          <tr><td><strong>이용 환경·전환 톤</strong></td><td>정부24 앱 안내, 홈택스 PC 전용, 대한민국법원 모바일 제한</td><td>가능한 작업, 제한 이유, 전환 경로가 바로 보이는가?</td><td>Notice banner + Helper text + Link/Button</td></tr>
+          <tr><td><strong>오류·검증 톤</strong></td><td>정부24 인증 번호 불일치, 홈택스 로그인 실패, 대한민국법원 일시 오류</td><td>원인, 다시 할 행동, 문의 또는 대체 경로가 바로 보이는가?</td><td>Inline validation + Alert + Button/Link</td></tr>
+          <tr><td><strong>대기·세션 종료 톤</strong></td><td>국세청 소득 정보 불러오기, 국민신문고 로그인·실명확인 정보 120분 유지, 홈택스 세션 종료</td><td>기다리는 이유, 남은 시간, 임시 저장, 재진입 경로가 한 흐름으로 보이는가?</td><td>Status badge + Modal + Helper text + Button</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box">
+        <strong>실무 규칙</strong>: 파운데이션 검수는 정중한가만 묻지 않습니다. 첫 문장에 상태·행동이 있는가, 기관이 책임을 지는 문장인가, 예우보다 다음 경로가 먼저 보이는가를 같은 축으로 봅니다.
+      </div>
+    </section>
 
     <!-- 1.1 비전 -->
     <section class="article-section" id="vision" aria-labelledby="vision-title">
@@ -518,6 +535,66 @@
           <div class="tone-card-example">지원금 신청이 끝났습니다. 심사 결과는 3일 뒤 카카오톡으로 알려드릴게요.</div>
         </div>
       </div>
+
+      <div class="sub-h3" style="margin-top:24px">대표 서비스 관찰 — '귀하'와 '주시기 바랍니다'는 존중보다 거리두기로 읽힌다</div>
+      <p style="font-size:14px;line-height:1.9;color:var(--text-mid);margin-bottom:16px;">
+        서울시 응답소·국민신문고 계열의 <code>귀하께서 신청하신 민원...</code>, 홈택스의 <code>귀하의 종합소득세 신고서가 접수되었습니다.</code>, 법원의 <code>증명서발급과 인터넷신고는 PC를 이용하여 주시기 바랍니다.</code> 같은 문장은 정중해 보이지만 실제로는 결론을 늦추고 기관을 멀리 세웁니다. 주권자는 예우보다 <strong>지금 상태</strong>, <strong>다음 행동</strong>, <strong>전환 경로</strong>를 먼저 알고 싶어 합니다.
+      </p>
+      <table class="data-table">
+        <thead><tr><th>상황</th><th>관찰된 표현</th><th>보이스 전환 원칙</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>결과 안내</strong></td><td><code>귀하께서 신청하신 민원 ...</code> / <code>귀하의 종합소득세 신고서가 접수되었습니다.</code></td><td>첫 문장에 상태·기한을 둡니다. <code>검토 결과를 안내합니다</code>, <code>종합소득세 신고가 완료됐습니다</code>처럼 결과를 먼저 밝힙니다.</td><td>Result page, Status badge, Button</td></tr>
+          <tr><td><strong>이용 제한 안내</strong></td><td><code>증명서발급과 인터넷신고는 PC를 이용하여 주시기 바랍니다.</code></td><td><code>일부 서비스(증명서 발급·신고)는 PC에서만 이용하실 수 있습니다. PC에서 다시 접속해 주세요</code>처럼 환경·이유·전환 경로를 바로 말합니다.</td><td>Notice banner, Helper text, Link</td></tr>
+          <tr><td><strong>홍보성 권유</strong></td><td><code>정부24 앱으로 더 편리하게 이용하세요.</code></td><td><code>앱에서는 모바일 신분증 발급·알림 수신·간편인증이 가능해요</code>처럼 가능한 행동을 구체화합니다.</td><td>Notice banner, Button group</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>실무 규칙</strong>: 보이스·톤은 어미의 높낮이보다 <code>첫 문장에 상태·행동이 보이는가</code>, <code>기관이 책임을 지는 문장인가</code>, <code>예우보다 다음 경로가 먼저 보이는가</code>로 판정합니다.
+      </div>
+
+      <div class="sub-h3" style="margin-top:24px">대표 사이트 기반 보이스·톤 점검 우선순위</div>
+      <p style="font-size:14px;line-height:1.9;color:var(--text-mid);margin-bottom:16px;">
+        이제 1.4와 5장의 다음 라운드는 높임말 어미만 세는 일보다, 같은 상태 전환에서 톤 실패가 반복되는 화면을 먼저 묶는 데 초점을 둡니다. 보이스·톤은 <code>완료</code>, <code>이용 환경 전환</code>, <code>오류·검증</code>, <code>대기·세션 종료</code>처럼 주권자 감정 곡선이 크게 바뀌는 순간에 가장 쉽게 흔들립니다.
+      </p>
+      <table class="data-table">
+        <thead><tr><th>우선 묶음</th><th>먼저 볼 대표 사이트·화면</th><th>먼저 확인할 질문</th><th>같이 볼 KRDS 조합</th></tr></thead>
+        <tbody>
+          <tr><td><strong>완료·결과 톤</strong></td><td>서울특별시 응답소 결과 안내, 홈택스 종합소득세 신고 완료, 정부24 민원 접수 완료</td><td>인사·감사보다 상태, 접수번호, 다음 일정이 먼저 보이는가?</td><td>Result page + Status badge + Button</td></tr>
+          <tr><td><strong>이용 환경·전환 톤</strong></td><td>정부24 앱 안내, 홈택스 PC 전용, 대한민국법원 모바일 제한</td><td>권유·정중한 요청보다 가능한 작업, 제한 이유, 전환 경로가 먼저 보이는가?</td><td>Notice banner + Helper text + Link/Button</td></tr>
+          <tr><td><strong>오류·검증 톤</strong></td><td>정부24 인증 번호 불일치, 홈택스 로그인 실패, 대한민국법원 일시 오류</td><td>사과·감탄 없이 원인, 다시 할 행동, 문의 또는 대체 경로가 바로 보이는가?</td><td>Inline validation + Alert + Button/Link</td></tr>
+          <tr><td><strong>대기·세션 종료 톤</strong></td><td>국세청 소득 정보 불러오기, 국민신문고 로그인·실명확인 정보 120분 유지, 홈택스 세션 종료</td><td>기다리는 이유, 남은 시간·예상 시간, 임시 저장, 재진입 경로가 한 흐름으로 보이는가?</td><td>Status badge + Modal + Helper text + Button</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h4">대표 사이트 점검 매트릭스 — 완료·환경 제한·오류·대기를 같은 톤 축으로 본다</div>
+      <table class="data-table">
+        <thead><tr><th>대표 사이트·화면</th><th>먼저 확인할 톤 실패</th><th>사례 카드로 승격할 문장</th><th>KRDS 조합</th></tr></thead>
+        <tbody>
+          <tr><td><strong>서울특별시 응답소 결과 안내</strong> (<code>귀하께서 신청하신 민원...</code>)</td><td>인사·배경 설명이 결론보다 앞서고, 결과 뒤 행동이 늦게 드러나는가?</td><td><code>검토 결과를 안내합니다. 답변은 나의 민원에서 확인할 수 있습니다.</code></td><td>Result page + Alert + Button</td></tr>
+          <tr><td><strong>홈택스 신고 완료</strong> (<code>귀하의 종합소득세 신고서가 접수되었습니다.</code>)</td><td>과공식 문장이 접수번호·납부 기한·지금 할 행동을 늦추는가?</td><td><code>종합소득세 신고가 완료됐습니다. 접수번호 {N} / 납부 기한 5월 31일 [지금 납부하기]</code></td><td>Result page + Status badge + Button</td></tr>
+          <tr><td><strong>정부24 앱 안내 / 법원 모바일 제한</strong> (<code>정부24 앱으로 더 편리하게 이용하세요.</code>, <code>증명서발급과 인터넷신고는 PC를 이용하여 주시기 바랍니다.</code>)</td><td>막연한 권유나 정중한 요청만 있고 가능한 작업·전환 경로가 빠지는가?</td><td><code>앱에서는 모바일 신분증 발급·알림 수신·간편인증이 가능해요. [앱 열기]</code>, <code>일부 서비스(증명서 발급·신고)는 PC에서만 이용하실 수 있습니다. PC에서 다시 접속해 주세요</code></td><td>Notice banner + Helper text + Button/Link</td></tr>
+          <tr><td><strong>정부24 인증 번호 / 홈택스 로그인 / 법원 일시 오류</strong> (<code>앗! 비밀번호를 잘못 입력하셨어요. 😅</code>, <code>오류가 발생했습니다. 죄송합니다.</code>)</td><td>사과·감탄이 원인과 해결책을 가리는가?</td><td><code>인증 번호가 틀렸습니다. 문자로 받은 6자리 숫자를 다시 입력해 주세요.</code>, <code>아이디 또는 비밀번호가 일치하지 않습니다. 다시 입력하거나 [비밀번호 찾기]</code>, <code>일시적인 오류가 발생했습니다. 10분 뒤 다시 시도해 주세요. 계속되면 1899-2732로 문의하거나 가까운 법원 종합민원실을 방문해 주세요</code></td><td>Inline validation + Alert + Button/Link</td></tr>
+          <tr><td><strong>국세청 로딩 / 국민신문고·홈택스 세션 종료</strong> (<code>국세청에서 소득 정보를 불러오고 있습니다. (약 10초 소요)</code>, <code>로그인·실명확인 정보 120분 유지</code>, <code>세션이 만료되었습니다. 처음부터 다시 시작하세요.</code>)</td><td>대기 이유·예상 시간·임시 저장·재진입 경로가 따로 노는가?</td><td><code>국세청에서 소득 정보를 불러오고 있습니다. (약 10초 소요)</code>, <code>5분 뒤 자동으로 로그아웃됩니다. 작성 중인 내용은 임시 저장됩니다. [로그인 유지하기]</code>, <code>자리를 비운 사이 로그인이 끊겼습니다. 다시 로그인하면 이어서 작성할 수 있습니다. [다시 로그인하기]</code></td><td>Status badge + Modal + Helper text + Button</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>운영 규칙</strong>: 보이스·톤 검수는 <code>정중한가</code>만 묻지 않습니다. <code>첫 문장에 상태·행동이 있는가</code>, <code>기관이 책임을 지는가</code>, <code>전환 경로가 바로 보이는가</code>를 같은 행에서 같이 기록합니다. 같은 실패가 두 대표 사이트 이상에서 반복되면 5장 표현만 고치지 말고 4장 안전망·7장 컴포넌트·사례 카드까지 같은 라운드에서 같이 갱신합니다.
+      </div>
+      <div class="sub-h4" style="margin-top:24px">이번 라운드 보이스·톤 KRDS/Figma 적용 예시</div>
+      <table class="data-table">
+        <thead><tr><th>대표 사이트·화면</th><th>KRDS 조합</th><th>Description에 꼭 남길 문장</th><th>기본 예시 문구</th><th>숨은 레이블 메모</th></tr></thead>
+        <tbody>
+          <tr><td><strong>서울특별시 응답소 결과 안내, 홈택스 종합소득세 신고 완료</strong></td><td>Result page + Status badge + Button</td><td>Description에는 결과 상태, 답변 확인 경로 또는 접수번호, 다음 일정·납부 기한, 바로 이어지는 CTA를 함께 적습니다.</td><td>검토 결과를 안내합니다 / 답변은 나의 민원에서 확인할 수 있습니다 / 종합소득세 신고가 완료됐습니다 / 접수번호 {N} / 납부 기한 5월 31일 [지금 납부하기]</td><td>현재 결과와 다음 일정 확인하기 / 민원 답변 다시 확인하기 / 종합소득세 신고 접수번호와 납부 기한 확인하기</td></tr>
+          <tr><td><strong>정부24 앱 안내, 대한민국법원 모바일 제한</strong></td><td>Notice banner + Helper text + Link/Button</td><td>Description에는 지금 가능한 작업, 제한 이유, 전환 경로, 다시 접속해야 하는 환경을 함께 적습니다.</td><td>앱에서는 모바일 신분증 발급·알림 수신·간편인증이 가능해요 / 일부 서비스(증명서 발급·신고)는 PC에서만 이용하실 수 있습니다 / PC에서 다시 접속해 주세요</td><td>정부24 앱에서 가능한 작업 확인하기 / PC에서 계속 진행하기</td></tr>
+          <tr><td><strong>정부24 인증 번호, 홈택스 로그인 실패, 대한민국법원 일시 오류</strong></td><td>Inline validation + Alert + Button/Link</td><td>Description에는 오류 원인, 다시 할 행동, 문의 또는 대체 경로를 함께 적습니다.</td><td>인증 번호가 틀렸습니다. 문자로 받은 6자리 숫자를 다시 입력해 주세요 / 아이디 또는 비밀번호가 일치하지 않습니다. 다시 입력하거나 [비밀번호 찾기] / 일시적인 오류가 발생했습니다. 10분 뒤 다시 시도해 주세요</td><td>인증 번호 다시 입력하기 / 비밀번호 찾기 / 오류 뒤 다시 시도 또는 문의하기</td></tr>
+          <tr><td><strong>국세청 소득 정보 불러오기, 국민신문고·홈택스 세션 종료</strong></td><td>Status badge + Modal + Helper text + Button</td><td>Description에는 대기 이유, 예상 시간 또는 남은 시간, 임시 저장 여부, 재로그인 뒤 이어쓰기 경로를 함께 적습니다.</td><td>국세청에서 소득 정보를 불러오고 있습니다. (약 10초 소요) / 5분 뒤 자동으로 로그아웃됩니다. 작성 중인 내용은 임시 저장됩니다. [로그인 유지하기] / 자리를 비운 사이 로그인이 끊겼습니다. 다시 로그인하면 이어서 작성할 수 있습니다.</td><td>남은 시간과 자동 저장 확인하기 / 다시 로그인해 이어서 작성하기</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box">
+        <strong>보이스·톤 handoff 메모</strong>: <code>정중한 톤</code>, <code>친절한 톤</code>처럼 추상 명사만 남기지 않습니다. Description과 숨은 레이블에도 <code>상태 → 행동 → 기관 책임 → 전환 경로</code>를 같은 순서로 적어 Result page, Notice banner, Alert, Modal 기본값이 화면마다 흔들리지 않게 합니다.
+      </div>
     </section>
 
     <!-- Chapter Navigation -->
@@ -555,6 +632,7 @@
   </div>
 </div>
 
+<script src="../../shared/base-path.js"></script>
 <script src="../../shared/nav.js"></script>
 </body>
 </html>

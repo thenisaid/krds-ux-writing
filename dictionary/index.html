@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="공공 서비스에서 자주 쓰이는 행정어·전문용어의 대체어 사전 — 14세 기준 일상어로 교체합니다.">
+  <meta name="description" content="대표 사이트 8종 순회와 대한민국법원 보조 표본으로 채운 행정어 대체어 사전. 14세 기준 일상어 교체, 사전 후보 → 사례 카드 → KRDS 컴포넌트 보강 흐름을 다룹니다.">
   <title>행정어 대체어 사전 | KRDS UX Writing</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
-  <script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+  <script>(function(){var prefersDark=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches;var t='light';try{t=localStorage.getItem('krds-theme')||(prefersDark?'dark':'light');}catch(e){t=prefersDark?'dark':'light';}if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css" rel="stylesheet">
   <style>
@@ -41,6 +41,26 @@
       line-height: 1.5;
       background: var(--color-bg);
       color: var(--color-text);
+    }
+    .skip-link {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      transform: translateY(-200%);
+      padding: 12px 20px;
+      background: var(--color-primary);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 6px;
+      text-decoration: none;
+      z-index: 9999;
+      transition: transform 0.15s ease;
+    }
+    .skip-link:focus {
+      transform: translateY(0);
+      outline: 3px solid #ffffff;
+      outline-offset: -3px;
     }
     /* NAV — standard GNB */
     .gnb {
@@ -88,7 +108,23 @@
     }
     .gnb-icon-btn:hover { color: var(--color-text); }
     @media (max-width: 640px) {
-      .gnb-nav { display: none; }
+      .gnb {
+        height: auto;
+        padding: 12px 16px;
+        flex-wrap: wrap;
+        row-gap: 10px;
+      }
+      .gnb-logo { margin-right: 0; }
+      .gnb-nav {
+        flex-basis: 100%;
+        order: 3;
+        overflow-x: auto;
+        gap: 8px;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+      }
+      .gnb-nav::-webkit-scrollbar { display: none; }
+      .gnb-nav-link { flex-shrink: 0; }
       .gnb-badge { display: none; }
     }
 
@@ -116,6 +152,110 @@
     .stat { text-align: center; }
     .stat-num { font-size: 28px; font-weight: 700; color: var(--color-primary); }
     .stat-label { font-size: 13px; color: var(--color-text-muted); margin-top: 2px; }
+    .hero-note {
+      margin: 22px auto 0;
+      max-width: 720px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(37,110,244,.16);
+      background: rgba(37,110,244,.05);
+      font-size: 14px;
+      color: var(--color-text-muted);
+      line-height: 1.7;
+    }
+    .hero-note strong { color: var(--color-text); }
+    .hero-note a {
+      color: var(--color-primary);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .hero-note a:hover { text-decoration: underline; }
+
+    .ops-guide {
+      margin-bottom: 28px;
+      padding: 24px;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      background: var(--color-surface);
+    }
+    .ops-guide-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 700; letter-spacing: .04em;
+      color: var(--color-primary);
+      margin-bottom: 12px;
+    }
+    .ops-guide-title {
+      font-size: 20px; font-weight: 700; letter-spacing: -.02em;
+      line-height: 1.35; margin-bottom: 10px;
+    }
+    .ops-guide-desc {
+      font-size: 14px; color: var(--color-text-muted);
+      line-height: 1.8;
+    }
+    .ops-guide-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .ops-guide-card {
+      padding: 16px;
+      border: 1px solid var(--color-border-light);
+      border-radius: 10px;
+      background: var(--color-bg);
+    }
+    .ops-guide-card-title {
+      font-size: 13px; font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 8px;
+    }
+    .ops-guide-card p {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      line-height: 1.7;
+    }
+    .ops-guide-note {
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--color-text-muted);
+      line-height: 1.8;
+    }
+    .ops-guide-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .ops-guide-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .ops-guide-link:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      text-decoration: none;
+      background: rgba(37,110,244,.04);
+    }
+    .ops-guide-table-wrap {
+      margin-top: 16px;
+      border: 1px solid var(--color-border-light);
+      border-radius: 10px;
+      overflow-x: auto;
+      background: var(--color-bg);
+    }
+    .ops-guide-table {
+      min-width: 860px;
+    }
 
     /* MAIN */
     .main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
@@ -251,11 +391,15 @@
     @media (max-width: 640px) {
       .hero h1 { font-size: 24px; }
       .hero-stats { gap: 20px; }
-      thead th:nth-child(3), tbody td:nth-child(3) { display: none; }
+      .ops-guide { padding: 20px; }
+      .ops-guide-grid { grid-template-columns: 1fr; }
+      #dictTable thead th:nth-child(3), #dictTable tbody td:nth-child(3) { display: none; }
     }
   </style>
 </head>
 <body>
+
+<a href="#main-content" class="skip-link">본문으로 이동</a>
 
 <header class="gnb">
   <a href="/krds-ux-writing/" class="gnb-logo" aria-label="KRDS UX Writing 가이드라인 홈">
@@ -282,14 +426,15 @@
   </div>
   <h1>행정어 대체어 사전</h1>
   <p>14세 기준 일상어로 교체해야 할 용어 모음.<br>
-     정부24·홈택스·복지로·법원·건강보험·SeMA 6개 사이트 실사 수집.</p>
+     정부24·홈택스·복지로·국민건강보험·국민신문고·고용24·전자가족관계등록시스템·서울특별시 응답소 대표 화면 재검토.<br>
+     완료 뒤 후속 흐름·권리구제 문장은 대한민국법원 보조 표본으로 함께 확인.</p>
   <div class="hero-stats">
-    <div class="stat">
-      <div class="stat-num">50</div>
+      <div class="stat">
+      <div class="stat-num">167</div>
       <div class="stat-label">고우선순위 용어</div>
     </div>
     <div class="stat">
-      <div class="stat-num">150</div>
+      <div class="stat-num">274</div>
       <div class="stat-label">전체 사전 규모</div>
     </div>
     <div class="stat">
@@ -297,9 +442,111 @@
       <div class="stat-label">카테고리</div>
     </div>
   </div>
+  <p class="hero-note">
+    <strong>현재 페이지는 고우선순위 167개 선별본입니다.</strong>
+    전체 사전 274개는 <a href="/krds-ux-writing/dictionary/full.html">전체 공개본</a>에서 바로 볼 수 있고,
+    raw markdown·JSON과 조사 범위는 <a href="/krds-ux-writing/corpus/">코퍼스 공개 현황</a>에서 함께 확인할 수 있습니다.
+  </p>
 </section>
 
-<main class="main">
+<main class="main" id="main-content">
+  <section class="ops-guide" aria-labelledby="ops-guide-title">
+    <div class="ops-guide-eyebrow">대표 사이트 운영</div>
+    <h2 class="ops-guide-title" id="ops-guide-title">사전은 용어 목록이 아니라 순회 로그의 첫 도착지입니다</h2>
+    <p class="ops-guide-desc">
+      대표 사이트 8종 화면을 같은 과업 단계로 다시 보며 수집한 표현을 <strong>사전 후보 → 사례 카드 → KRDS 컴포넌트 보강</strong> 흐름으로 묶습니다.
+      완료 뒤 후속 흐름·권리구제 검증은 대한민국법원 보조 표본 1개를 같은 라운드에 함께 기록합니다.
+    </p>
+    <div class="ops-guide-grid">
+      <div class="ops-guide-card">
+        <div class="ops-guide-card-title">1. 대표 사이트 순회</div>
+        <p>동의·본인확인, 복지·고용 계산, 세무·법원 메뉴, 상태·결과처럼 같은 화면 단계를 먼저 맞춰 보고 새 사전 후보 3개 이상을 모읍니다.</p>
+      </div>
+      <div class="ops-guide-card">
+        <div class="ops-guide-card-title">2. 새 실화면 10분 판정</div>
+        <p>새 실화면을 받은 직후 10분 안에 화면 유형 1개, 원문 3개+CTA 1개, UX/UI 검수 축 1개를 먼저 적습니다.</p>
+      </div>
+      <div class="ops-guide-card">
+        <div class="ops-guide-card-title">3. KRDS 연결과 사례 승격</div>
+        <p>용어만 바꾸지 않고 Helper text + Structured list + Notice banner + Result page 조합까지 같이 보고, 세 대표 사이트에서 같은 실패가 반복될 때만 사례 승격을 검토합니다.</p>
+      </div>
+      <div class="ops-guide-card">
+        <div class="ops-guide-card-title">4. 국민건강보험 기록법</div>
+        <p><code>피부양자</code>, <code>산정특례</code>, <code>보험료 산정</code>은 사전 행만 만들지 않고 <code>부양가족 등록·해제 대상</code>, <code>중증질환 본인부담 감면 대상</code>, <code>이번 달 보험료 계산 기준</code>이 첫 레이블과 도움말에 함께 보이는지 기록합니다. 결과 화면에서는 <code>변동 신고</code>, <code>경감 신청 자가 진단</code>, <code>임의계속가입 확인</code>이 같은 첫 블록에서 이어지는지도 같이 적습니다.</p>
+      </div>
+      <div class="ops-guide-card">
+        <div class="ops-guide-card-title">5. 고용24 기록법</div>
+        <p><code>조기재취업수당</code>, <code>실업인정일</code>, <code>적극적인 재취업활동</code>은 <code>실업급여를 확인하는 날</code>, <code>이번 회차 재취업 활동</code>, <code>취업한 날 기준</code>, <code>활동을 확인하는 서류</code>, 놓쳤을 때 다시 확인 경로까지 같은 로그 행에 남깁니다. <code>조기재취업수당 안내</code>는 누가 대상인지, 언제 다시 취업했는지, 무엇으로 확인하는지도 첫 블록에서 같이 적습니다.</p>
+      </div>
+      <div class="ops-guide-card">
+        <div class="ops-guide-card-title">6. 서울응답소 분기</div>
+        <p><code>처리기관</code>, <code>답변예정일</code>은 사전에 남기되, <code>결과보기</code>와 <code>민원 신청하기</code> 위계는 정보핵심화·표기·컴포넌트 규칙으로 먼저 넘깁니다.</p>
+      </div>
+      <div class="ops-guide-card">
+        <div class="ops-guide-card-title">7. 전자가족관계등록 정식 승격 기준</div>
+        <p><code>국적 회복 허가</code>, <code>국적 이탈 신고</code>, <code>개명 허가</code>는 사전 행만 만들지 않습니다. 특히 <code>국적 회복 허가</code>와 <code>국적 이탈 신고</code>는 허가 뒤 신고 의무, <code>1년 내</code>·<code>3월 31일</code> 같은 기한, 복수 국적·병역 요건, 외국 국적 포기 증명서 제출 경로, <code>[신고 방법 보기]</code>·<code>[요건 확인]</code> CTA가 같은 첫 블록에서 함께 읽히면 2장·3장·4장·7장 정식 승격 대상으로 올립니다.</p>
+      </div>
+    </div>
+    <p class="ops-guide-note">
+      <strong>운영 규칙</strong>: 용어 1개 = 사전 1행이 아닙니다. 같은 실패가 세 대표 사이트에서 반복되면 <code>사전 등록 → 사례 카드 → 관련 원칙·컴포넌트 보강 → QA 반영</code>을 같은 라운드에서 처리합니다.
+    </p>
+    <p class="ops-guide-note">
+      <strong>사용 맥락 기록 규칙</strong>: 사전의 <code>사용 맥락</code>은 기관명만 쓰지 않고 <code>국민건강보험 (보험료 산정)</code>, <code>고용24 (실업인정 인터넷 신청)</code>, <code>고용24 (조기재취업수당 안내)</code>, <code>전자가족관계등록시스템 (국적 회복 허가)</code>처럼 실제 화면 단계까지 적습니다. 그래야 사전 행이 바로 <code>CASE 2·6·8·42</code>와 KRDS handoff로 이어집니다.
+    </p>
+    <p class="ops-guide-note">
+      <strong>사전 승격 보류 기준</strong>: 사전에 올리지 않는 이유를 세 가지로 나눠 먼저 공개합니다. 용어 하나만 떼어내지 않고, <code>사전 대신 먼저 둘 곳</code>과 <code>KRDS 우선 조합</code>까지 같이 판단합니다.
+    </p>
+    <div class="ops-guide-table-wrap">
+      <table class="ops-guide-table" aria-label="사전 승격 보류 3분류">
+        <thead>
+          <tr>
+            <th scope="col">분류</th>
+            <th scope="col">대표 묶음</th>
+            <th scope="col">왜 사전에 바로 올리지 않나</th>
+            <th scope="col">우선 도착지</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>구조 규칙 우선</strong></td>
+            <td><code>전입신고 / 사업자 등록 사항 정정 신청 / 집행문 부여 신청</code>, <code>전입신고 / 사업자 등록 사항 정정 신청 / 가족관계등록부 정정</code></td>
+            <td>핵심 문제는 용어 자체보다 <code>온라인/방문 분기</code>와 <code>담당 기관·관할</code>이 첫 분기 영역에서 숨는 구조입니다.</td>
+            <td><code>7.3 선택지</code>, <code>담당 기관·관할</code>, KRDS <code>Radio + Helper text + Structured list + Badge + Button</code></td>
+          </tr>
+          <tr>
+            <td><strong>일반화 후 재판정</strong></td>
+            <td><code>이메일 / 전자고지(송달) 신청 및 해지 / 민사 등 사건진행 알림서비스</code></td>
+            <td>채널 이름만으로는 약하고 <code>무엇이 오고</code>, <code>언제 또는 언제부터 오고</code>, <code>완료·상태가 어떻게 바뀌는지</code>, <code>어디서 다시 확인하는지</code>를 함께 봐야 오탐이 줄어듭니다.</td>
+            <td>KRDS <code>Checkbox/Radio + Helper text</code>, <code>Notice banner + Structured list</code>, <code>Result page + Link</code></td>
+          </tr>
+          <tr>
+            <td><strong>긍정 사례·원칙 유지</strong></td>
+            <td><code>민원 신청하기 / 검색어 / 구조화 목록 / 비회원 이용 / 발급 보관 90일 / 기간 제한 / 유지 조건 / 기한 임박 / 예상·확정 차이 / 이용권·포인트</code></td>
+            <td>이미 긍정 사례·원칙·컴포넌트 규칙으로 기능해 사전보다 사례 카드 가치가 큽니다.</td>
+            <td><code>사례 카드 + KRDS 컴포넌트 보강</code>, <code>사전 비대상</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="ops-guide-note">
+      <strong>보류 규칙</strong>: <code>홍길동</code>, <code>2026.01~2026.12</code>, <code>30일</code>처럼 사람 이름·기간·예시 수치가 들어간 개선안은 일반화 전에는 사전에 올리지 않습니다.
+    </p>
+    <p class="ops-guide-note">
+      <strong>이번 라운드 승격 메모</strong>: <code>외국인등록번호 *</code>, <code>영세율 신고</code>는 <code>해당자만 필수</code>, <code>해당 거래만 필수</code>가 드러나는 공통 문장으로 일반화해 2.1 사전에 이미 승격했습니다.
+    </p>
+    <p class="ops-guide-note">
+      <strong>화면 단계 승격 연결</strong>: <code>전자증명서안내</code>, <code>부가가치세예정신고</code>처럼 클릭 전 의미가 먼저 풀려야 하면 <code>CASE 49</code>, <code>국적 회복 허가</code>처럼 결과 뒤 별도 신고 의무와 미이행 위험이 첫 블록에 붙어야 하면 <code>CASE 32</code>를 먼저 붙이고 필요하면 <code>CASE 46</code>으로 이어 봅니다. <code>긴급복지지원 신청</code>, <code>국적 이탈 신고</code>처럼 모두 충족 조건이 핵심이면 <code>CASE 57</code>, 같은 <code>국적 이탈 신고</code>라도 신청 가능 기간과 기한 경과 뒤 상태를 먼저 따져야 하면 <code>CASE 45</code>, <code>세무대리인 수임 동의</code>, <code>소송 대리인 등록</code>처럼 권한 범위가 먼저 보여야 하면 <code>CASE 59</code>, <code>민원 유형 선택</code>, <code>휴업·폐업 신고</code>, <code>개인회생·파산</code>처럼 절차 자체가 갈리면 <code>CASE 60</code>으로 먼저 넘깁니다. 이때도 <code>첫 레이블 + 도움말 + 메뉴 이름 + CTA</code>를 같은 로그 행에 남깁니다.
+    </p>
+    <p class="ops-guide-note">
+      <strong>국적 화면 기록 순서</strong>: 2장 로그에는 <code>한국 국적 다시 받기 허가 결과</code> → <code>1년 내 외국 국적 포기</code> → <code>외국국적불행사서약 대상 여부</code> → <code>외국 국적 포기 증명서 제출 경로</code>, <code>국적 이탈 가능 기한</code> → <code>병역 조건</code> → <code>기한 경과 뒤 상태</code>를 같은 순서로 남기고, 숨은 레이블에는 <code>국적 회복 허가 뒤 1년 기한과 국적 이탈 병역 조건 확인하기</code>를 적어 후속 의무가 CTA 뒤로 밀리지 않게 합니다.
+    </p>
+    <div class="ops-guide-links" aria-label="사전 운영 빠른 이동">
+      <a class="ops-guide-link" href="/krds-ux-writing/principles/governance/">대표 사이트 순회 운영법 →</a>
+      <a class="ops-guide-link" href="/krds-ux-writing/case-studies/">실제 사례 추가 운영 방법 →</a>
+      <a class="ops-guide-link" href="/krds-ux-writing/principles/no-translation/">대표 사이트 기반 무번역 점검 우선순위 →</a>
+    </div>
+  </section>
+
   <div class="search-wrap">
     <svg class="search-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
       <circle cx="9" cy="9" r="6"/><path d="M15 15l3 3"/>
@@ -311,25 +558,25 @@
   </div>
 
   <div class="filter-bar" role="group" aria-label="카테고리 필터">
-    <button class="filter-btn active" data-cat="all">
-      전체 <span class="count">50</span>
+    <button class="filter-btn active" data-cat="all" aria-pressed="true">
+      전체 <span class="count">167</span>
     </button>
-    <button class="filter-btn" data-cat="admin">
-      행정관습어 <span class="count">25</span>
+    <button class="filter-btn" data-cat="admin" aria-pressed="false">
+      행정관습어 <span class="count">102</span>
     </button>
-    <button class="filter-btn" data-cat="double">
+    <button class="filter-btn" data-cat="double" aria-pressed="false">
       이중부정 <span class="count">10</span>
     </button>
-    <button class="filter-btn" data-cat="foreign">
-      외래어·전문용어 <span class="count">10</span>
+    <button class="filter-btn" data-cat="foreign" aria-pressed="false">
+      외래어·전문용어 <span class="count">50</span>
     </button>
-    <button class="filter-btn" data-cat="formal">
+    <button class="filter-btn" data-cat="formal" aria-pressed="false">
       과도한경어 <span class="count">5</span>
     </button>
   </div>
 
   <div class="result-bar">
-    <span id="resultCount"><strong>50</strong>개 용어</span>
+    <span id="resultCount"><strong>167</strong>개 용어</span>
   </div>
 
   <div class="table-wrap">
@@ -342,7 +589,7 @@
         </tr>
       </thead>
       <tbody id="dictBody">
-        <!-- 행정관습어 25 -->
+        <!-- 행정관습어 102 -->
         <tr data-cat="admin">
           <td class="td-bad">명일까지 제출</td>
           <td class="td-good">내일까지 제출</td>
@@ -396,17 +643,52 @@
         <tr data-cat="admin">
           <td class="td-bad">피부양자</td>
           <td class="td-good">부양가족</td>
-          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 건강보험</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 국민건강보험 (피부양자·산정특례 안내)</td>
         </tr>
         <tr data-cat="admin">
           <td class="td-bad">본인일부부담금</td>
           <td class="td-good">본인부담금</td>
-          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 건강보험</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 국민건강보험 (피부양자·산정특례 안내)</td>
         </tr>
         <tr data-cat="admin">
           <td class="td-bad">법정대리인</td>
           <td class="td-good">부모님 또는 후견인</td>
           <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원·미성년자 서비스</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">본인확인</td>
+          <td class="td-good">본인 확인</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원, 공통</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">실명확인</td>
+          <td class="td-good">본인 확인</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 국민신문고</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">처리기관</td>
+          <td class="td-good">담당 기관</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 국민신문고, 서울시 응답소</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">답변예정일</td>
+          <td class="td-good">답변 예정일</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 국민신문고, 서울시 응답소</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">등록일</td>
+          <td class="td-good">접수한 날</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 국민신문고, 서울시 응답소</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">서비스 이용동의</td>
+          <td class="td-good">서비스 이용 동의</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">자료제공동의</td>
+          <td class="td-good">자료 제공 동의</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스</td>
         </tr>
         <tr data-cat="admin">
           <td class="td-bad">소명자료</td>
@@ -429,6 +711,21 @@
           <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스</td>
         </tr>
         <tr data-cat="admin">
+          <td class="td-bad">환급세액</td>
+          <td class="td-good">돌려받을 세금</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 환급 결과</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">과납</td>
+          <td class="td-good">더 낸 세금</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 환급 조회</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">예정 고지</td>
+          <td class="td-good">미리 청구</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 부가세·납부 안내</td>
+        </tr>
+        <tr data-cat="admin">
           <td class="td-bad">체납</td>
           <td class="td-good">세금·보험료 미납</td>
           <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 세금·건강보험</td>
@@ -437,6 +734,341 @@
           <td class="td-bad">경정청구</td>
           <td class="td-good">세금 환급 신청</td>
           <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">장기미환급금</td>
+          <td class="td-good">못 받은 세금 환급금</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 환급 조회</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">전자증명서안내</td>
+          <td class="td-good">전자증명서 안내</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24 안내 메뉴</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">부가가치세예정신고</td>
+          <td class="td-good">부가가치세 예정 신고</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 신고 메뉴</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">증명서발급</td>
+          <td class="td-good">증명서 발급</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 GNB</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">인터넷신고</td>
+          <td class="td-good">온라인 신고</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 GNB</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">가족관계등록부정정</td>
+          <td class="td-good">가족관계 기록 정정</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 허가 메뉴</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">가족관계등록부정정 허가</td>
+          <td class="td-good">가족관계 기록 정정 허가</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 허가 메뉴</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">정부민원안내콜센터</td>
+          <td class="td-good">정부 민원 안내</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24 푸터 상담</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">국세상담센터</td>
+          <td class="td-good">세금 신고·납부 상담</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 상담</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">사용자지원센터</td>
+          <td class="td-good">전자가족관계등록 이용 문의</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 전자가족관계등록</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">서비스 상세 이동</td>
+          <td class="td-good">서비스 이름 + 자세히 보기</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24 혜택 카드 접근성 레이블</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">1번째 배너</td>
+          <td class="td-good">배너 제목 + 보기</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 배너 접근성 레이블</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">AI 켜기</td>
+          <td class="td-good">AI 검색 꺼짐 — 켜려면 클릭 / AI 검색 사용 중 — 끄려면 클릭</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24 AI 검색 토글</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">새창</td>
+          <td class="td-good">제목 + 새 탭에서 열림</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 외부 링크 접근성 레이블</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">주민등록등본</td>
+          <td class="td-good">가족 전체 주민등록증명서 (등본) — 대출·계약·학교 제출</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24 주민등록 발급</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">상세증명서</td>
+          <td class="td-good">상세 가족관계증명서 — 전 가족 기록 포함, 상속·이민 제출</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 가족관계증명서</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">납세증명서 (금융거래용)</td>
+          <td class="td-good">금융거래용 납세증명서 — 은행·대출 제출</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 납세증명서</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">개인정보 제공 범위 선택</td>
+          <td class="td-good">은행·학교 제출용 — 주민번호 뒷자리는 제외하고 필요한 항목만 선택</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24 표시 범위</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">말소 사항 포함</td>
+          <td class="td-good">대출·담보 제출용 — 말소 포함 전체 / 소송 제출용 — 현재 유효만</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 등기사항증명서</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">세무정보 열람권한 부여</td>
+          <td class="td-good">세무사 [대리인 이름]이 [기간] 동안 신고·납부 내역과 과세자료를 확인합니다. 마이페이지에서 해제할 수 있습니다</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 세무대리 수임</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">건강보험 피부양자 등록 신청</td>
+          <td class="td-good">관계별 서류 확인 — 부모 등록은 가족관계증명서 + 소득 확인서 필요</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24·건강보험 피부양자 등록</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">연말정산 간소화</td>
+          <td class="td-good">본인 자료는 바로 조회 / 부양가족 자료는 온라인 동의 또는 세무서 방문 필요</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 연말정산 간소화</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">소송 기록 열람·복사 신청</td>
+          <td class="td-good">당사자는 온라인 열람 가능 / 이해관계인은 소명 서류 + 허가 절차 필요 / 제3자는 법원 방문 신청</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 소송 기록 열람</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">협의이혼 의사확인 신청</td>
+          <td class="td-good">이혼 성립 전 확인 / 배우자 두 분 방문 + 미성년 자녀 협의서 + 숙려기간 뒤 확인기일 출석</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 협의이혼 의사확인</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">외국인등록번호 *</td>
+          <td class="td-good">외국인이라면 외국인등록번호 입력 (해당자만 필수)</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24 신청인 정보 입력</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">영세율 신고</td>
+          <td class="td-good">영세율 대상 거래라면 첨부서류 제출 (해당 거래만 필수)</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 영세율 첨부서류</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">병적증명서 발급</td>
+          <td class="td-good">본인 또는 위임장 지참 대리인 신청 가능</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24 증명서 대리 발급</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">세무대리인 수임 동의</td>
+          <td class="td-good">세금 업무 맡기기 동의 / 위임 범위·해지 경로 먼저 확인</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 세무대리 위임</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">소송 대리인 등록</td>
+          <td class="td-good">서류 제출·열람·기일 신청·항소 대리 / 제한 위임·해임 신고 안내</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 소송 대리인</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">파일을 첨부하세요</td>
+          <td class="td-good">허용 형식 + 파일당 최대 용량 + 최대 개수 안내</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24·법원 업로드 화면</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">증빙서류 파일 첨부</td>
+          <td class="td-good">허용 형식 + 총 용량 + 판독 불가 시 재제출 경로 안내</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 증빙 제출</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">PDF 형식만 가능</td>
+          <td class="td-good">PDF만 가능 · HWP는 PDF 변환 후 제출</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 전자소송</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">문서확인번호</td>
+          <td class="td-good">진위 확인용 문서 번호</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24 인터넷 발급</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">전자 발급본도 출력 시 원본과 동일 효력</td>
+          <td class="td-good">출력본도 원본과 같은 효력 / 공공 마이데이터 제출 또는 PDF 첨부</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 전자 제출</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">전자 발급본이 공문서와 동일한 효력</td>
+          <td class="td-good">전자 발급본도 공문서와 같은 효력 / 제출 전 증명서 진위 확인 가능</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 전자 발급본</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">온라인은 대리인 신청 불가</td>
+          <td class="td-good">온라인은 본인만 신청할 수 있습니다 / 대리 신청은 방문 시 위임장을 준비해 주세요</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24 주민등록표 등본</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">발급일 현재 징수유예액 또는 체납처분유예액을 제외하고는 다른 국세를 체납한 사실이 없음을 증명</td>
+          <td class="td-good">이 증명서는 지금 미납한 국세가 없을 때 발급됩니다 / 지금 발급되지 않으면 체납 내역부터 확인해 주세요</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24 납세증명서</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">집행문 부여 신청</td>
+          <td class="td-good">강제집행 전에 필요한 서류입니다 / 판결·조정조서는 제1심법원, 공정증서는 공증인사무소에 신청</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 대한민국법원 집행문</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">판독 불가</td>
+          <td class="td-good">보완 요청 — 스캔본 판독이 어려워 다시 제출해 주세요 / 재제출 바로 가기</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 증빙 재제출</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">신고 불수리 통지 조회</td>
+          <td class="td-good">신고 반려 통지 확인 / 거부 사유 보기 + 다시 신고하기</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 가족관계등록 반려 통지</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">전자고지(송달) 신청 및 해지</td>
+          <td class="td-good">전자 고지서 받기 / 우편으로 다시 받기</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 전자 고지서 설정</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">지급명세서 제출·수정·삭제</td>
+          <td class="td-good">지급명세서 제출 / 제출 내역 수정 / 제출 내역 삭제</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 지급명세서 처리</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">현금영수증 발급·취소·수정</td>
+          <td class="td-good">현금영수증 발급 / 발급 취소 / 발급 정보 수정</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 현금영수증 처리</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">국선대리인 신청(불복청구서 제출전)/(제출후)</td>
+          <td class="td-good">국선대리인 신청 → [불복청구서 제출 전] [제출 후]</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 국선대리인 신청 단계</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">전자(세금)계산서</td>
+          <td class="td-good">세금계산서 / 계산서</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 계산서 유형 선택</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">세대주 변경 신고</td>
+          <td class="td-good">세대 대표자 변경 신고 (세대주 변경) / 기존 세대주의 동의 필요 / 세대 분리 신청과 다름</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24 주민등록 정정</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">사업장 현황 신고</td>
+          <td class="td-good">부가가치세 면세 사업자 신고 / 내 업종 확인 + 신고 기한 확인</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 면세 사업자 신고</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">개명 허가 신청</td>
+          <td class="td-good">개명 허가 기준 확인 / 허가 사유·심사 기간·불복 방법 보기</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 개명 허가</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">민원이 접수되었습니다</td>
+          <td class="td-good">신청이 완료됐습니다 / 처리까지 약 3일 / 나의 민원 확인하기 + 알림 설정하기</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24, 국민신문고 민원 완료</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">귀하의 종합소득세 신고서가 접수되었습니다</td>
+          <td class="td-good">종합소득세 신고가 완료됐습니다 / 접수번호 확인 + 납부 기한 확인 + 지금 납부하기</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 종합소득세 신고 완료</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">신고서가 정상적으로 접수되었습니다</td>
+          <td class="td-good">신고가 접수됐습니다 / 심사 기간 확인 + 처리 현황 조회</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 전자가족관계등록시스템 국적이탈 신고 완료</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">환급금: [금액]</td>
+          <td class="td-good">환급 결정 완료 / 예상 입금일 확인 + 지연 사유 조회 + 계좌 등록하기</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 환급 입금 대기</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">개인정보 보호를 위해 로그인 후 약 0분 동안 서비스 이용이 없어 자동 로그아웃 됩니다.</td>
+          <td class="td-good">5분 뒤 자동으로 로그아웃됩니다 / 작성 중인 내용은 임시 저장됩니다 / 로그인 유지하기</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24, 국민신문고 세션 만료 전 경고</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">세션이 만료되었습니다. 처음부터 다시 시작하세요.</td>
+          <td class="td-good">자리를 비운 사이 로그인이 끊겼습니다 / 다시 로그인하면 이어서 작성할 수 있습니다</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스, 정부24 세션 종료</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">로그아웃 되었습니다.</td>
+          <td class="td-good">로그아웃 됐습니다 / 메인으로 가기 + 다시 로그인하기</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 공통 로그아웃 완료</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">서비스 이용이 일시적으로 중단되었습니다.</td>
+          <td class="td-good">지금은 이 서비스를 이용할 수 없습니다 / 다시 열리는 시각 + 대체 경로 안내</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24 점검 화면</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">지방세 연계 납부</td>
+          <td class="td-good">위택스에서 별도 신고·납부 / 연계 오류 시 납부 처리 상태 확인</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 위택스 연계</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">친권 상실 청구</td>
+          <td class="td-good">112 또는 1577-1391로 먼저 연락 / 보호 조치 후 친권 상실·일시 정지 절차 이어서 신청</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 친권 상실</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">소상공인 정책자금 신청</td>
+          <td class="td-good">보증서 필요 여부 먼저 확인 / 직접·대리대출 비교 / 보증서 발급 1~2주 소요</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24 소상공인 정책자금</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">부재자 재산 관리인 선임 청구</td>
+          <td class="td-good">재산 처분이 급하면 가압류·가처분 병행 / 관리인 선임만으로는 부동산 매각·담보 설정 차단 불가</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 부재자 재산 관리</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">정부24 앱으로 더 편리하게 이용하세요.</td>
+          <td class="td-good">앱에서 가능한 기능 안내 / 앱 열기 + 앱 다운로드</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 정부24 앱 안내</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">해당 서비스는 PC 홈택스에서만 이용하실 수 있습니다</td>
+          <td class="td-good">이 서비스는 PC에서 이용 가능 / PC로 이동하는 QR코드 보기</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 PC 전용</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">증명서발급과 인터넷신고는 PC를 이용하여 주시기 바랍니다.</td>
+          <td class="td-good">일부 서비스는 PC에서만 이용 가능 / PC에서 다시 접속해 주세요</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 모바일 제한</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">정보이용료</td>
+          <td class="td-good">추가 서비스 요금</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 법원 상담센터</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">계좌신고</td>
+          <td class="td-good">환급 계좌 등록</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 환급 계좌</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">사전답변</td>
+          <td class="td-good">세법 적용 결과 미리 확인</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 세법 해석</td>
+        </tr>
+        <tr data-cat="admin">
+          <td class="td-bad">해임</td>
+          <td class="td-good">위임 취소</td>
+          <td class="td-ctx"><span class="cat-tag cat-admin">행정관습어</span> 홈택스 세무대리</td>
         </tr>
         <tr data-cat="admin">
           <td class="td-bad">기초생활수급자</td>
@@ -521,7 +1153,7 @@
           <td class="td-ctx"><span class="cat-tag cat-double">이중부정</span> 공지사항</td>
         </tr>
 
-        <!-- 외래어·전문용어 10 -->
+        <!-- 외래어·전문용어 50 -->
         <tr data-cat="foreign">
           <td class="td-bad">행태정보</td>
           <td class="td-good">행동 패턴 정보, 브라우징 기록</td>
@@ -531,6 +1163,11 @@
           <td class="td-bad">쿠키(Cookie)</td>
           <td class="td-good">웹사이트 방문 기록</td>
           <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 개인정보 동의</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">손말이음센터</td>
+          <td class="td-good">청각장애인 통신중계</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 홈택스</td>
         </tr>
         <tr data-cat="foreign">
           <td class="td-bad">아카이브</td>
@@ -548,6 +1185,131 @@
           <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 건강보험</td>
         </tr>
         <tr data-cat="foreign">
+          <td class="td-bad">보험료 산정</td>
+          <td class="td-good">보험료 계산</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 국민건강보험 (보험료 산정)</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">인지대</td>
+          <td class="td-good">법원에 내는 수수료</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 소송 비용</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">송달료</td>
+          <td class="td-good">서류를 보내는 우편 비용</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 소송 비용</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">강제집행</td>
+          <td class="td-good">판결 뒤 돈·재산을 강제로 받는 절차</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 법원 집행 절차</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">성년후견</td>
+          <td class="td-good">판단이 어려운 성인을 돕는 법원 보호 제도</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 법원 후견 절차</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">친권 상실</td>
+          <td class="td-good">부모의 법적 결정권을 없애는 절차</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 법원 아동 보호</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">친권 일시 정지</td>
+          <td class="td-good">부모의 법적 결정권을 일정 기간 멈추는 절차</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 법원 아동 보호</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">임시 후견인</td>
+          <td class="td-good">급한 상황에서 잠시 대신 보호·결정할 사람</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 법원 후견·보호</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">국적 이탈</td>
+          <td class="td-good">한국 국적 포기 신고</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 전자가족관계등록 국적 신고</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">국적 회복</td>
+          <td class="td-good">한국 국적 다시 받기</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 국적 회복 허가</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">개명 허가</td>
+          <td class="td-good">이름 바꾸기 허가</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 개명 신청</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">협의이혼 의사확인</td>
+          <td class="td-good">부부가 이혼에 합의했는지 확인</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 협의이혼 신청</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">상속포기</td>
+          <td class="td-good">상속 거부 신고</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 상속 결정</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">간주임대료</td>
+          <td class="td-good">보증금을 이자로 계산한 임대수입</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 임대소득 신고</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">확정일자</td>
+          <td class="td-good">전세 계약서 날짜 확인 (보증금 보호)</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 전세 보증금 보호</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">중간예납</td>
+          <td class="td-good">중간에 미리 내는 세금</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 홈택스 납부 안내</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">원천징수영수증</td>
+          <td class="td-good">급여에서 공제된 세금 확인서</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 홈택스 발급 서류</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">세금포인트</td>
+          <td class="td-good">세금 납부 혜택 포인트</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 홈택스</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">반기납부</td>
+          <td class="td-good">1년에 두 번 나눠 내기</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 홈택스 원천세 신고</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">간이과세자</td>
+          <td class="td-good">소규모 사업자용 부가세 방식</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 홈택스 부가세 신고</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">지방소득세</td>
+          <td class="td-good">지방자치단체에 따로 내는 소득세</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 홈택스·위택스 납부</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">임의가입</td>
+          <td class="td-good">원하면 직접 가입</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 국민연금</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">추납</td>
+          <td class="td-good">못 낸 기간 보험료 나중에 내기</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 국민연금</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">임의계속가입</td>
+          <td class="td-good">퇴직 뒤 예전 직장 보험료로 계속 가입</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 국민건강보험 (보험료 산정)</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">분납</td>
+          <td class="td-good">세금 나눠 내기</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 홈택스·지방세 납부</td>
+        </tr>
+        <tr data-cat="foreign">
           <td class="td-bad">소득인정액</td>
           <td class="td-good">가구 소득·재산 합산액</td>
           <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 복지 서비스</td>
@@ -558,9 +1320,74 @@
           <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 복지 서비스</td>
         </tr>
         <tr data-cat="foreign">
+          <td class="td-bad">소득평가액</td>
+          <td class="td-good">월 소득으로 계산한 금액</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 복지 서비스</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">소득환산액</td>
+          <td class="td-good">재산을 소득으로 바꾼 금액</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 복지 서비스</td>
+        </tr>
+        <tr data-cat="foreign">
           <td class="td-bad">전자바우처</td>
           <td class="td-good">전자 서비스 이용권, 복지카드</td>
           <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 복지 서비스</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">첫만남이용권</td>
+          <td class="td-good">출생아 첫 지원금</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 정부24 출생 지원</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">국민행복카드</td>
+          <td class="td-good">임신·출산·육아 지원 카드</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 정부24 임신·출산</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">사회서비스 이용권</td>
+          <td class="td-good">돌봄·활동 지원 서비스 이용권</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 정부24 복지 서비스</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">긴급복지지원</td>
+          <td class="td-good">갑작스러운 위기 가구를 위한 생계·의료·주거 지원</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 정부24 복지</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">적극적인 재취업활동</td>
+          <td class="td-good">재취업 활동</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 고용24 (실업인정 인터넷 신청)</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">실업인정일</td>
+          <td class="td-good">실업급여를 확인하는 날</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 고용24 (실업인정 인터넷 신청)</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">조기재취업수당</td>
+          <td class="td-good">빨리 다시 취업했을 때 받는 수당</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 고용24 (조기재취업수당 안내)</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">노무제공플랫폼사업자</td>
+          <td class="td-good">일을 연결하는 플랫폼 사업자</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 고용24 (통신판매중개자·노무제공플랫폼사업자 고용보험 안내)</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">세무대리인</td>
+          <td class="td-good">세금 업무를 대신하는 전문가</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 홈택스</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">수임</td>
+          <td class="td-good">업무 맡기기</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 홈택스</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">일괄제공</td>
+          <td class="td-good">한 번에 제공</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 홈택스</td>
         </tr>
         <tr data-cat="foreign">
           <td class="td-bad">수탁자</td>
@@ -571,6 +1398,11 @@
           <td class="td-bad">임의비급여</td>
           <td class="td-good">보험 미적용 비용</td>
           <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 건강보험</td>
+        </tr>
+        <tr data-cat="foreign">
+          <td class="td-bad">장기요양인정</td>
+          <td class="td-good">장기요양 등급 신청</td>
+          <td class="td-ctx"><span class="cat-tag cat-foreign">외래어·전문용어</span> 장기요양 신청</td>
         </tr>
 
         <!-- 과도한경어 5 -->
@@ -612,12 +1444,15 @@
   </div>
 
   <p class="page-footer">
-    출처: principles.md 2.1절 — 전체 150개 사전 중 고우선순위 50개 수록 |
-    <a href="https://thenisaid.github.io/krds-ux-writing/">KRDS UX Writing 가이드</a>
+    출처: principles.md 2.1절 — 전체 274개 사전 중 고우선순위 167개 수록 |
+    <a href="/krds-ux-writing/dictionary/full.html">전체 사전 274개 보기</a> |
+    <a href="/krds-ux-writing/corpus/">코퍼스 공개 현황</a> |
+    <a href="/krds-ux-writing/">KRDS UX Writing 가이드</a>
   </p>
 </main>
 
 <script src="dict.js"></script>
+<script src="../shared/base-path.js"></script>
 <script src="../shared/nav.js"></script>
 </body>
 </html>

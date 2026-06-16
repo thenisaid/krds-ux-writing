@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="번역 금지 원칙 — 행정어를 시민의 언어로. 행정 관습어, 이중 부정, 과도한 경어 제거 기준과 150개 대체어 사전.">
+<meta name="description" content="대표 사이트 기반 무번역 원칙 — 동의·본인확인, 복지·고용 계산, 세무·법원 메뉴를 화면 단계 묶음으로 다시 보고 274개 행정어 사전과 KRDS 연결 기준을 정리합니다.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="2장 무번역의 원칙 — KRDS UX Writing 가이드라인">
-  <meta property="og:description" content="번역 금지 원칙 — 행정어를 시민의 언어로. 행정 관습어, 이중 부정, 과도한 경어 제거 기준과 150개 대체어 사전.">
+  <meta property="og:description" content="대표 사이트 기반 무번역 원칙 — 동의·본인확인, 복지·고용 계산, 세무·법원 메뉴를 화면 단계 묶음으로 다시 보고 274개 행정어 사전과 KRDS 연결 기준을 정리합니다.">
   <meta property="og:url" content="https://thenisaid.github.io/krds-ux-writing/principles/no-translation/">
   <link rel="canonical" href="https://thenisaid.github.io/krds-ux-writing/principles/no-translation/">
 <title>2장 무번역의 원칙 — KRDS UX Writing 가이드라인</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
-<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<script>(function(){var prefersDark=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches;var t='light';try{t=localStorage.getItem('krds-theme')||(prefersDark?'dark':'light');}catch(e){t=prefersDark?'dark':'light';}if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" as="style" crossorigin="anonymous"
   href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
@@ -326,14 +326,47 @@
       <h1 class="content-title">번역 금지<br><span style="font-size:0.55em;color:var(--text-muted);font-weight:600"> (No Direct Translation)</span></h1>
       <p class="content-headline">행정어를 그대로 UI에 옮기지 마세요</p>
       <p class="content-desc">
-        공공 서비스의 글은 법원 판결문이 아닙니다. 시민이 사전 없이, 멈추지 않고 읽을 수 있어야 합니다. 뇌가 '번역'해야 하는 단어는 철저히 배제합니다.
+        공공 서비스의 글은 법원 판결문이 아닙니다. 대표 사이트 8종을 같은 화면 단계로 다시 보며 동의·본인확인, 복지·고용 계산, 세무·법원 메뉴를 먼저 묶습니다. 시민이 사전 없이, 멈추지 않고 읽을 수 있도록 낯선 용어를 과업 언어와 화면 구조로 다시 설계합니다. 새 실화면이 들어오면 <code>원문 3개+CTA 1개</code>와 CASE 시작점을 먼저 적고 KRDS/Figma handoff 범위까지 같이 정합니다.
       </p>
     </div>
 
     <!-- 1. 원칙 개요 -->
     <section class="article-section" id="overview" aria-labelledby="overview-title">
       <h2 class="article-section-heading" id="overview-title">개요</h2>
-      <p class="article-section-lead">공급자의 행정적 정확성보다 주권자의 즉각적인 이해가 우선입니다. 법률문은 법원에서, 서비스 문구는 시민에게.</p>
+      <p class="article-section-lead">공급자의 행정적 정확성보다 주권자의 즉각적인 이해가 우선입니다. 법률문은 법원에서, 서비스 문구는 시민에게. 무번역은 단어 치환이 아니라 화면 단계 재설계 기준으로 판단합니다.</p>
+
+      <div class="sub-h3">이번 라운드 운영 기준</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">
+        대표 사이트 8종을 같은 화면 단계로 다시 보며 동의·본인확인, 복지·고용 계산, 세무·법원 메뉴를 먼저 묶습니다. 단어 1개가 아니라 첫 레이블, 도움말, 메뉴 이름, CTA가 함께 실패하는 지점을 수집해 사전 후보에서 사례 카드, 관련 원칙, KRDS 컴포넌트까지 한 라운드로 이어 붙입니다.
+      </p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>우선 묶음</th>
+            <th>이번에 같이 볼 텍스트 슬롯</th>
+            <th>KRDS 연결</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>동의·본인확인</strong></td>
+            <td>첫 레이블 + 도움말 + 동의 CTA</td>
+            <td>Consent, Checkbox, Helper text</td>
+          </tr>
+          <tr>
+            <td><strong>복지·고용 계산</strong></td>
+            <td>레이블 + 계산 도움말 + 행동 날짜/준비 서류</td>
+            <td>Accordion, Structured list, Notice banner</td>
+          </tr>
+          <tr>
+            <td><strong>세무·법원 메뉴</strong></td>
+            <td>메뉴 이름 + 분기 버튼/라디오 + 다음 CTA</td>
+            <td>Button, Link, Radio, Structured list</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box"><strong>승격 규칙</strong>: 같은 실패가 세 대표 사이트 이상 반복되면 사전 후보 → 사례 카드 → 관련 원칙·컴포넌트로 승격하고, 아직 반복 근거가 약하면 Layer 3 기관 특화 후보로 남겨 다음 순회에서 다시 확인합니다.</div>
+      <div class="info-box"><strong>실제 사례 추가 시작 메모</strong>: 새 실화면이 들어오면 먼저 이슈 아카이브에서 비슷한 실패를 찾고 <code>원문 3개+CTA 1개</code>를 다시 적습니다. 2장에서는 새 CASE 번호부터 만들지 않고 <code>CASE 38·11·59</code>, <code>CASE 6·7·8</code>, <code>CASE 39·40·49</code> 가운데 기존 묶음부터 대조한 뒤, 세 대표 사이트 반복이면 Layer 2 승격과 KRDS/Figma handoff로, 기관 고유 제도면 Layer 3 보류로 넘깁니다.</div>
 
       <div class="sub-h3">핵심 기준: 14세 중학생 기준</div>
       <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">
@@ -389,7 +422,7 @@
     <!-- 2. 행정어 사전 -->
     <section class="article-section" id="dictionary" aria-labelledby="dictionary-title">
       <h2 class="article-section-heading" id="dictionary-title">행정어 대체어 사전</h2>
-      <p class="article-section-lead">SeMA · 정부24 · 법원 · 국민건강보험 · 홈택스 · 복지로 6개 사이트 실사 수집 기준 (2026-04-08). 150개 행정어를 5개 카테고리로 분류합니다.</p>
+      <p class="article-section-lead">대표 사이트 8종(정부24 · 홈택스 · 복지로 · 국민건강보험 · 국민신문고 · 고용24 · 전자가족관계등록시스템 · 서울특별시 응답소) + 대한민국법원 보조 표본 + SeMA Layer 3 파생 사례 재검토 기준 (2026-06-10). 274개 행정어를 5개 카테고리로 분류합니다.</p>
 
       <!-- 카테고리 1 -->
       <div class="cat-pill admin">카테고리 1 — 행정 관습어 (한자어·관청 은어)</div>
@@ -402,11 +435,79 @@
           <tr><td class="strike">기표 완료</td><td class="ok">등록 완료</td><td>공통</td></tr>
           <tr><td class="strike">교부 신청</td><td class="ok">발급 신청</td><td>정부24, 법원</td></tr>
           <tr><td class="strike">귀하</td><td class="ok">고객님 / 신청인</td><td>공통</td></tr>
-          <tr><td class="strike">피부양자</td><td class="ok">부양가족</td><td>국민건강보험</td></tr>
-          <tr><td class="strike">득실 신고</td><td class="ok">취득·상실 신고</td><td>국민건강보험</td></tr>
+          <tr><td class="strike">피부양자</td><td class="ok">부양가족</td><td>국민건강보험 (피부양자·산정특례 안내)</td></tr>
+          <tr><td class="strike">득실 신고</td><td class="ok">취득·상실 신고</td><td>국민건강보험 (피부양자·산정특례 안내)</td></tr>
           <tr><td class="strike">소명자료</td><td class="ok">증빙 자료</td><td>공통</td></tr>
           <tr><td class="strike">경정청구</td><td class="ok">세금 환급 신청</td><td>홈택스</td></tr>
+          <tr><td class="strike">장기미환급금</td><td class="ok">못 받은 세금 환급금</td><td>홈택스</td></tr>
+          <tr><td class="strike">전자증명서안내</td><td class="ok">전자증명서 안내</td><td>정부24</td></tr>
+          <tr><td class="strike">부가가치세예정신고</td><td class="ok">부가가치세 예정 신고</td><td>홈택스</td></tr>
+          <tr><td class="strike">증명서발급</td><td class="ok">증명서 발급</td><td>법원</td></tr>
+          <tr><td class="strike">인터넷신고</td><td class="ok">온라인 신고</td><td>법원</td></tr>
+          <tr><td class="strike">가족관계등록부정정</td><td class="ok">가족관계 기록 정정</td><td>법원</td></tr>
+          <tr><td class="strike">가족관계등록부정정 허가</td><td class="ok">가족관계 기록 정정 허가</td><td>법원</td></tr>
+          <tr><td class="strike">정부민원안내콜센터</td><td class="ok">정부 민원 안내</td><td>정부24</td></tr>
+          <tr><td class="strike">국세상담센터</td><td class="ok">세금 신고·납부 상담</td><td>홈택스</td></tr>
+          <tr><td class="strike">사용자지원센터</td><td class="ok">전자가족관계등록 이용 문의</td><td>법원</td></tr>
+          <tr><td class="strike">서비스 상세 이동</td><td class="ok">서비스 이름 + 자세히 보기</td><td>정부24 혜택 카드 접근성 레이블</td></tr>
+          <tr><td class="strike">1번째 배너</td><td class="ok">배너 제목 + 보기</td><td>홈택스 배너 접근성 레이블</td></tr>
+          <tr><td class="strike">AI 켜기</td><td class="ok">AI 검색 꺼짐 — 켜려면 클릭 / AI 검색 사용 중 — 끄려면 클릭</td><td>정부24 AI 검색 토글</td></tr>
+          <tr><td class="strike">새창</td><td class="ok">제목 + 새 탭에서 열림</td><td>법원 외부 링크 접근성 레이블</td></tr>
+          <tr><td class="strike">주민등록등본</td><td class="ok">가족 전체 주민등록증명서 (등본) — 대출·계약·학교 제출</td><td>정부24 (주민등록 발급)</td></tr>
+          <tr><td class="strike">상세증명서</td><td class="ok">상세 가족관계증명서 — 전 가족 기록 포함, 상속·이민 제출</td><td>법원 (가족관계증명서)</td></tr>
+          <tr><td class="strike">납세증명서 (금융거래용)</td><td class="ok">금융거래용 납세증명서 — 은행·대출 제출</td><td>홈택스</td></tr>
+          <tr><td class="strike">개인정보 제공 범위 선택</td><td class="ok">은행·학교 제출용 — 주민번호 뒷자리는 제외하고 필요한 항목만 선택</td><td>정부24 (주민등록 발급)</td></tr>
+          <tr><td class="strike">말소 사항 포함</td><td class="ok">대출·담보 제출용 — 말소 포함 전체 / 소송 제출용 — 현재 유효만</td><td>법원 (등기사항증명서)</td></tr>
+          <tr><td class="strike">세무정보 열람권한 부여</td><td class="ok">세무사 [대리인 이름]이 [기간] 동안 신고·납부 내역과 과세자료를 확인합니다. 마이페이지에서 해제할 수 있습니다</td><td>홈택스 (세무대리 수임)</td></tr>
+          <tr><td class="strike">건강보험 피부양자 등록 신청</td><td class="ok">관계별 서류 확인 — 부모 등록은 가족관계증명서 + 소득 확인서 필요</td><td>정부24·건강보험 (피부양자 등록)</td></tr>
+          <tr><td class="strike">연말정산 간소화</td><td class="ok">본인 자료는 바로 조회 / 부양가족 자료는 온라인 동의 또는 세무서 방문 필요</td><td>홈택스 (연말정산 간소화)</td></tr>
+          <tr><td class="strike">소송 기록 열람·복사 신청</td><td class="ok">당사자는 온라인 열람 가능 / 이해관계인은 소명 서류 + 허가 절차 필요 / 제3자는 법원 방문 신청</td><td>법원 (소송 기록 열람)</td></tr>
+          <tr><td class="strike">협의이혼 의사확인 신청</td><td class="ok">이혼 성립 전 확인 / 배우자 두 분 방문 + 미성년 자녀 협의서 + 숙려기간 뒤 확인기일 출석</td><td>법원 (협의이혼 의사확인)</td></tr>
+          <tr><td class="strike">외국인등록번호 *</td><td class="ok">외국인이라면 외국인등록번호 입력 (해당자만 필수)</td><td>정부24 (신청인 정보 입력)</td></tr>
+          <tr><td class="strike">영세율 신고</td><td class="ok">영세율 대상 거래라면 첨부서류 제출 (해당 거래만 필수)</td><td>홈택스 (영세율 첨부서류)</td></tr>
+          <tr><td class="strike">병적증명서 발급</td><td class="ok">본인 또는 위임장 지참 대리인 신청 가능</td><td>정부24 (증명서 대리 발급)</td></tr>
+          <tr><td class="strike">세무대리인 수임 동의</td><td class="ok">세금 업무 맡기기 동의 / 위임 범위·해지 경로 먼저 확인</td><td>홈택스 (세무대리 위임)</td></tr>
+          <tr><td class="strike">소송 대리인 등록</td><td class="ok">서류 제출·열람·기일 신청·항소 대리 / 제한 위임·해임 신고 안내</td><td>법원 (소송 대리인)</td></tr>
+          <tr><td class="strike">파일을 첨부하세요</td><td class="ok">허용 형식 + 파일당 최대 용량 + 최대 개수 안내</td><td>정부24, 법원 업로드 화면</td></tr>
+          <tr><td class="strike">증빙서류 파일 첨부</td><td class="ok">허용 형식 + 총 용량 + 판독 불가 시 재제출 경로 안내</td><td>홈택스</td></tr>
+          <tr><td class="strike">PDF 형식만 가능</td><td class="ok">PDF만 가능 · HWP는 PDF 변환 후 제출</td><td>법원 전자소송</td></tr>
+          <tr><td class="strike">문서확인번호</td><td class="ok">진위 확인용 문서 번호</td><td>정부24 인터넷 발급</td></tr>
+          <tr><td class="strike">전자 발급본도 출력 시 원본과 동일 효력</td><td class="ok">출력본도 원본과 같은 효력 / 공공 마이데이터 제출 또는 PDF 첨부</td><td>홈택스</td></tr>
+          <tr><td class="strike">전자 발급본이 공문서와 동일한 효력</td><td class="ok">전자 발급본도 공문서와 같은 효력 / 제출 전 증명서 진위 확인 가능</td><td>법원</td></tr>
+          <tr><td class="strike">온라인은 대리인 신청 불가</td><td class="ok">온라인은 본인만 신청할 수 있습니다 / 대리 신청은 방문 시 위임장을 준비해 주세요</td><td>정부24 (주민등록표 등본)</td></tr>
+          <tr><td class="strike">발급일 현재 징수유예액 또는 체납처분유예액을 제외하고는 다른 국세를 체납한 사실이 없음을 증명</td><td class="ok">이 증명서는 지금 미납한 국세가 없을 때 발급됩니다 / 지금 발급되지 않으면 체납 내역부터 확인해 주세요</td><td>정부24 (납세증명서)</td></tr>
+          <tr><td class="strike">집행문 부여 신청</td><td class="ok">강제집행 전에 필요한 서류입니다 / 판결·조정조서는 제1심법원, 공정증서는 공증인사무소에 신청</td><td>대한민국법원 (집행문)</td></tr>
+          <tr><td class="strike">판독 불가</td><td class="ok">보완 요청 — 스캔본 판독이 어려워 다시 제출해 주세요 / 재제출 바로 가기</td><td>홈택스 (증빙 재제출)</td></tr>
+          <tr><td class="strike">신고 불수리 통지 조회</td><td class="ok">신고 반려 통지 확인 / 거부 사유 보기 + 다시 신고하기</td><td>법원 (가족관계등록 반려 통지)</td></tr>
+          <tr><td class="strike">전자고지(송달) 신청 및 해지</td><td class="ok">전자 고지서 받기 / 우편으로 다시 받기</td><td>홈택스 (전자 고지서 설정)</td></tr>
+          <tr><td class="strike">지급명세서 제출·수정·삭제</td><td class="ok">지급명세서 제출 / 제출 내역 수정 / 제출 내역 삭제</td><td>홈택스 (지급명세서 처리)</td></tr>
+          <tr><td class="strike">현금영수증 발급·취소·수정</td><td class="ok">현금영수증 발급 / 발급 취소 / 발급 정보 수정</td><td>홈택스 (현금영수증 처리)</td></tr>
+          <tr><td class="strike">국선대리인 신청(불복청구서 제출전)/(제출후)</td><td class="ok">국선대리인 신청 → [불복청구서 제출 전] [제출 후]</td><td>법원 (국선대리인 신청 단계)</td></tr>
+          <tr><td class="strike">전자(세금)계산서</td><td class="ok">세금계산서 / 계산서</td><td>홈택스 (계산서 유형 선택)</td></tr>
+          <tr><td class="strike">세대주 변경 신고</td><td class="ok">세대 대표자 변경 신고 (세대주 변경) / 기존 세대주의 동의 필요 / 세대 분리 신청과 다름</td><td>정부24 (주민등록 정정)</td></tr>
+          <tr><td class="strike">사업장 현황 신고</td><td class="ok">부가가치세 면세 사업자 신고 / 내 업종 확인 + 신고 기한 확인</td><td>홈택스 (면세 사업자 신고)</td></tr>
+          <tr><td class="strike">개명 허가 신청</td><td class="ok">개명 허가 기준 확인 / 허가 사유·심사 기간·불복 방법 보기</td><td>법원 (개명 허가)</td></tr>
+          <tr><td class="strike">민원이 접수되었습니다</td><td class="ok">신청이 완료됐습니다 / 처리까지 약 3일 / 나의 민원 확인하기 + 알림 설정하기</td><td>정부24, 국민신문고 (민원 완료)</td></tr>
+          <tr><td class="strike">귀하의 종합소득세 신고서가 접수되었습니다</td><td class="ok">종합소득세 신고가 완료됐습니다 / 접수번호 확인 + 납부 기한 확인 + 지금 납부하기</td><td>홈택스 (종합소득세 신고 완료)</td></tr>
+          <tr><td class="strike">신고서가 정상적으로 접수되었습니다</td><td class="ok">신고가 접수됐습니다 / 심사 기간 확인 + 처리 현황 조회</td><td>전자가족관계등록시스템 (국적이탈 신고 완료)</td></tr>
+          <tr><td class="strike">환급금: [금액]</td><td class="ok">환급 결정 완료 / 예상 입금일 확인 + 지연 사유 조회 + 계좌 등록하기</td><td>홈택스 (환급 입금 대기)</td></tr>
+          <tr><td class="strike">개인정보 보호를 위해 로그인 후 약 0분 동안 서비스 이용이 없어 자동 로그아웃 됩니다.</td><td class="ok">5분 뒤 자동으로 로그아웃됩니다 / 작성 중인 내용은 임시 저장됩니다 / 로그인 유지하기</td><td>정부24, 국민신문고 (세션 만료 전 경고)</td></tr>
+          <tr><td class="strike">세션이 만료되었습니다. 처음부터 다시 시작하세요.</td><td class="ok">자리를 비운 사이 로그인이 끊겼습니다 / 다시 로그인하면 이어서 작성할 수 있습니다</td><td>홈택스, 정부24 (세션 종료)</td></tr>
+          <tr><td class="strike">로그아웃 되었습니다.</td><td class="ok">로그아웃 됐습니다 / 메인으로 가기 + 다시 로그인하기</td><td>공통 (로그아웃 완료)</td></tr>
+          <tr><td class="strike">서비스 이용이 일시적으로 중단되었습니다.</td><td class="ok">지금은 이 서비스를 이용할 수 없습니다 / 다시 열리는 시각 + 대체 경로 안내</td><td>정부24 (점검 화면)</td></tr>
+          <tr><td class="strike">지방세 연계 납부</td><td class="ok">위택스에서 별도 신고·납부 / 연계 오류 시 납부 처리 상태 확인</td><td>홈택스 (위택스 연계)</td></tr>
+          <tr><td class="strike">친권 상실 청구</td><td class="ok">112 또는 1577-1391로 먼저 연락 / 보호 조치 후 친권 상실·일시 정지 절차 이어서 신청</td><td>법원 (친권 상실)</td></tr>
+          <tr><td class="strike">소상공인 정책자금 신청</td><td class="ok">보증서 필요 여부 먼저 확인 / 직접·대리대출 비교 / 보증서 발급 1~2주 소요</td><td>정부24 (소상공인 정책자금)</td></tr>
+          <tr><td class="strike">부재자 재산 관리인 선임 청구</td><td class="ok">재산 처분이 급하면 가압류·가처분 병행 / 관리인 선임만으로는 부동산 매각·담보 설정 차단 불가</td><td>법원 (부재자 재산 관리)</td></tr>
+          <tr><td class="strike">정부24 앱으로 더 편리하게 이용하세요.</td><td class="ok">앱에서 가능한 기능 안내 / 앱 열기 + 앱 다운로드</td><td>정부24 (앱 안내)</td></tr>
+          <tr><td class="strike">해당 서비스는 PC 홈택스에서만 이용하실 수 있습니다</td><td class="ok">이 서비스는 PC에서 이용 가능 / PC로 이동하는 QR코드 보기</td><td>홈택스 (PC 전용)</td></tr>
+          <tr><td class="strike">증명서발급과 인터넷신고는 PC를 이용하여 주시기 바랍니다.</td><td class="ok">일부 서비스는 PC에서만 이용 가능 / PC에서 다시 접속해 주세요</td><td>법원 (모바일 제한)</td></tr>
+          <tr><td class="strike">정보이용료</td><td class="ok">추가 서비스 요금</td><td>법원 상담센터</td></tr>
+          <tr><td class="strike">계좌신고</td><td class="ok">환급 계좌 등록</td><td>홈택스</td></tr>
+          <tr><td class="strike">사전답변</td><td class="ok">세법 적용 결과 미리 확인</td><td>홈택스</td></tr>
+          <tr><td class="strike">해임</td><td class="ok">위임 취소</td><td>홈택스 (세무대리인)</td></tr>
           <tr><td class="strike">원천징수</td><td class="ok">급여에서 미리 뗀 세금</td><td>홈택스</td></tr>
+          <tr><td class="strike">예정 고지</td><td class="ok">미리 청구</td><td>홈택스 (부가세)</td></tr>
           <tr><td class="strike">체납</td><td class="ok">세금·보험료 미납</td><td>홈택스, 건강보험</td></tr>
           <tr><td class="strike">기초생활수급자</td><td class="ok">기초생활 지원 대상자</td><td>복지로</td></tr>
           <tr><td class="strike">수급권자</td><td class="ok">지원 대상자</td><td>복지로</td></tr>
@@ -417,11 +518,20 @@
           <tr><td class="strike">교부 청구</td><td class="ok">발급 요청</td><td>법원</td></tr>
           <tr><td class="strike">귀책사유</td><td class="ok">잘못, 책임</td><td>정부24</td></tr>
           <tr><td class="strike">정보주체</td><td class="ok">(본인), 개인정보 보유 대상자</td><td>SeMA, 정부24</td></tr>
+          <tr><td class="strike">본인확인</td><td class="ok">본인 확인</td><td>법원, 공통</td></tr>
+          <tr><td class="strike">실명확인</td><td class="ok">본인 확인</td><td>국민신문고</td></tr>
+          <tr><td class="strike">처리기관</td><td class="ok">담당 기관</td><td>국민신문고, 서울시 응답소</td></tr>
+          <tr><td class="strike">답변예정일</td><td class="ok">답변 예정일</td><td>국민신문고, 서울시 응답소</td></tr>
+          <tr><td class="strike">등록일</td><td class="ok">접수한 날</td><td>국민신문고, 서울시 응답소</td></tr>
+          <tr><td class="strike">서비스 이용동의</td><td class="ok">서비스 이용 동의</td><td>정부24</td></tr>
+          <tr><td class="strike">자료제공동의</td><td class="ok">자료 제공 동의</td><td>홈택스</td></tr>
           <tr><td class="strike">법정대리인</td><td class="ok">부모님 또는 후견인</td><td>법원, 공통</td></tr>
-          <tr><td class="strike">본인일부부담금</td><td class="ok">본인부담금</td><td>국민건강보험</td></tr>
-          <tr><td class="strike">산정특례</td><td class="ok">중증질환 본인부담 감면</td><td>국민건강보험</td></tr>
+          <tr><td class="strike">본인일부부담금</td><td class="ok">본인부담금</td><td>국민건강보험 (피부양자·산정특례 안내)</td></tr>
+          <tr><td class="strike">산정특례</td><td class="ok">중증질환 본인부담 감면</td><td>국민건강보험 (피부양자·산정특례 안내)</td></tr>
           <tr><td class="strike">연말정산</td><td class="ok">한 해 세금 정산</td><td>홈택스</td></tr>
           <tr><td class="strike">가산세</td><td class="ok">추가 세금</td><td>홈택스</td></tr>
+          <tr><td class="strike">환급세액</td><td class="ok">돌려받을 세금</td><td>홈택스</td></tr>
+          <tr><td class="strike">과납</td><td class="ok">더 낸 세금</td><td>홈택스</td></tr>
           <tr><td class="strike">차상위계층</td><td class="ok">기초생활 지원 바로 위 소득 계층</td><td>복지로</td></tr>
           <tr><td class="strike">의료급여</td><td class="ok">의료비 지원</td><td>복지로</td></tr>
           <tr><td class="strike">자활</td><td class="ok">자립, 스스로 살아가기</td><td>복지로</td></tr>
@@ -460,18 +570,58 @@
           <tr><td class="strike">디스클로저</td><td class="ok">접기·펼치기</td><td>컴포넌트</td></tr>
           <tr><td class="strike">코치마크</td><td class="ok">초보자 안내 표시</td><td>컴포넌트</td></tr>
           <tr><td class="strike">플로팅 버튼</td><td class="ok">떠 있는 버튼, 빠른 버튼</td><td>컴포넌트</td></tr>
+          <tr><td class="strike">손말이음센터</td><td class="ok">청각장애인 통신중계</td><td>홈택스</td></tr>
           <tr><td class="strike">아카이브</td><td class="ok">자료실, 기록 보관소</td><td>공통</td></tr>
           <tr><td class="strike">레거시</td><td class="ok">기존 시스템, 이전 방식</td><td>내부 문서</td></tr>
           <tr><td class="strike">API 연동</td><td class="ok">시스템 연결</td><td>내부 문서</td></tr>
           <tr><td class="strike">임의비급여</td><td class="ok">보험 미적용 비용</td><td>국민건강보험</td></tr>
           <tr><td class="strike">요양급여</td><td class="ok">의료비 지원, 건강보험 혜택</td><td>국민건강보험</td></tr>
+          <tr><td class="strike">보험료 산정</td><td class="ok">보험료 계산</td><td>국민건강보험 (보험료 산정)</td></tr>
+          <tr><td class="strike">인지대</td><td class="ok">법원에 내는 수수료</td><td>법원</td></tr>
+          <tr><td class="strike">송달료</td><td class="ok">서류를 보내는 우편 비용</td><td>법원</td></tr>
+          <tr><td class="strike">강제집행</td><td class="ok">판결 뒤 돈·재산을 강제로 받는 절차</td><td>법원</td></tr>
+          <tr><td class="strike">성년후견</td><td class="ok">판단이 어려운 성인을 돕는 법원 보호 제도</td><td>법원 (후견)</td></tr>
+          <tr><td class="strike">친권 상실</td><td class="ok">부모의 법적 결정권을 없애는 절차</td><td>법원 (아동 보호)</td></tr>
+          <tr><td class="strike">친권 일시 정지</td><td class="ok">부모의 법적 결정권을 일정 기간 멈추는 절차</td><td>법원 (아동 보호)</td></tr>
+          <tr><td class="strike">임시 후견인</td><td class="ok">급한 상황에서 잠시 대신 보호·결정할 사람</td><td>법원 (아동 보호, 후견)</td></tr>
+          <tr><td class="strike">국적 이탈</td><td class="ok">한국 국적 포기 신고</td><td>전자가족관계등록시스템 (국적 이탈 신고)</td></tr>
+          <tr><td class="strike">국적 회복</td><td class="ok">한국 국적 다시 받기</td><td>전자가족관계등록시스템, 법무부 (국적 회복 허가)</td></tr>
+          <tr><td class="strike">개명 허가</td><td class="ok">이름 바꾸기 허가</td><td>법원 (가족관계등록)</td></tr>
+          <tr><td class="strike">협의이혼 의사확인</td><td class="ok">부부가 이혼에 합의했는지 확인</td><td>법원 (이혼)</td></tr>
+          <tr><td class="strike">상속포기</td><td class="ok">상속 거부 신고</td><td>법원 (상속)</td></tr>
           <tr><td class="strike">소득세 경정청구</td><td class="ok">소득세 환급 신청</td><td>홈택스</td></tr>
+          <tr><td class="strike">장기요양인정</td><td class="ok">장기요양 등급 신청</td><td>정부24 (장기요양)</td></tr>
+          <tr><td class="strike">중간예납</td><td class="ok">중간에 미리 내는 세금</td><td>홈택스</td></tr>
+          <tr><td class="strike">원천징수영수증</td><td class="ok">급여에서 공제된 세금 확인서</td><td>홈택스</td></tr>
+          <tr><td class="strike">세금포인트</td><td class="ok">세금 납부 혜택 포인트</td><td>홈택스</td></tr>
+          <tr><td class="strike">반기납부</td><td class="ok">1년에 두 번 나눠 내기</td><td>홈택스 (원천세)</td></tr>
+          <tr><td class="strike">간이과세자</td><td class="ok">소규모 사업자용 부가세 방식</td><td>홈택스 (부가세)</td></tr>
+          <tr><td class="strike">지방소득세</td><td class="ok">지방자치단체에 따로 내는 소득세</td><td>홈택스, 위택스</td></tr>
+          <tr><td class="strike">간주임대료</td><td class="ok">보증금을 이자로 계산한 임대수입</td><td>홈택스</td></tr>
+          <tr><td class="strike">확정일자</td><td class="ok">전세 계약서 날짜 확인 (보증금 보호)</td><td>정부24 (전월세)</td></tr>
+          <tr><td class="strike">임의가입</td><td class="ok">원하면 직접 가입</td><td>정부24 (국민연금)</td></tr>
+          <tr><td class="strike">추납</td><td class="ok">못 낸 기간 보험료 나중에 내기</td><td>정부24 (국민연금)</td></tr>
+          <tr><td class="strike">임의계속가입</td><td class="ok">퇴직 뒤 예전 직장 보험료로 계속 가입</td><td>국민건강보험 (보험료 산정)</td></tr>
+          <tr><td class="strike">분납</td><td class="ok">세금 나눠 내기</td><td>홈택스, 지방세</td></tr>
           <tr><td class="strike">소득인정액</td><td class="ok">가구 소득·재산 합산액</td><td>복지로</td></tr>
           <tr><td class="strike">기준 중위소득</td><td class="ok">소득이 중간 가구의 기준값 (비율로 비교)</td><td>복지로</td></tr>
+          <tr><td class="strike">소득평가액</td><td class="ok">월 소득으로 계산한 금액</td><td>복지로</td></tr>
+          <tr><td class="strike">소득환산액</td><td class="ok">재산을 소득으로 바꾼 금액</td><td>복지로</td></tr>
           <tr><td class="strike">전자바우처</td><td class="ok">전자 서비스 이용권, 복지카드</td><td>복지로</td></tr>
+          <tr><td class="strike">첫만남이용권</td><td class="ok">출생아 첫 지원금</td><td>정부24 (출생 지원)</td></tr>
+          <tr><td class="strike">국민행복카드</td><td class="ok">임신·출산·육아 지원 카드</td><td>정부24 (임신·출산)</td></tr>
+          <tr><td class="strike">사회서비스 이용권</td><td class="ok">돌봄·활동 지원 서비스 이용권</td><td>정부24 (복지 서비스)</td></tr>
+          <tr><td class="strike">긴급복지지원</td><td class="ok">갑작스러운 위기 가구를 위한 생계·의료·주거 지원</td><td>정부24 (복지)</td></tr>
+          <tr><td class="strike">적극적인 재취업활동</td><td class="ok">재취업 활동</td><td>고용24 (실업인정 인터넷 신청)</td></tr>
+          <tr><td class="strike">실업인정일</td><td class="ok">실업급여를 확인하는 날</td><td>고용24 (실업인정 인터넷 신청)</td></tr>
+          <tr><td class="strike">조기재취업수당</td><td class="ok">빨리 다시 취업했을 때 받는 수당</td><td>고용24 (조기재취업수당 안내)</td></tr>
+          <tr><td class="strike">노무제공플랫폼사업자</td><td class="ok">일을 연결하는 플랫폼 사업자</td><td>고용24 (통신판매중개자·노무제공플랫폼사업자 고용보험 안내)</td></tr>
           <tr><td class="strike">경계선지능아동</td><td class="ok">인지·학습에 어려움이 있는 아동</td><td>복지로</td></tr>
           <tr><td class="strike">거치 후 균분상환</td><td class="ok">일정 기간 후 같은 금액으로 나눠 갚기</td><td>복지로</td></tr>
           <tr><td class="strike">파생상품</td><td class="ok">선물·옵션 등 파생금융상품</td><td>홈택스</td></tr>
+          <tr><td class="strike">세무대리인</td><td class="ok">세금 업무를 대신하는 전문가</td><td>홈택스</td></tr>
+          <tr><td class="strike">수임</td><td class="ok">업무 맡기기</td><td>홈택스</td></tr>
+          <tr><td class="strike">일괄제공</td><td class="ok">한 번에 제공</td><td>홈택스</td></tr>
           <tr><td class="strike">수탁자</td><td class="ok">위탁 업체</td><td>개인정보처리방침</td></tr>
         </tbody>
       </table>
@@ -731,6 +881,87 @@ I: 전화번호를 입력하세요   ← 레이블 없이 플레이스홀더만 
       </table>
       <div class="info-box">1위와 2위는 LID 원칙 준수로 자동 방지됩니다. 3위는 4.1 에러 3단 구조와 함께 적용합니다.</div>
 
+      <div class="sub-h3" style="margin-top:32px">법령 용어는 첫 레이블이 아니라 도움말·병기 영역으로 내린다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">동의, 계산, 연금 신청처럼 공식 용어를 완전히 지울 수 없는 화면에서도 첫 줄에는 시민이 지금 해야 할 판단을 남겨야 합니다. 공식 용어는 괄호, 도움말, 접기 영역으로 내려 <code>무엇을 입력하는지</code>와 <code>왜 필요한지</code>를 분리합니다.</p>
+      <table class="data-table">
+        <thead><tr><th>관찰된 표현</th><th>권장 레이블</th><th>권장 도움말</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td class="strike">실명확인</td><td class="ok">본인 확인</td><td>실명확인 절차입니다. 확인이 끝나면 다음 단계로 넘어갑니다</td><td>Text input, Helper text, Consent</td></tr>
+          <tr><td class="strike">자료제공동의 / 세무대리인 수임</td><td class="ok">자료 제공 동의 / 세금 업무 맡기기 동의</td><td>세금 신고에 필요한 자료를 불러옵니다. 원하면 나중에 철회할 수 있습니다</td><td>Checkbox, Helper text, Consent</td></tr>
+          <tr><td class="strike">예정 고지 / 예정신고</td><td class="ok">사업자 유형</td><td>개인 일반과세자는 예정 고지 대상인지 먼저 확인하세요. 매출이 1/3 이하로 줄었다면 예정 신고를 직접 선택할 수 있습니다</td><td>Radio, Helper text, Banner</td></tr>
+          <tr><td class="strike">간주임대료</td><td class="ok">전세 보증금</td><td>전세 보증금이 있으면 간주임대료 계산이 필요합니다. 보증금과 임대 기간을 먼저 확인해 주세요</td><td>Text input, Helper text</td></tr>
+          <tr><td class="strike">인지대 / 송달료</td><td class="ok">청구금액</td><td>청구금액을 입력하면 인지대와 송달료를 자동 계산합니다</td><td>Text input, Helper text, Structured list</td></tr>
+          <tr><td class="strike">임의가입 / 추납</td><td class="ok">가입 공백 기간</td><td>못 낸 기간 보험료는 추납으로 나중에 낼 수 있습니다. 공백 기간과 예상 수령액 증가를 같이 확인하세요</td><td>Accordion, Helper text, Button</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box"><strong>실무 규칙</strong>: <code>레이블 = 지금 입력하거나 선택할 대상</code>, <code>도움말 = 공식 용어 설명 + 왜 필요한지 + 다음 판단</code>으로 분리합니다.</div>
+
+      <div class="sub-h3" style="margin-top:24px">대표 서비스 관찰 — 낯선 용어는 번역보다 과업·분기·도움말로 다시 설계한다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">정부24·홈택스·대한민국법원을 다시 보면 생소한 말 자체보다 더 큰 문제는 그 말이 <strong>과업</strong>, <strong>분기</strong>, <strong>예외</strong>를 한 줄에 함께 숨긴다는 점입니다. <code>실명확인</code>, <code>자료제공동의</code>, <code>간주임대료</code>, <code>전자고지(송달) 신청 및 해지</code>, <code>국선대리인 신청(불복청구서 제출전)/(제출후)</code>, <code>이용약관개인정보처리방침저작권정책비회원확인서비스</code> 같은 표현은 번역 1회로 끝나지 않습니다. 시민이 지금 해야 할 일, 갈라지는 단계, 보조 설명을 화면 구조로 다시 나눠야 합니다.</p>
+      <table class="data-table">
+        <thead><tr><th>관찰된 표현</th><th>바로 쓰면 생기는 문제</th><th>먼저 보여줄 구조</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>실명확인 / 자료제공동의 / 간주임대료 / 인지대·송달료</strong></td><td>무엇을 입력·동의·계산하는지 첫눈에 안 보입니다</td><td><span class="ok">본인 확인</span> / <span class="ok">자료 제공 동의</span> / <span class="ok">전세 보증금</span> / <span class="ok">청구금액</span> + 도움말에서 공식 용어와 이유 설명</td><td>Helper text, Consent, Accordion, Structured list</td></tr>
+          <tr><td><strong>전자고지(송달) 신청 및 해지 / 지급명세서 제출·수정·삭제 / 국선대리인 신청(불복청구서 제출전)/(제출후)</strong></td><td>반대 행동과 단계 분기가 한 줄에 압축돼 선택 구조가 보이지 않습니다</td><td>상위 메뉴 + <span class="ok">내부 분기</span>: 전자 고지서 받기 / 우편으로 다시 받기, 제출 / 수정 / 삭제, [불복청구서 제출 전] [제출 후]</td><td>Button group, Tabs, Radio, Structured list</td></tr>
+          <tr><td><strong>전자증명서안내 / 부가가치세예정신고 / 이용약관개인정보처리방침저작권정책비회원확인서비스</strong></td><td>단어 경계와 링크 경계가 없어 읽기 전에 해석 비용이 생깁니다</td><td><span class="ok">전자증명서 안내</span> / <span class="ok">부가가치세 예정 신고</span> / <span class="ok">이용약관 | 개인정보처리방침 | 저작권정책 | 비회원 확인 서비스</span></td><td>Link, Navigation, Footer</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box"><strong>실무 규칙</strong>: 낯선 용어를 만나면 먼저 <code>이게 과업인가</code>, <code>분기인가</code>, <code>법령 설명인가</code>를 가릅니다. 과업은 첫 레이블로, 분기는 선택 UI로, 법령 설명은 도움말·접기 영역으로 내립니다.</div>
+
+      <div class="sub-h3" style="margin-top:32px">대표 사이트 기반 무번역 점검 우선순위</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">이제 2장의 다음 라운드는 사전 행을 더 늘리는 일보다, 같은 화면 단계를 여러 대표 사이트에서 다시 보며 <strong>레이블</strong>, <strong>도움말</strong>, <strong>메뉴 이름</strong>이 함께 실패하는 지점을 먼저 묶는 데 초점을 둡니다. 무번역은 단어 1개를 바꾸는 작업이 아니라, 시민이 <code>지금 무엇을 해야 하는지</code>, <code>어디서 갈리는지</code>, <code>언제 다시 확인해야 하는지</code>가 첫 줄에 보이도록 화면 구조를 다시 잡는 작업입니다.</p>
+      <table class="data-table">
+        <thead><tr><th>우선 묶음</th><th>먼저 볼 대표 사이트·화면</th><th>먼저 확인할 질문</th><th>같이 볼 KRDS 조합</th></tr></thead>
+        <tbody>
+          <tr><td><strong>동의·본인확인</strong></td><td>정부24·홈택스·국민신문고 로그인/동의 단계</td><td>첫 줄만 읽고도 지금 무엇을 확인·동의하는지, 철회·해지 경로가 보이는가?</td><td>Consent, Checkbox, Helper text, Notice banner</td></tr>
+          <tr><td><strong>복지·고용 복합 제도어</strong></td><td>복지로 자격 계산, 고용24 실업인정·수당 안내</td><td>계산식·제도어가 대상 여부, 행동 날짜, 준비 서류를 가리는가?</td><td>Accordion, Helper text, Structured list, Notice banner</td></tr>
+          <tr><td><strong>세무·법원 고빈도 메뉴어</strong></td><td>홈택스 환급·신고·세무대리 메뉴, 대한민국법원 신청 단계 선택</td><td>메뉴 이름만 읽고도 지금 할 일, 분기 기준, 대상 여부가 바로 보이는가?</td><td>Button, Link, Radio, Structured list</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box"><strong>운영 규칙</strong>: 무번역 사례는 <code>용어 1개</code>보다 <code>화면 단계 묶음</code>으로 수집합니다. 같은 실패가 세 대표 사이트에서 반복되면 <code>사전 → 사례 카드 → 관련 원칙·컴포넌트</code>를 같은 라운드에서 같이 보강합니다.</div>
+      <div class="info-box"><strong>CASE 시작점</strong>: 동의·본인확인은 <code>CASE 38·11·59</code>, 세무·법원 메뉴어는 <code>CASE 39·40·49</code>를 먼저 붙입니다. 메뉴 이름을 풀어도 클릭 전 의미가 안 보이면 2장에서 끝내지 않고 사례 카드와 7장 버튼·탐색 규칙까지 같은 라운드에서 넘깁니다.</div>
+
+      <div class="sub-h3" style="margin-top:24px">상대적으로 얇은 대표 사이트 무번역 재검산 메모</div>
+      <table class="data-table">
+        <thead><tr><th>사이트·화면</th><th>먼저 붙일 사전 후보</th><th>2장에서 같이 남길 판단</th><th>KRDS 조합</th></tr></thead>
+        <tbody>
+          <tr><td><strong>국민건강보험 <code>피부양자·산정특례 안내</code>, <code>보험료 산정</code></strong></td><td><code>피부양자</code>, <code>산정특례</code>, <code>보험료 산정</code></td><td><code>부양가족 등록</code>, <code>중증질환 본인부담 감면</code>, <code>보험료 계산</code>처럼 대상·혜택·내가 내는 비용 뜻이 첫 레이블과 도움말에서 함께 보이는가? 결과 뒤에는 <code>변동 신고</code>, <code>경감 신청 자가 진단</code>, <code>임의계속가입 확인</code>이 바로 이어지는가?</td><td>Helper text + Accordion + Table + Button</td></tr>
+          <tr><td><strong>고용24 <code>조기재취업수당 안내</code>, <code>실업인정 인터넷 신청</code></strong></td><td><code>조기재취업수당</code>, <code>실업인정일</code>, <code>적극적인 재취업활동</code></td><td><code>빨리 다시 취업했을 때 받는 수당</code>, <code>실업급여를 확인하는 날</code>, <code>재취업 활동 등록</code>이 행동 날짜·준비 서류·다시 확인 경로와 함께 읽히는가? <code>조기재취업수당 안내</code>는 누가 대상인지, 언제 다시 취업했는지, 무엇으로 확인하는지가 첫 블록에서 보이는가?</td><td>Notice banner + Structured list + Disclosure + Button</td></tr>
+          <tr><td><strong>서울특별시 응답소 <code>질의응답·답변원문</code>, <code>결과보기</code></strong></td><td><code>처리기관</code>, <code>답변예정일</code></td><td><code>담당 기관</code>, <code>답변 예정일</code> 치환은 2장에 남기되, 결과 재확인 구조와 CTA 위계는 3장·5장·7장에서 먼저 다루는가?</td><td>Status badge + Table + Result page + Button</td></tr>
+          <tr><td><strong>전자가족관계등록시스템 <code>국적 회복 허가</code>, <code>국적 이탈 신고</code></strong></td><td><code>국적 회복</code>, <code>국적 이탈</code>, <code>1년 내 외국 국적 포기</code>, <code>외국국적불행사서약 대상 여부</code></td><td><code>한국 국적 다시 받기</code>, <code>한국 국적 포기 신고</code>처럼 첫 레이블을 풀고, 허가 뒤 <code>1년 내 외국 국적 포기</code>, <code>외국국적불행사서약 대상 여부</code>, <code>외국 국적 포기 증명서 제출 경로</code>, 복수 국적·병역·기한 요건과 <code>[요건 확인]</code> CTA가 같은 첫 블록에서 함께 읽히는가?</td><td>Helper text + Notice banner + Checklist + Button</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box"><strong>실행 규칙</strong>: 국민건강보험·고용24는 사전 행만 늘리지 않고 <code>첫 레이블 + 도움말 + CTA</code>를 같은 로그 행에 남깁니다. 특히 국민건강보험 <code>보험료 산정</code>처럼 계산형 결과는 결과 숫자 뒤의 <code>변동 신고</code>, <code>경감 신청 자가 진단</code>, <code>임의계속가입 확인</code>까지 2장에서 같이 적습니다. 고용24 <code>조기재취업수당 안내</code>처럼 제도 판단형 화면은 <code>누가 대상인지</code>, <code>언제 다시 취업했는지</code>, <code>무엇으로 확인하는지</code>까지 2장에서 같이 적습니다. 서울특별시 응답소처럼 구조 문제가 더 큰 화면은 2장에서는 최소 치환만 남기고 3장·5장·7장으로 먼저 넘깁니다. 전자가족관계등록시스템은 첫 레이블, 후속 신고 의무, 기한, 복수 조건, CTA를 같은 로그 행으로 남깁니다. 특히 <code>한국 국적 다시 받기 허가 결과 → 1년 내 외국 국적 포기 → 외국국적불행사서약 대상 여부 → 외국 국적 포기 증명서 제출 경로</code>, <code>국적 이탈 가능 기한 → 병역 조건 → 기한 경과 뒤 상태</code>, <code>신고 방법 보기 / 요건 확인</code>를 한 줄에서 끊기지 않게 적습니다.</div>
+      <div class="info-box"><strong>사례 카드 직접화 메모</strong>: 국민건강보험 <code>피부양자·산정특례 안내</code>는 <code>CASE 2</code> 카드 본문에서도 <code>부양가족으로 등록하거나 해제할 가족인지</code>, <code>중증질환 본인부담 감면 대상인지</code>, <code>이번 달 건강보험료가 어떻게 계산됐는지</code>가 한 흐름으로 읽혀야 2장 무번역 근거로 인정합니다. 용어 치환만 남기지 말고 <code>변동 신고</code>, <code>경감 신청 자가 진단</code>, <code>임의계속가입 확인</code>처럼 다음 CTA까지 같이 내려 운영 표와 사례 카드가 같은 화면을 가리키게 합니다. 전자가족관계등록시스템 <code>국적 회복 허가</code>, <code>국적 이탈 신고</code>도 같은 <code>CASE 2</code> 카드 본문에서 <code>한국 국적 다시 받기</code>, <code>한국 국적 포기 신고</code>, <code>1년 내 외국 국적 포기</code>, <code>외국국적불행사서약 대상 여부</code>, <code>외국 국적 포기 증명서 제출 경로</code>, <code>[신고 방법 보기]</code>, <code>[요건 확인]</code>이 같은 첫 블록으로 내려와야 2장 무번역 근거로 인정합니다. 이때 <code>국적 이탈 가능 기한</code>, <code>병역 조건</code>, <code>기한 경과 뒤 상태</code>도 같은 첫 블록에서 끊기지 않아야 합니다.</div>
+      <div class="info-box"><strong>고용24 사례 카드 직접화 메모</strong>: <code>조기재취업수당 안내</code>, <code>실업인정 인터넷 신청</code>도 <code>CASE 6·8</code> 카드 본문에서 <code>취업한 날</code>, <code>활동을 확인하는 서류</code>, <code>[조기재취업수당 대상과 확인 서류 보기]</code>, <code>[실업인정일을 놓쳤을 때 다시 확인하기]</code>가 같은 고용24 흐름으로 내려와야 2장 무번역·4장 심리적안전망 근거로 인정합니다.</div>
+      <div class="info-box"><strong>사용 맥락 기록 규칙</strong>: 사전의 <code>사용 맥락</code>은 기관명만 쓰지 않고 <code>국민건강보험 (보험료 산정)</code>, <code>고용24 (실업인정 인터넷 신청)</code>, <code>고용24 (조기재취업수당 안내)</code>처럼 실제 화면 단계까지 적습니다. 그래야 사전 행이 바로 <code>CASE 2·6·8·42</code>와 KRDS handoff로 이어집니다.</div>
+      <div class="info-box"><strong>전자가족관계등록시스템 운영 메모</strong>: <code>국적 회복 허가</code>, <code>국적 이탈 신고</code>는 별도 보조 note가 아니라 위 표의 정식 재검산 행에서 관리하고, 2장에서는 <code>첫 레이블 + 후속 의무 + 기한 + 요건 + CTA</code>가 함께 읽히는지 먼저 확인합니다. 같은 메모에는 <code>한국 국적 다시 받기 허가 결과 → 1년 내 외국 국적 포기 → 외국국적불행사서약 대상 여부 → 외국 국적 포기 증명서 제출 경로</code>, <code>국적 이탈 가능 기한 → 병역 조건 → 기한 경과 뒤 상태</code>, <code>신고 방법 보기 / 요건 확인</code>를 같은 순서로 적고, 숨은 레이블에는 <code>국적 회복 허가 뒤 1년 기한과 국적 이탈 병역 조건 확인하기</code>를 남깁니다.</div>
+      <div class="info-box"><strong>얇은 대표 사이트 승격 규칙</strong>: 국민건강보험은 검색 범위·재검색 단서까지 같이 흔들리면 <code>CASE 10·49</code>, 고용24와 전자가족관계등록시스템은 모두 충족 조건이 먼저면 <code>CASE 57</code>, 동의 문장과 위임 범위가 같은 블록에 붙는 화면은 <code>CASE 38·11·59</code>로 이어 판정합니다.</div>
+
+      <div class="sub-h3" style="margin-top:24px">이번 라운드 무번역 KRDS/Figma handoff 예시</div>
+      <table class="data-table">
+        <thead><tr><th>대표 사이트·화면</th><th>KRDS 조합</th><th>Description에 꼭 남길 문장</th><th>기본 예시 문구</th><th>숨은 레이블 메모</th></tr></thead>
+        <tbody>
+          <tr><td><strong>국민건강보험 <code>피부양자·산정특례 안내</code>, <code>보험료 산정</code></strong></td><td>Helper text + Accordion + Table + Button</td><td>Description에는 부양가족 등록·해제 대상, 중증질환 본인부담 감면 대상, 이번 달 보험료 계산 기준, 변동 신고·경감 신청·임의계속가입 CTA를 함께 적습니다.</td><td>부양가족으로 등록하거나 해제할 가족인지 먼저 확인해 주세요 / 중증질환 본인부담 감면 대상인지 확인 / 이번 달 보험료 계산 기준 보기 / 변동 신고하기</td><td>부양가족 등록·해제 대상 확인하기 / 중증질환 본인부담 감면 요건 보기 / 현재 보험료 계산 기준 보기 / 보험료 변동 신고하기 / 보험료 경감 신청 가능 여부 자가 진단하기 / 퇴직 뒤 예전 직장 보험료 계속 가입 확인하기</td></tr>
+          <tr><td><strong>고용24 <code>조기재취업수당 안내</code>, <code>실업인정 인터넷 신청</code></strong></td><td>Notice banner + Structured list + Disclosure + Button</td><td>Description에는 실업급여를 확인하는 날, 이번 회차 재취업 활동, 취업한 날 기준, 조기재취업 대상 여부·확인 서류, 놓쳤을 때 결과와 다시 확인 경로를 함께 적습니다.</td><td>실업급여를 확인하는 날까지 재취업 활동을 등록해 주세요 / 빨리 다시 취업했을 때 받는 수당 대상과 확인 서류 보기 / 놓쳤다면 다음 회차와 보완 경로 확인</td><td>실업인정일까지 필요한 활동 보기 / 취업한 날 기준 확인하기 / 조기재취업수당 대상과 확인 서류 보기 / 실업인정일을 놓쳤을 때 다시 확인하기</td></tr>
+          <tr><td><strong>전자가족관계등록시스템 <code>국적 회복 허가</code>, <code>국적 이탈 신고</code></strong></td><td>Helper text + Notice banner + Checklist + Button</td><td>Description에는 <code>한국 국적 다시 받기</code> 같은 시민 언어 헤더와 공식 용어 병기, <code>1년 내 외국 국적 포기</code>, <code>외국국적불행사서약 대상 여부</code>, <code>외국 국적 포기 증명서</code> 제출 경로, <code>[요건 확인]</code>·<code>[신고 방법 보기]</code> CTA를 함께 적습니다.</td><td>한국 국적 다시 받기 허가 결과를 먼저 확인해 주세요 / 1년 내 외국 국적 포기와 외국국적불행사서약 대상 여부를 확인해 주세요 / 외국 국적 포기 증명서 제출 경로 확인 / 신고 방법 보기</td><td>국적 회복 허가 결과 확인하기 / 외국 국적 포기 기한과 서약 대상 확인하기 / 외국 국적 포기 증명서 제출 경로 확인하기 / 국적 신고 방법 보기</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box"><strong>전자가족관계등록시스템 handoff 메모</strong>: KRDS/Figma Description과 숨은 레이블에는 <code>한국 국적 다시 받기 허가 결과 → 1년 내 외국 국적 포기 → 외국국적불행사서약 대상 여부 → 외국 국적 포기 증명서 제출 경로</code>, <code>국적 이탈 가능 기한 → 병역 조건 → 기한 경과 뒤 상태</code>, <code>신고 방법 보기 / 요건 확인</code>를 같은 순서로 남기고, 숨은 레이블에는 <code>국적 회복 허가 뒤 1년 기한과 국적 이탈 병역 조건 확인하기</code>를 적습니다.</div>
+      <div class="info-box"><strong>실행 규칙</strong>: 2장 handoff는 첫 레이블·도움말·CTA를 먼저 고정하는 데 집중합니다. 서울특별시 응답소처럼 결과 재확인 위계가 더 큰 화면은 2장에서는 최소 치환만 남기고 3장·5장·7장 handoff 표에서 먼저 직접화합니다.</div>
+
+      <div class="sub-h3" style="margin-top:24px">대표 사이트 점검 매트릭스 — 동의·계산·메뉴를 이 순서로 다시 본다</div>
+      <table class="data-table">
+        <thead><tr><th>대표 사이트·화면</th><th>먼저 확인할 실패 패턴</th><th>사례 카드로 승격할 문장</th><th>KRDS 조합</th></tr></thead>
+        <tbody>
+          <tr><td><strong>정부24·홈택스·국민신문고 동의/본인확인</strong> (<code>실명확인</code>, <code>자료제공동의</code>, <code>세무대리인 수임 동의</code>)</td><td>법령 용어가 첫 레이블에 남고, 이유·범위·철회 경로가 도움말에서 빠지는가?</td><td><code>본인 확인</code>, <code>자료 제공 동의</code>, <code>세금 업무 맡기기 동의</code>처럼 과업을 첫 줄에 두고 범위·해지 경로를 바로 붙인다</td><td>Consent + Checkbox + Helper text</td></tr>
+          <tr><td><strong>복지로 계산식·고용24 제도 안내</strong> (<code>소득평가액</code>, <code>소득환산액</code>, <code>노무제공플랫폼사업자</code>, <code>적극적인 재취업활동</code>, <code>실업인정일</code>)</td><td>계산 순서와 행동 날짜가 제도어 뒤에 숨어, 대상 여부 판단이 늦어지는가?</td><td><code>월 소득으로 계산한 금액</code>, <code>재산을 소득으로 바꾼 금액</code>, <code>다음 실업인정일까지 재취업 활동 1회를 등록해 주세요</code>처럼 계산 순서와 행동 날짜를 먼저 쓴다</td><td>Helper text + Structured list + Accordion / Notice banner + Disclosure</td></tr>
+          <tr><td><strong>홈택스 환급·신고·세무대리 / 대한민국법원 신청 단계</strong> (<code>장기미환급금 찾기 서비스</code>, <code>세법해석 사전답변 신청</code>, <code>전자고지(송달) 신청 및 해지</code>, <code>국선대리인 신청(불복청구서 제출전)/(제출후)</code>)</td><td>메뉴명만 보고는 과업 동사, 대상 여부, 단계 분기가 보이지 않는가?</td><td><code>못 받은 세금 환급금 조회·신청</code>, <code>세법 적용 결과 미리 확인 신청</code>, <code>전자 고지서 받기 / 우편으로 다시 받기</code>, <code>국선대리인 신청 → [불복청구서 제출 전] [제출 후]</code>처럼 과업과 분기를 분리한다</td><td>Button + Link + Radio + Structured list</td></tr>
+          <tr><td><strong>국민신문고·홈택스·대한민국법원 첫 선택 영역</strong> (<code>민원 유형 선택</code>, <code>휴업·폐업 신고</code>, <code>개인회생·파산</code>)</td><td>절차 이름은 보이지만 내 상황, 선택 기준, 오선택 위험, 비교·상담 경로가 첫 분기 영역에 빠지는가?</td><td><code>내 상황에 맞는 민원 유형 찾기</code>, <code>잠시 쉬면 휴업 신고 / 완전히 끝내면 폐업 신고</code>, <code>소득이 있으면 개인회생 / 상환이 어렵다면 파산</code>처럼 절차 이름보다 선택 기준을 먼저 쓴다</td><td>Radio + Segmented control + Structured list + Helper text + Notice banner + Link</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box"><strong>승격 연결</strong>: 같은 첫 분기 영역에서 네 질문이 함께 실패하면 <code>CASE 60</code>을 먼저 붙이고, 모두 충족 조건이 더 앞서면 <code>CASE 57</code>, 클릭 전 의미가 더 앞서면 <code>CASE 49</code>로 이어 판정합니다.</div>
+
       <div class="sub-h3" style="margin-top:32px">입력 유형별 레이블·플레이스홀더 패턴</div>
       <div class="sub-h4">날짜 입력 필드</div>
       <div class="code-block"><span class="code-ok">✅ 날짜 피커(Date Picker) — 캘린더 UI 제공 시</span>
@@ -784,6 +1015,7 @@ I: 전화번호를 입력하세요   ← 레이블 없이 플레이스홀더만 
         </tbody>
       </table>
       <div class="info-box"><strong>전체 동의 체크박스</strong>: 하위 항목을 묶을 때는 필수 항목과 선택 항목의 수를 명시합니다.<br>예: <code>전체 동의 (필수 2개, 선택 1개)</code></div>
+      <div class="info-box"><strong>동의 화면 관찰</strong>: 정부24·홈택스·법원처럼 동의 단계가 중요한 서비스에서는 레이블 첫 줄에 과업 단어를 먼저 둡니다.<br>예: <code>실명확인 → 본인 확인</code>, <code>자료제공동의 → 자료 제공 동의</code>, <code>세무대리인 수임 동의 → 세금 업무 맡기기 동의</code></div>
 
       <div class="sub-h4" style="margin-top:16px">라디오 버튼 그룹</div>
       <div class="code-block"><span class="code-ok">✅ 올바른 구조 — fieldset/legend 사용</span>
@@ -806,6 +1038,7 @@ I: 전화번호를 입력하세요   ← 레이블 없이 플레이스홀더만 
           <tr><td>필수 표기</td><td><code>레이블 (필수)</code> — <code>*</code> 단독 사용 금지</td><td>스크린 리더 접근성</td></tr>
           <tr><td>플레이스홀더 내용</td><td>입력 예시만 (<code>예: 홍길동</code>) — 안내 규칙 금지</td><td>NNG(2023) 가시성</td></tr>
           <tr><td>형식 안내 위치</td><td>도움말 텍스트(D) — 플레이스홀더 사용 금지</td><td>입력 후 소실 방지</td></tr>
+          <tr><td>법령 용어 처리</td><td>레이블은 시민 언어, 공식 용어는 도움말·괄호·접기 영역으로 이동</td><td>해석 비용 감소</td></tr>
           <tr><td>비활성 이유</td><td>비활성 요소 바로 아래·옆, 40자 이내</td><td>KWCAG 2.1 SC 1.3.3</td></tr>
           <tr><td>날짜 직접 입력</td><td>6자리 숫자 기준 + 예시 플레이스홀더</td><td>공공 서비스 표준</td></tr>
           <tr><td>파일 업로드</td><td>형식·용량·매수 도움말 필수 명시</td><td>오류율 31% 감소</td></tr>
@@ -820,7 +1053,7 @@ I: 전화번호를 입력하세요   ← 레이블 없이 플레이스홀더만 
     <!-- 4. 버튼 레이블 -->
     <section class="article-section" id="button-labels" aria-labelledby="button-labels-title">
       <h2 class="article-section-heading" id="button-labels-title">버튼 레이블 기준</h2>
-      <p class="article-section-lead">버튼은 주권자의 행동을 촉발하는 인터페이스의 핵심입니다. 레이블이 모호하면 클릭을 망설이고, 잘못된 레이블은 비가역적 실수로 이어집니다.</p>
+      <p class="article-section-lead">버튼은 주권자의 행동을 촉발하는 인터페이스의 핵심입니다. 레이블이 모호하면 클릭을 망설이고, 잘못된 레이블은 비가역적 실수로 이어집니다. 복지로·응답소·고용24처럼 신청, 조회, 결과 확인 버튼이 함께 있는 화면일수록 과업을 분리한 이름이 필요합니다.</p>
 
       <div class="info-box"><strong>핵심 원칙</strong>: 버튼은 '눌렀을 때 일어날 일'을 말합니다. 동사로 끝나는 레이블을 사용하세요.</div>
 
@@ -837,6 +1070,20 @@ I: 전화번호를 입력하세요   ← 레이블 없이 플레이스홀더만 
       </table>
       <p style="font-size:13px;color:var(--text-muted);margin-top:8px;"><strong>글자 수 기준</strong>: 버튼 레이블은 <strong>12자 이내</strong> 권장. 초과 시 핵심 동사를 앞에 두고 부연 설명을 생략합니다.</p>
 
+      <div class="sub-h3" style="margin-top:24px">대표 공공서비스 CTA 관찰</div>
+      <table class="data-table">
+        <thead><tr><th>과업 단계</th><th>반복 관찰 레이블</th><th>의미</th></tr></thead>
+        <tbody>
+          <tr><td><strong>신청 시작</strong></td><td><span class="ok">신청하기</span>, <span class="ok">민원 신청하기</span></td><td>지금 신청이 시작된다는 결과를 바로 예측하게 합니다.</td></tr>
+          <tr><td><strong>사전 확인</strong></td><td><span class="ok">모의계산</span>, <span class="ok">참여 이력조회</span></td><td>신청 전에 자격 확인, 이전 이력 확인을 분리합니다.</td></tr>
+          <tr><td><strong>결과 확인</strong></td><td><span class="ok">결과보기</span>, <span class="ok">답변 확인</span></td><td>진행 중 행동과 완료 후 행동을 섞지 않습니다.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>핵심</strong>: 공공서비스 CTA는 `신청하기`, `모의계산`, `참여 이력조회`, `민원 결과보기`처럼 과업 명사와 결과 동사를 묶어야 합니다. 같은 `확인`을 여러 단계에서 반복하면 사용자가 지금 무엇을 확인하는지 알 수 없습니다.
+      </div>
+
       <div class="sub-h3" style="margin-top:24px">CTA 위계별 패턴</div>
       <table class="data-table">
         <thead><tr><th>위계</th><th>목적</th><th>레이블 패턴</th><th>예시</th></tr></thead>
@@ -847,6 +1094,46 @@ I: 전화번호를 입력하세요   ← 레이블 없이 플레이스홀더만 
           <tr><td><strong>위험 (Danger)</strong></td><td>비가역 삭제·초기화</td><td>[목적어] [동사]하기</td><td>계정 삭제하기</td></tr>
         </tbody>
       </table>
+
+      <div class="sub-h3" style="margin-top:24px">권장 치환 예시</div>
+      <table class="data-table">
+        <thead><tr><th>🚫 모호한 레이블</th><th>✅ 과업이 보이는 레이블</th></tr></thead>
+        <tbody>
+          <tr><td class="strike">확인</td><td class="ok">민원 결과보기</td></tr>
+          <tr><td class="strike">다음</td><td class="ok">실업인정 정보 입력하기</td></tr>
+          <tr><td class="strike">조회</td><td class="ok">참여 이력조회</td></tr>
+          <tr><td class="strike">확인</td><td class="ok">자격 모의계산하기</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-h3" style="margin-top:24px">홈택스형 메뉴·버튼은 행정 절차어보다 지금 할 일을 먼저 쓴다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">홈택스의 조회·환급·세무대리 화면에서는 메뉴 이름이 곧 CTA 역할을 합니다. 이때 <code>장기미환급금</code>, <code>계좌신고</code>, <code>사전답변</code>, <code>해임</code>, <code>원천징수영수증</code>, <code>중간예납</code>처럼 제도명만 먼저 나오면 사용자는 지금 해야 할 행동을 한 번 더 해석해야 합니다. 첫 줄에는 <code>조회</code>, <code>신청</code>, <code>등록</code>, <code>위임 취소</code>, <code>발급</code>, <code>선납</code> 같은 과업 동사를 먼저 둡니다.</p>
+      <table class="data-table">
+        <thead><tr><th>화면 맥락</th><th>🚫 용어 중심 레이블</th><th>✅ 과업 중심 레이블</th></tr></thead>
+        <tbody>
+          <tr><td><strong>환급 찾기</strong></td><td class="strike">장기미환급금 찾기 서비스</td><td class="ok">못 받은 세금 환급금 조회·신청</td></tr>
+          <tr><td><strong>환급 계좌</strong></td><td class="strike">국세환급금 계좌신고</td><td class="ok">세금 환급받을 계좌 등록</td></tr>
+          <tr><td><strong>세법 확인</strong></td><td class="strike">세법해석 사전답변 신청</td><td class="ok">세법 적용 결과 미리 확인 신청</td></tr>
+          <tr><td><strong>세무대리 종료</strong></td><td class="strike">나의 세무대리인 해임</td><td class="ok">세무대리인 위임 취소</td></tr>
+          <tr><td><strong>서류 발급</strong></td><td class="strike">근로소득 원천징수영수증</td><td class="ok">급여에서 공제된 세금 확인서 (원천징수영수증)</td></tr>
+          <tr><td><strong>선납 안내</strong></td><td class="strike">종합소득세 중간예납</td><td class="ok">11월 소득세 선납 (중간예납) — 대상인지 먼저 확인하세요</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box"><strong>실무 규칙</strong>: 메뉴·버튼 이름만 읽고도 <code>지금 할 행동</code>, <code>결과</code>, <code>다음 판단</code>이 보여야 합니다. 제도명은 괄호나 보조 설명으로 남기고, 첫 줄은 과업 언어로 씁니다.</div>
+
+      <div class="sub-h3" style="margin-top:24px">점(·)·슬래시(/)·괄호()로 서로 다른 행동을 한 줄에 묶지 않는다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">홈택스의 메뉴 이름은 짧아 보여도 실제로는 선택 구조를 설명해야 합니다. <code>신청 및 해지</code>, <code>제출·수정·삭제</code>, <code>제출전/제출후</code>처럼 반대 행동이나 다른 단계를 한 줄에 압축하면 사용자는 먼저 분기 구조를 해석하느라 멈춥니다. 점(·), 슬래시(/), 괄호() 안에 서로 다른 행동·단계·대상이 같이 들어가면 <code>상위 메뉴 + 내부 분기</code>, <code>주행동 + 보조행동</code>, <code>유형 선택 + 다음 버튼</code>으로 나눕니다.</p>
+      <table class="data-table">
+        <thead><tr><th>화면 맥락</th><th>🚫 한 줄 병합 레이블</th><th>✅ 분리한 레이블</th></tr></thead>
+        <tbody>
+          <tr><td><strong>전자 고지서 설정</strong></td><td class="strike">전자고지(송달) 신청 및 해지</td><td class="ok">전자 고지서 설정 → 전자 고지서 받기 / 우편으로 다시 받기</td></tr>
+          <tr><td><strong>지급명세서 처리</strong></td><td class="strike">지급명세서 제출·수정·삭제</td><td class="ok">지급명세서 제출 / 제출 내역 수정 / 제출 내역 삭제</td></tr>
+          <tr><td><strong>현금영수증 처리</strong></td><td class="strike">현금영수증 발급·취소·수정</td><td class="ok">현금영수증 발급 / 발급 취소 / 발급 정보 수정</td></tr>
+          <tr><td><strong>국선대리인 신청 단계</strong></td><td class="strike">국선대리인 신청(불복청구서 제출전)/(제출후)</td><td class="ok">국선대리인 신청 → [불복청구서 제출 전] [제출 후]</td></tr>
+          <tr><td><strong>계산서 유형 선택</strong></td><td class="strike">전자(세금)계산서</td><td class="ok">세금계산서 / 계산서</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box"><strong>분리 체크포인트</strong>: 점(·)·슬래시(/)·괄호() 안에 <code>신청/해지</code>, <code>발급/취소</code>, <code>제출 전/후</code>, <code>세금계산서/계산서</code>처럼 서로 다른 행동·단계·대상이 함께 들어가면 한 줄 레이블로 두지 않습니다. 사용자가 먼저 분기 기준을 고르도록 <code>Button group</code>, <code>Tabs</code>, <code>Radio</code>, <code>Structured list</code>, <code>Link</code>로 나눕니다.</div>
 
       <div class="sub-h3" style="margin-top:24px">비가역 행동 경고 패턴</div>
       <div class="code-block"><span class="code-ok">✅ Do — 버튼 위 경고 텍스트</span>
@@ -1062,6 +1349,8 @@ I: 전화번호를 입력하세요   ← 레이블 없이 플레이스홀더만 
   </div>
 </div>
 
+<script src="../../shared/base-path.js"></script>
+<script src="../../shared/prompt-copy.js"></script>
 <script src="../../shared/nav.js"></script>
 </body>
 </html>

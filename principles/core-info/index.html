@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="핵심 정보 먼저 원칙 — 역피라미드 구조로 결론을 맨 앞에. 40자 규칙, 청킹, 중요도 순서 설계 기준.">
+<meta name="description" content="핵심 정보 먼저 원칙 — 역피라미드 구조로 결론을 맨 앞에. 민원·환급·심사 결과와 완료 뒤 후속 흐름을 상태 1문장 + 예정일 + 다음 행동으로 재구성합니다.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="3장 정보핵심화의 원칙 — KRDS UX Writing 가이드라인">
-  <meta property="og:description" content="핵심 정보 먼저 원칙 — 역피라미드 구조로 결론을 맨 앞에. 40자 규칙, 청킹, 중요도 순서 설계 기준.">
+  <meta property="og:description" content="핵심 정보 먼저 원칙 — 역피라미드 구조로 결론을 맨 앞에. 민원·환급·심사 결과와 완료 뒤 후속 흐름을 상태 1문장 + 예정일 + 다음 행동으로 재구성합니다.">
   <meta property="og:url" content="https://thenisaid.github.io/krds-ux-writing/principles/core-info/">
   <link rel="canonical" href="https://thenisaid.github.io/krds-ux-writing/principles/core-info/">
 <title>3장 정보핵심화의 원칙 — KRDS UX Writing 가이드라인</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
-<script>(function(){var t=localStorage.getItem('krds-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<script>(function(){var prefersDark=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches;var t='light';try{t=localStorage.getItem('krds-theme')||(prefersDark?'dark':'light');}catch(e){t=prefersDark?'dark':'light';}if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" as="style" crossorigin="anonymous"
   href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css"
@@ -319,7 +319,7 @@
       <h1 class="content-title">핵심 정보 먼저<br><span style="font-size:0.55em;color:var(--text-muted);font-weight:600"> (Core Info First)</span></h1>
       <p class="content-headline">결론을 맨 앞에, 불필요한 말은 뒤로</p>
       <p class="content-desc">
-        무작정 글자 수를 줄이는 것이 아닙니다. 주권자가 핵심에 도달하는 '생각의 거리'를 물리적으로 줄이는 노이즈 제거 과정입니다.
+        무작정 글자 수를 줄이는 것이 아닙니다. 주권자가 핵심에 도달하는 '생각의 거리'를 물리적으로 줄이는 노이즈 제거 과정입니다. 대표 사이트 순회에서는 민원·환급·심사 결과와 완료 뒤 후속 흐름 화면을 상태 1문장 + 예정일 + 다음 행동 구조로 다시 묶습니다.
       </p>
     </div>
 
@@ -349,6 +349,60 @@
           </tr>
         </tbody>
       </table>
+
+      <div class="sub-h3" style="margin-top:24px">대표 사이트 순회 운영 — 결과·완료·후속 흐름을 같은 정보 위계 축으로 본다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">정보핵심화는 문장 길이만 줄이는 장이 아닙니다. 대표 사이트 순회에서는 민원 상태, 환급·발급 결과, 심사·판정, 완료 뒤 후속 흐름 화면을 먼저 다시 보며 <strong>상태 1문장</strong>, <strong>예정일</strong>, <strong>다음 행동</strong>이 첫 블록에 함께 있는지 확인합니다.</p>
+      <table class="data-table">
+        <thead><tr><th>화면 묶음</th><th>먼저 볼 대표 사이트·화면</th><th>먼저 확인할 질문</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>상태·결과</strong></td><td>국민신문고 답변 확인, 서울특별시 응답소 결과 안내</td><td>상태 첫 줄, 답변 예정일, 다시 확인 경로가 함께 보이는가?</td><td>Status badge + Timeline + Table</td></tr>
+          <tr><td><strong>환급·발급 결과</strong></td><td>홈택스 국세 환급금 조회, 전자가족관계등록시스템 전자 발급본 안내</td><td>산출 근거·효력·예상 시점·재확인 경로가 첫 블록에 모이는가?</td><td>Result page + Notice banner + Structured list</td></tr>
+          <tr><td><strong>심사·판정·허가</strong></td><td>정부24 장기요양인정 신청, 홈택스 종합소득세 신고 도움, 대한민국법원 개명 허가 신청</td><td>판정 기준, 심사 단계, 결과 통보 시점, 다음 행동이 보이는가?</td><td>Step indicator + Structured list + Accordion</td></tr>
+          <tr><td><strong>완료 뒤 후속 흐름</strong></td><td>정부24 전입신고 완료, 대한민국법원 지급명령 이의신청</td><td>자동·별도 처리, 이의 기한, 바로 가기 CTA가 같은 첫 블록에 있는가?</td><td>Result page + Structured list + Notice banner + Link</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box">
+        <strong>실무 규칙</strong>: 민원·환급·심사 결과 화면은 <code>상태 1문장 + 예정일 + 다음 행동</code>, 완료 뒤 후속 흐름 화면은 <code>후속 행동 + 자동/별도 + 이의 기한</code>을 첫 블록에서 함께 확인합니다.
+      </div>
+      <div class="sub-h4">상대적으로 얇은 대표 사이트 재검산 메모</div>
+      <table class="data-table">
+        <thead><tr><th>사이트·화면</th><th>공식 화면에서 먼저 확인할 묶음</th><th>정보핵심화 판단</th><th>KRDS 조합</th></tr></thead>
+        <tbody>
+          <tr><td><strong>서울특별시 응답소 <code>질의응답·답변원문</code>, <code>결과보기</code></strong></td><td><code>처리기관</code>, <code>답변예정일</code>, 결과 첫 줄, 다시 확인 CTA</td><td>인사말보다 결과 요약과 일정이 먼저 보이는지, 기존 민원 확인과 새 민원 버튼이 분리되는지 본다</td><td>Result page + Status badge + Button + Link</td></tr>
+          <tr><td><strong>국민건강보험 <code>보험료 산정</code></strong></td><td>계산 결과, 계산 기준, 적용 시점, 재확인 경로</td><td>숫자만 남기지 않고 왜 이렇게 계산됐는지와 다음 확인 경로가 같은 첫 블록에 모이는지 본다</td><td>Table + Result page + Helper text + Button</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box">
+        <strong>실행 규칙</strong>: 이 두 화면은 상태값이나 숫자만 따로 뽑지 않습니다. <code>상태 1문장 + 기준 또는 예정일 + 다시 확인 CTA</code>가 같이 보여야 3장 근거로 승격합니다.
+      </div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-top:16px;">서울특별시 응답소의 <code>질의응답·답변원문</code>, <code>결과보기</code>는 결과를 다시 보는 행동과 새 민원을 넣는 행동을 분리해야 합니다. 국민건강보험 <code>보험료 산정</code>은 월 보험료 숫자만 두지 말고 <strong>계산 기준</strong>, <strong>적용 시점</strong>, <strong>다시 확인 CTA</strong>를 같은 첫 블록에서 보여줘야 합니다. 소득·재산이 바뀌면 <code>변동 신고</code>, 보험료가 부담되면 <code>경감 신청 자가 진단</code>, 퇴직자라면 <code>임의계속가입 확인</code>처럼 부담 완화와 수정 경로도 첫 결과 영역에 같이 붙입니다. 전자가족관계등록시스템 <code>국적 회복 허가</code>는 허가 결과만 남기지 말고 <code>한국 국적 다시 받기</code> 같은 시민 언어 헤더, <code>1년 내 외국 국적 포기</code>, <code>외국국적불행사서약 대상 여부</code>, <code>외국 국적 포기 증명서 제출 경로</code>, 복수 국적·병역 조건, <code>[요건 확인]</code>, <code>[신고 방법 보기]</code>를 같은 첫 결과 영역에서 이어 읽히게 해야 합니다.</p>
+      <div class="sub-h4" style="margin-top:24px">이번 라운드 KRDS/Figma 적용 예시</div>
+      <table class="data-table">
+        <thead><tr><th>대표 사이트·화면</th><th>KRDS 조합</th><th>Description에 꼭 남길 문장</th><th>기본 예시 문구</th><th>상태/CTA 숨은 레이블 메모</th></tr></thead>
+        <tbody>
+          <tr><td><strong>서울특별시 응답소 질의응답·답변원문, 결과보기</strong></td><td>Result page + Status badge + Button + Link</td><td>Description에는 답변 준비 상태, 답변 예정일, 나의 민원 재확인, 답변원문이 등록되면 민원 결과보기, 같은 건이 아니면 새 민원 신청 위계를 함께 적습니다.</td><td>담당 기관에서 답변을 준비하고 있습니다 / 답변 예정일 2026.06.12 / 나의 민원에서 다시 확인 / 답변원문이 등록되면 민원 결과보기 / 같은 건이 아니면 새 민원 신청하기</td><td>현재 답변 상태와 예정일 확인하기 / 나의 민원에서 다시 확인하기 / 기존 민원 결과 확인하기 / 같은 건이 아니면 새 민원 신청 시작하기</td></tr>
+          <tr><td><strong>국민건강보험 보험료 산정</strong></td><td>Table + Result page + Helper text + Button</td><td>Description에는 이번 달 보험료, 계산 기준, 다음 부과 반영 시점, 변동 신고·경감 신청·임의계속가입 CTA를 함께 적습니다.</td><td>이번 달 보험료를 먼저 확인해 주세요 / 계산 기준과 적용 시점 보기 / 다음 부과 반영 시점 확인 / 경감 신청 또는 임의계속가입 확인</td><td>현재 보험료와 계산 기준 보기 / 다음 부과 반영 시점 확인하기 / 보험료 변동 신고하기 / 보험료 경감 신청 가능 여부 확인하기 / 퇴직 뒤 예전 직장 보험료 계속 가입 확인하기</td></tr>
+          <tr><td><strong>전자가족관계등록시스템 국적 회복 허가</strong></td><td>Result page + Notice banner + Checklist + Button</td><td>Description에는 <code>한국 국적 다시 받기</code> 같은 시민 언어 헤더와 공식 용어 병기, <code>1년 내 외국 국적 포기</code>, <code>외국국적불행사서약 대상 여부</code>, <code>외국 국적 포기 증명서</code> 제출 경로, <code>[요건 확인]</code>·<code>[신고 방법 보기]</code> CTA를 함께 적습니다.</td><td>한국 국적 다시 받기 허가 결과를 먼저 확인해 주세요 / 1년 내 외국 국적 포기와 외국국적불행사서약 대상 여부를 확인해 주세요 / 외국 국적 포기 증명서 제출 경로 확인 / 신고 방법 보기</td><td>국적 회복 허가 결과 확인하기 / 외국 국적 포기 기한과 서약 대상 확인하기 / 외국 국적 포기 증명서 제출 경로 확인하기 / 국적 신고 방법 보기</td></tr>
+          <tr><td><strong>국민신문고 민원 유형 선택, 홈택스 휴업·폐업 신고, 대한민국법원 개인회생·파산</strong></td><td>Radio + Segmented control + Structured list + Helper text + Notice banner + Link</td><td>Description에는 내 상황, 절차별 선택 기준, 오선택 위험, 비교·상담 CTA를 함께 적습니다.</td><td>내 상황에 맞는 절차를 먼저 확인해 주세요 / 휴업·폐업 또는 회생·파산 차이 보기 / 무료 상담 연결</td><td>민원 유형 비교하기 / 휴업·폐업 차이 보기 / 개인회생·파산 비교하기</td></tr>
+          <tr><td><strong>정부24 전입신고, 홈택스 사업자 등록 사항 정정 신청, 전자가족관계등록시스템 가족관계등록부 정정</strong></td><td>Radio + Helper text + Structured list + Badge + Button</td><td>Description에는 지금 내야 할 기관, 온라인 가능 여부, 관할이 갈리는 기준, 담당 기관 확인 CTA를 함께 적습니다.</td><td>어느 기관에 내는지 먼저 확인해 주세요 / 온라인 가능 여부와 관할 기준 보기 / 담당 기관 찾기</td><td>담당 기관 찾기 / 담당 세무서 확인하기 / 관할 법원 찾기</td></tr>
+        </tbody>
+      </table>
+      <div class="sub-h4" style="margin-top:24px">상대적으로 얇은 대표 사이트 정보핵심화 직접화</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;"><code>상태 1문장 + 예정일 + 다음 행동</code>이라는 일반 규칙만 적어 두면, 실제 대표 사이트를 다시 볼 때 무엇을 같은 첫 블록에 묶어야 하는지가 흐려지기 쉽습니다. 서울특별시 응답소, 국민건강보험, 전자가족관계등록시스템처럼 결과 직후의 구조가 중요한 화면은 아래 형식으로 바로 남겨야 3장 근거가 사례 카드와 KRDS handoff까지 같은 문장으로 이어집니다.</p>
+      <table class="data-table">
+        <thead><tr><th>대표 사이트·화면</th><th>첫 블록에 남길 순서</th><th>한 로그 행에 같이 적을 근거</th><th>KRDS 조합</th><th>먼저 붙일 CASE</th></tr></thead>
+        <tbody>
+          <tr><td><strong>서울특별시 응답소 <code>질의응답·답변원문</code>, <code>결과보기</code></strong></td><td><code>답변 준비 상태 → 답변 예정일 → 나의 민원 재확인 → 같은 건이 아니면 새 민원 신청</code></td><td><code>담당 기관에서 답변을 준비하고 있습니다</code>, <code>답변 예정일</code>, <code>민원 결과보기</code>, <code>새 민원 신청하기</code>가 같은 결과 영역에서 위계 있게 보이는가?</td><td>Result page + Status badge + Button + Link</td><td><code>CASE 3 / CASE 5 / CASE 56</code></td></tr>
+          <tr><td><strong>국민건강보험 <code>보험료 산정</code></strong></td><td><code>이번 달 보험료 → 계산 기준 → 다음 부과 반영 시점 → 변동 신고·경감 신청·임의계속가입</code></td><td>결과 숫자, <code>소득·재산·자동차</code> 같은 산정 기준, <code>이번 달 적용</code> 또는 <code>다음 부과분부터</code>, 부담 완화 CTA가 한 블록에서 이어지는가?</td><td>Table + Result page + Helper text + Button</td><td><code>CASE 42 / CASE 53</code></td></tr>
+          <tr><td><strong>전자가족관계등록시스템 <code>국적 회복 허가</code></strong></td><td><code>한국 국적 다시 받기 허가 결과 → 1년 내 외국 국적 포기 → 외국국적불행사서약 대상 여부 → 외국 국적 포기 증명서 제출 경로 → 신고 방법 보기</code></td><td><code>한국 국적 다시 받기</code> 같은 시민 언어 헤더, <code>1년 내 외국 국적 포기</code>, <code>외국국적불행사서약 대상 여부</code>, <code>외국 국적 포기 증명서 제출 경로</code>, 복수 국적·병역 조건, <code>[요건 확인]</code>, <code>[신고 방법 보기]</code>가 같은 첫 결과 블록에 모이는가?</td><td>Result page + Notice banner + Checklist + Button</td><td><code>CASE 32 / CASE 45·46</code></td></tr>
+        </tbody>
+      </table>
+      <div class="info-box">
+        <strong>기록 규칙</strong>: 이 화면군은 <code>원문 3개 + 상태 또는 결과 1문장 + 기준·기한 1개 + CTA 1개 + KRDS 조합 1개</code>를 같은 로그 행에 남깁니다. 그래야 3장 근거가 7장 handoff와 사례 카드 본문까지 바로 내려갑니다.
+      </div>
+      <div class="info-box">
+        정보핵심화 장에서 정리한 실문장은 설명으로 끝내지 않습니다. Description, 기본 예시 문구, 숨은 레이블 메모까지 같은 표로 남겨야 결과 화면 규칙이 KRDS/Figma 기본값으로 바로 이어집니다.
+      </div>
 
       <div class="do-dont" style="margin-top:24px">
         <div class="do-dont-box dont">
@@ -507,7 +561,40 @@
             <div class="question-text">"40자를 넘는가?"</div>
             <div class="question-answer">→ 넘는다면 핵심 1문장을 추출하고 나머지는 하위에 배치합니다.</div>
           </div>
-        </div>
+      </div>
+      </div>
+
+      <div class="sub-h3" style="margin-top:24px">대표 민원 결과 페이지 관찰 — 상태 첫 줄, 예정일, 다음 행동을 먼저 묶는다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">국민신문고와 서울특별시 응답소 계열 결과 화면을 다시 보면, 결과 페이지에는 반복적으로 두 가지 문제가 나타납니다. 인사말과 기관 소개가 결론보다 먼저 나오고, 상태 표는 <code>처리기관 / 답변예정일 / 등록일</code>처럼 내부 용어 위주로만 구성됩니다. 이 구조는 사용자가 가장 먼저 알고 싶은 <strong>지금 상태와 다음 일정</strong>을 뒤로 밀어냅니다.</p>
+      <table class="data-table">
+        <thead><tr><th>반복 패턴</th><th>왜 느린가</th><th>권장 재구성</th></tr></thead>
+        <tbody>
+          <tr><td><code>귀하께서 신청하신 민원 ... 검토 결과 ... 답변드립니다</code> 같은 도입부</td><td>인사말을 다 읽기 전까지 결론이 보이지 않습니다.</td><td>첫 문장에 <code>검토 결과를 안내합니다</code> 또는 <code>아직 답변을 기다리는 중입니다</code>를 배치합니다.</td></tr>
+          <tr><td><code>처리기관 / 답변예정일 / 등록일</code>만 보이는 상태 표</td><td>현재 상태와 사용자의 다음 행동이 표만으로는 드러나지 않습니다.</td><td>상단 상태 요약 + 표 헤더 <code>담당 기관</code>, <code>답변 예정일</code>, <code>접수한 날</code>로 재구성합니다.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>결과 페이지 체크포인트</strong>: 첫 줄에서 상태를, 둘째 줄에서 일정을, 셋째 줄에서 다음 행동을 파악할 수 있어야 합니다. 상태·결과 화면을 수집할 때는 이 3줄 구조를 기준으로 CASE 5·42·54·55·56을 같은 묶음으로 확인합니다.
+      </div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-top:16px;">실무에서는 이 3줄 구조를 더 직접 써야 합니다. 서울특별시 응답소는 <code>답변원문</code>이 등록되면 <code>결과보기</code>로 바로 이어지고, <code>민원 신청하기</code>는 별도 행동으로 분리되어야 합니다. 국민건강보험 <code>보험료 산정</code>은 결과 숫자 아래에 <code>왜 이렇게 산정됐는지</code>, <code>언제 반영되는지</code>, <code>어디서 다시 확인하는지</code>가 함께 붙어야 합니다.</p>
+
+      <div class="sub-h3" style="margin-top:24px">대표 서비스 관찰 — 중대한 결정·심사·의무 안내도 결론 → 조건 → 예외 순서로 쪼갠다</div>
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:16px;">정부24의 확정일자·장기요양인정, 홈택스의 휴·폐업 신고, 전자가족관계등록의 국적 회복, 대한민국법원의 상속포기·지급명령 신청처럼 결과가 크거나 절차가 길거나 처음에 경로를 잘못 고르면 다시 판단해야 하는 서비스는 용어 뜻부터 설명하면 늦습니다. 첫 줄에서 <strong>지금 주의할 효력이나 결론</strong>을 먼저 밝히고, 다음 줄에서 <strong>기한·판정 단계·유지 조건·선택 기준</strong>을 잇고, 예외·법적 배경은 접기나 도움말로 내려야 합니다.</p>
+      <table class="data-table">
+        <thead><tr><th>서비스</th><th>첫 줄 결론</th><th>뒤에 붙일 조건·예외</th><th>KRDS 연결</th></tr></thead>
+        <tbody>
+          <tr><td><strong>확정일자 신청</strong></td><td>보증금 보호가 완전하지 않을 수 있습니다. 확정일자 + 전입신고 + 실거주를 모두 해야 우선변제 권리가 생깁니다.</td><td>선순위 권리 확인, 계약서 원본 보관, [등기부등본 확인]을 이어 둡니다.</td><td>Notice banner, Helper text, Link</td></tr>
+          <tr><td><strong>상속포기 신고</strong></td><td>사망 사실을 안 날부터 3개월 이내 신청해야 합니다. 한 번 신고하면 취소할 수 없습니다.</td><td>부채가 다음 순위 상속인에게 넘어갈 수 있다는 경고와 [한정승인과 비교]를 바로 붙입니다.</td><td>Alert, Bottom sheet, Comparison card</td></tr>
+          <tr><td><strong>지급명령 신청</strong></td><td>상대방이 2주 이내 이의하지 않으면 확정 판결과 같은 효력이 생깁니다.</td><td>이의가 들어오면 소송으로 전환되고, 상대방 주소를 모르면 신청할 수 없다는 점과 [절차 확인]을 이어 둡니다.</td><td>Notice banner, Structured list, Link</td></tr>
+          <tr><td><strong>사업자 휴·폐업 신고</strong></td><td>잠시 쉬는 사업이면 휴업, 완전히 끝내면 폐업을 선택하세요.</td><td>휴업은 최대 2년 유지, 폐업은 등록 말소 뒤 부가가치세·종합소득세 신고가 남습니다. 남은 재고 부가세와 [차이 보기]를 함께 둡니다.</td><td>Segmented control, Notice banner, Structured list</td></tr>
+          <tr><td><strong>장기요양인정 신청</strong></td><td>신청 가능 대상인지 먼저 확인하세요. 만 65세 이상 또는 노인성 질병이면 신청할 수 있습니다.</td><td>신청 → 방문 조사(7~10일) → 판정위원회 심의(30일)와 [등급별 서비스 비교]를 같은 흐름에 둡니다.</td><td>Structured list, Step indicator, Accordion</td></tr>
+          <tr><td><strong>국적 회복 허가</strong></td><td>허가 뒤에도 끝나지 않습니다. 1년 내 외국 국적 포기 절차를 진행하고, 외국국적불행사서약 대상인지도 확인해야 합니다.</td><td>1년 내 포기나 서약 절차를 마치지 않으면 회복한 대한민국 국적을 다시 잃을 수 있다는 위험과 [신고 방법 보기]를 함께 둡니다.</td><td>Notice banner, Checklist, CTA</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>실무 규칙</strong>: 중대한 결정·심사·의무 안내는 KRDS 컴포넌트에서 첫 문단이나 배너에 결론 1문장을 먼저 두고, Structured list나 Checklist로 기한·단계를 쪼개고, 예외·법적 배경은 Accordion이나 도움말로 내립니다.
       </div>
     </section>
 
@@ -805,6 +892,8 @@ Step 3. [제출하기]를 눌러 신청을 완료해 주세요.</span></div>
   </div>
 </div>
 
+<script src="../../shared/base-path.js"></script>
+<script src="../../shared/prompt-copy.js"></script>
 <script src="../../shared/nav.js"></script>
 </body>
 </html>

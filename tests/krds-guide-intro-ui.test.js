@@ -1,0 +1,262 @@
+import { describe, expect, it, vi } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+
+const HTML = fs.readFileSync(path.join(process.cwd(), 'krds-guide-intro.html'), 'utf8');
+const INLINE_SCRIPTS = [...HTML.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((match) => match[1]);
+const SOURCE = INLINE_SCRIPTS[0] || '';
+
+function createClassList(initial = []) {
+  const classes = new Set(initial);
+  return {
+    add(...values) {
+      values.forEach((value) => classes.add(value));
+    },
+    remove(...values) {
+      values.forEach((value) => classes.delete(value));
+    },
+    contains(value) {
+      return classes.has(value);
+    },
+    toggle(value, force) {
+      if (force === undefined) {
+        if (classes.has(value)) {
+          classes.delete(value);
+          return false;
+        }
+        classes.add(value);
+        return true;
+      }
+      if (force) classes.add(value);
+      else classes.delete(value);
+      return force;
+    },
+  };
+}
+
+function createElement(options = {}) {
+  const listeners = new Map();
+  const element = {
+    id: options.id || '',
+    style: options.style || {},
+    dataset: options.dataset || {},
+    classList: createClassList(options.classes || []),
+    children: [],
+    addEventListener(type, handler) {
+      const arr = listeners.get(type) || [];
+      arr.push(handler);
+      listeners.set(type, arr);
+    },
+    removeEventListener(type, handler) {
+      const arr = listeners.get(type) || [];
+      listeners.set(type, arr.filter((entry) => entry !== handler));
+    },
+    listenerCount(type) {
+      return (listeners.get(type) || []).length;
+    },
+    appendChild(child) {
+      element.children.push(child);
+      return child;
+    },
+    dispatch(type, event = {}) {
+      const handlers = listeners.get(type) || [];
+      handlers.forEach((handler) => handler.call(element, {
+        preventDefault() {},
+        stopPropagation() {},
+        target: element,
+        currentTarget: element,
+        ...event,
+      }));
+    },
+    querySelectorAll(selector) {
+      if (selector === '.b') return options.buildItems || [];
+      return [];
+    },
+    focus: vi.fn(),
+    setAttribute() {},
+  };
+  return element;
+}
+
+function buildContext(options = {}) {
+  const documentListeners = new Map();
+  const stage = createElement({ id: 'stage', style: {} });
+  const container = createElement({ id: 'sc', style: {} });
+  const progressBar = createElement({ id: 'pbar', style: {} });
+  const slideNumber = createElement({ id: 'snum' });
+  const dots = createElement({ id: 'dots' });
+  const slideConfigs = options.slides || [
+    { dataset: { slide: '0' }, buildItems: [] },
+    { dataset: { slide: '1' }, buildItems: [] },
+  ];
+  const slides = slideConfigs.map((slideConfig, index) => createElement({
+    classes: ['slide'],
+    dataset: slideConfig.dataset || { slide: String(index) },
+    buildItems: slideConfig.buildItems || [],
+  }));
+
+  const document = {
+    activeElement: null,
+    querySelectorAll(selector) {
+      if (selector === '.slide') return slides;
+      return [];
+    },
+    getElementById(id) {
+      if (id === 'sc') return container;
+      if (id === 'stage') return stage;
+      if (id === 'pbar') return progressBar;
+      if (id === 'snum') return slideNumber;
+      if (id === 'dots') return dots;
+      return null;
+    },
+    addEventListener(type, handler) {
+      const arr = documentListeners.get(type) || [];
+      arr.push(handler);
+      documentListeners.set(type, arr);
+    },
+    dispatch(type, event = {}) {
+      const handlers = documentListeners.get(type) || [];
+      handlers.forEach((handler) => handler({
+        preventDefault() {},
+        stopPropagation() {},
+        ...event,
+      }));
+    },
+    createElement() {
+      return createElement();
+    },
+  };
+
+  const windowListeners = new Map();
+  const history = {
+    replaceState: vi.fn(),
+  };
+  const location = {
+    hash: options.hash || '',
+  };
+  const context = {
+    document,
+    window: {
+      innerWidth: 1024,
+      innerHeight: 576,
+      addEventListener(type, handler) {
+        const arr = windowListeners.get(type) || [];
+        arr.push(handler);
+        windowListeners.set(type, arr);
+      },
+      dispatch(type, event = {}) {
+        const handlers = windowListeners.get(type) || [];
+        handlers.forEach((handler) => handler(event));
+      },
+    },
+    history,
+    location,
+    requestAnimationFrame(fn) {
+      fn();
+      return 1;
+    },
+    setTimeout(fn) {
+      fn();
+      return 1;
+    },
+    clearTimeout() {},
+    Promise,
+    Array,
+    console,
+    globalThis: null,
+  };
+  context.globalThis = context;
+
+  return { context, document, container, history };
+}
+
+describe('guide intro slides', () => {
+  it('reveals all build items when a deep slide hash is loaded on startup', () => {
+    const finalBuildItems = [
+      createElement({ classes: ['b'] }),
+      createElement({ classes: ['b'] }),
+    ];
+    const { context, container } = buildContext({
+      hash: '#slide-3',
+      slides: [
+        { dataset: { slide: '0' }, buildItems: [] },
+        { dataset: { slide: '1' }, buildItems: [] },
+        { dataset: { slide: '2' }, buildItems: finalBuildItems },
+      ],
+    });
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(container.style.transform).toBe('translateX(-200%)');
+    expect(finalBuildItems[0].classList.contains('shown')).toBe(true);
+    expect(finalBuildItems[1].classList.contains('shown')).toBe(true);
+  });
+
+  it('reveals all build items when navigation happens through a slide hash change', async () => {
+    const targetBuildItems = [
+      createElement({ classes: ['b'] }),
+      createElement({ classes: ['b'] }),
+    ];
+    const { context, container } = buildContext({
+      slides: [
+        { dataset: { slide: '0' }, buildItems: [] },
+        { dataset: { slide: '1' }, buildItems: targetBuildItems },
+      ],
+    });
+
+    vm.runInNewContext(SOURCE, context);
+
+    context.location.hash = '#slide-2';
+    context.window.dispatch('hashchange');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(container.style.transform).toBe('translateX(-100%)');
+    expect(targetBuildItems[0].classList.contains('shown')).toBe(true);
+    expect(targetBuildItems[1].classList.contains('shown')).toBe(true);
+  });
+
+  it('reveals the final slide builds when End is pressed after arriving on the last slide', async () => {
+    const finalBuildItems = [
+      createElement({ classes: ['b'] }),
+      createElement({ classes: ['b'] }),
+    ];
+    const { context, document } = buildContext({
+      slides: [
+        { dataset: { slide: '0' }, buildItems: [] },
+        { dataset: { slide: '1' }, buildItems: [] },
+        { dataset: { slide: '2' }, buildItems: finalBuildItems },
+      ],
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    document.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    document.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(finalBuildItems[0].classList.contains('shown')).toBe(false);
+    expect(finalBuildItems[1].classList.contains('shown')).toBe(false);
+
+    const preventDefault = vi.fn();
+    document.dispatch('keydown', { key: 'End', preventDefault });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(finalBuildItems[0].classList.contains('shown')).toBe(true);
+    expect(finalBuildItems[1].classList.contains('shown')).toBe(true);
+  });
+
+  it('removes transition fallback listeners after slide movement completes without a transitionend event', async () => {
+    const { context, document, container } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    const preventDefault = vi.fn();
+    document.dispatch('keydown', { key: 'ArrowRight', preventDefault });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(container.listenerCount('transitionend')).toBe(0);
+  });
+});
