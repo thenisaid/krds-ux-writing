@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="KRDS UX Writing 코퍼스 공개 현황. 대표 코퍼스 8종, 보조 표본 1종, 간접 반영 2종, 확장 인벤토리 58개 서비스와 raw markdown·JSON 자산 공개 범위를 정리합니다.">
+  <title>코퍼스 공개 현황 | KRDS UX Writing</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
+  <script>(function(){var prefersDark=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches;var t='light';try{t=localStorage.getItem('krds-theme')||(prefersDark?'dark':'light');}catch(e){t=prefersDark?'dark':'light';}if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #256ef4;
+      --accent-soft: rgba(37,110,244,.08);
+      --text: #101828;
+      --text-muted: #667085;
+      --bg: #f7f5f1;
+      --surface: #ffffff;
+      --surface-2: #fbfaf8;
+      --border: #e7e1d9;
+      --border-strong: #d7cfc4;
+      --radius: 18px;
+      --font: 'Pretendard GOV Variable', Pretendard, -apple-system, sans-serif;
+    }
+    [data-theme="dark"] {
+      --text: #f2f4f7;
+      --text-muted: #98a2b3;
+      --bg: #0f1117;
+      --surface: #171a22;
+      --surface-2: #1d222d;
+      --border: #2b313d;
+      --border-strong: #3b4354;
+      --accent-soft: rgba(134,175,249,.12);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.6;
+      background:
+        radial-gradient(circle at top left, rgba(37,110,244,.08), transparent 34%),
+        linear-gradient(180deg, #fbfaf7 0%, var(--bg) 28%);
+      color: var(--text);
+    }
+    [data-theme="dark"] body {
+      background:
+        radial-gradient(circle at top left, rgba(134,175,249,.1), transparent 36%),
+        linear-gradient(180deg, #111523 0%, var(--bg) 26%);
+    }
+    .skip-link {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      transform: translateY(-200%);
+      padding: 12px 20px;
+      background: var(--accent);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      text-decoration: none;
+      z-index: 9999;
+      transition: transform 0.15s ease;
+    }
+    .skip-link:focus {
+      transform: translateY(0);
+      outline: 3px solid #ffffff;
+      outline-offset: -3px;
+    }
+    .gnb {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center;
+      gap: 0; height: 62px;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(247,245,241,.9);
+      backdrop-filter: blur(12px);
+    }
+    [data-theme="dark"] .gnb { background: rgba(15,17,23,.9); }
+    .gnb-logo {
+      display: inline-flex; align-items: center; gap: 10px;
+      margin-right: 24px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .gnb-logo:hover { text-decoration: none; }
+    .gnb-logo-mark {
+      width: 26px; height: 26px;
+      border-radius: 7px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--accent); color: #fff;
+      font-size: 12px;
+    }
+    .gnb-nav { display: flex; align-items: center; gap: 4px; flex: 1; }
+    .gnb-nav-link {
+      padding: 6px 12px;
+      border-radius: 999px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: color 0.15s, background 0.15s;
+    }
+    .gnb-nav-link:hover { color: var(--text); text-decoration: none; background: rgba(37,110,244,.06); }
+    .gnb-nav-link.active { color: var(--accent); background: var(--accent-soft); }
+    .gnb-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .gnb-badge {
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .04em;
+    }
+    .gnb-icon-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 6px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .gnb-icon-btn:hover { color: var(--text); background: rgba(37,110,244,.06); }
+    @media (max-width: 720px) {
+      .gnb {
+        height: auto;
+        padding: 12px 16px;
+        flex-wrap: wrap;
+        row-gap: 10px;
+      }
+      .gnb-logo { margin-right: 0; }
+      .gnb-nav {
+        flex-basis: 100%;
+        order: 3;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .gnb-nav::-webkit-scrollbar { display: none; }
+      .gnb-nav-link { flex-shrink: 0; }
+      .gnb-badge { display: none; }
+    }
+    .hero {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 68px 24px 26px;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 52px);
+      line-height: 1.08;
+      letter-spacing: -.03em;
+      max-width: 860px;
+      margin-bottom: 16px;
+    }
+    .hero p {
+      max-width: 760px;
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+    .hero-note {
+      max-width: 820px;
+      margin-top: 20px;
+      padding: 18px 20px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.7);
+      border: 1px solid rgba(37,110,244,.18);
+      box-shadow: 0 10px 30px rgba(37,110,244,.08);
+      color: var(--text-muted);
+    }
+    [data-theme="dark"] .hero-note {
+      background: rgba(23,26,34,.88);
+      box-shadow: none;
+    }
+    .hero-note strong { color: var(--text); }
+    .stats {
+      max-width: 1180px;
+      margin: 18px auto 0;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .stat-card {
+      padding: 20px 18px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      min-height: 118px;
+    }
+    .stat-number {
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--accent);
+    }
+    .stat-title {
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .stat-desc {
+      margin-top: 10px;
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    @media (max-width: 920px) {
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .stats { grid-template-columns: 1fr; }
+    }
+    .main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 24px 90px;
+    }
+    .section {
+      margin-top: 26px;
+      padding: 26px;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .section-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section h2 {
+      font-size: clamp(22px, 3vw, 30px);
+      line-height: 1.18;
+      margin-bottom: 10px;
+      letter-spacing: -.02em;
+    }
+    .section > p {
+      color: var(--text-muted);
+      max-width: 760px;
+      margin-bottom: 18px;
+    }
+    .asset-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .asset-card {
+      padding: 18px 16px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+    .asset-number {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .asset-title {
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .asset-desc {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      min-height: 64px;
+    }
+    .asset-link,
+    .source-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .asset-link:hover,
+    .source-link:hover { text-decoration: underline; }
+    @media (max-width: 1080px) {
+      .asset-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .asset-grid { grid-template-columns: 1fr; }
+    }
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow-x: auto;
+      background: var(--surface-2);
+    }
+    table { width: 100%; min-width: 760px; border-collapse: collapse; }
+    th, td {
+      padding: 15px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th {
+      background: rgba(37,110,244,.05);
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    tr:last-child td { border-bottom: none; }
+    td strong { display: inline-block; margin-bottom: 4px; }
+    .survey-shell {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .survey-stats {
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+    .survey-stat + .survey-stat {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .survey-stat strong {
+      display: block;
+      font-size: 22px;
+      line-height: 1;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .survey-groups {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .survey-group {
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+    .survey-group h3 {
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+    .survey-group ul {
+      list-style: none;
+      display: grid;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .survey-group li strong { color: var(--text); }
+    @media (max-width: 920px) {
+      .survey-shell { grid-template-columns: 1fr; }
+      .survey-groups { grid-template-columns: 1fr; }
+    }
+    .gap-grid,
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .gap-card,
+    .source-card {
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+    .gap-card h3,
+    .source-card h3 {
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+    .gap-card p,
+    .source-card p {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .footer {
+      margin-top: 26px;
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+    @media (max-width: 920px) {
+      .gap-grid, .source-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">본문 바로가기</a>
+
+<header class="gnb">
+  <a href="/krds-ux-writing/" class="gnb-logo" aria-label="KRDS UX Writing 가이드라인 홈">
+    <span class="gnb-logo-mark" aria-hidden="true">K</span>
+    <span>UX Writing</span>
+  </a>
+  <nav class="gnb-nav" aria-label="섹션 내비게이션">
+    <a href="/krds-ux-writing/principles/" class="gnb-nav-link" data-section="principles">원칙</a>
+    <a href="/krds-ux-writing/dictionary/" class="gnb-nav-link" data-section="dictionary">사전</a>
+    <a href="/krds-ux-writing/case-studies/" class="gnb-nav-link" data-section="case-studies">사례</a>
+    <a href="/krds-ux-writing/corpus/" class="gnb-nav-link" data-section="corpus">코퍼스</a>
+  </nav>
+  <div class="gnb-actions">
+    <span class="gnb-badge">Open Corpus</span>
+    <button class="gnb-icon-btn" id="themeToggle" aria-label="다크 모드로 전환" type="button"></button>
+  </div>
+</header>
+
+<header class="hero">
+  <div class="hero-tag">공개 현황</div>
+  <h1>수집한 코퍼스를 “선별본”만이 아니라 원본 범위까지 보이게 엽니다.</h1>
+  <p>이 저장소는 처음부터 대표 사이트 8종과 보조 표본, 확장 조사 인벤토리까지 넓게 수집해 왔지만,
+     공개면에서는 사전 선별본과 사례 카드만 눈에 띄었습니다. 이 페이지는 현재 공개한 자산과 아직 승격 전인 조사 문서를 한 자리에서 찾을 수 있게 정리한 허브입니다.</p>
+  <div class="hero-note">
+    <strong>중요:</strong> 확장 조사 문서는 <strong>공공기관 전체 페이지 전수조사 완료 문서가 아닙니다.</strong>
+    현재 방식은 “사이트 전체 크롤링”이 아니라 “검색·자격/조건·입력/첨부·오류·완료/결과·처리 상태·법적 고지” 같은
+    과업 단계별 대표 화면 샘플링입니다. 이 한계를 공개한 상태에서 raw markdown과 JSON까지 함께 노출합니다.
+  </div>
+</header>
+
+<section class="stats" aria-label="코퍼스 요약 통계">
+  <div class="stat-card">
+    <div class="stat-number" id="corpusStatCore">8</div>
+    <div class="stat-title">대표 코퍼스</div>
+    <div class="stat-desc">정부24, 홈택스, 복지로, 국민건강보험, 전자가족관계등록시스템, 국민신문고, 고용24, 서울특별시 응답소</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number" id="corpusStatSupport">1</div>
+    <div class="stat-title">보조 표본</div>
+    <div class="stat-desc">대한민국법원은 완료 뒤 후속 흐름과 권리구제 문장 검토에 함께 씁니다.</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number" id="corpusStatIndirect">2</div>
+    <div class="stat-title">간접 반영 포털</div>
+    <div class="stat-desc">위택스, 국민연금은 이미 일부 원칙·사전·파생 가이드에 반영돼 있습니다.</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number" id="corpusStatInventory">58</div>
+    <div class="stat-title">확장 인벤토리</div>
+    <div class="stat-desc">별도 독립 조사 후보로 적재한 시민 중심 외부 포털 수입니다.</div>
+  </div>
+</section>
+
+<main class="main" id="main-content">
+  <section class="section" aria-labelledby="assets-title">
+    <div class="section-kicker">Public Assets</div>
+    <h2 id="assets-title">지금 바로 볼 수 있게 연 공개 자산</h2>
+    <p>큐레이션된 페이지와 raw 소스 파일을 분리해, “대표 사례만 공개”와 “원본 범위 공개”를 동시에 만족시키는 구조로 정리했습니다.</p>
+    <div class="asset-grid">
+      <article class="asset-card">
+        <div class="asset-number" id="assetPriorityDictionary">50</div>
+        <div class="asset-title">현재 공개 선별본</div>
+        <p class="asset-desc">현재는 선별본 50개가 먼저 공개돼 있습니다. 추천 문구와 운영 메모가 함께 붙어 있는 큐레이션 페이지입니다.</p>
+        <a class="asset-link" href="/krds-ux-writing/dictionary/">선별본 보기 →</a>
+      </article>
+      <article class="asset-card">
+        <div class="asset-number" id="assetFullDictionary">274</div>
+        <div class="asset-title">전체 사전 공개본</div>
+        <p class="asset-desc">이제 숨기지 않고 전체 사전 항목을 별도 공개본으로 열었습니다. 5개 카테고리를 모두 포함합니다.</p>
+        <a class="asset-link" href="/krds-ux-writing/dictionary/full.html">전체 사전 보기 →</a>
+      </article>
+      <article class="asset-card">
+        <div class="asset-number" id="assetCaseCards">60</div>
+        <div class="asset-title">사례 카드</div>
+        <p class="asset-desc">원문 3개 + CTA 1개 + KRDS 연결을 갖춘 승격 사례 카드입니다. 화면 단계 묶음만 공개합니다.</p>
+        <a class="asset-link" href="/krds-ux-writing/case-studies/">사례 카드 보기 →</a>
+      </article>
+      <article class="asset-card">
+        <div class="asset-number" id="assetArchive">805</div>
+        <div class="asset-title">deep archive 이슈</div>
+        <p class="asset-desc">정부24, 홈택스, 전자가족관계등록 3기관을 42 cycle 동안 깊게 검수한 이슈 기준점입니다.</p>
+        <a class="asset-link" href="/krds-ux-writing/archive.html">아카이브 보기 →</a>
+      </article>
+      <article class="asset-card">
+        <div class="asset-number">6</div>
+        <div class="asset-title">raw source 파일</div>
+        <p class="asset-desc">대표 코퍼스 markdown, 확장 조사 markdown, 사전 JSON, 기관별 파생 guide markdown을 함께 공개합니다.</p>
+        <a class="asset-link" href="#sources">원문 파일 보기 →</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="core-title">
+    <div class="section-kicker">Core Corpus</div>
+    <h2 id="core-title">대표 코퍼스 8종과 현재 연결된 공개면</h2>
+    <p>대표 코퍼스는 원칙, 사전, 사례, KRDS 컴포넌트 가이드를 잇는 기준선입니다. 아래 표는 연구 문서의 8개 대표 사이트를 현재 사이트 공개면과 연결해서 다시 보여줍니다.</p>
+    <div class="table-wrap">
+      <table aria-label="대표 코퍼스 8종">
+        <thead>
+          <tr>
+            <th scope="col">사이트</th>
+            <th scope="col">대표 과업</th>
+            <th scope="col">현재 관찰된 핵심 표현</th>
+            <th scope="col">공개 연결 자산</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>정부24</strong></td>
+            <td>민원 검색, 증명서 발급, 신청 상세</td>
+            <td>신청자격, 구비서류, 발급서류, 처리기간, 전자문서지갑</td>
+            <td>사전, 사례 카드, deep archive, 정부24 파생 가이드</td>
+          </tr>
+          <tr>
+            <td><strong>홈택스</strong></td>
+            <td>신고, 납부, 환급, 조회</td>
+            <td>세액공제, 경정청구, 예정신고, 가산세</td>
+            <td>사전, 사례 카드, deep archive, 홈택스 파생 가이드</td>
+          </tr>
+          <tr>
+            <td><strong>복지로</strong></td>
+            <td>자격 진단, 급여 안내, 신청</td>
+            <td>소득인정액, 의료급여, 자활, 수급권자</td>
+            <td>사전, 사례 카드, 원칙 본문</td>
+          </tr>
+          <tr>
+            <td><strong>국민건강보험</strong></td>
+            <td>자격 조회, 피부양자, 산정특례</td>
+            <td>피부양자, 본인부담금, 산정특례</td>
+            <td>사전, 사례 카드, 원칙 본문</td>
+          </tr>
+          <tr>
+            <td><strong>전자가족관계등록시스템</strong></td>
+            <td>증명서 발급, 본인/대리인 확인</td>
+            <td>법정대리인, 이해관계인, 교부서류</td>
+            <td>사전, 사례 카드, deep archive, 전자가족관계 파생 가이드</td>
+          </tr>
+          <tr>
+            <td><strong>국민신문고</strong></td>
+            <td>민원 접수, 처리 상태, 답변 확인</td>
+            <td>민원해결, 답변예정일, 처리기관</td>
+            <td>사전, 사례 카드, 원칙 본문</td>
+          </tr>
+          <tr>
+            <td><strong>고용24</strong></td>
+            <td>실업인정, 수당 안내, 훈련 신청</td>
+            <td>실업인정, 조기재취업수당, 통신판매중개자</td>
+            <td>사전, 사례 카드, 원칙 본문</td>
+          </tr>
+          <tr>
+            <td><strong>서울특별시 응답소</strong></td>
+            <td>민원 접수, 처리 현황, 검토 결과</td>
+            <td>구비서류, 처리기간, 검토 결과 안내</td>
+            <td>사전, 사례 카드, 원칙 본문</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="survey-title">
+    <div class="section-kicker">Expanded Inventory</div>
+    <h2 id="survey-title">확장 조사 문서에는 58개 서비스가 이미 정리돼 있습니다.</h2>
+    <p>이 문서는 아직 독립 조사 전인 외부 포털 후보를 공개하는 인벤토리입니다. 숨겨 둔 채로 두기보다, 현재 어디까지 파악했는지와 우선순위 분포를 먼저 공개합니다.</p>
+    <div class="survey-shell">
+      <aside class="survey-stats" aria-label="확장 인벤토리 통계">
+        <div class="survey-stat">
+          <strong id="inventoryHigh">30</strong>
+          <span>상 우선순위</span>
+        </div>
+        <div class="survey-stat">
+          <strong id="inventoryMidHigh">27</strong>
+          <span>중상 우선순위</span>
+        </div>
+        <div class="survey-stat">
+          <strong id="inventoryMid">1</strong>
+          <span>중 우선순위</span>
+        </div>
+        <div class="survey-stat">
+          <strong>56</strong>
+          <span>아직 독립 조사 전인 미반영 포털</span>
+        </div>
+      </aside>
+      <div class="survey-groups">
+        <article class="survey-group">
+          <h3>세금·행정·교통</h3>
+          <ul>
+            <li><strong>위택스</strong> 자동차세, 지방세, 세외수입 신고·납부</li>
+            <li><strong>국민연금공단 개인민원</strong> 가입내역, 예상연금, 민원 진행현황</li>
+            <li><strong>교통민원24</strong> 최근단속내역, 과태료, 환급, 알림 신청</li>
+            <li><strong>안전운전 통합민원</strong> 면허갱신, 적성검사, 국제면허증</li>
+            <li><strong>자동차365</strong> 통합이력조회, 등록비용 간편계산</li>
+            <li><strong>도로명주소 안내시스템</strong> 통합 주소검색, 영문주소, 증명</li>
+          </ul>
+        </article>
+        <article class="survey-group">
+          <h3>법률·권리구제</h3>
+          <ul>
+            <li><strong>인터넷등기소</strong> 등기부 열람·발급, 전자신청, 확정일자</li>
+            <li><strong>전자소송포털</strong> 나의사건현황, 송달문서, 서류제출</li>
+            <li><strong>온라인행정심판</strong> 청구 및 신청, 나의 사건현황, 재결례 검색</li>
+            <li><strong>법무부 온라인민원서비스</strong> 접견 예약, 보관금 조회, 나의민원조회</li>
+            <li><strong>대한법률구조공단</strong> 상담 예약, 사건 조회, 소송비용 계산</li>
+          </ul>
+        </article>
+        <article class="survey-group">
+          <h3>주거·보건·돌봄</h3>
+          <ul>
+            <li><strong>청약Home</strong> 공고 상세, 자격 조건, 청약 신청, 결과 조회</li>
+            <li><strong>LH청약플러스</strong> 공고 목록, 신청, 결과, 서류 제출</li>
+            <li><strong>HUG 안심전세포털</strong> 보증가입, 피해지원, 신청내역</li>
+            <li><strong>예방접종도우미</strong> 접종내역, 증명서 발급, 진위확인</li>
+            <li><strong>e보건소</strong> 건강진단결과서 발급, 검진결과 조회, 내원이력</li>
+            <li><strong>아이사랑</strong> 어린이집 검색, 보육료 결제, 결제 현황</li>
+          </ul>
+        </article>
+        <article class="survey-group">
+          <h3>안전·교육·채용</h3>
+          <ul>
+            <li><strong>안전신문고</strong> 신고 유형 선택, 사진·위치 입력, 처리 상태</li>
+            <li><strong>119안전신고센터</strong> 인터넷 신고, 안심콜, 접수결과 재확인</li>
+            <li><strong>한국장학재단</strong> 지원 유형 선택, 서류 제출, 심사 결과</li>
+            <li><strong>나이스 대국민서비스</strong> 교육제증명, 학교생활 정보, 신청</li>
+            <li><strong>사이버국가고시센터</strong> 시험공고, 원서접수, 합격자 발표</li>
+            <li><strong>Q-Net</strong> 원서접수, 시험 결과 보기, 자격증 신청</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="gaps-title">
+    <div class="section-kicker">Promotion Logic</div>
+    <h2 id="gaps-title">지금 당장 사전이나 사례로 올리지 않는 묶음도 공개 기준을 남깁니다.</h2>
+    <p>“왜 아직 적게 보이느냐”의 상당수는 수집 부족이 아니라 승격 규칙 때문입니다. 남은 묶음은 아래 세 가지 기준으로 관리하고, 그 판단 자체를 공개합니다.</p>
+    <div class="gap-grid">
+      <article class="gap-card">
+        <h3>구조 규칙 우선</h3>
+        <p><code>전입신고</code>, <code>사업자 등록 사항 정정 신청</code>, <code>집행문 부여 신청</code>처럼 핵심 문제가 단어보다
+           온라인/방문/관할 분기 구조에 있으면, 사전보다 <code>선택지</code>와 <code>담당 기관·관할</code> 규칙으로 먼저 다룹니다.</p>
+      </article>
+      <article class="gap-card">
+        <h3>일반화 후 재판정</h3>
+        <p><code>이메일</code>, <code>전자고지(송달) 신청 및 해지</code>, <code>민사 등 사건진행 알림서비스</code>처럼
+           채널 이름만으로는 오탐이 큰 항목은 단독 용어가 아니라 결과·상태·재확인 경로를 함께 본 뒤 다시 판정합니다.</p>
+      </article>
+      <article class="gap-card">
+        <h3>긍정 사례·원칙 유지</h3>
+        <p><code>민원 신청하기</code>, <code>검색어</code>, <code>구조화 목록</code>, <code>발급 보관 90일</code>,
+           <code>기한 임박</code>처럼 이미 긍정 사례와 컴포넌트 규칙으로 기능하는 묶음은 사전보다 사례 카드 가치가 더 크다고 보고 유지합니다.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="sources-title">
+    <div class="section-kicker">Raw Files</div>
+    <h2 id="sources-title">원문 파일과 연구 로그</h2>
+    <p id="sources">페이지로 승격되지 않은 문서도 바로 열 수 있게 raw 파일 경로를 함께 공개합니다. 필요한 경우 markdown 원문을 직접 확인할 수 있습니다.</p>
+    <div class="source-grid">
+      <article class="source-card">
+        <h3>대표 코퍼스 원문</h3>
+        <p>대표 사이트 8종, 포착 예시, 승격 큐, 남은 gap까지 담은 기준 문서입니다.</p>
+        <a class="source-link" href="/krds-ux-writing/research/public-service-corpus.md">public-service-corpus.md 보기 →</a>
+      </article>
+      <article class="source-card">
+        <h3>확장 조사 원문</h3>
+        <p>58개 시민 중심 외부 포털 인벤토리와 우선순위 메모, 공식 재확인 로그를 담은 문서입니다.</p>
+        <a class="source-link" href="/krds-ux-writing/research/public-service-survey-expanded.md">public-service-survey-expanded.md 보기 →</a>
+      </article>
+      <article class="source-card">
+        <h3>사전 JSON</h3>
+        <p>전체 274개 용어를 담은 원본 데이터입니다. 전체 공개본은 이 파일을 기준으로 렌더합니다.</p>
+        <a class="source-link" href="/krds-ux-writing/jargon-dictionary.json">jargon-dictionary.json 보기 →</a>
+      </article>
+      <article class="source-card">
+        <h3>정부24 deep guide</h3>
+        <p>정부24 파생 guide markdown 원문입니다. 파생 가이드와 deep archive 연결 근거를 추적할 수 있습니다.</p>
+        <a class="source-link" href="/krds-ux-writing/derived/jeongbu24-guide.md">jeongbu24-guide.md 보기 →</a>
+      </article>
+      <article class="source-card">
+        <h3>홈택스 deep guide</h3>
+        <p>홈택스 세무/환급/신고 파생 guide markdown 원문입니다.</p>
+        <a class="source-link" href="/krds-ux-writing/derived/hometax-guide.md">hometax-guide.md 보기 →</a>
+      </article>
+      <article class="source-card">
+        <h3>전자가족관계·법원 deep guide</h3>
+        <p>전자가족관계등록시스템과 법원 보조 표본 관찰을 함께 담은 markdown 원문입니다.</p>
+        <a class="source-link" href="/krds-ux-writing/derived/efamily-court-guide.md">efamily-court-guide.md 보기 →</a>
+      </article>
+    </div>
+  </section>
+
+  <p class="footer">
+    현재 공개 구조: 선별본 사전 <a href="/krds-ux-writing/dictionary/">50</a> / 전체 공개본 <a href="/krds-ux-writing/dictionary/full.html">274</a> /
+    사례 카드 <a href="/krds-ux-writing/case-studies/">60</a> / deep archive <a href="/krds-ux-writing/archive.html">805</a> /
+    대표 코퍼스 원문 <a href="/krds-ux-writing/research/public-service-corpus.md">markdown</a> /
+    확장 조사 원문 <a href="/krds-ux-writing/research/public-service-survey-expanded.md">markdown</a>.
+  </p>
+</main>
+
+<script src="../shared/base-path.js"></script>
+<script src="../shared/nav.js"></script>
+</body>
+</html>
