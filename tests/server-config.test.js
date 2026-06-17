@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import EventEmitter from 'node:events';
 import https from 'node:https';
 import { createRequire } from 'node:module';
@@ -7,11 +7,9 @@ import { default as vercelHandler } from '../api/generate.js';
 
 const {
   ALLOWED_ORIGINS,
-  API_ENDPOINT,
   SITE_BASE_PATH,
   VALID_AGENCY_TYPES,
   buildApiEndpoint,
-  callClaudeStream,
   getClientIp,
   getRequestHeader,
   isWithinRoot,
@@ -22,10 +20,18 @@ const {
   server,
 } = serverModule;
 
+const DEFAULT_ANTHROPIC_API_KEY = 'test-key';
+const DEFAULT_ANTHROPIC_BASE_URL = 'https://api.anthropic.com/v1';
 const savedAllowInsecureTls = process.env.ALLOW_INSECURE_TLS;
 const savedAnthropicApiKey = process.env.ANTHROPIC_API_KEY;
 const savedAnthropicBaseUrl = process.env.ANTHROPIC_BASE_URL;
 const requireModule = createRequire(import.meta.url);
+
+beforeEach(() => {
+  delete process.env.ALLOW_INSECURE_TLS;
+  process.env.ANTHROPIC_API_KEY = DEFAULT_ANTHROPIC_API_KEY;
+  process.env.ANTHROPIC_BASE_URL = DEFAULT_ANTHROPIC_BASE_URL;
+});
 
 afterEach(() => {
   if (savedAllowInsecureTls === undefined) delete process.env.ALLOW_INSECURE_TLS;
@@ -96,6 +102,10 @@ function loadFreshServerModule() {
   return requireModule(resolved);
 }
 
+function callFreshClaudeStream(body, onChunk, onDone, onError) {
+  return loadFreshServerModule().callClaudeStream(body, onChunk, onDone, onError);
+}
+
 describe('server.js configuration', () => {
   it('normalizes Anthropic API endpoints without duplicating /v1', () => {
     expect(buildApiEndpoint('https://api.anthropic.com/v1')).toBe('https://api.anthropic.com/v1/messages');
@@ -107,7 +117,9 @@ describe('server.js configuration', () => {
     );
     expect(buildApiEndpoint('https://proxy.internal/custom')).toBe('https://proxy.internal/custom/v1/messages');
     expect(buildApiEndpoint('http://localhost:8200/krds')).toBe('http://localhost:8200/krds/v1/messages');
-    expect(API_ENDPOINT).toBe(buildApiEndpoint(process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com/v1'));
+    expect(loadFreshServerModule().API_ENDPOINT).toBe(
+      buildApiEndpoint(process.env.ANTHROPIC_BASE_URL || DEFAULT_ANTHROPIC_BASE_URL),
+    );
   });
 
   it('parses quoted dotenv values without keeping wrapper quotes', () => {
@@ -454,7 +466,7 @@ describe('server.js configuration', () => {
           return req;
         };
 
-        callClaudeStream(
+        callFreshClaudeStream(
           { model: 'claude-sonnet-4-6' },
           () => {},
           () => { doneCalled = true; },
@@ -491,7 +503,7 @@ describe('server.js configuration', () => {
           return req;
         };
 
-        callClaudeStream(
+        callFreshClaudeStream(
           { model: 'claude-sonnet-4-6' },
           () => {},
           () => resolve(),
@@ -526,7 +538,7 @@ describe('server.js configuration', () => {
           return req;
         };
 
-        callClaudeStream(
+        callFreshClaudeStream(
           { model: 'claude-sonnet-4-6' },
           () => {},
           () => resolve(),
@@ -562,7 +574,7 @@ describe('server.js configuration', () => {
           return req;
         };
 
-        callClaudeStream(
+        callFreshClaudeStream(
           { model: 'claude-sonnet-4-6' },
           (text) => { chunks.push(text); },
           () => {
@@ -604,7 +616,7 @@ describe('server.js configuration', () => {
           return req;
         };
 
-        callClaudeStream(
+        callFreshClaudeStream(
           { model: 'claude-sonnet-4-6' },
           (text) => { chunks.push(text); },
           () => {
@@ -644,7 +656,7 @@ describe('server.js configuration', () => {
           return req;
         };
 
-        callClaudeStream(
+        callFreshClaudeStream(
           { model: 'claude-sonnet-4-6' },
           (text) => { chunks.push(text); },
           () => {
@@ -681,7 +693,7 @@ describe('server.js configuration', () => {
           return req;
         };
 
-        callClaudeStream(
+        callFreshClaudeStream(
           { model: 'claude-sonnet-4-6' },
           () => {},
           () => { doneCalled = true; },
