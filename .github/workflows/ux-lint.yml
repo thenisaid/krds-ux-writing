@@ -1,22 +1,15 @@
-name: KRDS UX 라이팅 린팅 (조건 5)
+name: KRDS UX 라이팅 린팅 (수동 점검)
 
 on:
-  push:
-    paths:
-      - '**.md'
-      - '**.txt'
-      - '**.html'
-  pull_request:
-    paths:
-      - '**.md'
-      - '**.txt'
-      - '**.html'
   workflow_dispatch:
     inputs:
       target_file:
-        description: '검사할 파일 경로 (기본: principles.md)'
+        description: '검사할 파일 경로 (비우면 전체 md/txt/html 수동 점검)'
         required: false
-        default: 'principles.md'
+        default: ''
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   krds-lint:
@@ -34,11 +27,14 @@ jobs:
 
       - name: KRDS 린팅 실행
         id: lint
+        env:
+          TARGET_FILE: ${{ inputs.target_file }}
         run: |
           node << 'JSEOF'
           const fs = require('fs');
           const path = require('path');
           const KRDSLint = require('./krds-lint.js');
+          const targetFile = String(process.env.TARGET_FILE || '').trim();
 
           // 검사 대상 파일 수집
           const targetExtensions = ['.md', '.txt', '.html'];
@@ -59,7 +55,12 @@ jobs:
             return results;
           }
 
-          const files = collectFiles('.');
+          if (targetFile && !fs.existsSync(targetFile)) {
+            console.error(`❌ 대상 파일을 찾을 수 없습니다: ${targetFile}`);
+            process.exit(1);
+          }
+
+          const files = targetFile ? [targetFile] : collectFiles('.');
           let totalErrors = 0;
           let totalWarnings = 0;
           const summary = [];
@@ -91,6 +92,7 @@ jobs:
 
           console.log('\n' + '═'.repeat(60));
           console.log(`KRDS UX 라이팅 린팅 완료`);
+          console.log(`검사 모드: ${targetFile ? `단일 파일 (${targetFile})` : '전체 저장소'}`);
           console.log(`검사 파일: ${files.length}개`);
           console.log(`이슈 발생 파일: ${summary.length}개`);
           console.log(`총 오류: ${totalErrors}건 / 총 경고: ${totalWarnings}건`);
