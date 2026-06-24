@@ -910,4 +910,233 @@ describe('server.js configuration', () => {
     callOllama('file:///etc/passwd', 'system', 'msg', 2200, () => {}, () => {}, (msg) => { errorMessage = msg; });
     expect(errorMessage).toMatch(/형식/);
   });
+
+  it('passes an SSE error event type from Claude as an error in the local server path', async () => {
+    const originalRequest = https.request;
+    try {
+      await new Promise((resolve) => {
+        let doneCalled = false;
+
+        https.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            res.headers = { 'content-type': 'text/event-stream' };
+            callback(res);
+            res.emit('data', Buffer.from('data: {"type":"error","error":{"message":"overloaded"}}\n\n'));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callFreshClaudeStream(
+          { model: 'claude-sonnet-4-6' },
+          () => {},
+          () => { doneCalled = true; },
+          (message) => {
+            expect(doneCalled).toBe(false);
+            expect(message).toContain('AI 처리 중 오류');
+            resolve();
+          },
+        );
+      });
+    } finally {
+      https.request = originalRequest;
+    }
+  });
+
+  it('reports a network error when the upstream Anthropic request connection fails', async () => {
+    const originalRequest = https.request;
+    try {
+      await new Promise((resolve) => {
+        https.request = function (_options, _callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            process.nextTick(() => req.emit('error', new Error('ECONNREFUSED')));
+          };
+          return req;
+        };
+
+        callFreshClaudeStream(
+          { model: 'claude-sonnet-4-6' },
+          () => {},
+          () => {},
+          (message) => {
+            expect(message).toContain('연결할 수 없습니다');
+            resolve();
+          },
+        );
+      });
+    } finally {
+      https.request = originalRequest;
+    }
+  });
+
+  it('reports a mid-stream error when the Anthropic response socket drops', async () => {
+    const originalRequest = https.request;
+    try {
+      await new Promise((resolve) => {
+        https.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            res.headers = { 'content-type': 'text/event-stream' };
+            callback(res);
+            process.nextTick(() => res.emit('error', new Error('socket hang up')));
+          };
+          return req;
+        };
+
+        callFreshClaudeStream(
+          { model: 'claude-sonnet-4-6' },
+          () => {},
+          () => {},
+          (message) => {
+            expect(message).toContain('끊겼습니다');
+            resolve();
+          },
+        );
+      });
+    } finally {
+      https.request = originalRequest;
+    }
+  });
+
+  it('handles the OPTIONS preflight on the local server with a 204 and no body', async () => {
+    const responseState = await runServerRequest({
+      method: 'OPTIONS',
+      url: '/api/generate',
+      headers: { origin: 'http://localhost:3000' },
+    });
+
+    expect(responseState.statusCode).toBe(204);
+    expect(responseState.body).toBe('');
+  });
+
+  it('streams Ollama ndjson chunks as SSE text and fires done when evt.done is true', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      await new Promise((resolve) => {
+        const chunks = [];
+
+        http.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            callback(res);
+            res.emit('data', Buffer.from(
+              '{"model":"test","response":"안녕","done":false}\n' +
+              '{"model":"test","response":"하세요","done":false}\n' +
+              '{"model":"test","done":true}\n',
+            ));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callOllama(
+          'http://localhost:11434',
+          'system',
+          'user message',
+          2200,
+          (text) => { chunks.push(text); },
+          () => {
+            expect(chunks).toEqual(['안녕', '하세요']);
+            resolve();
+          },
+          (message) => { throw new Error('unexpected error: ' + message); },
+        );
+      });
+    } finally {
+      http.request = originalRequest;
+    }
+  });
+
+  it('treats an Ollama HTTP 4xx response as an error without calling onDone', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      await new Promise((resolve) => {
+        let doneCalled = false;
+
+        http.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 404;
+            callback(res);
+            res.emit('data', Buffer.from('not found'));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callOllama(
+          'http://localhost:11434',
+          'system',
+          'user message',
+          2200,
+          () => {},
+          () => { doneCalled = true; },
+          (message) => {
+            expect(doneCalled).toBe(false);
+            expect(message).toContain('로컬 AI 서비스 연결에 실패했습니다');
+            resolve();
+          },
+        );
+      });
+    } finally {
+      http.request = originalRequest;
+    }
+  });
+
+  it('reports a network error when the Ollama request connection fails', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      await new Promise((resolve) => {
+        http.request = function (_options, _callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            process.nextTick(() => req.emit('error', new Error('ECONNREFUSED')));
+          };
+          return req;
+        };
+
+        callOllama(
+          'http://localhost:11434',
+          'system',
+          'user message',
+          2200,
+          () => {},
+          () => {},
+          (message) => {
+            expect(message).toContain('Ollama에 연결할 수 없습니다');
+            resolve();
+          },
+        );
+      });
+    } finally {
+      http.request = originalRequest;
+    }
+  });
 });

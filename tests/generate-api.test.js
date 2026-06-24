@@ -5,6 +5,7 @@ import { pathToFileURL } from 'node:url';
 
 let vercelHandler;
 let onRequestPost;
+let onRequestOptions;
 
 const ALLOWED_ORIGIN = 'http://localhost:3000';
 const ROOT = process.cwd();
@@ -92,7 +93,7 @@ function buildUniqueTestIp(index) {
 
 beforeAll(async () => {
   ({ default: vercelHandler } = await import('../api/generate.js'));
-  ({ onRequestPost } = await import('../functions/api/generate.js'));
+  ({ onRequestPost, onRequestOptions } = await import('../functions/api/generate.js'));
 });
 
 beforeEach(() => {
@@ -1019,5 +1020,97 @@ describe('generator API handlers', () => {
     }));
 
     expect(response.status).toBe(200);
+  });
+
+  it('rejects all-whitespace samples as having no valid content in deployed handlers', async () => {
+    const payload = {
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      samples: ['   ', '\t', '  \n  '],
+    };
+
+    const vercelResponse = await vercelHandler(buildRequest(payload));
+    const cloudflareResponse = await onRequestPost({
+      request: buildRequest(payload),
+      env: { ANTHROPIC_API_KEY: 'test-key' },
+    });
+
+    expect(vercelResponse.status).toBe(400);
+    expect(await vercelResponse.json()).toEqual({
+      error: '유효한 샘플 텍스트를 1개 이상 입력해 주세요.',
+    });
+
+    expect(cloudflareResponse.status).toBe(400);
+    expect(await cloudflareResponse.json()).toEqual({
+      error: '유효한 샘플 텍스트를 1개 이상 입력해 주세요.',
+    });
+  });
+
+  it('rejects a sample that exceeds 500 characters in deployed handlers', async () => {
+    const payload = {
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      samples: ['가'.repeat(501)],
+    };
+
+    const vercelResponse = await vercelHandler(buildRequest(payload));
+    const cloudflareResponse = await onRequestPost({
+      request: buildRequest(payload),
+      env: { ANTHROPIC_API_KEY: 'test-key' },
+    });
+
+    expect(vercelResponse.status).toBe(400);
+    expect(await vercelResponse.json()).toEqual({
+      error: '각 샘플 텍스트는 500자 이하여야 합니다.',
+    });
+
+    expect(cloudflareResponse.status).toBe(400);
+    expect(await cloudflareResponse.json()).toEqual({
+      error: '각 샘플 텍스트는 500자 이하여야 합니다.',
+    });
+  });
+
+  it('rejects an array JSON body instead of crashing in deployed handlers', async () => {
+    const vercelResponse = await vercelHandler(buildRawJsonRequest('[1,2,3]'));
+    const cloudflareResponse = await onRequestPost({
+      request: buildRawJsonRequest('[1,2,3]'),
+      env: {},
+    });
+
+    expect(vercelResponse.status).toBe(400);
+    expect(await vercelResponse.json()).toEqual({ error: '요청 형식이 올바르지 않습니다.' });
+
+    expect(cloudflareResponse.status).toBe(400);
+    expect(await cloudflareResponse.json()).toEqual({ error: '요청 형식이 올바르지 않습니다.' });
+  });
+
+  it('returns 204 with CORS headers on Cloudflare preflight OPTIONS requests', async () => {
+    const request = new Request('http://localhost/api/generate', {
+      method: 'OPTIONS',
+      headers: {
+        'Origin': ALLOWED_ORIGIN,
+        'Access-Control-Request-Method': 'POST',
+      },
+    });
+
+    const response = await onRequestOptions({ request });
+
+    expect(response.status).toBe(204);
+    expect(response.headers.get('access-control-allow-origin')).toBe(ALLOWED_ORIGIN);
+    expect(response.headers.get('access-control-allow-methods')).toContain('POST');
+    expect(response.headers.get('access-control-allow-methods')).toContain('OPTIONS');
+    expect(response.headers.get('access-control-allow-headers')).toContain('Content-Type');
+  });
+
+  it('omits Access-Control-Allow-Origin on OPTIONS requests from untrusted origins', async () => {
+    const request = new Request('http://localhost/api/generate', {
+      method: 'OPTIONS',
+      headers: { 'Origin': 'https://attacker.example' },
+    });
+
+    const response = await onRequestOptions({ request });
+
+    expect(response.status).toBe(204);
+    expect(response.headers.get('access-control-allow-origin')).toBeNull();
   });
 });
