@@ -1359,4 +1359,101 @@ describe('lint-ui stale result handling', () => {
     const html = elements.highlightedText.innerHTML;
     expect((html.match(/<mark/g) || []).length).toBe(1);
   });
+
+  it('uses entry.text as fullText when a legacy history entry has text but no fullText field', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      {
+        date: '2026. 1. 1.',
+        score: 80,
+        text: '레거시 텍스트 형식입니다.',
+        issueCount: 1,
+        // fullText intentionally absent — legacy format
+      },
+    ]));
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.historyList.innerHTML).toContain('레거시 텍스트 형식입니다.');
+
+    const historyBtn = createElement({ dataset: { idx: '0' } });
+    elements.historyList.dispatch('click', { target: historyBtn });
+    expect(elements.inputText.value).toBe('레거시 텍스트 형식입니다.');
+  });
+
+  it('uses fullText.slice(0, 80) as preview when a history entry has fullText but no text field', () => {
+    const { context, elements } = buildContext();
+    const longText = '나'.repeat(120);
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      {
+        date: '2026. 1. 1.',
+        score: 70,
+        fullText: longText,
+        issueCount: 0,
+        // text intentionally absent
+      },
+    ]));
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.historyList.innerHTML).toContain('나'.repeat(80));
+    expect(elements.historyList.innerHTML).toContain('…');
+  });
+
+  it('defaults score and issueCount to 0 when history entry contains non-numeric values for those fields', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      {
+        date: '2026. 1. 1.',
+        score: 'bad-score',
+        text: '테스트 텍스트',
+        fullText: '테스트 텍스트',
+        issueCount: null,
+      },
+    ]));
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.historyList.innerHTML).toContain('이슈 0개');
+    expect(elements.historyList.innerHTML).toContain('var(--color-danger-50)');
+  });
+
+  it('filters out null entries inside the history array and renders only the valid entry', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      null,
+      {
+        date: '2026. 1. 1.',
+        score: 90,
+        text: '유효한 항목입니다.',
+        fullText: '유효한 항목입니다.',
+        issueCount: 0,
+      },
+    ]));
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.historyCard.style.display).toBe('block');
+    expect(elements.historyList.innerHTML).toContain('유효한 항목입니다.');
+    expect((elements.historyList.innerHTML.match(/<button/g) || []).length).toBe(1);
+  });
+
+  it('renders history score badge in danger color when the score is below 50', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      {
+        date: '2026. 1. 1.',
+        score: 30,
+        text: '문제가 많은 텍스트입니다.',
+        fullText: '문제가 많은 텍스트입니다.',
+        issueCount: 5,
+      },
+    ]));
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.historyList.innerHTML).toContain('var(--color-danger-50)');
+    expect(elements.historyList.innerHTML).not.toContain('var(--color-success-50)');
+    expect(elements.historyList.innerHTML).not.toContain('var(--color-warning-50)');
+  });
 });
