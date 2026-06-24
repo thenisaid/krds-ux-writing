@@ -436,6 +436,72 @@ describe('lint() multiline input', () => {
   });
 });
 
+// ── PATTERN RULES ────────────────────────────────────────────────────────────
+
+describe('PATTERN_RULES detection', () => {
+  it('detects double-passive expressions like "되어지다"', () => {
+    const result = KRDSLint.lint('신청이 완료되어지다.');
+    const issue = result.issues.find(i => i.type === 'double-passive');
+    expect(issue).toBeDefined();
+    expect(issue.severity).toBe('error');
+    // pattern alternation matches the earliest token: '되어지' before '되어지다'
+    expect(issue.match).toBe('되어지');
+  });
+
+  it('detects excessive-honorific expressions like "처리되시겠습니다"', () => {
+    const result = KRDSLint.lint('서류가 처리되시겠습니다.');
+    const issue = result.issues.find(i => i.type === 'excessive-honorific');
+    expect(issue).toBeDefined();
+    expect(issue.severity).toBe('warning');
+    expect(issue.match).toContain('처리되시겠습니다');
+  });
+
+  it('detects subjective-adverb expressions like "빠르게"', () => {
+    const result = KRDSLint.lint('빠르게 처리해 드립니다.');
+    const issue = result.issues.find(i => i.type === 'subjective-adverb');
+    expect(issue).toBeDefined();
+    expect(issue.severity).toBe('warning');
+    expect(issue.match).toBe('빠르게');
+  });
+
+  it('detects forbidden-char-excl when multiple exclamation marks appear', () => {
+    const result = KRDSLint.lint('지금 신청하세요!!');
+    const issue = result.issues.find(i => i.type === 'forbidden-char-excl');
+    expect(issue).toBeDefined();
+    expect(issue.severity).toBe('error');
+    expect(issue.match).toBe('!!');
+  });
+
+  it('detects forbidden-char-tilde when a tilde is used in text', () => {
+    const result = KRDSLint.lint('1~3일 소요됩니다.');
+    const issue = result.issues.find(i => i.type === 'forbidden-char-tilde');
+    expect(issue).toBeDefined();
+    expect(issue.severity).toBe('warning');
+    expect(issue.match).toBe('~');
+  });
+
+  it('detects forbidden-char-mandatory when (필수) label appears in text', () => {
+    const result = KRDSLint.lint('이름 (필수)');
+    const issue = result.issues.find(i => i.type === 'forbidden-char-mandatory');
+    expect(issue).toBeDefined();
+    expect(issue.severity).toBe('warning');
+    expect(issue.match).toBe('(필수)');
+  });
+
+  it('detects noun-chain when 14+ Korean characters precede a particle', () => {
+    const result = KRDSLint.lint('공공기관정보시스템사용자인증절차가이드를 확인하세요.');
+    const issue = result.issues.find(i => i.type === 'noun-chain');
+    expect(issue).toBeDefined();
+    expect(issue.severity).toBe('info');
+  });
+
+  it('does not flag a 13-char Korean sequence as a noun-chain', () => {
+    const result = KRDSLint.lint('공공기관정보시스템사용자를 확인하세요.');
+    const issue = result.issues.find(i => i.type === 'noun-chain');
+    expect(issue).toBeUndefined();
+  });
+});
+
 // ── PUBLIC API SHAPE ─────────────────────────────────────────────────────────
 
 describe('KRDSLint public API', () => {
