@@ -1583,4 +1583,29 @@ describe('lint-ui CLI banner close and copy buttons', () => {
     expect(writtenTexts[0]).toContain('krds-ux-writing');
     expect(elements.toast.textContent).toContain('✅');
   });
+
+  it('falls back to execCommand when clipboard is unavailable on result copy button click', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1, col: 1, severity: 'error', category: '행정 관습어',
+          message: '행정어/금지어: "귀하"', match: '귀하',
+          suggestion: '→ 고객님', type: 'admin-jargon',
+        }],
+      },
+    });
+    // navigator.clipboard is absent → hasAsyncClipboard() returns false → legacyCopy()
+    context.document.execCommand = vi.fn(() => true);
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+    elements.copyBtn.dispatch('click');
+
+    expect(context.document.execCommand).toHaveBeenCalledWith('copy');
+    expect(elements.copyBtn.textContent).toBe('✅ 복사됨');
+  });
 });
