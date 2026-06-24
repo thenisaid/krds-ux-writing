@@ -189,4 +189,55 @@ describe('shared nav theme behavior', () => {
     expect(ctx.localStorage.setItem).toHaveBeenCalledWith('krds-theme', 'dark');
     expect(themeBtn.getAttribute('aria-label')).toBe('라이트 모드로 전환');
   });
+
+  it('falls back to the legacy addListener API when addEventListener is not available on the media query', () => {
+    const addListenerCalls = [];
+    const mediaQuery = {
+      matches: true,
+      addListener: vi.fn((handler) => { addListenerCalls.push(handler); }),
+    };
+
+    const documentElement = {
+      theme: 'dark',
+      setAttribute(name, value) {
+        if (name === 'data-theme') this.theme = String(value);
+      },
+      getAttribute(name) {
+        return name === 'data-theme' ? this.theme : null;
+      },
+    };
+
+    const context = {
+      window: {
+        location: { pathname: '/case-studies/' },
+        matchMedia: () => mediaQuery,
+      },
+      document: {
+        documentElement,
+        body: { style: {} },
+        activeElement: null,
+        querySelectorAll() { return []; },
+        querySelector() { return null; },
+        getElementById() { return null; },
+        addEventListener() {},
+      },
+      localStorage: {
+        getItem() { return null; },
+        setItem() {},
+      },
+      IntersectionObserver: function () { return { observe() {}, unobserve() {}, disconnect() {} }; },
+      Array,
+      JSON,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(mediaQuery.addListener).toHaveBeenCalled();
+    mediaQuery.matches = false;
+    addListenerCalls[0]({ matches: false });
+    expect(documentElement.getAttribute('data-theme')).toBe('light');
+  });
 });
