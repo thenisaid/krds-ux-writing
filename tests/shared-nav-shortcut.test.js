@@ -241,4 +241,79 @@ describe('shared nav Ctrl+K behavior', () => {
     expect(preventDefault).toHaveBeenCalled();
     expect(ctx.window.location.href).toBe('/preview/KRDS/');
   });
+
+  it('clicks the GNB search button when gnbSearch exists instead of focusing the page search input', () => {
+    const click = vi.fn();
+    const focus = vi.fn();
+    const preventDefault = vi.fn();
+    const searchBtn = { click };
+    const searchInput = { focus, select: vi.fn() };
+
+    const ctx = makeContext({
+      pathname: '/krds-ux-writing/',
+      href: 'https://example.com/krds-ux-writing/',
+      searchBtn,
+      searchInput,
+    });
+
+    ctx.dispatchKeydown({ ctrlKey: true, metaKey: false, key: 'k', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(click).toHaveBeenCalled();
+    expect(focus).not.toHaveBeenCalled();
+  });
+
+  it('treats a TEXTAREA target as a text-entry field and does not hijack Ctrl+K', () => {
+    const focus = vi.fn();
+    const preventDefault = vi.fn();
+    const searchInput = { focus, select: vi.fn() };
+    const textareaTarget = { tagName: 'TEXTAREA' };
+
+    const ctx = makeContext({
+      pathname: '/krds-ux-writing/dictionary/',
+      searchInput,
+    });
+
+    ctx.dispatchKeydown({
+      ctrlKey: true, metaKey: false, key: 'k', preventDefault, target: textareaTarget,
+    });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(focus).not.toHaveBeenCalled();
+  });
+
+  it('treats a contenteditable element with no tagName as a text-entry target and skips Ctrl+K', () => {
+    const focus = vi.fn();
+    const preventDefault = vi.fn();
+    const searchInput = { focus, select: vi.fn() };
+    const editableTarget = { isContentEditable: true };
+
+    const ctx = makeContext({
+      pathname: '/krds-ux-writing/dictionary/',
+      searchInput,
+    });
+
+    ctx.dispatchKeydown({
+      ctrlKey: true, metaKey: false, key: 'k', preventDefault, target: editableTarget,
+    });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(focus).not.toHaveBeenCalled();
+  });
+
+  it('focuses the page search input when it does not expose a select method', () => {
+    const focus = vi.fn();
+    const preventDefault = vi.fn();
+    const searchInput = { focus };
+
+    const ctx = makeContext({
+      pathname: '/krds-ux-writing/dictionary/',
+      searchInput,
+    });
+
+    ctx.dispatchKeydown({ ctrlKey: true, metaKey: false, key: 'k', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(focus).toHaveBeenCalled();
+  });
 });
