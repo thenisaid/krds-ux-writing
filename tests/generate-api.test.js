@@ -1316,6 +1316,21 @@ describe('generator API handlers', () => {
     expect(body).not.toContain('"type":"error"');
   });
 
+  it('returns 204 with CORS headers on Vercel preflight OPTIONS requests', async () => {
+    const request = new Request('http://localhost/api/generate', {
+      method: 'OPTIONS',
+      headers: {
+        Origin: ALLOWED_ORIGIN,
+        'Access-Control-Request-Method': 'POST',
+      },
+    });
+    const response = await vercelHandler(request);
+    expect(response.status).toBe(204);
+    expect(response.headers.get('access-control-allow-origin')).toBe(ALLOWED_ORIGIN);
+    expect(response.headers.get('access-control-allow-methods')).toContain('POST');
+    expect(response.headers.get('access-control-allow-headers')).toContain('Content-Type');
+  });
+
   it('returns 405 for non-POST methods in the Vercel handler', async () => {
     const request = new Request('http://localhost/api/generate', {
       method: 'GET',
