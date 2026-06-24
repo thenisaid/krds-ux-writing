@@ -616,4 +616,24 @@ describe('placeholderPattern branches via synthetic dictionary', () => {
     const result = lint.lint('귀하');
     expect(result.issues.find(i => i.match === '귀하')).toBeDefined();
   });
+
+  it('builds a monetary amount regex when the placeholder label contains "금액"', () => {
+    const lint = makeCustomLint([
+      { banned: '납부금액: [금액]', alt: '납부할 금액을 명시하세요', cat: '행정 관습어' },
+    ]);
+    const result = lint.lint('납부금액: 50,000원');
+    const issue = result.issues.find(i => i.type === 'admin-jargon');
+    expect(issue).toBeDefined();
+    expect(issue.match).toMatch(/납부금액/);
+  });
+
+  it('deduplicates entries with the same banned phrase in a custom dictionary', () => {
+    const lint = makeCustomLint([
+      { banned: '귀하', alt: '고객님', cat: '행정 관습어' },
+      { banned: '귀하', alt: '신청인', cat: '행정 관습어' },
+    ]);
+    const result = lint.lint('귀하');
+    const issues = result.issues.filter(i => i.match === '귀하' && i.type === 'admin-jargon');
+    expect(issues.length).toBe(1);
+  });
 });
