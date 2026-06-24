@@ -2539,4 +2539,39 @@ describe('generator/app.js', () => {
     elements['generator-mode'].value = 'tone-adjust';
     expect(() => elements['generator-mode'].dispatch('change')).not.toThrow();
   });
+
+  it('shows 심리적 안전망 통과 and "다음 행동 신호" description when structureCue is present in reviewed text', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 100,
+        summary: { total: 0, errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      })),
+    };
+    // message-pack mode fallback contains '이유' and '다음 행동' which triggers structureCue
+    elements['generator-mode'].value = 'message-pack';
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    const html = elements['quality-gates'].innerHTML;
+    expect(html).toContain('다음 행동 신호가 포함되어 있습니다');
+    expect(html).not.toContain('직접적인 오류 구조 표지');
+  });
+
+  it('falls back to "검수 항목" as the category label when both category and type are absent from a lint issue', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 80,
+        summary: { total: 1, errors: 1, warnings: 0, infos: 0 },
+        issues: [{ message: '분류 없는 이슈', suggestion: '수정 제안 없음' }],
+      })),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    expect(elements['quality-issues-list'].innerHTML).toContain('검수 항목');
+  });
 });
