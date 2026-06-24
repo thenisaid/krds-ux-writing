@@ -52,7 +52,7 @@ function createElement(options = {}) {
     },
     dispatch(type, event = {}) {
       const handlers = listeners.get(type) || [];
-      handlers.forEach((handler) => handler({
+      handlers.forEach((handler) => handler.call(element, {
         preventDefault() {},
         stopPropagation() {},
         target: element,
@@ -1772,5 +1772,62 @@ describe('generator/app.js', () => {
     elements['fallback-btn'].dispatch('click');
 
     expect(elements['quality-issues-list'].innerHTML).toContain('no-category-field');
+  });
+
+  it('fills sample fields from TYPE_SAMPLES when agencyType changes and all sample fields are empty', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['sample-1'].value = '';
+    elements['sample-2'].value = '';
+    elements['sample-3'].value = '';
+    elements['agency-type'].value = '지방자치단체';
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['agency-type'].dispatch('change');
+
+    expect(elements['sample-1'].value).not.toBe('');
+    expect(elements['sample-1'].value).toContain('주민등록');
+  });
+
+  it('does not overwrite sample fields when agencyType changes and sample-1 already has a value', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['sample-1'].value = '사용자가 직접 입력한 문장입니다.';
+    elements['agency-type'].value = '지방자치단체';
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['agency-type'].dispatch('change');
+
+    expect(elements['sample-1'].value).toBe('사용자가 직접 입력한 문장입니다.');
+  });
+
+  it('updates sample placeholders and mode help text when the generator-mode changes', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['sample-1'].value = '기존 샘플 텍스트';
+    elements['generator-mode'].value = 'guide-draft';
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-mode'].value = 'rewrite';
+    elements['generator-mode'].dispatch('change');
+
+    expect(elements['mode-help'].textContent).not.toBe('');
+  });
+
+  it('uses window.KRDSLint as the lint engine when the global KRDSLint identifier is not defined', () => {
+    const { context, elements } = buildGeneratorContext();
+    const lintMock = vi.fn(() => ({
+      score: 92,
+      summary: { total: 0, errors: 0, warnings: 0, infos: 0 },
+      issues: [],
+    }));
+    context.window.KRDSLint = { lint: lintMock };
+    // No top-level KRDSLint in context — getLintEngine() must fall through to window.KRDSLint
+
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    expect(lintMock).toHaveBeenCalled();
+    expect(elements['quality-review'].hidden).toBe(false);
   });
 });
