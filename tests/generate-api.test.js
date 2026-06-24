@@ -611,6 +611,58 @@ describe('generator API handlers', () => {
     });
   });
 
+  it('rate-limits Cloudflare requests by the X-Real-IP header when CF-Connecting-IP is absent', async () => {
+    const fetchMock = mockAnthropicFetch();
+    global.fetch = fetchMock;
+
+    const basePayload = {
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      samples: ['샘플 문구'],
+    };
+
+    for (let i = 0; i < 5; i += 1) {
+      const response = await onRequestPost({
+        request: buildRequest(basePayload, ALLOWED_ORIGIN, {
+          'X-Real-IP': '203.0.113.88',
+        }),
+        env: { ANTHROPIC_API_KEY: 'test-key' },
+      });
+      expect(response.status).toBe(200);
+    }
+
+    const blocked = await onRequestPost({
+      request: buildRequest(basePayload, ALLOWED_ORIGIN, {
+        'X-Real-IP': '203.0.113.88',
+      }),
+      env: { ANTHROPIC_API_KEY: 'test-key' },
+    });
+    expect(blocked.status).toBe(429);
+  });
+
+  it('rate-limits requests by the X-Real-IP header when CF-Connecting-IP is absent', async () => {
+    const fetchMock = mockAnthropicFetch();
+    global.fetch = fetchMock;
+
+    const basePayload = {
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      samples: ['샘플 문구'],
+    };
+
+    for (let i = 0; i < 5; i += 1) {
+      const response = await vercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
+        'X-Real-IP': '203.0.113.77',
+      }));
+      expect(response.status).toBe(200);
+    }
+
+    const blocked = await vercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
+      'X-Real-IP': '203.0.113.77',
+    }));
+    expect(blocked.status).toBe(429);
+  });
+
   it('ignores blank higher-priority Vercel IP headers and falls back to the forwarded client IP', async () => {
     const fetchMock = mockAnthropicFetch();
     global.fetch = fetchMock;

@@ -1084,6 +1084,21 @@ describe('generator/app.js', () => {
     expect(elements['sample-1'].classList.contains('has-error')).toBe(true);
   });
 
+  it('clears the agency-name error class when the user types in the field after a validation failure', async () => {
+    const fetchImpl = vi.fn();
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['agency-name'].value = 'a'.repeat(51);
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(elements['agency-name'].classList.contains('has-error')).toBe(true);
+
+    elements['agency-name'].value = '테스트 기관';
+    elements['agency-name'].dispatch('input');
+    expect(elements['agency-name'].classList.contains('has-error')).toBe(false);
+  });
+
   it('calls focus on the first invalid field when document.querySelector returns a has-error element', async () => {
     const fetchImpl = vi.fn();
     const { context, elements } = buildGeneratorContext({ fetchImpl });
