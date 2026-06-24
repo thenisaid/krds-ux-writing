@@ -150,4 +150,40 @@ describe('shared nav GNB keyboard navigation', () => {
     gnbNav.dispatch('keydown', { key: 'Escape', preventDefault: vi.fn() });
     expect(gnbBtn.focus).not.toHaveBeenCalled();
   });
+
+  it('removes the open class from a GNB item even when it has no .gnb-link toggle button', () => {
+    const removeClassSpy = vi.fn();
+    const noButtonOpenItem = {
+      classList: { remove: removeClassSpy, add() {}, contains() { return false; }, toggle() {} },
+      querySelector() { return null; },
+    };
+    const links = [makeLink(), makeLink()];
+    const gnbNav = makeGnbNav(links);
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: null,
+      querySelectorAll() { return []; },
+      querySelector(sel) {
+        if (sel === '.gnb-nav') return gnbNav;
+        if (sel === '.gnb-item.open') return noButtonOpenItem;
+        return null;
+      },
+      getElementById() { return null; },
+      addEventListener() {},
+    };
+    const context = {
+      window: { location: { pathname: '/krds-ux-writing/' }, matchMedia: null, addEventListener() {} },
+      document,
+      localStorage: { getItem() { return null; }, setItem() {} },
+      sessionStorage: { getItem() { return null; }, setItem() {} },
+      IntersectionObserver: function () { return { observe() {}, disconnect() {} }; },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(SOURCE, context);
+
+    expect(() => gnbNav.dispatch('keydown', { key: 'Escape' })).not.toThrow();
+    expect(removeClassSpy).toHaveBeenCalledWith('open');
+  });
 });

@@ -600,6 +600,18 @@ describe('shared nav sidebar toggle', () => {
     expect(hamburger.getAttribute('aria-expanded')).toBe('true');
   });
 
+  it('opens the sidebar without setting up a focus trap when no focusable elements are present', () => {
+    const { hamburger, sidebar, firstLink, sidebarLink } = makeContext();
+    firstLink.offsetParent = null;
+    sidebarLink.offsetParent = null;
+
+    hamburger.dispatch('click');
+
+    expect(sidebar.classList.contains('open')).toBe(true);
+    expect(sidebar.listenerCount('keydown')).toBe(0);
+    expect(firstLink.focus).not.toHaveBeenCalled();
+  });
+
   it('focuses the anchor target without calling scrollTo when window.scrollTo is not available', () => {
     const { context, hamburger, sidebarLink, sidebarTarget } = makeContext();
     context.window.scrollTo = undefined;
