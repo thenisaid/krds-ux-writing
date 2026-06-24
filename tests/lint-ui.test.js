@@ -982,4 +982,81 @@ describe('lint-ui stale result handling', () => {
     expect(context.navigator.clipboard.writeText).not.toHaveBeenCalled();
     expect(elements.toast.textContent).toBe('⚠️ 500자 이하 텍스트만 링크로 공유할 수 있습니다');
   });
+
+  it('silently ignores copyBtn click when no lint result is available yet', () => {
+    const { context, elements } = buildContext();
+    context.navigator.clipboard = { writeText: vi.fn(() => Promise.resolve()) };
+    vm.runInNewContext(SOURCE, context);
+
+    // No lintBtn click — lastResult is null
+    expect(() => elements.copyBtn.dispatch('click')).not.toThrow();
+    expect(context.navigator.clipboard.writeText).not.toHaveBeenCalled();
+  });
+
+  it('silently ignores downloadBtn click when no lint result is available yet', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    // No lintBtn click — lastResult is null
+    expect(() => elements.downloadBtn.dispatch('click')).not.toThrow();
+    expect(elements.toast.textContent).toBe('');
+  });
+
+  it('silently ignores downloadBtn click when lint result has no issues', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 100,
+        summary: { errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '깨끗한 문장입니다.';
+    elements.lintBtn.dispatch('click');
+
+    expect(() => elements.downloadBtn.dispatch('click')).not.toThrow();
+    expect(elements.toast.textContent).toBe('');
+  });
+
+  it('downloads a CSV file via anchor.click() when the download APIs are all available', () => {
+    const { context, elements } = buildContext();
+    const clickMock = vi.fn();
+    context.document.createElement = vi.fn(() => ({
+      href: '',
+      download: '',
+      click: clickMock,
+      style: {},
+      value: '',
+      select: vi.fn(),
+    }));
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+    elements.downloadBtn.dispatch('click');
+
+    expect(clickMock).toHaveBeenCalledTimes(1);
+    expect(elements.toast.textContent).toBe('');
+  });
+
+  it('sets share button title to dirty message after text changes following a successful lint', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    // shareLinkBtn should now be enabled (text ≤ 500, result exists)
+    expect(elements.shareLinkBtn.disabled).toBe(false);
+
+    // Simulate user editing the text — clears lastResult and marks dirty
+    elements.inputText.value = '귀하의 신청이 수정됩니다.';
+    elements.inputText.dispatch('input');
+
+    // Share button should now reflect the dirty state
+    expect(elements.shareLinkBtn.disabled).toBe(true);
+    expect(elements.shareLinkBtn.title).toBe('텍스트가 변경되었습니다. 다시 검사해 주세요');
+  });
 });
