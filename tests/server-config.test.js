@@ -1406,6 +1406,13 @@ describe('server.js configuration', () => {
     expect(errorMessage).toMatch(/형식/);
   });
 
+  it('reports an error immediately when the Ollama URL uses an unsupported protocol', () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    let errorMessage;
+    callOllama('ftp://localhost:11434', 'system', 'msg', 2200, () => {}, () => {}, (msg) => { errorMessage = msg; });
+    expect(errorMessage).toMatch(/형식/);
+  });
+
   it('flushes a content chunk from the Ollama end-of-stream buffer when the last line has no trailing newline', async () => {
     const { callOllamaStream: callOllama } = loadFreshServerModule();
     const http = requireModule('node:http');
