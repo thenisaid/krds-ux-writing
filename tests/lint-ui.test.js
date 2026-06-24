@@ -1097,4 +1097,109 @@ describe('lint-ui stale result handling', () => {
     expect(elements.toast.textContent).toBe('');
     expect(elements.inputText.value).toBe('귀하의 신청이 접수되었습니다.');
   });
+
+  it('silently skips admin-jargon issues with out-of-range coordinates and leaves improved text unchanged', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 0,
+          col: 1,
+          severity: 'error',
+          category: '행정어',
+          message: '행정어',
+          match: '귀하',
+          suggestion: '→ 고객님',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+    elements.inputText.value = '귀하의 서류';
+    elements.lintBtn.dispatch('click');
+    expect(elements.improvedText.textContent).toBe('귀하의 서류');
+  });
+
+  it('silently skips an admin-jargon issue whose line number exceeds the input text line count', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 99,
+          col: 1,
+          severity: 'error',
+          category: '행정어',
+          message: '행정어',
+          match: '귀하',
+          suggestion: '→ 고객님',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+    elements.inputText.value = '귀하의 서류';
+    elements.lintBtn.dispatch('click');
+    expect(elements.improvedText.textContent).toBe('귀하의 서류');
+  });
+
+  it('silently skips an admin-jargon issue when the match text no longer appears at the expected column', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1,
+          col: 1,
+          severity: 'error',
+          category: '행정어',
+          message: '행정어',
+          match: '귀하',
+          suggestion: '→ 고객님',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+    elements.inputText.value = '안녕하세요';
+    elements.lintBtn.dispatch('click');
+    expect(elements.improvedText.textContent).toBe('안녕하세요');
+  });
+
+  it('skips an overlapping issue in the highlight view when its start falls inside the previous mark', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 2, warnings: 0, infos: 0 },
+        issues: [
+          {
+            line: 1,
+            col: 1,
+            severity: 'error',
+            category: '패턴',
+            message: '첫 번째 이슈',
+            match: 'ERROR',
+            suggestion: '',
+            type: 'pattern',
+          },
+          {
+            line: 1,
+            col: 3,
+            severity: 'error',
+            category: '패턴',
+            message: '두 번째 이슈 (중복)',
+            match: 'ROR',
+            suggestion: '',
+            type: 'pattern',
+          },
+        ],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+    elements.inputText.value = 'ERROR CODE';
+    elements.lintBtn.dispatch('click');
+    const html = elements.highlightedText.innerHTML;
+    expect((html.match(/<mark/g) || []).length).toBe(1);
+  });
 });

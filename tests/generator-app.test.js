@@ -988,6 +988,42 @@ describe('generator/app.js', () => {
     expect(elements['fallback-area'].style.display).toBe('block');
   });
 
+  it('shows a generic server-error message with the status code when the upstream returns a 5xx response', async () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: false,
+      status: 503,
+      async json() { return {}; },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(elements['generating-error'].classList.contains('visible')).toBe(true);
+    expect(elements['generating-error'].textContent).toContain('503');
+    expect(elements['fallback-area'].style.display).toBe('block');
+  });
+
+  it('shows the fallback input-check message when a 400 response body cannot be parsed as JSON', async () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: false,
+      status: 400,
+      async json() { throw new Error('not json'); },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(elements['generating-error'].classList.contains('visible')).toBe(true);
+    expect(elements['generating-error'].textContent).toContain('입력값을 확인해 주세요');
+    expect(elements['fallback-area'].style.display).toBe('block');
+  });
+
   it('blocks form submission and marks agency-name field when the name exceeds 50 characters', async () => {
     const fetchImpl = vi.fn();
     const { context, elements } = buildGeneratorContext({ fetchImpl });
