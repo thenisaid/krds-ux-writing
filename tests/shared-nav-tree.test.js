@@ -310,6 +310,100 @@ describe('shared nav tree relationships', () => {
     })).not.toThrow();
   });
 
+  it('silently skips sessionStorage restore when getItem throws a security error', () => {
+    const toggle = createElement({ attributes: { 'aria-label': '1장 펼치기/접기' }, classes: ['lnb-tog'] });
+    const link = createElement({ classes: ['lnb-item-a'] });
+    const subLink = createElement({ classes: ['lnb-sub-a'] });
+    const sub = createElement({ classes: ['lnb-sub'], queryMap: { '.lnb-sub-a': [subLink] } });
+    const item = createElement({
+      attributes: { 'aria-expanded': 'false', 'data-path': '/principles/foundation/' },
+      classes: ['lnb-item'],
+      queryMap: { '.lnb-tog': toggle, '.lnb-sub': sub, '.lnb-item-a': link, '.lnb-item-a, .lnb-sub-a': [link, subLink] },
+    });
+    const tree = createElement({
+      classes: ['lnb-tree'],
+      queryMap: { '.lnb-item': [item], '.lnb-item-a, .lnb-tog, .lnb-sub-a': [link, toggle, subLink], '.lnb-sub-a': [subLink] },
+    });
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: null,
+      querySelector(selector) { return selector === '.lnb-tree' ? tree : null; },
+      querySelectorAll() { return []; },
+      getElementById() { return null; },
+      addEventListener() {},
+    };
+    const context = {
+      window: { innerWidth: 1280, location: { pathname: '/krds-ux-writing/' } },
+      location: { pathname: '/krds-ux-writing/', hash: '' },
+      document,
+      localStorage: { getItem() { return null; }, setItem() {} },
+      sessionStorage: {
+        getItem() { throw new Error('SecurityError: blocked'); },
+        setItem() {},
+      },
+      IntersectionObserver: function () { return { observe() {}, unobserve() {}, disconnect() {} }; },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    expect(() => vm.runInNewContext(SOURCE, context)).not.toThrow();
+    expect(item.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('silently swallows sessionStorage setItem throws when accordion state is saved after a toggle click', () => {
+    const { toggle, item } = makeContext({ currentPath: '/krds-ux-writing/' });
+
+    const savedSetItem = vi.fn(() => { throw new Error('QuotaExceededError'); });
+    const setItemSpy = vi.fn((key, value) => {
+      if (key === 'krds-lnb-open') savedSetItem(key, value);
+    });
+
+    const context = (() => {
+      const toggle2 = createElement({ attributes: { 'aria-label': '1장 펼치기/접기' }, classes: ['lnb-tog'] });
+      const link2 = createElement({ classes: ['lnb-item-a'] });
+      const subLink2 = createElement({ classes: ['lnb-sub-a'] });
+      const sub2 = createElement({ classes: ['lnb-sub'], queryMap: { '.lnb-sub-a': [subLink2] } });
+      const item2 = createElement({
+        attributes: { 'aria-expanded': 'false', 'data-path': '/principles/foundation/' },
+        classes: ['lnb-item'],
+        queryMap: { '.lnb-tog': toggle2, '.lnb-sub': sub2, '.lnb-item-a': link2, '.lnb-item-a, .lnb-sub-a': [link2, subLink2] },
+      });
+      const tree2 = createElement({
+        classes: ['lnb-tree'],
+        queryMap: { '.lnb-item': [item2], '.lnb-item-a, .lnb-tog, .lnb-sub-a': [link2, toggle2, subLink2], '.lnb-sub-a': [subLink2] },
+      });
+      const doc2 = {
+        documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+        body: { style: {} },
+        activeElement: null,
+        querySelector(selector) { return selector === '.lnb-tree' ? tree2 : null; },
+        querySelectorAll() { return []; },
+        getElementById() { return null; },
+        addEventListener() {},
+      };
+      const ctx = {
+        window: { innerWidth: 1280, location: { pathname: '/krds-ux-writing/' } },
+        location: { pathname: '/krds-ux-writing/', hash: '' },
+        document: doc2,
+        localStorage: { getItem() { return null; }, setItem() {} },
+        sessionStorage: {
+          getItem() { return null; },
+          setItem: savedSetItem,
+        },
+        IntersectionObserver: function () { return { observe() {}, unobserve() {}, disconnect() {} }; },
+        Array, JSON, console, globalThis: null,
+      };
+      ctx.globalThis = ctx;
+      vm.runInNewContext(SOURCE, ctx);
+      return { toggle2, item2, savedSetItem };
+    })();
+
+    expect(() => context.toggle2.dispatch('click')).not.toThrow();
+    expect(context.item2.getAttribute('aria-expanded')).toBe('true');
+    expect(context.savedSetItem).toHaveBeenCalled();
+  });
+
   it('does not throw when tree keyboard events fire before an item has focus', () => {
     const { tree, document } = makeContext();
     document.activeElement = null;
