@@ -1996,6 +1996,33 @@ describe('generator/app.js', () => {
     expect(elements['sample-1'].value).toContain('신청이 접수되었습니다');
   });
 
+  it('fills sample fields with tone-adjust defaults when mode is tone-adjust and all samples are empty', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['sample-1'].value = '';
+    elements['sample-2'].value = '';
+    elements['sample-3'].value = '';
+    elements['generator-mode'].value = 'tone-adjust';
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements['sample-1'].value).toContain('확인하여야 합니다');
+  });
+
+  it('preserves existing sample values when mode changes and samples are already filled', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['sample-1'].value = '사용자가 미리 입력한 문장';
+    elements['sample-2'].value = '';
+    elements['sample-3'].value = '';
+    elements['generator-mode'].value = 'tone-adjust';
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-mode'].value = 'message-pack';
+    elements['generator-mode'].dispatch('change');
+
+    expect(elements['sample-1'].value).toBe('사용자가 미리 입력한 문장');
+  });
+
   it('uses window.KRDSLint as the lint engine when the global KRDSLint identifier is not defined', () => {
     const { context, elements } = buildGeneratorContext();
     const lintMock = vi.fn(() => ({
