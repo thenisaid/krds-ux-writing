@@ -196,6 +196,17 @@ describe('server.js configuration', () => {
     expect(getClientIp({ headers: {} })).toBe('unknown');
   });
 
+  it('returns an empty string when a header array contains only blank or non-string entries', () => {
+    expect(getRequestHeader({
+      headers: { 'x-forwarded-for': ['   ', ''] },
+    }, 'x-forwarded-for')).toBe('');
+
+    expect(getClientIp({
+      headers: { 'x-forwarded-for': ',' },
+      socket: { remoteAddress: '127.0.0.1' },
+    })).toBe('127.0.0.1');
+  });
+
   it('accepts the same agency types as the generator UI and deployed handlers', async () => {
     expect(VALID_AGENCY_TYPES).toEqual([
       '지방자치단체',
