@@ -1437,6 +1437,45 @@ describe('server.js configuration', () => {
     }
   });
 
+  it('fires done from the Ollama end-of-stream buffer when the last line is a done event without a trailing newline', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      await new Promise((resolve) => {
+        const chunks = [];
+        http.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            callback(res);
+            // content line with trailing newline → processed immediately
+            res.emit('data', Buffer.from('{"model":"test","response":"내용","done":false}\n'));
+            // done event WITHOUT trailing newline → stays in buffer, flushed on('end')
+            res.emit('data', Buffer.from('{"model":"test","done":true}'));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callOllama(
+          'http://localhost:11434', 'system', 'user', 2200,
+          (text) => { chunks.push(text); },
+          () => {
+            expect(chunks).toEqual(['내용']);
+            resolve();
+          },
+          (message) => { throw new Error('unexpected error: ' + message); },
+        );
+      });
+    } finally {
+      http.request = originalRequest;
+    }
+  });
+
   it('rejects a local server request when screenType exceeds the 40-character limit', async () => {
     const responseState = await runServerRequest({
       headers: { 'x-forwarded-for': '203.0.113.50' },
