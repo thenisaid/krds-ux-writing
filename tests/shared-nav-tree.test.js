@@ -304,6 +304,90 @@ describe('shared nav tree relationships', () => {
     expect(toggle.getAttribute('aria-expanded')).toBe('true');
   });
 
+  it('reuses the existing sub-menu id for aria-controls when the sub already has one', () => {
+    const toggle = createElement({ attributes: { 'aria-label': '1장 펼치기/접기' }, classes: ['lnb-tog'] });
+    const link = createElement({ classes: ['lnb-item-a'] });
+    const subLink = createElement({ classes: ['lnb-sub-a'] });
+    const sub = createElement({
+      id: 'pre-existing-sub-id',
+      classes: ['lnb-sub'],
+      queryMap: { '.lnb-sub-a': [subLink] },
+    });
+    const item = createElement({
+      attributes: { 'aria-expanded': 'false', 'data-path': '/principles/foundation/' },
+      classes: ['lnb-item'],
+      queryMap: { '.lnb-tog': toggle, '.lnb-sub': sub, '.lnb-item-a': link, '.lnb-item-a, .lnb-sub-a': [link, subLink] },
+    });
+    const tree = createElement({
+      classes: ['lnb-tree'],
+      queryMap: { '.lnb-item': [item], '.lnb-item-a, .lnb-tog, .lnb-sub-a': [link, toggle, subLink], '.lnb-sub-a': [subLink] },
+    });
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: null,
+      querySelector(selector) { return selector === '.lnb-tree' ? tree : null; },
+      querySelectorAll() { return []; },
+      getElementById(id) { return id === 'pre-existing-sub-id' ? sub : null; },
+      addEventListener() {},
+    };
+    const context = {
+      window: { innerWidth: 1280, location: { pathname: '/krds-ux-writing/' } },
+      location: { pathname: '/krds-ux-writing/', hash: '' },
+      document,
+      localStorage: { getItem() { return null; }, setItem() {} },
+      sessionStorage: { getItem() { return null; }, setItem() {} },
+      IntersectionObserver: function () { return { observe() {}, unobserve() {}, disconnect() {} }; },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(sub.id).toBe('pre-existing-sub-id');
+    expect(toggle.getAttribute('aria-controls')).toBe('pre-existing-sub-id');
+  });
+
+  it('generates a fallback sub-menu id using the item index when the item has no data-path attribute', () => {
+    const toggle = createElement({ attributes: { 'aria-label': '1장 펼치기/접기' }, classes: ['lnb-tog'] });
+    const link = createElement({ classes: ['lnb-item-a'] });
+    const subLink = createElement({ classes: ['lnb-sub-a'] });
+    const sub = createElement({ classes: ['lnb-sub'], queryMap: { '.lnb-sub-a': [subLink] } });
+    const item = createElement({
+      attributes: { 'aria-expanded': 'false' },
+      classes: ['lnb-item'],
+      queryMap: { '.lnb-tog': toggle, '.lnb-sub': sub, '.lnb-item-a': link, '.lnb-item-a, .lnb-sub-a': [link, subLink] },
+    });
+    const tree = createElement({
+      classes: ['lnb-tree'],
+      queryMap: { '.lnb-item': [item], '.lnb-item-a, .lnb-tog, .lnb-sub-a': [link, toggle, subLink], '.lnb-sub-a': [subLink] },
+    });
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: null,
+      querySelector(selector) { return selector === '.lnb-tree' ? tree : null; },
+      querySelectorAll() { return []; },
+      getElementById() { return null; },
+      addEventListener() {},
+    };
+    const context = {
+      window: { innerWidth: 1280, location: { pathname: '/krds-ux-writing/' } },
+      location: { pathname: '/krds-ux-writing/', hash: '' },
+      document,
+      localStorage: { getItem() { return null; }, setItem() {} },
+      sessionStorage: { getItem() { return null; }, setItem() {} },
+      IntersectionObserver: function () { return { observe() {}, unobserve() {}, disconnect() {} }; },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(sub.id).toMatch(/^lnb-sub-section-\d+$/);
+    expect(toggle.getAttribute('aria-controls')).toBe(sub.id);
+  });
+
   it('ignores corrupted non-array LNB session state instead of crashing during restore', () => {
     expect(() => makeContext({
       sessionStorageValue: '{"oops":true}',
