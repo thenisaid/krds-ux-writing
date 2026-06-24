@@ -163,6 +163,20 @@ describe('shared/base-path.js', () => {
     expect(basePath.normalizeSitePath('/preview/KRDS#case-studies')).toBe('/preview/KRDS/#case-studies');
   });
 
+  it('silently skips a node whose href attribute is null while still rewriting adjacent valid nodes', () => {
+    const nullHrefNode = makeNode({});
+    const validNode = makeNode({ href: '/krds-ux-writing/principles/' });
+
+    runBasePath({
+      pathname: '/preview/KRDS/index.html',
+      scriptPath: '/preview/KRDS/shared/base-path.js',
+      hrefNodes: [nullHrefNode, validNode],
+    });
+
+    expect(nullHrefNode.getAttribute('href')).toBe(null);
+    expect(validNode.getAttribute('href')).toBe('/preview/KRDS/principles/');
+  });
+
   it('falls back to getElementsByTagName script search when document.currentScript is absent', () => {
     const scriptEl = { src: 'https://example.com/preview/KRDS/shared/base-path.js', getAttribute() { return null; } };
     const document = {
