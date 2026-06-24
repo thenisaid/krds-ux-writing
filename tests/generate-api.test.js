@@ -379,6 +379,22 @@ describe('generator API handlers', () => {
     expect(requestBody.messages[0].content).toContain('추가 요청: 로그인과 신청 흐름을 우선 반영해 주세요.');
   });
 
+  it('includes the toneTarget field in the Anthropic request body when it is provided', async () => {
+    const fetchMock = mockAnthropicFetch();
+    global.fetch = fetchMock;
+
+    const response = await vercelHandler(buildRequest({
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      toneTarget: '친근하고 명확한 안내',
+      samples: ['샘플 문구'],
+    }));
+
+    expect(response.status).toBe(200);
+    const requestBody = JSON.parse(fetchMock.mock.calls[0][1].body);
+    expect(requestBody.messages[0].content).toContain('목표 톤: 친근하고 명확한 안내');
+  });
+
   it('uses a custom Anthropic base URL in the Vercel handler when configured', async () => {
     process.env.ANTHROPIC_BASE_URL = 'https://proxy.internal/v1/messages?token=a=b';
     const fetchMock = mockAnthropicFetch();
