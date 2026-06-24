@@ -1573,6 +1573,19 @@ describe('server.js configuration', () => {
     expect(JSON.parse(responseState.body).error).toContain('작업 모드');
   });
 
+  it('rejects a local server request when agencyName exceeds 50 characters', async () => {
+    const responseState = await runServerRequest({
+      headers: { 'x-forwarded-for': '203.0.113.56' },
+      body: {
+        agencyName: 'a'.repeat(51),
+        agencyType: '지방자치단체',
+        samples: ['샘플 문구'],
+      },
+    });
+    expect(responseState.statusCode).toBe(400);
+    expect(JSON.parse(responseState.body).error).toContain('기관명은');
+  });
+
   it('routes generation requests through Ollama when OLLAMA_URL is set in the local server', async () => {
     process.env.OLLAMA_URL = 'http://localhost:11434';
     const http = requireModule('node:http');
