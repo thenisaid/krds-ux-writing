@@ -163,7 +163,7 @@
       return '<div class="arc-card">' +
         '<div class="arc-card-head">' +
           '<span class="arc-card-id">' + iss.id + '</span>' +
-          (iss.severity ? '<span class="arc-card-sev ' + (SEV_CLASS[iss.severity]||'sev-2') + '">' + iss.severity + '</span>' : '') +
+          (iss.severity ? '<span class="arc-card-sev ' + (SEV_CLASS[iss.severity]||'sev-2') + '">' + escHtml(iss.severity) + '</span>' : '') +
           '<span class="arc-card-prin">[' + escHtml(iss.principle) + ']</span>' +
           (iss.cycle ? '<span class="arc-card-cycle">Cycle ' + iss.cycle + '</span>' : '') +
         '</div>' +
