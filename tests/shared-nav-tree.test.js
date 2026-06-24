@@ -615,6 +615,16 @@ describe('shared nav tree relationships', () => {
     expect(remoteSubLink.classList.contains('active')).toBe(false);
   });
 
+  it('does not mark a same-page LNB sub-link active when its href ends with a bare trailing hash', () => {
+    const { localSubLink } = makeHashContext({
+      hash: '#overview',
+      localHref: '/krds-ux-writing/principles/core-info/#',
+    });
+
+    expect(localSubLink.classList.contains('active')).toBe(false);
+    expect(localSubLink.getAttribute('aria-current')).toBe(null);
+  });
+
   it('uses location.search as a fallback when window.location.search is not a string', () => {
     const toggle = createElement({
       attributes: { 'aria-label': '1장 펼치기/접기' },
