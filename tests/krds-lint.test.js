@@ -444,8 +444,7 @@ describe('PATTERN_RULES detection', () => {
     const issue = result.issues.find(i => i.type === 'double-passive');
     expect(issue).toBeDefined();
     expect(issue.severity).toBe('error');
-    // pattern alternation matches the earliest token: '되어지' before '되어지다'
-    expect(issue.match).toBe('되어지');
+    expect(issue.match).toBe('되어지다');
   });
 
   it('detects excessive-honorific expressions like "처리되시겠습니다"', () => {
