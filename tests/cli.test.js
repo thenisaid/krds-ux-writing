@@ -95,4 +95,74 @@ describe('bin/krds-lint CLI', () => {
     expect(result.stdout).toContain('이슈 있는 파일: 1개');
     expect(result.stdout).toContain('총 이슈: 1 (오류 1 / 경고 0 / 안내 0)');
   });
+
+  it('prints help text and exits 0 when --help is passed', () => {
+    const result = runCli(['--help']);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('krds-lint — KRDS UX Writing 린터');
+    expect(result.stdout).toContain('--json');
+  });
+
+  it('lints a single file in text mode and exits 1 when errors are found', () => {
+    const dir = makeTempDir();
+    const filePath = path.join(dir, 'one.txt');
+    fs.writeFileSync(filePath, '귀하의 신청이 접수되었습니다.\n', 'utf8');
+
+    const result = runCli([filePath]);
+
+    expect(result.status).toBe(1);
+    // Single-file text mode uses formatCLI output directly (no "파일:" header)
+    expect(result.stdout).not.toContain('검사 파일:');
+    expect(result.stdout).toContain('품질 점수:');
+  });
+
+  it('exits 0 for a clean single-file lint with no issues', () => {
+    const dir = makeTempDir();
+    const filePath = path.join(dir, 'clean.txt');
+    fs.writeFileSync(filePath, '신청이 접수되었습니다.\n', 'utf8');
+
+    const result = runCli([filePath]);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('품질 점수:');
+  });
+
+  it('exits 1 and writes to stderr when a target path does not exist', () => {
+    const result = runCli(['/nonexistent/path/definitely-missing.txt']);
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('내부 오류');
+  });
+
+  it('reads stdin in JSON mode and returns structured lint output', () => {
+    const result = runCli(['--json'], '귀하의 신청이 접수되었습니다.');
+    const payload = JSON.parse(result.stdout);
+
+    expect(result.status).toBe(1);
+    expect(payload).toHaveProperty('issues');
+    expect(payload.issues.length).toBeGreaterThan(0);
+    expect(payload).toHaveProperty('score');
+  });
+
+  it('reads stdin in text mode and formats output as CLI report', () => {
+    const result = runCli([], '신청이 접수되었습니다.');
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('품질 점수: 100/100');
+  });
+
+  it('skips binary files when scanning a directory', () => {
+    const dir = makeTempDir();
+    const binaryPath = path.join(dir, 'image.png');
+    const nullBytes = Buffer.alloc(16, 0);
+    fs.writeFileSync(binaryPath, nullBytes);
+    fs.writeFileSync(path.join(dir, 'text.txt'), '신청이 접수되었습니다.\n', 'utf8');
+
+    const result = runCli([dir]);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('검사 파일: 1개');
+    expect(result.stdout).not.toContain('image.png');
+  });
 });
