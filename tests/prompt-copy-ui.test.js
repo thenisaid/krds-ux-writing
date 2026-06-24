@@ -294,4 +294,27 @@ describe('shared prompt copy behavior', () => {
     expect(button.textContent).toBe('복사됨!');
     expect(context.document.execCommand).toHaveBeenCalledWith('copy');
   });
+
+  it('cancels the existing reset timer when the button is clicked again before it fires', () => {
+    const clearedTimers = [];
+    const { context, document, button } = createEnvironment({
+      execCommandResult: true,
+      manualTimers: true,
+    });
+    context.navigator = {};
+    const originalClearTimeout = context.clearTimeout;
+    context.clearTimeout = (id) => {
+      clearedTimers.push(id);
+      originalClearTimeout(id);
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    document.dispatch('click', { target: button });
+    expect(button.textContent).toBe('복사됨!');
+
+    document.dispatch('click', { target: button });
+    expect(button.textContent).toBe('복사됨!');
+    expect(clearedTimers.length).toBeGreaterThan(0);
+  });
 });
