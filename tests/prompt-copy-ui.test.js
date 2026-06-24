@@ -159,4 +159,52 @@ describe('shared prompt copy behavior', () => {
     expect(button.textContent).toBe('복사됨!');
     expect(document.execCommand).toHaveBeenCalledWith('copy');
   });
+
+  it('shows "복사 실패" when both clipboard and execCommand fallback fail', async () => {
+    const { context, document, button } = createEnvironment({
+      clipboardImpl: vi.fn(() => Promise.reject(new Error('denied'))),
+      execCommandResult: false,
+      manualTimers: true,
+    });
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('click', { target: button });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(button.textContent).toBe('복사 실패');
+  });
+
+  it('succeeds via execCommand fallback when clipboard API is unavailable', () => {
+    const { context, document, button } = createEnvironment({
+      execCommandResult: true,
+      manualTimers: true,
+    });
+    context.navigator = {};
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('click', { target: button });
+
+    expect(button.textContent).toBe('복사됨!');
+  });
+
+  it('does nothing when the clicked element is not a copy button', () => {
+    const { context, document, button } = createEnvironment();
+    const nonButton = createElement({ textContent: '일반 텍스트' });
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('click', { target: nonButton });
+
+    expect(button.textContent).toBe('복사');
+  });
+
+  it('does nothing when the prompt element referenced by the button does not exist in the DOM', () => {
+    const { context, document, button } = createEnvironment();
+    button.dataset.target = 'nonexistent-prompt';
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('click', { target: button });
+
+    expect(button.textContent).toBe('복사');
+  });
 });
