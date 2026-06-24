@@ -187,6 +187,13 @@ describe('server.js configuration', () => {
       },
       socket: { remoteAddress: '127.0.0.1' },
     })).toBe('198.51.100.9');
+
+    expect(getClientIp({
+      headers: {},
+      socket: { remoteAddress: '10.0.0.5' },
+    })).toBe('10.0.0.5');
+
+    expect(getClientIp({ headers: {} })).toBe('unknown');
   });
 
   it('accepts the same agency types as the generator UI and deployed handlers', async () => {
