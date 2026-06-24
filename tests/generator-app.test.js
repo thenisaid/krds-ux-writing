@@ -2148,4 +2148,79 @@ describe('generator/app.js', () => {
     // renderQualityReview returned at the guard without writing to quality-gates
     expect(elements['quality-gates'].innerHTML).toBe('');
   });
+
+  it('skips an all-blank-cell table row (|| pattern) and still passes other lines to lint', () => {
+    let lintInput = null;
+    const { context } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn((text) => { lintInput = text; return { score: 100, summary: { total: 0, errors: 0, warnings: 0, infos: 0 }, issues: [] }; }),
+    };
+
+    const markdown = '개선 표현\n||\n다음 조치';
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true, status: 200,
+      body: { getReader() {
+        const chunks = [
+          encoder.encode('data: ' + JSON.stringify({ type: 'chunk', text: markdown }) + '\n'),
+          encoder.encode('data: ' + JSON.stringify({ type: 'done' }) + '\n'),
+        ];
+        let i = 0;
+        return { async read() { if (i < chunks.length) return { done: false, value: chunks[i++] }; return { done: true, value: undefined }; } };
+      } },
+    }));
+
+    const { context: ctx2 } = buildGeneratorContext({ fetchImpl });
+    ctx2.KRDSLint = context.KRDSLint;
+    vm.runInNewContext(SOURCE, ctx2);
+    ctx2.document.getElementById('generator-form').dispatch('submit');
+
+    return new Promise((resolve) => {
+      setTimeout(async () => {
+        await new Promise((r) => setTimeout(r, 0));
+        expect(ctx2.KRDSLint.lint).toHaveBeenCalled();
+        expect(lintInput).toContain('개선 표현');
+        expect(lintInput).toContain('다음 조치');
+        resolve();
+      }, 0);
+    });
+  });
+
+  it('skips a single source-marker cell row (| 현재 |) that leaves no reviewable content after slicing', () => {
+    let lintInput = null;
+    const { context } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn((text) => { lintInput = text; return { score: 100, summary: { total: 0, errors: 0, warnings: 0, infos: 0 }, issues: [] }; }),
+    };
+
+    const markdown = '개선 표현\n| 현재 |\n다음 조치';
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true, status: 200,
+      body: { getReader() {
+        const chunks = [
+          encoder.encode('data: ' + JSON.stringify({ type: 'chunk', text: markdown }) + '\n'),
+          encoder.encode('data: ' + JSON.stringify({ type: 'done' }) + '\n'),
+        ];
+        let i = 0;
+        return { async read() { if (i < chunks.length) return { done: false, value: chunks[i++] }; return { done: true, value: undefined }; } };
+      } },
+    }));
+
+    const { context: ctx2 } = buildGeneratorContext({ fetchImpl });
+    ctx2.KRDSLint = context.KRDSLint;
+    vm.runInNewContext(SOURCE, ctx2);
+    ctx2.document.getElementById('generator-form').dispatch('submit');
+
+    return new Promise((resolve) => {
+      setTimeout(async () => {
+        await new Promise((r) => setTimeout(r, 0));
+        expect(ctx2.KRDSLint.lint).toHaveBeenCalled();
+        expect(lintInput).toContain('개선 표현');
+        expect(lintInput).toContain('다음 조치');
+        expect(lintInput).not.toContain('현재');
+        resolve();
+      }, 0);
+    });
+  });
 });
