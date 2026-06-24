@@ -1496,6 +1496,24 @@ describe('generator/app.js', () => {
     expect(html).not.toContain('quality-gate--fail');
   });
 
+  it('renders 심리적 안전망 as 주의 when safetyCount is 0 but text has no action/structure cues and mode is derivative-guide', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 100,
+        summary: { total: 0, errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      })),
+    };
+    elements['generator-mode'].value = 'derivative-guide';
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    const html = elements['quality-gates'].innerHTML;
+    // 심리적 안전망 is 주의 (no safety errors, but no action/structure cue and mode ≠ rewrite/tone-adjust)
+    expect(html).toContain('quality-gate--warn');
+  });
+
   it('flags 정보핵심화 as 주의 when the reviewed text contains one long sentence and no pattern issues', async () => {
     const longLine = 'a'.repeat(80);
     const encoder = new TextEncoder();
@@ -1848,6 +1866,21 @@ describe('generator/app.js', () => {
     elements['agency-type'].dispatch('change');
 
     expect(elements['sample-1'].value).toBe('사용자가 직접 입력한 문장입니다.');
+  });
+
+  it('falls back to 기타공공기관 samples when agencyType changes to an unrecognized value and all sample fields are empty', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['sample-1'].value = '';
+    elements['sample-2'].value = '';
+    elements['sample-3'].value = '';
+    elements['agency-type'].value = '알 수 없는 기관 유형';
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['agency-type'].dispatch('change');
+
+    // TYPE_SAMPLES['알 수 없는 기관 유형'] is undefined → falls back to TYPE_SAMPLES['기타공공기관']
+    expect(elements['sample-1'].value).toContain('신청이 접수되었습니다');
   });
 
   it('updates sample placeholders and mode help text when the generator-mode changes', () => {
