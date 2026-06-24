@@ -236,4 +236,14 @@ describe('shared prompt copy behavior', () => {
 
     expect(button.textContent).toBe('복사 실패');
   });
+
+  it('does nothing when the click target has no closest method', () => {
+    const { context, document, button } = createEnvironment();
+    const bareTarget = { textContent: '링크' };
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('click', { target: bareTarget });
+
+    expect(button.textContent).toBe('복사');
+  });
 });
