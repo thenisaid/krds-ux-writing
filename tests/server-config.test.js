@@ -1414,6 +1414,43 @@ describe('server.js configuration', () => {
     }
   });
 
+  it('silently skips Ollama ndjson events that have no response field and done is false', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      await new Promise((resolve) => {
+        const chunks = [];
+        http.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            callback(res);
+            res.emit('data', Buffer.from(
+              '{"model":"test","created_at":"2026-01-01T00:00:00Z"}\n' + // no done, no response → fall-through
+              '{"model":"test","response":"내용","done":false}\n' +
+              '{"model":"test","done":true}\n',
+            ));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callOllama(
+          'http://localhost:11434', 'system', 'user', 2200,
+          (text) => { chunks.push(text); },
+          () => { expect(chunks).toEqual(['내용']); resolve(); },
+          (message) => { throw new Error('unexpected error: ' + message); },
+        );
+      });
+    } finally {
+      http.request = originalRequest;
+    }
+  });
+
   it('fires done via sawContent fallback when Ollama content arrived but no explicit done event was sent', async () => {
     const { callOllamaStream: callOllama } = loadFreshServerModule();
     const http = requireModule('node:http');
