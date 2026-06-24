@@ -1523,6 +1523,41 @@ describe('generator API handlers', () => {
   });
 });
 
+describe('generate-shared.js — buildUserMessage and readOptionalStringField', () => {
+  let buildUserMessage;
+  let readOptionalStringField;
+
+  beforeAll(async () => {
+    const mod = await import('../api/shared/generate-shared.js');
+    buildUserMessage = mod.buildUserMessage;
+    readOptionalStringField = mod.readOptionalStringField;
+  });
+
+  it('buildUserMessage falls back to the guide-draft label and instruction when mode is unrecognised', () => {
+    const result = buildUserMessage({
+      mode: 'unknown-mode',
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      screenType: '',
+      toneTarget: '',
+      taskBrief: '',
+      samples: ['샘플 문구'],
+    });
+    expect(result).toContain('기관 가이드 초안');
+    expect(result).toContain('샘플을 분석해 기관 전체 UX Writing 기준을 작성하세요.');
+  });
+
+  it('readOptionalStringField returns ok:true and empty value when the field is explicitly null', () => {
+    const result = readOptionalStringField({ screenType: null }, 'screenType', 40);
+    expect(result).toEqual({ ok: true, value: '' });
+  });
+
+  it('readOptionalStringField returns ok:true and empty value when the field is an empty string', () => {
+    const result = readOptionalStringField({ screenType: '' }, 'screenType', 40);
+    expect(result).toEqual({ ok: true, value: '' });
+  });
+});
+
 describe('anthropic-edge.js — buildApiEndpoint and getAnthropicApiKey', () => {
   let buildApiEndpoint;
   let getAnthropicApiKey;
