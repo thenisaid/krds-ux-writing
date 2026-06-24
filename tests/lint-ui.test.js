@@ -675,6 +675,33 @@ describe('lint-ui stale result handling', () => {
     expect(elements.improvedText.textContent).toBe('삭제가 필요합니다.');
   });
 
+  it('leaves the particle unchanged when the replacement text ends with a non-Korean character', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1,
+          col: 1,
+          severity: 'error',
+          category: '행정어',
+          message: '행정어/금지어: "파일"',
+          match: '파일',
+          suggestion: '→ PDF',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '파일를 제출해 주세요.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedCard.style.display).toBe('block');
+    // 'PDF' ends with a non-Korean char → particle '를' returned unchanged
+    expect(elements.improvedText.textContent).toBe('PDF를 제출해 주세요.');
+  });
+
   it('shows a failure toast when CSV download APIs are unavailable', () => {
     const { context, elements } = buildContext();
     context.URL = {
@@ -981,6 +1008,16 @@ describe('lint-ui stale result handling', () => {
 
     expect(context.navigator.clipboard.writeText).not.toHaveBeenCalled();
     expect(elements.toast.textContent).toBe('⚠️ 500자 이하 텍스트만 링크로 공유할 수 있습니다');
+  });
+
+  it('silently ignores copyImprovedBtn click when improved text is empty', () => {
+    const { context, elements } = buildContext();
+    context.navigator.clipboard = { writeText: vi.fn(() => Promise.resolve()) };
+    vm.runInNewContext(SOURCE, context);
+
+    // No lintBtn click — improvedText.textContent is empty
+    expect(() => elements.copyImprovedBtn.dispatch('click')).not.toThrow();
+    expect(context.navigator.clipboard.writeText).not.toHaveBeenCalled();
   });
 
   it('silently ignores copyBtn click when no lint result is available yet', () => {
