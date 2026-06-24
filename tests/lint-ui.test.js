@@ -1041,6 +1041,72 @@ describe('lint-ui stale result handling', () => {
     expect(elements.toast.textContent).toBe('');
   });
 
+  it('shows a failure toast when document.body is null and skips both finally cleanups', () => {
+    const { context, elements } = buildContext();
+    context.document.body = null;
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+    elements.downloadBtn.dispatch('click');
+
+    expect(elements.toast.textContent).toBe('❌ CSV 다운로드에 실패했습니다');
+  });
+
+  it('shows a failure toast and revokes the blob URL when the created anchor has no click method', () => {
+    const { context, elements } = buildContext();
+    const revokeCall = vi.fn();
+    context.URL = {
+      createObjectURL() { return 'blob:test-no-click'; },
+      revokeObjectURL: revokeCall,
+    };
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+    elements.downloadBtn.dispatch('click');
+
+    expect(elements.toast.textContent).toBe('❌ CSV 다운로드에 실패했습니다');
+    expect(revokeCall).toHaveBeenCalledWith('blob:test-no-click');
+  });
+
+  it('shows a failure toast and revokes the blob URL when document.createElement returns null', () => {
+    const { context, elements } = buildContext();
+    const revokeCall = vi.fn();
+    context.URL = {
+      createObjectURL() { return 'blob:null-anchor'; },
+      revokeObjectURL: revokeCall,
+    };
+    context.document.createElement = vi.fn(() => null);
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+    elements.downloadBtn.dispatch('click');
+
+    expect(elements.toast.textContent).toBe('❌ CSV 다운로드에 실패했습니다');
+    expect(revokeCall).toHaveBeenCalledWith('blob:null-anchor');
+  });
+
+  it('silently swallows a removeChild error in the finally block and still revokes the blob URL', () => {
+    const { context, elements } = buildContext();
+    const revokeCall = vi.fn();
+    context.URL = {
+      createObjectURL() { return 'blob:remove-throws'; },
+      revokeObjectURL: revokeCall,
+    };
+    context.document.body = {
+      appendChild() {},
+      removeChild() { throw new Error('DOM mutation error'); },
+    };
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+    expect(() => elements.downloadBtn.dispatch('click')).not.toThrow();
+    expect(revokeCall).toHaveBeenCalledWith('blob:remove-throws');
+  });
+
   it('sets share button title to dirty message after text changes following a successful lint', () => {
     const { context, elements } = buildContext();
     vm.runInNewContext(SOURCE, context);
