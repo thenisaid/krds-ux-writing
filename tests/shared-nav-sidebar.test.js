@@ -90,7 +90,7 @@ function createElement(options = {}) {
       const queryValue = options.queryMap ? options.queryMap[selector] : null;
       if (Array.isArray(queryValue)) return queryValue;
       if (queryValue) return [queryValue];
-      if (selector === '.sidebar-link') return options.sidebarLinks || [];
+      if (selector === '.sidebar-link' || selector === '.sidebar-link[href^="#"]') return options.sidebarLinks || [];
       if (selector.indexOf('a[href]') !== -1 && selector.indexOf('button:not([disabled])') !== -1) {
         return options.focusables || [];
       }
@@ -543,5 +543,129 @@ describe('shared nav sidebar toggle', () => {
 
     expect(sidebar.classList.contains('open')).toBe(false);
     expect(sidebarTarget.focus).toHaveBeenCalled();
+  });
+});
+
+describe('shared nav sidebar scroll-tracking IntersectionObserver', () => {
+  function makeScrollContext(options = {}) {
+    let observerCallback = null;
+    const observedTargets = [];
+    const targetId = options.targetId || 'section-1';
+    const sidebarTarget = createElement({ id: targetId });
+    const sidebarLink = createElement({
+      attributes: { href: '#' + targetId },
+      classes: ['sidebar-link'],
+    });
+    const hamburger = createElement({
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    const sidebar = {
+      querySelectorAll(selector) {
+        if (selector === '.sidebar-link' || selector === '.sidebar-link[href^="#"]') return [sidebarLink];
+        if (selector.indexOf('a[href]') !== -1) return [sidebarLink];
+        return [];
+      },
+      classList: { add() {}, remove() {}, contains() { return false; } },
+      addEventListener() {},
+      removeEventListener() {},
+    };
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: null,
+      querySelectorAll() { return []; },
+      querySelector(selector) {
+        if (selector === '.sidebar') return sidebar;
+        if (selector === '.sidebar-backdrop') return null;
+        if (selector === '.lnb-tree') return null;
+        return null;
+      },
+      getElementById(id) {
+        if (id === 'gnbHamburger') return hamburger;
+        if (id === targetId) return sidebarTarget;
+        return null;
+      },
+      addEventListener() {},
+    };
+    const context = {
+      window: {
+        innerWidth: 1200,
+        location: { pathname: '/krds-ux-writing/principles/', search: '' },
+        scrollTo: vi.fn(),
+        addEventListener() {},
+      },
+      location: { pathname: '/krds-ux-writing/principles/', search: '', hash: '' },
+      document,
+      localStorage: { getItem() { return null; }, setItem() {} },
+      sessionStorage: { getItem() { return null; }, setItem() {} },
+      IntersectionObserver: function (callback) {
+        observerCallback = callback;
+        return {
+          observe(target) { observedTargets.push(target); },
+          unobserve() {},
+          disconnect() {},
+        };
+      },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(SOURCE, context);
+    return { sidebarLink, sidebarTarget, observerCallback, observedTargets };
+  }
+
+  it('registers an IntersectionObserver for sidebar hash links and observes their target elements', () => {
+    const { observedTargets, sidebarTarget } = makeScrollContext();
+    expect(observedTargets).toContain(sidebarTarget);
+  });
+
+  it('marks the sidebar link active when its target section intersects the viewport', () => {
+    const { sidebarLink, sidebarTarget, observerCallback } = makeScrollContext();
+    expect(typeof observerCallback).toBe('function');
+
+    observerCallback([{ isIntersecting: true, target: sidebarTarget }]);
+
+    expect(sidebarLink.classList.contains('active')).toBe(true);
+  });
+
+  it('skips target IDs that have no corresponding DOM element and does not observe them', () => {
+    let observerCallback = null;
+    const observedTargets = [];
+    const sidebarLink = createElement({
+      attributes: { href: '#nonexistent' },
+      classes: ['sidebar-link'],
+    });
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: null,
+      querySelectorAll() { return []; },
+      querySelector(selector) {
+        if (selector === '.sidebar') return {
+          querySelectorAll() { return [sidebarLink]; },
+          classList: { add() {}, remove() {}, contains() { return false; } },
+          addEventListener() {},
+          removeEventListener() {},
+        };
+        return null;
+      },
+      getElementById() { return null; },
+      addEventListener() {},
+    };
+    const context = {
+      window: { innerWidth: 1200, location: { pathname: '/krds-ux-writing/principles/', search: '' }, scrollTo: vi.fn(), addEventListener() {} },
+      location: { pathname: '/krds-ux-writing/principles/', search: '', hash: '' },
+      document,
+      localStorage: { getItem() { return null; }, setItem() {} },
+      sessionStorage: { getItem() { return null; }, setItem() {} },
+      IntersectionObserver: function (callback) {
+        observerCallback = callback;
+        return { observe(t) { observedTargets.push(t); }, unobserve() {}, disconnect() {} };
+      },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(SOURCE, context);
+
+    expect(observedTargets).toHaveLength(0);
   });
 });
