@@ -955,4 +955,66 @@ describe('generator/app.js', () => {
     expect(lintInput).toContain('이 문장은 포함됩니다');
     expect(lintInput).toContain('일반 문장도 포함됩니다');
   });
+
+  it('shows 심리적 안전망 주의 when safety issues are absent but text has no action or structure cues', async () => {
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: {"type":"chunk","text":"무번역 원칙을 적용합니다."}\n'),
+            encoder.encode('data: {"type":"done"}\n'),
+          ];
+          let index = 0;
+          return {
+            async read() {
+              if (index < chunks.length) {
+                return { done: false, value: chunks[index++] };
+              }
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 100,
+        summary: { total: 0, errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      })),
+    };
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const html = elements['quality-gates'].innerHTML;
+    expect(html).toContain('quality-gate--warn');
+    expect(html).not.toContain('quality-gate--fail');
+  });
+
+  it('shows 보이스·톤 주의 when exactly one voice-type issue is present with no emoji in text', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 90,
+        summary: { total: 1, errors: 0, warnings: 1, infos: 0 },
+        issues: [
+          { type: 'excessive-honorific', category: '과잉 존칭', message: '처리되시겠습니다', suggestion: '→ 처리됩니다' },
+        ],
+      })),
+    };
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    const html = elements['quality-gates'].innerHTML;
+    expect(html).toContain('quality-gate--warn');
+    expect(html).not.toContain('quality-gate--fail');
+  });
 });
