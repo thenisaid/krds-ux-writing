@@ -517,6 +517,20 @@ describe('shared nav sidebar toggle', () => {
     expect(sidebarTarget.focus).not.toHaveBeenCalled();
   });
 
+  it('closes the sidebar without focusing any target when the sidebar link href ends with a bare "#"', () => {
+    const { hamburger, sidebar, sidebarLink, sidebarTarget } = makeContext({
+      sidebarLinkHref: '/krds-ux-writing/principles/foundation/#',
+      targetId: 'section-1',
+    });
+
+    hamburger.dispatch('click');
+    sidebarLink.dispatch('click');
+
+    expect(sidebar.classList.contains('open')).toBe(false);
+    expect(hamburger.getAttribute('aria-expanded')).toBe('false');
+    expect(sidebarTarget.focus).not.toHaveBeenCalled();
+  });
+
   it('focuses the anchor target when the sidebar link uses an absolute https:// same-page URL', () => {
     const { hamburger, sidebar, sidebarLink, sidebarTarget } = makeContext({
       currentPath: '/krds-ux-writing/principles/',
