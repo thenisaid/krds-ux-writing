@@ -1022,6 +1022,40 @@ describe('generator API handlers', () => {
     expect(response.status).toBe(200);
   });
 
+  it('does not call the KV expire endpoint on subsequent requests within the same rate-limit window', async () => {
+    const kvUrl = 'https://kv.example.com';
+    process.env.KV_REST_API_URL = kvUrl;
+    process.env.KV_REST_API_TOKEN = 'kv-token';
+
+    let kvExpireCalled = false;
+
+    global.fetch = vi.fn(async (url) => {
+      const u = String(url);
+      if (u.includes('/incr/')) {
+        // count=3: subsequent request in same window (> 1, ≤ RATE_LIMIT_MAX=5)
+        return new Response(JSON.stringify({ result: 3 }), { status: 200 });
+      }
+      if (u.includes('/expire/')) {
+        kvExpireCalled = true;
+        return new Response(JSON.stringify({ result: 1 }), { status: 200 });
+      }
+      return new Response('data: {"type":"message_stop"}\n\n', {
+        status: 200,
+        headers: { 'Content-Type': 'text/event-stream' },
+      });
+    });
+
+    const response = await vercelHandler(buildRequest({
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      mode: 'rewrite',
+      samples: ['문장 하나'],
+    }));
+
+    expect(response.status).toBe(200);
+    expect(kvExpireCalled).toBe(false);
+  });
+
   it('rejects all-whitespace samples as having no valid content in deployed handlers', async () => {
     const payload = {
       agencyName: '테스트 기관',
