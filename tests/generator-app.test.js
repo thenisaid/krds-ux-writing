@@ -2137,4 +2137,15 @@ describe('generator/app.js', () => {
 
     expect(screens[0].classList.contains('active')).toBe(true);
   });
+
+  it('returns early from renderQualityReview when the quality-review element is absent', () => {
+    const { context, elements } = buildGeneratorContext();
+    delete elements['quality-review']; // qualityReviewEl initialises to null
+    vm.runInNewContext(SOURCE, context);
+
+    elements['fallback-btn'].dispatch('click');
+
+    // renderQualityReview returned at the guard without writing to quality-gates
+    expect(elements['quality-gates'].innerHTML).toBe('');
+  });
 });
