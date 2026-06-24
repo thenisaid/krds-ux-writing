@@ -1457,3 +1457,62 @@ describe('lint-ui stale result handling', () => {
     expect(elements.historyList.innerHTML).not.toContain('var(--color-warning-50)');
   });
 });
+
+describe('pickPrimarySuggestion — bracket nesting prevents slash split', () => {
+  it('does not split on a slash that appears inside parentheses in the suggestion string', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1,
+          col: 1,
+          severity: 'error',
+          category: '전문 용어',
+          message: '행정어/금지어: "API 연동"',
+          match: 'API 연동',
+          suggestion: '→ 시스템 연결 (또는 / 시스템 통합)',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = 'API 연동이 필요합니다.';
+    elements.lintBtn.dispatch('click');
+
+    // The slash is inside '()' so pickPrimarySuggestion returns the full suggestion (no split)
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).toBe('시스템 연결 (또는 / 시스템 통합)이 필요합니다.');
+  });
+});
+
+describe('correctParticleForReplacement — vowel-form correction', () => {
+  it('converts batchim-form particle "이" to "가" when the replacement ends with a vowel Korean syllable', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1,
+          col: 1,
+          severity: 'error',
+          category: '행정 관습어',
+          message: '행정어/금지어: "행정처분"',
+          match: '행정처분',
+          suggestion: '→ 행정 제재',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    // '행정처분' ends with '분' (batchim ㄴ) → particle '이' is used in source text
+    // replacement '행정 제재' ends with '재' (no batchim) → '이' must become '가'
+    elements.inputText.value = '행정처분이 내려집니다.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).toBe('행정 제재가 내려집니다.');
+  });
+});
