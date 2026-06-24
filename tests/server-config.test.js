@@ -1010,6 +1010,80 @@ describe('server.js configuration', () => {
     }
   });
 
+  it('treats a [DONE] SSE sentinel as a no-op in the local Claude server path', async () => {
+    const originalRequest = https.request;
+    try {
+      await new Promise((resolve) => {
+        const chunks = [];
+
+        https.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            res.headers = { 'content-type': 'text/event-stream' };
+            callback(res);
+            res.emit('data', Buffer.from(
+              'data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"내용"}}\n' +
+              'data: [DONE]\n' +
+              'data: {"type":"message_stop"}\n\n',
+            ));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callFreshClaudeStream(
+          { model: 'claude-sonnet-4-6' },
+          (text) => { chunks.push(text); },
+          () => {
+            expect(chunks).toEqual(['내용']);
+            resolve();
+          },
+          (message) => { throw new Error('unexpected error: ' + message); },
+        );
+      });
+    } finally {
+      https.request = originalRequest;
+    }
+  });
+
+  it('fires done via the buffer flush path when a message_stop arrives without a trailing newline', async () => {
+    const originalRequest = https.request;
+    try {
+      await new Promise((resolve) => {
+        https.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            res.headers = { 'content-type': 'text/event-stream' };
+            callback(res);
+            // content with trailing newline → processed immediately in on('data')
+            res.emit('data', Buffer.from('data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"안녕"}}\n'));
+            // message_stop WITHOUT trailing newline → stays in buffer, flushed on('end')
+            res.emit('data', Buffer.from('data: {"type":"message_stop"}'));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callFreshClaudeStream(
+          { model: 'claude-sonnet-4-6' },
+          () => {},
+          () => resolve(),
+          (message) => { throw new Error('unexpected error: ' + message); },
+        );
+      });
+    } finally {
+      https.request = originalRequest;
+    }
+  });
+
   it('handles the OPTIONS preflight on the local server with a 204 and no body', async () => {
     const responseState = await runServerRequest({
       method: 'OPTIONS',
