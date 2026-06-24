@@ -414,6 +414,28 @@ describe('shared nav tree relationships', () => {
     expect(localSubLink.classList.contains('active')).toBe(true);
     expect(localSubLink.getAttribute('aria-current')).toBe('location');
   });
+
+  it('does not mark an https:// LNB sub-link active when the URL has no path component', () => {
+    const { localSubLink, remoteSubLink } = makeHashContext({
+      hash: '#overview',
+      localHref: 'https://example.com#overview',
+    });
+
+    expect(localSubLink.classList.contains('active')).toBe(false);
+    expect(localSubLink.getAttribute('aria-current')).toBe(null);
+    expect(remoteSubLink.classList.contains('active')).toBe(false);
+  });
+
+  it('does not mark a protocol-relative // LNB sub-link active when the URL has no path component', () => {
+    const { localSubLink, remoteSubLink } = makeHashContext({
+      hash: '#overview',
+      localHref: '//example.com#overview',
+    });
+
+    expect(localSubLink.classList.contains('active')).toBe(false);
+    expect(localSubLink.getAttribute('aria-current')).toBe(null);
+    expect(remoteSubLink.classList.contains('active')).toBe(false);
+  });
 });
 
 describe('shared nav tree accordion toggle', () => {
