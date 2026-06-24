@@ -1471,6 +1471,24 @@ describe('generator/app.js', () => {
     expect(elements['fallback-area'].style.display).toBe('block');
   });
 
+  it('shows a stream-unavailable error when the successful response has no readable body', async () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: null,
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(elements['generating-error'].classList.contains('visible')).toBe(true);
+    expect(elements['generating-error'].textContent).toContain('응답 스트림을 읽을 수 없습니다');
+    expect(elements['fallback-area'].style.display).toBe('block');
+  });
+
   it('shows a network error message when the fetch itself throws a non-abort error', async () => {
     const fetchImpl = vi.fn(async () => {
       throw new Error('ECONNREFUSED');
