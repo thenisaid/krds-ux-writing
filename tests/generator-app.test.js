@@ -1856,4 +1856,58 @@ describe('generator/app.js', () => {
     expect(lintMock).toHaveBeenCalled();
     expect(elements['quality-review'].hidden).toBe(false);
   });
+
+  it('closes the format dropdown when the toggle button is clicked while the menu is already open', () => {
+    const { context, elements } = buildGeneratorContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements['dl-chevron'].dispatch('click');
+    expect(elements['dl-menu'].classList.contains('open')).toBe(true);
+    expect(elements['dl-chevron'].getAttribute('aria-expanded')).toBe('true');
+
+    elements['dl-chevron'].dispatch('click');
+    expect(elements['dl-menu'].classList.contains('open')).toBe(false);
+    expect(elements['dl-chevron'].getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('closes the format dropdown and restores focus when Escape is pressed with items present', () => {
+    const { context, elements } = buildGeneratorContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements['dl-chevron'].dispatch('click');
+    expect(elements['dl-menu'].classList.contains('open')).toBe(true);
+
+    elements['dl-menu'].dispatch('keydown', { key: 'Escape', preventDefault: vi.fn() });
+
+    expect(elements['dl-menu'].classList.contains('open')).toBe(false);
+    expect(elements['dl-chevron'].getAttribute('aria-expanded')).toBe('false');
+    expect(elements['dl-chevron'].focus).toHaveBeenCalled();
+  });
+
+  it('does nothing when the format dropdown is clicked outside any menu item', () => {
+    const { context, elements } = buildGeneratorContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements['dl-chevron'].dispatch('click');
+    expect(elements['dl-menu'].classList.contains('open')).toBe(true);
+
+    const nonItemTarget = createElement();
+    expect(() => elements['dl-menu'].dispatch('click', { target: nonItemTarget })).not.toThrow();
+    expect(elements['dl-menu'].classList.contains('open')).toBe(true);
+    expect(elements['download-error'].classList.contains('visible')).toBe(false);
+  });
+
+  it('shows a "Word 변환에 실패했습니다" error for unrecognised non-HWP download formats', () => {
+    const docxItem = createElement({ dataset: { format: 'docx' }, classes: ['dl-menu-item'] });
+    const { context, elements } = buildGeneratorContext({
+      menuItems: [docxItem],
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['dl-chevron'].dispatch('click');
+    elements['dl-menu'].dispatch('click', { target: docxItem });
+
+    expect(elements['download-error'].classList.contains('visible')).toBe(true);
+    expect(elements['download-error'].textContent).toContain('Word 변환에 실패했습니다');
+  });
 });
