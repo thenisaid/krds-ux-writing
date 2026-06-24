@@ -1539,3 +1539,48 @@ describe('correctParticleForReplacement — vowel-form correction', () => {
     expect(elements.improvedText.textContent).toBe('행정 제재가 내려집니다.');
   });
 });
+
+describe('lint-ui CLI banner close and copy buttons', () => {
+  it('hides the CLI banner when the close button is clicked', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 42,
+        summary: { errors: 2, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1, col: 1, severity: 'error', category: '행정 관습어',
+          message: '행정어/금지어: "귀하"', match: '귀하',
+          suggestion: '→ 고객님', type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+    expect(elements.cliBanner.style.display).toBe('block');
+
+    elements.cliBannerClose.dispatch('click');
+    expect(elements.cliBanner.style.display).toBe('none');
+  });
+
+  it('copies the npm install CLI command when the copy CLI button is clicked', async () => {
+    const { context, elements } = buildContext();
+    const writtenTexts = [];
+    context.navigator = {
+      clipboard: {
+        writeText: vi.fn((text) => {
+          writtenTexts.push(text);
+          return Promise.resolve();
+        }),
+      },
+    };
+    vm.runInNewContext(SOURCE, context);
+
+    elements.copyCliBtn.dispatch('click');
+    await Promise.resolve();
+
+    expect(writtenTexts.length).toBeGreaterThan(0);
+    expect(writtenTexts[0]).toContain('krds-ux-writing');
+    expect(elements.toast.textContent).toContain('✅');
+  });
+});
