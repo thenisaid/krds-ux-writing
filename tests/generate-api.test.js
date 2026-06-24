@@ -1113,4 +1113,97 @@ describe('generator API handlers', () => {
     expect(response.status).toBe(204);
     expect(response.headers.get('access-control-allow-origin')).toBeNull();
   });
+
+  it('sends an SSE error event when the upstream Claude API responds with a non-200 status', async () => {
+    global.fetch = vi.fn(async () => new Response('Internal Server Error', { status: 500 }));
+
+    const response = await vercelHandler(buildRequest({
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      samples: ['샘플 문구'],
+    }));
+    const body = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(body).toContain('"type":"error"');
+    expect(body).toContain('AI 서비스 연결에 실패했습니다');
+  });
+
+  it('sends an SSE error event when the upstream Claude SSE stream contains a type:error event', async () => {
+    global.fetch = vi.fn(async () => new Response(
+      'data: {"type":"error","error":{"type":"overloaded_error","message":"overloaded"}}\n\n',
+      { status: 200, headers: { 'Content-Type': 'text/event-stream' } },
+    ));
+
+    const response = await vercelHandler(buildRequest({
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      samples: ['샘플 문구'],
+    }));
+    const body = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(body).toContain('"type":"error"');
+    expect(body).toContain('AI 처리 중 오류');
+  });
+
+  it('sends an SSE error event when the fetch itself throws a network-level error', async () => {
+    global.fetch = vi.fn(async () => { throw new Error('network failure'); });
+
+    const response = await vercelHandler(buildRequest({
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      samples: ['샘플 문구'],
+    }));
+    const body = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(body).toContain('"type":"error"');
+    expect(body).toContain('AI 서비스에 연결할 수 없습니다');
+  });
+
+  it('sends an SSE error event when the readable stream errors mid-transfer', async () => {
+    global.fetch = vi.fn(async () => {
+      const readable = new ReadableStream({
+        start(controller) {
+          controller.error(new Error('socket dropped'));
+        },
+      });
+      return new Response(readable, {
+        status: 200,
+        headers: { 'Content-Type': 'text/event-stream' },
+      });
+    });
+
+    const response = await vercelHandler(buildRequest({
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      samples: ['샘플 문구'],
+    }));
+    const body = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(body).toContain('"type":"error"');
+    expect(body).toContain('연결이 끊겼습니다');
+  });
+
+  it('treats a [DONE] SSE sentinel as a no-op and sends done when content was already streamed', async () => {
+    global.fetch = vi.fn(async () => new Response(
+      'data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"안녕"}}\n' +
+      'data: [DONE]\n\n',
+      { status: 200, headers: { 'Content-Type': 'text/event-stream' } },
+    ));
+
+    const response = await vercelHandler(buildRequest({
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      samples: ['샘플 문구'],
+    }));
+    const body = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(body).toContain('"type":"chunk"');
+    expect(body).toContain('"type":"done"');
+    expect(body).not.toContain('"type":"error"');
+  });
 });
