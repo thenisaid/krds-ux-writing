@@ -1475,4 +1475,118 @@ describe('generator/app.js', () => {
     expect(() => elements['copy-md-btn'].dispatch('click')).not.toThrow();
     expect(context.navigator.clipboard.writeText).not.toHaveBeenCalled();
   });
+
+  it('shows the fallback empty message when the lint engine is available but markdown produces no reviewable text', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({ score: 100, summary: { total: 0, errors: 0, warnings: 0, infos: 0 }, issues: [] })),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    // Trigger fallback with markdown that is entirely code — extractReviewText returns ''
+    elements['generator-mode'].value = 'rewrite';
+    // Directly set currentMarkdown to all-code-block content by overriding showOutput indirectly:
+    // use fallback-btn which passes getFallbackMarkdown() — but the rewrite template has real text.
+    // Instead, simulate via quality-gate rendering with empty reviewText:
+    // We override the output element and call renderQualityReview with code-only markdown.
+    // The easiest path: set output-content innerHTML to a code-block-only string then trigger a
+    // stream-done event with that content via a stub fetch.
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: ' + JSON.stringify({ type: 'chunk', text: '```\n코드만 있는 내용\n```' }) + '\n'),
+            encoder.encode('data: ' + JSON.stringify({ type: 'done' }) + '\n'),
+          ];
+          let index = 0;
+          return { async read() { if (index < chunks.length) return { done: false, value: chunks[index++] }; return { done: true, value: undefined }; } };
+        },
+      },
+    }));
+
+    const { context: ctx2, elements: els2 } = buildGeneratorContext({ fetchImpl });
+    ctx2.KRDSLint = context.KRDSLint;
+    vm.runInNewContext(SOURCE, ctx2);
+    els2['generator-form'].dispatch('submit');
+
+    return new Promise((resolve) => {
+      setTimeout(async () => {
+        await new Promise((r) => setTimeout(r, 0));
+        expect(els2['quality-gates'].innerHTML).toContain('자동 검수 엔진을 불러오지 못했습니다');
+        expect(ctx2.KRDSLint.lint).not.toHaveBeenCalled();
+        resolve();
+      }, 0);
+    });
+  });
+
+  it('extracts table cell content and skips the first column when the first cell is a source marker', () => {
+    const { context, elements } = buildGeneratorContext();
+    let lintInput = null;
+    context.KRDSLint = {
+      lint: vi.fn((text) => {
+        lintInput = text;
+        return { score: 100, summary: { total: 0, errors: 0, warnings: 0, infos: 0 }, issues: [] };
+      }),
+    };
+
+    const markdown = [
+      '| 현재 표현 | 권장 문안 | 원칙 |',
+      '|---|---|---|',
+      '| 처리되시겠습니다 | 처리됩니다 | 보이스·톤 |',
+    ].join('\n');
+
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: ' + JSON.stringify({ type: 'chunk', text: markdown }) + '\n'),
+            encoder.encode('data: ' + JSON.stringify({ type: 'done' }) + '\n'),
+          ];
+          let index = 0;
+          return { async read() { if (index < chunks.length) return { done: false, value: chunks[index++] }; return { done: true, value: undefined }; } };
+        },
+      },
+    }));
+
+    const { context: ctx2, elements: els2 } = buildGeneratorContext({ fetchImpl });
+    ctx2.KRDSLint = context.KRDSLint;
+    vm.runInNewContext(SOURCE, ctx2);
+    els2['generator-form'].dispatch('submit');
+
+    return new Promise((resolve) => {
+      setTimeout(async () => {
+        await new Promise((r) => setTimeout(r, 0));
+        expect(ctx2.KRDSLint.lint).toHaveBeenCalled();
+        // header row separator |---|---|---| is skipped; first row: "현재 표현" → skips first cell
+        // data row: first cell "처리되시겠습니다" is NOT "현재/원문/문제/before" → ≥3 cells → skip first
+        expect(lintInput).toContain('처리됩니다');
+        expect(lintInput).not.toContain('현재 표현');
+        expect(lintInput).not.toContain('처리되시겠습니다');
+        resolve();
+      }, 0);
+    });
+  });
+
+  it('uses issue.type as the category label when the category field is absent from a lint issue', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 88,
+        summary: { total: 1, errors: 0, warnings: 1, infos: 0 },
+        issues: [{ type: 'no-category-field', message: '타입만 있습니다', suggestion: '' }],
+      })),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    expect(elements['quality-issues-list'].innerHTML).toContain('no-category-field');
+  });
 });
