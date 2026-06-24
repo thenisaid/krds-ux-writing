@@ -424,4 +424,29 @@ describe('archive page initialization', () => {
     expect(elements['arc-grid-hometax'].innerHTML).not.toContain('검색 결과가 없습니다');
     expect(elements['arc-result-hometax'].textContent).toBe('');
   });
+
+  it('escapes HTML in severity field parsed from table cell to prevent innerHTML injection', async () => {
+    const { context, elements } = buildContext({
+      markdown: [
+        '## Cycle 1',
+        '### H1 — XSS 테스트 이슈 [A]',
+        '',
+        '| 항목 | 내용 |',
+        '|------|------|',
+        '| **원칙** | A |',
+        '| **심각도** | <script>alert(1)</script> |',
+        '',
+        '**문제**: 설명',
+        '**권장 개선안**: 개선',
+      ].join('\n'),
+    });
+    elements['arc-search-hometax'].value = '';
+
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    const html = elements['arc-grid-hometax'].innerHTML;
+    expect(html).not.toContain('<script>');
+    expect(html).toContain('&lt;script&gt;');
+  });
 });
