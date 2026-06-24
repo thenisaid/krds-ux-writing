@@ -1199,4 +1199,92 @@ describe('generator/app.js', () => {
     expect(screens[2].classList.contains('active')).toBe(true);
     expect(elements['output-content'].innerHTML).toContain('# 결과');
   });
+
+  it('shows 정보핵심화 주의 when there is exactly one distillation issue and no long sentences', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 88,
+        summary: { total: 1, errors: 0, warnings: 1, infos: 0 },
+        issues: [
+          { type: 'double-passive', category: '이중피동', message: '이중피동', suggestion: '단순형으로' },
+        ],
+      })),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    const html = elements['quality-gates'].innerHTML;
+    expect(html).toContain('quality-gate--warn');
+    expect(html).not.toContain('quality-gate--fail');
+  });
+
+  it('shows 정보핵심화 보완 필요 when there are more than two distillation issues', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 60,
+        summary: { total: 3, errors: 0, warnings: 3, infos: 0 },
+        issues: [
+          { type: 'double-passive', category: '이중피동', message: 'm1', suggestion: 's1' },
+          { type: 'subjective-adverb', category: '주관적부사', message: 'm2', suggestion: 's2' },
+          { type: 'noun-chain', category: '명사체인', message: 'm3', suggestion: 's3' },
+        ],
+      })),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    const html = elements['quality-gates'].innerHTML;
+    expect(html).toContain('quality-gate--fail');
+  });
+
+  it('shows 보이스·톤 보완 필요 when more than one voice-type issue is detected', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 75,
+        summary: { total: 2, errors: 0, warnings: 2, infos: 0 },
+        issues: [
+          { type: 'excessive-honorific', category: '과잉존칭', message: 'm1', suggestion: 's1' },
+          { type: 'excessive-honorific', category: '과잉존칭', message: 'm2', suggestion: 's2' },
+        ],
+      })),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    const html = elements['quality-gates'].innerHTML;
+    expect(html).toContain('quality-gate--fail');
+  });
+
+  it('uses the rewrite fallback template when the generator mode is set to rewrite', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['generator-mode'].value = 'rewrite';
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    expect(elements['output-title'].textContent).toContain('재작성안');
+  });
+
+  it('uses the message-pack fallback template when the generator mode is set to message-pack', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['generator-mode'].value = 'message-pack';
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    expect(elements['output-title'].textContent).toContain('상태 메시지 개선안');
+  });
+
+  it('uses the tone-adjust fallback template when the generator mode is set to tone-adjust', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['generator-mode'].value = 'tone-adjust';
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    expect(elements['output-title'].textContent).toContain('톤 조정안');
+  });
 });
