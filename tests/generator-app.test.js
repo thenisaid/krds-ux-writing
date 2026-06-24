@@ -1897,6 +1897,38 @@ describe('generator/app.js', () => {
     expect(elements['download-error'].classList.contains('visible')).toBe(false);
   });
 
+  it('closes the format dropdown and restores focus when Escape is pressed with no items in the menu', () => {
+    const { context, elements } = buildGeneratorContext({ menuItems: [] });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['dl-chevron'].dispatch('click');
+    expect(elements['dl-menu'].classList.contains('open')).toBe(true);
+
+    const preventDefault = vi.fn();
+    elements['dl-menu'].dispatch('keydown', { key: 'Escape', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(elements['dl-menu'].classList.contains('open')).toBe(false);
+    expect(elements['dl-chevron'].getAttribute('aria-expanded')).toBe('false');
+    expect(elements['dl-chevron'].focus).toHaveBeenCalled();
+  });
+
+  it('moves focus to the previous item when ArrowUp is pressed in the format dropdown', () => {
+    const item1 = createElement({ dataset: { format: 'html' }, classes: ['dl-menu-item'] });
+    const item2 = createElement({ dataset: { format: 'hwp' }, classes: ['dl-menu-item'] });
+    const { context, elements } = buildGeneratorContext({ menuItems: [item1, item2] });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['dl-chevron'].dispatch('click');
+    context.document.activeElement = item2;
+
+    const preventDefault = vi.fn();
+    elements['dl-menu'].dispatch('keydown', { key: 'ArrowUp', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(item1.focus).toHaveBeenCalled();
+  });
+
   it('shows a "Word 변환에 실패했습니다" error for unrecognised non-HWP download formats', () => {
     const docxItem = createElement({ dataset: { format: 'docx' }, classes: ['dl-menu-item'] });
     const { context, elements } = buildGeneratorContext({
