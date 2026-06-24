@@ -95,4 +95,72 @@ describe('scripts/sync-prompts.js', () => {
       { filePath: path.join(ROOT, file), html: expected.html },
     ]);
   });
+
+  it('skips a principle when its target file does not exist on disk', () => {
+    const warns = [];
+    const updated = syncPromptFiles({
+      libraryHtml: '<article data-principle="missing-id">내용</article>',
+      principles: [{ id: 'missing-id', file: 'nonexistent/does-not-exist.html' }],
+      rootDir: ROOT,
+      date: '2099-12-31',
+      writeFile() { throw new Error('writeFile must not be called'); },
+      log() {},
+      warn(msg) { warns.push(msg); },
+    });
+
+    expect(updated).toBe(0);
+    expect(warns.some((w) => w.includes('target missing'))).toBe(true);
+  });
+
+  it('skips and warns when the target file exists but is missing sync markers', () => {
+    const { id, file } = PRINCIPLES[0];
+    const warns = [];
+
+    const updated = syncPromptFiles({
+      libraryHtml: `<article data-principle="${id}">내용</article>`,
+      principles: [{ id, file }],
+      rootDir: ROOT,
+      date: '2099-12-31',
+      readFile() { return '<section><p>마커 없음</p></section>'; },
+      writeFile() { throw new Error('writeFile must not be called'); },
+      log() {},
+      warn(msg) { warns.push(msg); },
+    });
+
+    expect(updated).toBe(0);
+    expect(warns.some((w) => w.includes('sync markers missing'))).toBe(true);
+  });
+
+  it('treats tags as missing-markers when endTag appears before startTag in the document', () => {
+    const id = 'no-translation';
+    const html = '<!-- sync:no-translation:end -->before<!-- sync:no-translation:start -->';
+    const result = replaceSyncBlock(html, { id, snippets: [], date: '2099-12-31' });
+
+    expect(result.changed).toBe(false);
+    expect(result.reason).toBe('missing-markers');
+    expect(result.html).toBe(html);
+  });
+
+  it('uses singular "snippet" in the log when exactly one snippet is written', () => {
+    const { id, file } = PRINCIPLES[0];
+    const logs = [];
+    const fakeTarget = `<div><!-- sync:${id}:start -->\n      <!-- auto-updated: 2000-01-01 -->\n      <article>OLD</article>\n      <!-- sync:${id}:end --></div>`;
+    const fakeLibrary = `<article data-principle="${id}">NEW</article>`;
+
+    const updated = syncPromptFiles({
+      libraryHtml: fakeLibrary,
+      principles: [{ id, file }],
+      rootDir: ROOT,
+      date: '2099-12-31',
+      readFile() { return fakeTarget; },
+      writeFile() {},
+      log(msg) { logs.push(msg); },
+      warn() {},
+    });
+
+    expect(updated).toBe(1);
+    const updateLog = logs.find((l) => l.includes('snippet'));
+    expect(updateLog).toContain('(1 snippet)');
+    expect(updateLog).not.toContain('snippets');
+  });
 });

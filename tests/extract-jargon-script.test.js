@@ -9,6 +9,7 @@ const {
   buildOutput,
   parse,
   buildBrowserBundle,
+  mergeEntries,
   syncJargonDictionary,
 } = require('../scripts/extract-jargon.js');
 
@@ -606,5 +607,69 @@ describe('scripts/extract-jargon.js', () => {
       alt: '세금 나눠 내기',
       context: '홈택스, 지방세',
     });
+  });
+
+  describe('mergeEntries — isMoreDescriptiveEntry branch coverage', () => {
+    it('keeps the entry with the longer context when both have the same alt length (branch 2)', () => {
+      const entries = [
+        { banned: '공고문', alt: 'AB', cat: '행정 관습어', context: 'X' },
+        { banned: '공고문', alt: 'CD', cat: '행정 관습어', context: '더긴맥락' },
+      ];
+      const result = mergeEntries(entries);
+      expect(result).toHaveLength(1);
+      expect(result[0].context).toBe('더긴맥락');
+    });
+
+    it('keeps the first entry when both alt length and context length are equal (tiebreak → return false)', () => {
+      const entries = [
+        { banned: '민원인', alt: 'AB', cat: '행정 관습어', context: 'CC' },
+        { banned: '민원인', alt: 'XY', cat: '전문 용어', context: 'ZZ' },
+      ];
+      const result = mergeEntries(entries);
+      expect(result).toHaveLength(1);
+      expect(result[0].alt).toBe('AB');
+    });
+  });
+
+  it('dry-run mode writes json to stdout and skips file writes', () => {
+    const stdoutLines = [];
+    const stderrLines = [];
+
+    const result = syncJargonDictionary({
+      md: read('principles.md'),
+      dryRun: true,
+      date: '2099-12-31',
+      existingOutput: null,
+      writeFile(_filePath, _contents) {
+        throw new Error('writeFile must not be called in dry-run');
+      },
+      stdout: { write(s) { stdoutLines.push(s); } },
+      stderr: { write(s) { stderrLines.push(s); } },
+    });
+
+    const joined = stdoutLines.join('');
+    const parsed = JSON.parse(joined);
+    expect(parsed).toHaveProperty('entries');
+    expect(Array.isArray(parsed.entries)).toBe(true);
+    expect(stderrLines.join('')).toContain('[dry-run]');
+    expect(result).toHaveProperty('output');
+  });
+
+  it('writes output files when entries have changed and returns changed=true', () => {
+    const writes = [];
+
+    const result = syncJargonDictionary({
+      md: '### 2.1 행정어·전문용어 대체어 사전\n#### 카테고리 1. 행정 관습어\n| 쓰지 마세요 | 대신 쓰세요 |\n|---|---|\n| 귀하 | 고객님 |\n### 2.1 부록\n',
+      dryRun: false,
+      date: '2099-12-31',
+      existingOutput: null,
+      writeFile(filePath, contents) { writes.push({ filePath, contents }); },
+      stdout: { write() {} },
+      stderr: { write() {} },
+    });
+
+    expect(result.changed).toBe(true);
+    expect(writes.length).toBeGreaterThan(0);
+    expect(writes.some((w) => w.contents.includes('귀하'))).toBe(true);
   });
 });
