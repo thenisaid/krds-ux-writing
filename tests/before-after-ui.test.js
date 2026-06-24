@@ -454,4 +454,23 @@ describe('before-after page interactions', () => {
     expect(preventDefault).toHaveBeenCalled();
     expect(seminarClose.focus).toHaveBeenCalled();
   });
+
+  it('shows the clean-text success message when the lint engine returns no issues', () => {
+    const { context, elements } = buildContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 100,
+        summary: { errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      })),
+    };
+    vm.runInNewContext(SOURCE, context);
+
+    elements.lintInput.value = '신청이 완료되었습니다.';
+    elements.lintRunBtn.dispatch('click');
+
+    expect(elements.lintResults.classList.contains('visible')).toBe(true);
+    expect(elements.lintResults.innerHTML).toContain('원칙 위반이 없습니다');
+    expect(elements.lintResults.innerHTML).toContain('100');
+  });
 });
