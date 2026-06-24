@@ -268,6 +268,22 @@ describe('server.js configuration', () => {
     });
   });
 
+  it('rejects an array JSON body in the local server', async () => {
+    const responseState = await runServerRequest({
+      headers: {
+        'content-type': 'application/json',
+        origin: 'http://localhost:3000',
+      },
+      remoteAddress: '203.0.113.91',
+      body: [1, 2, 3],
+    });
+
+    expect(responseState.statusCode).toBe(400);
+    expect(JSON.parse(responseState.body)).toEqual({
+      error: '요청 형식이 올바르지 않습니다.',
+    });
+  });
+
   it('rejects overlong samples in the local server with the same validation message as deployed handlers', async () => {
     const longSample = '가'.repeat(501);
     const responseState = await runServerRequest({
