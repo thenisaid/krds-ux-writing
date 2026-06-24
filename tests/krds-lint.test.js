@@ -645,3 +645,30 @@ describe('placeholderPattern branches via synthetic dictionary', () => {
     expect(issues.length).toBe(1);
   });
 });
+
+describe('UMD Node.js branch — jargon-dictionary.json load failure falls back to inline list', () => {
+  const LINT_SOURCE = fs.readFileSync(
+    fileURLToPath(new URL('../krds-lint.js', import.meta.url)),
+    'utf8',
+  );
+
+  it('uses the inline jargon list when the JSON dictionary cannot be loaded in the Node.js UMD branch', () => {
+    const mod = { exports: {} };
+    const ctx = {
+      module: mod,
+      exports: mod.exports,
+      require: function (p) {
+        if (p === 'path') return require('path');
+        throw new Error('simulated load failure');
+      },
+      __dirname: '/nonexistent',
+      globalThis: null,
+      console,
+    };
+    ctx.globalThis = ctx;
+    vm.runInNewContext(LINT_SOURCE, ctx);
+    const lintFn = ctx.module.exports;
+    const result = lintFn.lint('잘못 입력하셨습니다.');
+    expect(result.issues.some((i) => i.match === '잘못 입력하셨습니다')).toBe(true);
+  });
+});
