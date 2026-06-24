@@ -443,6 +443,11 @@ describe('server.js configuration', () => {
     expect(normalizeStaticPath('archive.html')).toBe('/archive.html');
   });
 
+  it('returns true when the candidate path is exactly the root directory itself', () => {
+    const dir = process.cwd();
+    expect(isWithinRoot(dir, dir)).toBe(true);
+  });
+
   it('canonicalizes traversal-looking static paths without letting them into the public allowlist', () => {
     const safePath = resolveStaticFilePath('/principles/foundation/');
     const escapedSibling = resolveStaticFilePath('/../KRDS-evil');
@@ -1426,6 +1431,75 @@ describe('server.js configuration', () => {
             expect(message).toContain('로컬 AI 서비스 연결에 실패했습니다');
             resolve();
           },
+        );
+      });
+    } finally {
+      http.request = originalRequest;
+    }
+  });
+
+  it('fires done after calling onChunk when a content event arrives in the buffer flush without a trailing newline', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      await new Promise((resolve) => {
+        const chunks = [];
+        http.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            callback(res);
+            // No trailing newline → whole payload stays in buffer until 'end'
+            res.emit('data', Buffer.from('{"model":"test","response":"버퍼","done":false}'));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callOllama(
+          'http://localhost:11434', 'system', 'user', 2200,
+          (text) => { chunks.push(text); },
+          () => { expect(chunks).toEqual(['버퍼']); resolve(); },
+          (message) => { throw new Error('unexpected error: ' + message); },
+        );
+      });
+    } finally {
+      http.request = originalRequest;
+    }
+  });
+
+  it('fires done when the Ollama done event arrives in the buffer flush without a trailing newline', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      await new Promise((resolve) => {
+        const chunks = [];
+        http.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            callback(res);
+            // Content line with newline, then done line without newline
+            res.emit('data', Buffer.from('{"model":"test","response":"내용","done":false}\n'));
+            res.emit('data', Buffer.from('{"model":"test","done":true}'));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callOllama(
+          'http://localhost:11434', 'system', 'user', 2200,
+          (text) => { chunks.push(text); },
+          () => { expect(chunks).toEqual(['내용']); resolve(); },
+          (message) => { throw new Error('unexpected error: ' + message); },
         );
       });
     } finally {
