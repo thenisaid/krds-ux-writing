@@ -1522,3 +1522,50 @@ describe('generator API handlers', () => {
     expect(await cloudflareResponse.json()).toEqual({ error: '요청 형식이 올바르지 않습니다.' });
   });
 });
+
+describe('anthropic-edge.js — buildApiEndpoint and getAnthropicApiKey', () => {
+  let buildApiEndpoint;
+  let getAnthropicApiKey;
+
+  beforeAll(async () => {
+    const mod = await import('../api/shared/anthropic-edge.js');
+    buildApiEndpoint = mod.buildApiEndpoint;
+    getAnthropicApiKey = mod.getAnthropicApiKey;
+  });
+
+  it('buildApiEndpoint returns the fallback URL when baseUrl is not a valid URL', () => {
+    expect(buildApiEndpoint('not-a-valid-url')).toBe('https://api.anthropic.com/v1/messages');
+  });
+
+  it('buildApiEndpoint appends /v1/messages when pathname is root /', () => {
+    expect(buildApiEndpoint('https://proxy.example.com/')).toBe('https://proxy.example.com/v1/messages');
+  });
+
+  it('buildApiEndpoint returns URL as-is when pathname already ends with /messages', () => {
+    expect(buildApiEndpoint('https://proxy.example.com/v1/messages')).toBe('https://proxy.example.com/v1/messages');
+  });
+
+  it('buildApiEndpoint appends /messages when pathname ends with /v1', () => {
+    expect(buildApiEndpoint('https://proxy.example.com/v1')).toBe('https://proxy.example.com/v1/messages');
+  });
+
+  it('getAnthropicApiKey returns the configured key when ANTHROPIC_API_KEY is set', () => {
+    expect(getAnthropicApiKey('https://api.anthropic.com/v1', 'sk-test-key')).toBe('sk-test-key');
+  });
+
+  it('getAnthropicApiKey returns local-llm for 127.0.0.1 loopback hostname', () => {
+    expect(getAnthropicApiKey('http://127.0.0.1:11434/v1', '')).toBe('local-llm');
+  });
+
+  it('getAnthropicApiKey returns local-llm for ::1 loopback hostname', () => {
+    expect(getAnthropicApiKey('http://[::1]:11434/v1', '')).toBe('local-llm');
+  });
+
+  it('getAnthropicApiKey returns empty string for non-loopback hostnames when no API key is set', () => {
+    expect(getAnthropicApiKey('https://api.anthropic.com/v1', '')).toBe('');
+  });
+
+  it('getAnthropicApiKey returns empty string when baseUrl is invalid and apiKey is absent', () => {
+    expect(getAnthropicApiKey('not-a-valid-url', '')).toBe('');
+  });
+});

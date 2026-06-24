@@ -543,6 +543,14 @@ describe('KRDSLint public API', () => {
     expect(formatted).toContain('•');
     expect(formatted).toContain('테스트 메시지');
   });
+
+  it('uses the ℹ️ icon for info-severity issues in formatCLI output', () => {
+    const result = KRDSLint.lint('사용자식별번호등록처리시스템이');
+    const infoIssue = result.issues.find(i => i.severity === 'info');
+    expect(infoIssue).toBeDefined();
+    const formatted = KRDSLint.formatCLI(result);
+    expect(formatted).toContain('ℹ️');
+  });
 });
 
 describe('placeholderPattern branches via synthetic dictionary', () => {
