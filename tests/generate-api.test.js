@@ -442,6 +442,48 @@ describe('generator API handlers', () => {
     });
   });
 
+  it('rejects overlong optional fields and non-string optional fields in deployed handlers', async () => {
+    const basePayload = {
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      samples: ['샘플 문구'],
+    };
+
+    const longScreenType = 'a'.repeat(41);
+    const longToneTarget = 'b'.repeat(41);
+    const longTaskBrief  = 'c'.repeat(301);
+
+    const screenTypeOverlong = await vercelHandler(buildRequest({ ...basePayload, screenType: longScreenType }));
+    expect(screenTypeOverlong.status).toBe(400);
+    expect(await screenTypeOverlong.json()).toEqual({ error: '화면 맥락 값을 확인해 주세요.' });
+
+    const toneTargetOverlong = await vercelHandler(buildRequest({ ...basePayload, toneTarget: longToneTarget }));
+    expect(toneTargetOverlong.status).toBe(400);
+    expect(await toneTargetOverlong.json()).toEqual({ error: '목표 톤 값을 확인해 주세요.' });
+
+    const taskBriefOverlong = await vercelHandler(buildRequest({ ...basePayload, taskBrief: longTaskBrief }));
+    expect(taskBriefOverlong.status).toBe(400);
+    expect(await taskBriefOverlong.json()).toEqual({ error: '추가 요청은 300자 이하여야 합니다.' });
+
+    const screenTypeNonString = await vercelHandler(buildRequest({ ...basePayload, screenType: 42 }));
+    expect(screenTypeNonString.status).toBe(400);
+    expect(await screenTypeNonString.json()).toEqual({ error: '화면 맥락 값을 확인해 주세요.' });
+
+    const cfScreenTypeOverlong = await onRequestPost({
+      request: buildRequest({ ...basePayload, screenType: longScreenType }),
+      env: { ANTHROPIC_API_KEY: 'test-key' },
+    });
+    expect(cfScreenTypeOverlong.status).toBe(400);
+    expect(await cfScreenTypeOverlong.json()).toEqual({ error: '화면 맥락 값을 확인해 주세요.' });
+
+    const cfToneTargetOverlong = await onRequestPost({
+      request: buildRequest({ ...basePayload, toneTarget: longToneTarget }),
+      env: { ANTHROPIC_API_KEY: 'test-key' },
+    });
+    expect(cfToneTargetOverlong.status).toBe(400);
+    expect(await cfToneTargetOverlong.json()).toEqual({ error: '목표 톤 값을 확인해 주세요.' });
+  });
+
   it('uses a custom Anthropic base URL in the Cloudflare handler when configured', async () => {
     const fetchMock = mockAnthropicFetch();
     global.fetch = fetchMock;
