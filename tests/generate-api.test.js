@@ -1568,6 +1568,28 @@ describe('generator API handlers', () => {
     expect(body).toContain('연결이 끊겼습니다');
   });
 
+  it('sends a done SSE event when the Cloudflare stream ends normally after content without a message_stop', async () => {
+    global.fetch = vi.fn(async () => new Response(
+      'data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"# 결과"}}\n',
+      { status: 200, headers: { 'Content-Type': 'text/event-stream' } },
+    ));
+
+    const response = await onRequestPost({
+      request: buildRequest({
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        samples: ['샘플 문구'],
+      }),
+      env: { ANTHROPIC_API_KEY: 'test-key' },
+    });
+    const body = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(body).toContain('"type":"chunk"');
+    expect(body).toContain('"type":"done"');
+    expect(body).not.toContain('"type":"error"');
+  });
+
   it('sends an SSE error event when the upstream Claude SSE stream contains a type:error event in the Cloudflare handler', async () => {
     global.fetch = vi.fn(async () => new Response(
       'data: {"type":"error","error":{"type":"overloaded_error","message":"overloaded"}}\n\n',
