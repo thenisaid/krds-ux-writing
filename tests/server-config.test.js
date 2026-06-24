@@ -126,6 +126,12 @@ describe('server.js configuration', () => {
     );
   });
 
+  it('falls back to the Anthropic default endpoint when buildApiEndpoint receives an invalid URL', () => {
+    expect(buildApiEndpoint('not a url')).toBe('https://api.anthropic.com/v1/messages');
+    expect(buildApiEndpoint(null)).toBe('https://api.anthropic.com/v1/messages');
+    expect(buildApiEndpoint('')).toBe('https://api.anthropic.com/v1/messages');
+  });
+
   it('parses quoted dotenv values without keeping wrapper quotes', () => {
     expect(parseEnvValue('"test-key"')).toBe('test-key');
     expect(parseEnvValue("'https://proxy.internal/v1/messages?token=a=b'")).toBe(
