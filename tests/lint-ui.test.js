@@ -80,6 +80,7 @@ function buildContext(options = {}) {
     createElement({ dataset: { opt: 'checkAdminJargon' }, classes: ['opt-chip', 'active'] }),
     createElement({ dataset: { opt: 'checkPatterns' }, classes: ['opt-chip', 'active'] }),
   ];
+  optChips.forEach((chip) => { chip.click = () => chip.dispatch('click'); });
   const filterTabs = [
     createElement({ dataset: { filter: 'all' }, classes: ['filter-tab', 'active'], attributes: { 'aria-pressed': 'true' } }),
     createElement({ dataset: { filter: 'error' }, classes: ['filter-tab'], attributes: { 'aria-pressed': 'false' } }),
@@ -1607,5 +1608,88 @@ describe('lint-ui CLI banner close and copy buttons', () => {
 
     expect(context.document.execCommand).toHaveBeenCalledWith('copy');
     expect(elements.copyBtn.textContent).toBe('✅ 복사됨');
+  });
+});
+
+describe('lint-ui uncovered branch coverage', () => {
+  it('applies score-danger class and 주의 필요 label when the lint score is below 50', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 30,
+        summary: { errors: 4, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1, col: 1, severity: 'error', category: '행정어',
+          message: '어려운 표현', match: '귀하', suggestion: '→ 당신', type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.scoreSection.innerHTML).toContain('score-danger');
+    expect(elements.scoreSection.innerHTML).toContain('주의 필요');
+  });
+
+  it('sets the share button title to the pre-lint message before any analysis runs', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.shareLinkBtn.disabled).toBe(true);
+    expect(elements.shareLinkBtn.title).toBe('먼저 검사를 실행해 주세요');
+  });
+
+  it('shows the empty-filter message when no issues match the selected severity filter', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 60,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1, col: 1, severity: 'error', category: '행정어',
+          message: '오류', match: '귀하', suggestion: '→ 당신', type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    const infoTab = context.document.querySelectorAll('.filter-tab')[3];
+    infoTab.dispatch('click');
+
+    expect(elements.issuesList.innerHTML).toContain('선택한 필터에 이슈가 없습니다.');
+  });
+
+  it('does not update the issues list when a filter tab is clicked before any lint result is loaded', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    const errorTab = context.document.querySelectorAll('.filter-tab')[1];
+    expect(() => errorTab.dispatch('click')).not.toThrow();
+    expect(elements.issuesList.innerHTML).toBe('');
+  });
+
+  it('toggles the opt-chip state when the spacebar is pressed on it', () => {
+    const { context } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    const [adminChip] = context.document.querySelectorAll('.opt-chip');
+    const preventDefault = vi.fn();
+    adminChip.dispatch('keydown', { key: ' ', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(adminChip.getAttribute('aria-checked')).toBe('false');
+  });
+
+  it('shows a toast when the share link button is clicked with an empty input field', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '';
+    elements.shareLinkBtn.dispatch('click');
+
+    expect(elements.toast.textContent).toBe('⚠️ 500자 이하 텍스트만 링크로 공유할 수 있습니다');
   });
 });
