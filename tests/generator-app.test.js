@@ -1254,6 +1254,40 @@ describe('generator/app.js', () => {
     expect(html).not.toContain('quality-gate--fail');
   });
 
+  it('silently skips valid-JSON null SSE payloads and completes normally on the subsequent done event', async () => {
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: {"type":"chunk","text":"# 가이드"}\n'),
+            encoder.encode('data: null\n'),
+            encoder.encode('data: {"type":"done"}\n'),
+          ];
+          let index = 0;
+          return {
+            async read() {
+              if (index < chunks.length) return { done: false, value: chunks[index++] };
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    const { context, elements, screens } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(screens[2].classList.contains('active')).toBe(true);
+    expect(elements['output-content'].innerHTML).toContain('# 가이드');
+  });
+
   it('silently skips malformed JSON SSE lines and completes normally on the subsequent done event', async () => {
     const encoder = new TextEncoder();
     const fetchImpl = vi.fn(async () => ({
