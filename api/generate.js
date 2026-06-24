@@ -312,6 +312,7 @@ export default async function handler(request) {
             system: KRDS_SYSTEM_PROMPT,
             messages: [{ role: 'user', content: userMessage }],
           }),
+          signal: AbortSignal.timeout(30_000),
         }
       );
 
@@ -330,6 +331,10 @@ export default async function handler(request) {
       const decoder = new TextDecoder('utf-8');
       let buffer = '';
       let sawContent = false;
+
+      async function closeReader() {
+        try { await reader.cancel(); } catch { /* ignore */ }
+      }
 
       function getSseDataPayload(line) {
         const trimmed = String(line || '').trim();
@@ -389,13 +394,13 @@ export default async function handler(request) {
           buffer = lines.pop(); // 마지막 불완전한 줄 보존
 
           for (const line of lines) {
-            if (processClaudeLine(line)) return;
+            if (processClaudeLine(line)) { await closeReader(); return; }
           }
         }
 
         buffer += decoder.decode();
         if (buffer.trim()) {
-          if (processClaudeLine(buffer)) return;
+          if (processClaudeLine(buffer)) { await closeReader(); return; }
         }
 
         if (sawContent) {
@@ -409,7 +414,7 @@ export default async function handler(request) {
         }
         writer.close();
       } catch (readErr) {
-        // 네트워크 단절 등 reader 에러
+        await closeReader();
         writeSSE({
           type: 'error',
           message:

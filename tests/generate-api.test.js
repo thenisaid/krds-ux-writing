@@ -783,4 +783,64 @@ describe('generator API handlers', () => {
       error: '요청 한도를 초과했습니다. 1시간 후 다시 시도해 주세요.',
     });
   });
+
+  it('attaches an AbortSignal to the Anthropic fetch in the Vercel handler to prevent hanging requests', async () => {
+    let capturedOptions;
+    const mockFetch = vi.fn(async (url, options) => {
+      capturedOptions = options;
+      return {
+        ok: false,
+        status: 529,
+        text: async () => 'overloaded',
+        body: null,
+      };
+    });
+    global.fetch = mockFetch;
+
+    const response = await vercelHandler(
+      buildRequest({
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        mode: 'rewrite',
+        samples: ['문장 하나'],
+      })
+    );
+    expect(response.status).toBe(200);
+    await new Promise((resolve) => setTimeout(resolve, 20));
+
+    expect(capturedOptions?.signal).toBeDefined();
+    expect(capturedOptions.signal).toBeInstanceOf(AbortSignal);
+  });
+
+  it('attaches an AbortSignal to the Anthropic fetch in the Cloudflare handler to prevent hanging requests', async () => {
+    let capturedOptions;
+    const mockFetch = vi.fn(async (url, options) => {
+      capturedOptions = options;
+      return {
+        ok: false,
+        status: 529,
+        text: async () => 'overloaded',
+        body: null,
+      };
+    });
+    global.fetch = mockFetch;
+
+    const response = await onRequestPost({
+      request: buildRequest({
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        mode: 'rewrite',
+        samples: ['문장 하나'],
+      }),
+      env: {
+        ANTHROPIC_API_KEY: 'test-key',
+        ANTHROPIC_BASE_URL: 'https://api.anthropic.com',
+      },
+    });
+    expect(response.status).toBe(200);
+    await new Promise((resolve) => setTimeout(resolve, 20));
+
+    expect(capturedOptions?.signal).toBeDefined();
+    expect(capturedOptions.signal).toBeInstanceOf(AbortSignal);
+  });
 });

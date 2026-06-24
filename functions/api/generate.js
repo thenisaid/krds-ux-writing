@@ -271,6 +271,7 @@ export async function onRequestPost(context) {
             system: KRDS_SYSTEM_PROMPT,
             messages: [{ role: 'user', content: userMessage }],
           }),
+          signal: AbortSignal.timeout(30_000),
         }
       );
 
@@ -288,6 +289,10 @@ export async function onRequestPost(context) {
       const decoder = new TextDecoder('utf-8');
       let buffer = '';
       let sawContent = false;
+
+      async function closeReader() {
+        try { await reader.cancel(); } catch { /* ignore */ }
+      }
 
       function getSseDataPayload(line) {
         const trimmed = String(line || '').trim();
@@ -347,13 +352,13 @@ export async function onRequestPost(context) {
           buffer = lines.pop();
 
           for (const line of lines) {
-            if (processClaudeLine(line)) return;
+            if (processClaudeLine(line)) { await closeReader(); return; }
           }
         }
 
         buffer += decoder.decode();
         if (buffer.trim()) {
-          if (processClaudeLine(buffer)) return;
+          if (processClaudeLine(buffer)) { await closeReader(); return; }
         }
 
         if (sawContent) {
@@ -367,6 +372,7 @@ export async function onRequestPost(context) {
         }
         writer.close();
       } catch {
+        await closeReader();
         writeSSE({
           type: 'error',
           message:
