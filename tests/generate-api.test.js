@@ -673,6 +673,56 @@ describe('generator API handlers', () => {
     expect(fetchMock).toHaveBeenCalledTimes(6);
   });
 
+  it('rate-limits by the X-Real-IP header when CF-Connecting-IP is absent', async () => {
+    const fetchMock = mockAnthropicFetch();
+    global.fetch = fetchMock;
+
+    const basePayload = {
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      samples: ['샘플 문구'],
+    };
+
+    for (let i = 0; i < 5; i += 1) {
+      const response = await vercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
+        'X-Real-IP': '198.51.100.33',
+      }));
+      expect(response.status).toBe(200);
+    }
+
+    const blocked = await vercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
+      'X-Real-IP': '198.51.100.33',
+    }));
+    expect(blocked.status).toBe(429);
+  });
+
+  it('treats all requests without any IP header as sharing the "unknown" rate-limit bucket', async () => {
+    const fetchMock = mockAnthropicFetch();
+    global.fetch = fetchMock;
+
+    const basePayload = {
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      samples: ['샘플 문구'],
+    };
+
+    for (let i = 0; i < 5; i += 1) {
+      const response = await vercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
+        'CF-Connecting-IP': '',
+        'X-Real-IP': '',
+        'X-Forwarded-For': '',
+      }));
+      expect(response.status).toBe(200);
+    }
+
+    const blocked = await vercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
+      'CF-Connecting-IP': '',
+      'X-Real-IP': '',
+      'X-Forwarded-For': '',
+    }));
+    expect(blocked.status).toBe(429);
+  });
+
   it('flushes a final buffered text chunk even when the upstream stream ends without a trailing newline', async () => {
     global.fetch = vi.fn(async () => new Response(
       'data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"# 테스트 기관 가이드"}}',
