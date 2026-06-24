@@ -244,6 +244,34 @@ describe('script.js live index interactions', () => {
     expect(elements.themeToggle.getAttribute('aria-label')).toBe('다크모드로 전환');
   });
 
+  it('applies dark theme on init when no theme is stored and the system prefers dark', () => {
+    const { context, document, elements } = createEnvironment();
+    context.localStorage = { getItem() { return null; }, setItem() {} };
+    context.window.matchMedia = () => ({ matches: true });
+    elements.themeToggle = createElement(document);
+    elements.themeIcon = createElement(document, { attributes: { d: LIGHT_ICON } });
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(elements.themeToggle.getAttribute('aria-label')).toBe('라이트모드로 전환');
+  });
+
+  it('applies light theme on init when matchMedia is unavailable and no theme is stored', () => {
+    const { context, document, elements } = createEnvironment();
+    context.localStorage = { getItem() { return null; }, setItem() {} };
+    context.window.matchMedia = undefined;
+    elements.themeToggle = createElement(document);
+    elements.themeIcon = createElement(document, { attributes: { d: DARK_ICON } });
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+    expect(elements.themeToggle.getAttribute('aria-label')).toBe('다크모드로 전환');
+  });
+
   it('opens and closes the mobile menu with focus and body scroll state updates', () => {
     const { context, document, elements } = createEnvironment();
     const firstLink = createElement(document);

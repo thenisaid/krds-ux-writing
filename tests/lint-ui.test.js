@@ -928,4 +928,58 @@ describe('lint-ui stale result handling', () => {
     expect(context.localStorage.getItem('krds-lint-history')).toBeNull();
     expect(elements.historyCard.style.display).toBe('none');
   });
+
+  it('shows the CLI banner when text length exceeds 300 characters even if the lint score is high', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 95,
+        summary: { errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '가'.repeat(301);
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.cliBanner.style.display).toBe('block');
+  });
+
+  it('disables the share button with a 500-char message when the input exceeds 500 characters', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 95,
+        summary: { errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '가'.repeat(501);
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.shareLinkBtn.disabled).toBe(true);
+    expect(elements.shareLinkBtn.title).toBe('텍스트가 500자를 초과하면 URL 공유를 사용할 수 없습니다');
+  });
+
+  it('shows a toast and skips copying when the share button is clicked with text exceeding 500 characters', async () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 95,
+        summary: { errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      },
+    });
+    context.navigator.clipboard = { writeText: vi.fn(() => Promise.resolve()) };
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하'.repeat(260);
+    elements.lintBtn.dispatch('click');
+    elements.shareLinkBtn.dispatch('click');
+
+    await Promise.resolve();
+
+    expect(context.navigator.clipboard.writeText).not.toHaveBeenCalled();
+    expect(elements.toast.textContent).toBe('⚠️ 500자 이하 텍스트만 링크로 공유할 수 있습니다');
+  });
 });
