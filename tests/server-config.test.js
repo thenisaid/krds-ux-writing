@@ -1349,4 +1349,96 @@ describe('server.js configuration', () => {
       http.request = originalRequest;
     }
   });
+
+  it('reports an error immediately when the Ollama URL is completely unparseable', () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    let errorMessage;
+    callOllama('::not-a-url-at-all', 'system', 'msg', 2200, () => {}, () => {}, (msg) => { errorMessage = msg; });
+    expect(errorMessage).toMatch(/형식/);
+  });
+
+  it('flushes a content chunk from the Ollama end-of-stream buffer when the last line has no trailing newline', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      await new Promise((resolve) => {
+        const chunks = [];
+        http.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            callback(res);
+            // First chunk ends with \n — processed in on('data')
+            res.emit('data', Buffer.from('{"model":"test","response":"첫 번째 내용","done":false}\n'));
+            // Second chunk has NO trailing \n — stays in buffer, flushed on('end')
+            res.emit('data', Buffer.from('{"model":"test","response":" 두 번째 내용","done":false}'));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callOllama(
+          'http://localhost:11434', 'system', 'user', 2200,
+          (text) => { chunks.push(text); },
+          () => {
+            expect(chunks).toContain('첫 번째 내용');
+            expect(chunks).toContain(' 두 번째 내용');
+            resolve();
+          },
+          (message) => { throw new Error('unexpected error: ' + message); },
+        );
+      });
+    } finally {
+      http.request = originalRequest;
+    }
+  });
+
+  it('rejects a local server request when screenType exceeds the 40-character limit', async () => {
+    const responseState = await runServerRequest({
+      headers: { 'x-forwarded-for': '203.0.113.50' },
+      body: {
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        mode: 'guide-draft',
+        samples: ['샘플 문구'],
+        screenType: '가'.repeat(41),
+      },
+    });
+    expect(responseState.statusCode).toBe(400);
+    expect(JSON.parse(responseState.body).error).toContain('화면 맥락');
+  });
+
+  it('rejects a local server request when toneTarget is a non-string value', async () => {
+    const responseState = await runServerRequest({
+      headers: { 'x-forwarded-for': '203.0.113.51' },
+      body: {
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        mode: 'guide-draft',
+        samples: ['샘플 문구'],
+        toneTarget: 12345,
+      },
+    });
+    expect(responseState.statusCode).toBe(400);
+    expect(JSON.parse(responseState.body).error).toContain('목표 톤');
+  });
+
+  it('rejects a local server request when taskBrief exceeds the 300-character limit', async () => {
+    const responseState = await runServerRequest({
+      headers: { 'x-forwarded-for': '203.0.113.52' },
+      body: {
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        mode: 'guide-draft',
+        samples: ['샘플 문구'],
+        taskBrief: '나'.repeat(301),
+      },
+    });
+    expect(responseState.statusCode).toBe(400);
+    expect(JSON.parse(responseState.body).error).toContain('추가 요청');
+  });
 });
