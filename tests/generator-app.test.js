@@ -855,6 +855,23 @@ describe('generator/app.js', () => {
     expect(screens[0].classList.contains('active')).toBe(true);
   });
 
+  it('skips focus when the output-screen element is absent when the delayed focus timer fires', () => {
+    const { context, elements, timers } = buildGeneratorContext({ manualTimers: true });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['fallback-btn'].dispatch('click');
+
+    // Remove the screen-output element so getElementById returns null inside the timer
+    delete elements['screen-output'];
+
+    // Fire the 50ms focus timer
+    const focusTimer = [...timers.entries()].find(([, t]) => t.delay === 50);
+    expect(focusTimer).toBeDefined();
+    focusTimer[1].fn();
+
+    expect(elements['output-title'].focus).not.toHaveBeenCalled();
+  });
+
   it('does not crash when the format menu has no items to focus', () => {
     const { context, elements } = buildGeneratorContext({ menuItems: [] });
     vm.runInNewContext(SOURCE, context);
