@@ -1549,6 +1549,12 @@ describe('anthropic-edge.js — buildApiEndpoint and getAnthropicApiKey', () => 
     expect(buildApiEndpoint('https://proxy.example.com/v1')).toBe('https://proxy.example.com/v1/messages');
   });
 
+  it('buildApiEndpoint appends /v1/messages for an arbitrary custom path', () => {
+    expect(buildApiEndpoint('https://proxy.example.com/custom-path')).toBe(
+      'https://proxy.example.com/custom-path/v1/messages',
+    );
+  });
+
   it('getAnthropicApiKey returns the configured key when ANTHROPIC_API_KEY is set', () => {
     expect(getAnthropicApiKey('https://api.anthropic.com/v1', 'sk-test-key')).toBe('sk-test-key');
   });
