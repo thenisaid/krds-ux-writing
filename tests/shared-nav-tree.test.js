@@ -436,6 +436,92 @@ describe('shared nav tree relationships', () => {
     expect(localSubLink.getAttribute('aria-current')).toBe(null);
     expect(remoteSubLink.classList.contains('active')).toBe(false);
   });
+
+  it('uses location.search as a fallback when window.location.search is not a string', () => {
+    const toggle = createElement({
+      attributes: { 'aria-label': '1장 펼치기/접기' },
+      classes: ['lnb-tog'],
+    });
+    const link = createElement({ classes: ['lnb-item-a'] });
+    const localSubLink = createElement({
+      classes: ['lnb-sub-a'],
+      attributes: { href: '/krds-ux-writing/principles/core-info/#overview' },
+    });
+    const overviewTarget = createElement({ id: 'overview' });
+    const sub = createElement({
+      classes: ['lnb-sub'],
+      queryMap: { '.lnb-sub-a': [localSubLink] },
+    });
+    const item = createElement({
+      attributes: { 'aria-expanded': 'false', 'data-path': '/principles/core-info/' },
+      classes: ['lnb-item'],
+      queryMap: {
+        '.lnb-tog': toggle,
+        '.lnb-sub': sub,
+        '.lnb-item-a': link,
+        '.lnb-item-a, .lnb-sub-a': [link, localSubLink],
+      },
+    });
+    const tree = createElement({
+      classes: ['lnb-tree'],
+      queryMap: {
+        '.lnb-item': [item],
+        '.lnb-item-a, .lnb-tog, .lnb-sub-a': [link, toggle, localSubLink],
+        '.lnb-sub-a': [localSubLink],
+      },
+    });
+
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: null,
+      querySelector(selector) {
+        if (selector === '.lnb-tree') return tree;
+        return null;
+      },
+      querySelectorAll(selector) {
+        if (selector === '.lnb-footer-a') return [];
+        return [];
+      },
+      getElementById(id) {
+        if (id === 'overview') return overviewTarget;
+        if (id === sub.id) return sub;
+        return null;
+      },
+      addEventListener() {},
+    };
+
+    const context = {
+      window: {
+        innerWidth: 1280,
+        location: {
+          pathname: '/krds-ux-writing/principles/core-info/',
+          // search is intentionally absent — typeof window.location.search !== 'string'
+        },
+      },
+      location: {
+        pathname: '/krds-ux-writing/principles/core-info/',
+        search: '',
+        hash: '#overview',
+      },
+      document,
+      localStorage: { getItem() { return null; }, setItem() {} },
+      sessionStorage: { getItem() { return null; }, setItem() {} },
+      IntersectionObserver: function () {
+        return { observe() {}, unobserve() {}, disconnect() {} };
+      },
+      Array,
+      JSON,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(localSubLink.classList.contains('active')).toBe(true);
+    expect(localSubLink.getAttribute('aria-current')).toBe('location');
+  });
 });
 
 describe('shared nav tree accordion toggle', () => {
