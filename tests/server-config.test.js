@@ -1572,4 +1572,61 @@ describe('server.js configuration', () => {
     expect(responseState.statusCode).toBe(400);
     expect(JSON.parse(responseState.body).error).toContain('작업 모드');
   });
+
+  it('routes generation requests through Ollama when OLLAMA_URL is set in the local server', async () => {
+    process.env.OLLAMA_URL = 'http://localhost:11434';
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    const freshServerModule = loadFreshServerModule();
+    const freshServer = freshServerModule.server;
+
+    try {
+      await new Promise((resolve) => {
+        http.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            callback(res);
+            res.emit('data', Buffer.from('{"model":"test","response":"결과","done":false}\n'));
+            res.emit('data', Buffer.from('{"model":"test","done":true}\n'));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        const responseState = { statusCode: null, headers: {}, body: '' };
+        const req = new EventEmitter();
+        req.url = '/api/generate';
+        req.method = 'POST';
+        req.headers = { 'x-forwarded-for': '203.0.113.55' };
+        req.socket = { remoteAddress: '127.0.0.1' };
+        const res = {
+          setHeader(name, value) { responseState.headers[String(name).toLowerCase()] = String(value); },
+          writeHead(code, hdrs) {
+            responseState.statusCode = code;
+            Object.entries(hdrs || {}).forEach(([k, v]) => { responseState.headers[k.toLowerCase()] = String(v); });
+          },
+          write(chunk) {
+            responseState.body += String(chunk || '');
+            if (responseState.body.includes('"done"')) resolve(responseState);
+          },
+          end(chunk) { responseState.body += String(chunk || ''); },
+        };
+
+        freshServer.emit('request', req, res);
+        req.emit('data', Buffer.from(JSON.stringify({
+          agencyName: '테스트 기관',
+          agencyType: '지방자치단체',
+          samples: ['샘플 문구'],
+        })));
+        req.emit('end');
+      });
+    } finally {
+      http.request = originalRequest;
+      delete process.env.OLLAMA_URL;
+    }
+  });
 });
