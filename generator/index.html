@@ -129,6 +129,19 @@
 
     .form-group { margin-bottom: 16px; }
 
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .field-help {
+      font-size: 13px;
+      color: var(--krds-text-secondary);
+      margin-top: 8px;
+      line-height: 1.7;
+    }
+
     label {
       display: block;
       font-size: 14px;
@@ -361,6 +374,184 @@
       overflow-x: auto;
     }
 
+    .quality-review {
+      background: linear-gradient(180deg, rgba(37, 110, 244, 0.04), rgba(37, 110, 244, 0.01));
+    }
+
+    .quality-review[hidden] { display: none; }
+
+    .quality-review h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .quality-review-intro {
+      font-size: 14px;
+      color: var(--krds-text-secondary);
+      line-height: 1.7;
+      margin-bottom: 18px;
+    }
+
+    .quality-stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .quality-stat {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      background: #fff;
+    }
+
+    .quality-stat-label {
+      font-size: 12px;
+      color: var(--krds-text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .quality-stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--color-text);
+    }
+
+    .quality-gates {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .quality-gate {
+      padding: 16px 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      background: #fff;
+    }
+
+    .quality-gate--pass {
+      border-color: rgba(34, 135, 56, 0.28);
+      background: rgba(34, 135, 56, 0.05);
+    }
+
+    .quality-gate--warn {
+      border-color: rgba(180, 120, 18, 0.28);
+      background: rgba(245, 166, 35, 0.08);
+    }
+
+    .quality-gate--fail {
+      border-color: rgba(217, 52, 43, 0.28);
+      background: rgba(217, 52, 43, 0.06);
+    }
+
+    .quality-gate-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .quality-gate-label {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    .quality-gate-status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 26px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .quality-gate--pass .quality-gate-status {
+      background: rgba(34, 135, 56, 0.12);
+      color: #16652a;
+    }
+
+    .quality-gate--warn .quality-gate-status {
+      background: rgba(180, 120, 18, 0.12);
+      color: #8a5c0b;
+    }
+
+    .quality-gate--fail .quality-gate-status {
+      background: rgba(217, 52, 43, 0.12);
+      color: #a5261f;
+    }
+
+    .quality-gate-desc,
+    .quality-gate-action {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--krds-text-secondary);
+    }
+
+    .quality-gate-action {
+      margin-top: 6px;
+      color: var(--color-text);
+    }
+
+    .quality-issues-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .quality-issue-list {
+      list-style: none;
+      display: grid;
+      gap: 10px;
+      padding: 0;
+      margin: 0;
+    }
+
+    .quality-issue-item {
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      background: #fff;
+    }
+
+    .quality-issue-category {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-primary-50);
+      margin-bottom: 4px;
+    }
+
+    .quality-issue-message {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--color-text);
+    }
+
+    .quality-issue-suggestion {
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--krds-text-secondary);
+      margin-top: 4px;
+    }
+
+    .quality-empty {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--krds-text-secondary);
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--color-border);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
     /* 마크다운 스타일 */
     .output-card h1, .output-card h2,
     .output-card h3, .output-card h4 {
@@ -522,6 +713,8 @@
       .action-group { flex-direction: column; align-items: stretch; }
       .action-group .btn-primary { min-width: unset; }
       .btn-link { text-align: center; }
+      .field-grid,
+      .quality-stats { grid-template-columns: 1fr; }
     }
 
     /* ===== 접근성 ===== */
@@ -583,7 +776,7 @@
     <!-- ===== 화면 1: 입력 폼 ===== -->
     <section id="screen-input" class="screen active" aria-label="기관 정보 입력">
       <h1>기관별 UX Writing<br>가이드라인 생성기</h1>
-      <p class="page-subtitle">
+      <p id="page-subtitle" class="page-subtitle">
         기관명과 유형을 입력하고, 현재 서비스에서 사용 중인 UI 문구를 붙여넣으세요.<br>
         KRDS 3원칙 기반 맞춤 가이드라인 초안을 즉시 생성합니다.
       </p>
@@ -591,6 +784,24 @@
       <div id="form-alert" class="alert alert-error" role="alert" aria-live="polite"></div>
 
       <form id="generator-form" aria-label="기관 정보 입력" novalidate>
+
+        <fieldset>
+          <legend>작업 모드</legend>
+
+          <div class="form-group">
+            <label for="generator-mode">작업 유형</label>
+            <select id="generator-mode" name="mode" aria-describedby="mode-help">
+              <option value="guide-draft">기관 가이드 초안</option>
+              <option value="rewrite">문장 재작성</option>
+              <option value="message-pack">상태 메시지 개선</option>
+              <option value="tone-adjust">톤 조정</option>
+              <option value="derivative-guide">Layer 3 파생 가이드 초안</option>
+            </select>
+            <p id="mode-help" class="field-help">
+              기관 전체 UX Writing 기준을 빠르게 초안화합니다.
+            </p>
+          </div>
+        </fieldset>
 
         <fieldset>
           <legend>기관 정보</legend>
@@ -639,16 +850,65 @@
               기관 유형을 선택해 주세요.
             </span>
           </div>
+
+          <div class="field-grid">
+            <div class="form-group">
+              <label for="screen-type">
+                화면 맥락<span class="optional-mark">(선택)</span>
+              </label>
+              <select id="screen-type" name="screenType">
+                <option value="">화면 맥락을 선택해 주세요</option>
+                <option value="일반 안내">일반 안내</option>
+                <option value="폼/입력">폼/입력</option>
+                <option value="버튼/CTA">버튼/CTA</option>
+                <option value="에러/경고">에러/경고</option>
+                <option value="완료/성공">완료/성공</option>
+                <option value="빈 상태">빈 상태</option>
+                <option value="검색/탐색">검색/탐색</option>
+                <option value="공지/배너">공지/배너</option>
+              </select>
+            </div>
+
+            <div class="form-group" id="tone-target-group">
+              <label for="tone-target">
+                목표 톤<span class="optional-mark">(선택)</span>
+              </label>
+              <select id="tone-target" name="toneTarget">
+                <option value="">현재 톤 유지</option>
+                <option value="기본 KRDS">기본 KRDS</option>
+                <option value="더 단정하게">더 단정하게</option>
+                <option value="더 친근하게">더 친근하게</option>
+                <option value="더 안내형으로">더 안내형으로</option>
+                <option value="더 단호하게">더 단호하게</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="task-brief">
+              추가 요청<span class="optional-mark">(선택)</span>
+            </label>
+            <textarea
+              id="task-brief"
+              name="taskBrief"
+              maxlength="300"
+              placeholder="예: 로그인 실패 메시지와 완료 화면 문장을 우선 정리해 주세요."
+              aria-describedby="task-brief-help"
+            ></textarea>
+            <p id="task-brief-help" class="field-help">
+              우선 다뤄야 할 화면, 서비스 흐름, 특정 문체 요구가 있으면 적어 주세요.
+            </p>
+          </div>
         </fieldset>
 
         <fieldset>
-          <legend>현재 사용 중인 UI 문구</legend>
-          <p style="font-size:14px;color:var(--krds-text-secondary);margin-bottom:16px;">
+          <legend id="samples-legend">현재 사용 중인 UI 문구</legend>
+          <p id="samples-help" style="font-size:14px;color:var(--krds-text-secondary);margin-bottom:16px;">
             에러 메시지, 버튼 레이블, 안내문 등 현재 서비스에서 사용하는 문구를 그대로 붙여넣어 주세요.
           </p>
 
           <div class="form-group">
-            <label for="sample-1">
+            <label for="sample-1" id="sample-1-label">
               샘플 텍스트 1<span class="required-mark" aria-hidden="true"> *</span>
             </label>
             <textarea
@@ -667,7 +927,7 @@
           </div>
 
           <div class="form-group">
-            <label for="sample-2">
+            <label for="sample-2" id="sample-2-label">
               샘플 텍스트 2<span class="optional-mark">(선택)</span>
             </label>
             <textarea
@@ -679,7 +939,7 @@
           </div>
 
           <div class="form-group">
-            <label for="sample-3">
+            <label for="sample-3" id="sample-3-label">
               샘플 텍스트 3<span class="optional-mark">(선택)</span>
             </label>
             <textarea
@@ -755,7 +1015,49 @@
         aria-label="생성된 가이드라인 내용"
       ></div>
 
-      <div class="usage-guide">
+      <div
+        id="quality-review"
+        class="output-card quality-review"
+        role="region"
+        aria-label="자동 KRDS 검수"
+        hidden
+      >
+        <h3>자동 KRDS 검수</h3>
+        <p class="quality-review-intro">
+          생성 결과에서 권장안 중심 본문만 다시 검사해 점수와 주요 보완 포인트를 요약했습니다.
+        </p>
+
+        <div class="quality-stats">
+          <div class="quality-stat">
+            <div class="quality-stat-label">품질 점수</div>
+            <div id="quality-score" class="quality-stat-value">-</div>
+          </div>
+          <div class="quality-stat">
+            <div class="quality-stat-label">오류</div>
+            <div id="quality-errors" class="quality-stat-value">0</div>
+          </div>
+          <div class="quality-stat">
+            <div class="quality-stat-label">경고</div>
+            <div id="quality-warnings" class="quality-stat-value">0</div>
+          </div>
+          <div class="quality-stat">
+            <div class="quality-stat-label">안내</div>
+            <div id="quality-infos" class="quality-stat-value">0</div>
+          </div>
+        </div>
+
+        <div id="quality-gates" class="quality-gates"></div>
+
+        <div class="quality-issues">
+          <div class="quality-issues-title">우선 확인할 항목</div>
+          <ul id="quality-issues-list" class="quality-issue-list"></ul>
+          <div id="quality-empty" class="quality-empty" hidden>
+            자동 검수에서 추가 이슈를 찾지 못했습니다. 사람이 최종 검수해 바로 활용해도 됩니다.
+          </div>
+        </div>
+      </div>
+
+      <div id="usage-guide" class="usage-guide">
         이 가이드라인을 내부 문서로 활용하거나 출력하여 결재 자료로 사용하세요.
       </div>
 
@@ -811,6 +1113,8 @@
 </div>
 
 <script src="../shared/base-path.js"></script>
+<script src="../jargon-dictionary.js"></script>
+<script src="../krds-lint.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

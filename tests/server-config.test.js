@@ -25,12 +25,14 @@ const DEFAULT_ANTHROPIC_BASE_URL = 'https://api.anthropic.com/v1';
 const savedAllowInsecureTls = process.env.ALLOW_INSECURE_TLS;
 const savedAnthropicApiKey = process.env.ANTHROPIC_API_KEY;
 const savedAnthropicBaseUrl = process.env.ANTHROPIC_BASE_URL;
+const savedOllamaUrl = process.env.OLLAMA_URL;
 const requireModule = createRequire(import.meta.url);
 
 beforeEach(() => {
   delete process.env.ALLOW_INSECURE_TLS;
   process.env.ANTHROPIC_API_KEY = DEFAULT_ANTHROPIC_API_KEY;
   process.env.ANTHROPIC_BASE_URL = DEFAULT_ANTHROPIC_BASE_URL;
+  delete process.env.OLLAMA_URL;
 });
 
 afterEach(() => {
@@ -40,6 +42,8 @@ afterEach(() => {
   else process.env.ANTHROPIC_API_KEY = savedAnthropicApiKey;
   if (savedAnthropicBaseUrl === undefined) delete process.env.ANTHROPIC_BASE_URL;
   else process.env.ANTHROPIC_BASE_URL = savedAnthropicBaseUrl;
+  if (savedOllamaUrl === undefined) delete process.env.OLLAMA_URL;
+  else process.env.OLLAMA_URL = savedOllamaUrl;
 });
 
 async function runServerRequest(options = {}) {

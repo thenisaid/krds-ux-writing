@@ -41,6 +41,7 @@ function createElement(options = {}) {
     textContent: options.textContent || '',
     innerHTML: options.innerHTML || '',
     disabled: !!options.disabled,
+    hidden: !!options.hidden,
     dataset: options.dataset || {},
     style: options.style || {},
     classList: createClassList(),
@@ -110,8 +111,21 @@ function buildGeneratorContext({ fetchImpl, menuItems, manualTimers = false } = 
   const elements = {
     'generator-form': createElement(),
     'submit-btn': createElement({ disabled: true }),
+    'page-subtitle': createElement(),
+    'generator-mode': createElement({ value: 'guide-draft' }),
+    'mode-help': createElement(),
     'agency-name': createElement({ value: '테스트 기관' }),
     'agency-type': createElement({ value: '지방자치단체' }),
+    'screen-type': createElement(),
+    'tone-target': createElement(),
+    'tone-target-group': createElement({ style: {} }),
+    'task-brief': createElement(),
+    'task-brief-help': createElement(),
+    'samples-legend': createElement(),
+    'samples-help': createElement(),
+    'sample-1-label': createElement(),
+    'sample-2-label': createElement(),
+    'sample-3-label': createElement(),
     'sample-1': createElement({ value: '첫 번째 문장' }),
     'sample-2': createElement(),
     'sample-3': createElement(),
@@ -124,6 +138,15 @@ function buildGeneratorContext({ fetchImpl, menuItems, manualTimers = false } = 
     'fallback-btn': createElement(),
     'output-title': createElement(),
     'output-content': createElement(),
+    'quality-review': createElement({ hidden: true }),
+    'quality-score': createElement(),
+    'quality-errors': createElement(),
+    'quality-warnings': createElement(),
+    'quality-infos': createElement(),
+    'quality-gates': createElement(),
+    'quality-issues-list': createElement(),
+    'quality-empty': createElement({ hidden: true }),
+    'usage-guide': createElement(),
     'copy-md-btn': createElement({ textContent: '텍스트 복사' }),
     'download-btn': createElement(),
     'restart-btn': createElement(),
@@ -297,6 +320,74 @@ describe('generator/app.js', () => {
     expect(elements['output-title'].textContent).toBe('테스트 기관 UX Writing 가이드라인');
     expect(elements['output-content'].innerHTML).toContain('# 테스트 기관 가이드');
     expect(elements['stream-output'].getAttribute('aria-busy')).toBe('false');
+  });
+
+  it('sends mode and optional context fields and updates the output title for derivative guides', async () => {
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async (url, options) => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: {"type":"chunk","text":"# 테스트 기관 Layer 3 파생 가이드 초안"}\n'),
+            encoder.encode('data: {"type":"done"}\n'),
+          ];
+          let index = 0;
+          return {
+            async read() {
+              if (index < chunks.length) {
+                return { done: false, value: chunks[index++] };
+              }
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-mode'].value = 'derivative-guide';
+    elements['screen-type'].value = '에러/경고';
+    elements['task-brief'].value = '로그인과 신청 흐름을 우선 반영해 주세요.';
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const requestBody = JSON.parse(fetchImpl.mock.calls[0][1].body);
+    expect(requestBody.mode).toBe('derivative-guide');
+    expect(requestBody.screenType).toBe('에러/경고');
+    expect(requestBody.taskBrief).toBe('로그인과 신청 흐름을 우선 반영해 주세요.');
+    expect(elements['output-title'].textContent).toBe('테스트 기관 Layer 3 파생 가이드 초안');
+  });
+
+  it('renders an automatic KRDS quality review when the lint engine is available', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 94,
+        summary: { total: 1, errors: 0, warnings: 1, infos: 0 },
+        issues: [
+          {
+            type: 'subjective-adverb',
+            category: '주관적 부사',
+            message: '주관적 부사 "빠르게" — 수치 또는 구체적 사실로 대체하세요.',
+            suggestion: '→ "3영업일 이내"처럼 구체화',
+          },
+        ],
+      })),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['fallback-btn'].dispatch('click');
+
+    expect(elements['quality-review'].hidden).toBe(false);
+    expect(elements['quality-score'].textContent).toBe('94');
+    expect(elements['quality-gates'].innerHTML).toContain('무번역');
+    expect(elements['quality-issues-list'].innerHTML).toContain('주관적 부사');
   });
 
   it('returns focus to the format toggle after a menu item is activated', () => {
