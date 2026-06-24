@@ -890,4 +890,11 @@ describe('server.js configuration', () => {
       http.request = originalRequest;
     }
   });
+
+  it('rejects non-http/https Ollama URL protocols without making a network request', () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    let errorMessage;
+    callOllama('file:///etc/passwd', 'system', 'msg', 2200, () => {}, () => {}, (msg) => { errorMessage = msg; });
+    expect(errorMessage).toMatch(/형식/);
+  });
 });

@@ -587,6 +587,10 @@ function callOllamaStream(ollamaUrl, systemPrompt, userMessage, maxTokens, onChu
   }
 
   const isHttps = parsedUrl.protocol === 'https:';
+  if (!isHttps && parsedUrl.protocol !== 'http:') {
+    onError('OLLAMA_URL 형식이 올바르지 않습니다.');
+    return;
+  }
   const transport = isHttps ? https : http;
   let settled = false;
 
