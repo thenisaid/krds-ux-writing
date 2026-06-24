@@ -459,6 +459,7 @@ describe('server.js configuration', () => {
         https.request = function (_options, callback) {
           const req = new EventEmitter();
           req.write = function () {};
+          req.setTimeout = function () {};
           req.end = function () {
             const res = new EventEmitter();
             res.statusCode = 401;
@@ -496,6 +497,7 @@ describe('server.js configuration', () => {
           expect(options.rejectUnauthorized).toBe(true);
           const req = new EventEmitter();
           req.write = function () {};
+          req.setTimeout = function () {};
           req.end = function () {
             const res = new EventEmitter();
             res.statusCode = 200;
@@ -531,6 +533,7 @@ describe('server.js configuration', () => {
           expect(options.rejectUnauthorized).toBe(false);
           const req = new EventEmitter();
           req.write = function () {};
+          req.setTimeout = function () {};
           req.end = function () {
             const res = new EventEmitter();
             res.statusCode = 200;
@@ -565,6 +568,7 @@ describe('server.js configuration', () => {
         https.request = function (_options, callback) {
           const req = new EventEmitter();
           req.write = function () {};
+          req.setTimeout = function () {};
           req.end = function () {
             const res = new EventEmitter();
             res.statusCode = 200;
@@ -608,6 +612,7 @@ describe('server.js configuration', () => {
         https.request = function (_options, callback) {
           const req = new EventEmitter();
           req.write = function () {};
+          req.setTimeout = function () {};
           req.end = function () {
             const res = new EventEmitter();
             res.statusCode = 200;
@@ -646,6 +651,7 @@ describe('server.js configuration', () => {
         https.request = function (_options, callback) {
           const req = new EventEmitter();
           req.write = function () {};
+          req.setTimeout = function () {};
           req.end = function () {
             const res = new EventEmitter();
             res.statusCode = 200;
@@ -686,6 +692,7 @@ describe('server.js configuration', () => {
         https.request = function (_options, callback) {
           const req = new EventEmitter();
           req.write = function () {};
+          req.setTimeout = function () {};
           req.end = function () {
             const res = new EventEmitter();
             res.statusCode = 200;
@@ -754,5 +761,71 @@ describe('server.js configuration', () => {
     expect(JSON.parse(saturated.body)).toEqual({
       error: '요청 한도를 초과했습니다. 1시간 후 다시 시도해 주세요.',
     });
+  });
+
+  it('calls req.setTimeout with 30 000 ms on Anthropic API requests in the local server', () => {
+    const originalRequest = https.request;
+    try {
+      let capturedTimeout;
+
+      https.request = function (options, callback) {
+        const req = new EventEmitter();
+        req.write = function () {};
+        req.end = function () {};
+        req.destroy = function () {};
+        req.setTimeout = function (ms) { capturedTimeout = ms; };
+        return req;
+      };
+
+      callFreshClaudeStream(
+        { model: 'claude-sonnet-4-6' },
+        () => {},
+        () => {},
+        () => {},
+      );
+
+      expect(capturedTimeout).toBe(30000);
+    } finally {
+      https.request = originalRequest;
+    }
+  });
+
+  it('reports a timeout error when the Anthropic API socket stalls and destroys the request', async () => {
+    const originalRequest = https.request;
+    try {
+      let timeoutCallback;
+      let reqDestroyed = false;
+      let errorMessage;
+
+      await new Promise((resolve) => {
+        https.request = function (options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {};
+          req.destroy = function () { reqDestroyed = true; };
+          req.setTimeout = function (ms, cb) { timeoutCallback = cb; };
+          return req;
+        };
+
+        callFreshClaudeStream(
+          { model: 'claude-sonnet-4-6' },
+          () => {},
+          () => {},
+          (message) => {
+            errorMessage = message;
+            resolve();
+          },
+        );
+
+        // Simulate socket timeout firing
+        setTimeout(() => { if (timeoutCallback) timeoutCallback(); }, 0);
+      });
+
+      expect(reqDestroyed).toBe(true);
+      expect(errorMessage).toMatch(/초과/);
+    } finally {
+      https.request = originalRequest;
+    }
   });
 });
