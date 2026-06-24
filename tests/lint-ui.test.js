@@ -772,4 +772,48 @@ describe('lint-ui stale result handling', () => {
     }).not.toThrow();
     expect(elements.inputText.value).toBe('');
   });
+
+  it('loads history item text into the textarea and updates charCount when a history entry is clicked', () => {
+    const { context, elements } = buildContext();
+    const storedText = '귀하의 신청이 접수되었습니다. 민원 처리 결과를 확인하세요.';
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      {
+        date: '2026. 6. 9.',
+        score: 75,
+        text: storedText.slice(0, 80),
+        fullText: storedText,
+        issueCount: 2,
+      },
+    ]));
+
+    vm.runInNewContext(SOURCE, context);
+
+    const historyBtn = createElement({ dataset: { idx: '0' } });
+    elements.historyList.dispatch('click', { target: historyBtn });
+
+    expect(elements.inputText.value).toBe(storedText);
+    expect(elements.charCount.textContent).toBe(storedText.length);
+  });
+
+  it('clears history from localStorage and hides the card when the clear button is clicked', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      {
+        date: '2026. 6. 9.',
+        score: 90,
+        text: '테스트 텍스트',
+        fullText: '테스트 텍스트',
+        issueCount: 0,
+      },
+    ]));
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.historyCard.style.display).toBe('block');
+
+    elements.clearHistoryBtn.dispatch('click');
+
+    expect(context.localStorage.getItem('krds-lint-history')).toBeNull();
+    expect(elements.historyCard.style.display).toBe('none');
+  });
 });
