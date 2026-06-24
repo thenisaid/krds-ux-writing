@@ -210,6 +210,64 @@ describe('shared/base-path.js', () => {
     expect(basePath.buildSitePath('/principles/')).toBe('/preview/KRDS/principles/');
   });
 
+  it('prepends a leading slash when buildSitePath receives a path without one', () => {
+    const basePath = runBasePath({
+      pathname: '/krds-ux-writing/index.html',
+      scriptPath: '/krds-ux-writing/shared/base-path.js',
+    });
+
+    expect(basePath.buildSitePath('principles/')).toBe('/krds-ux-writing/principles/');
+  });
+
+  it('returns an empty site root path when no script tag src contains the base-path.js marker', () => {
+    const unrelatedScript = { src: 'https://example.com/other.js', getAttribute() { return null; } };
+    const document = {
+      currentScript: null,
+      querySelectorAll() { return []; },
+      getElementsByTagName() { return [unrelatedScript]; },
+    };
+    const context = {
+      document,
+      window: { location: { pathname: '/krds-ux-writing/', href: 'https://example.com/krds-ux-writing/' } },
+      URL,
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(SOURCE, context);
+
+    expect(context.window.KRDSBasePath.siteRootPath).toBe('');
+  });
+
+  it('uses getAttribute("src") as a fallback when the script element has no src property', () => {
+    const scriptEl = {
+      src: '',
+      getAttribute(name) {
+        return name === 'src' ? 'https://example.com/preview/KRDS/shared/base-path.js' : null;
+      },
+    };
+    const document = {
+      currentScript: null,
+      querySelectorAll() { return []; },
+      getElementsByTagName() { return [scriptEl]; },
+    };
+    const context = {
+      document,
+      window: {
+        location: { pathname: '/preview/KRDS/index.html', href: 'https://example.com/preview/KRDS/index.html' },
+      },
+      URL,
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(SOURCE, context);
+
+    expect(context.window.KRDSBasePath.siteRootPath).toBe('/preview/KRDS');
+  });
+
   it('returns an empty site root path when new URL throws for the script src', () => {
     const document = {
       currentScript: { src: 'not-a-valid-url-at-all' },
