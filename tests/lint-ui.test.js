@@ -795,6 +795,66 @@ describe('lint-ui stale result handling', () => {
     expect(elements.charCount.textContent).toBe(storedText.length);
   });
 
+  it('escapes HTML special characters in the unmatched tail when rendering the highlight view', () => {
+    const { context, elements } = buildContext();
+    const text = '이루어지다 <script>alert(1)</script>';
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 70,
+        summary: { total: 1, errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          type: 'double-passive',
+          category: '이중피동',
+          severity: 'error',
+          line: 1,
+          col: 1,
+          match: '이루어지다',
+          message: '"이루어지다" 이중피동 표현',
+          suggestion: '이루어진다',
+        }],
+      })),
+    };
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = text;
+    elements.lintBtn.dispatch('click');
+
+    const html = elements.highlightedText.innerHTML;
+    expect(html).toContain('<mark');
+    expect(html).not.toContain('<script>');
+    expect(html).toContain('&lt;script&gt;');
+  });
+
+  it('escapes HTML in the matched token inside a highlight mark when an issue covers user-supplied text', () => {
+    const { context, elements } = buildContext();
+    const xssText = '이루어지다 <img src=x onerror=alert(1)>';
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 70,
+        summary: { total: 1, errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          type: 'double-passive',
+          category: '이중피동',
+          severity: 'error',
+          line: 1,
+          col: 1,
+          match: '이루어지다',
+          message: '"이루어지다" 이중피동',
+          suggestion: '이루어진다',
+        }],
+      })),
+    };
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = xssText;
+    elements.lintBtn.dispatch('click');
+
+    const html = elements.highlightedText.innerHTML;
+    expect(html).toContain('<mark');
+    expect(html).not.toContain('<img');
+    expect(html).toContain('&lt;img');
+  });
+
   it('clears history from localStorage and hides the card when the clear button is clicked', () => {
     const { context, elements } = buildContext();
     context.localStorage.setItem('krds-lint-history', JSON.stringify([
