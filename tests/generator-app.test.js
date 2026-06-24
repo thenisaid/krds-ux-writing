@@ -867,4 +867,58 @@ describe('generator/app.js', () => {
     expect(fetchImpl).not.toHaveBeenCalled();
     expect(elements['sample-1'].classList.contains('has-error')).toBe(true);
   });
+
+  it('strips code fences, 🚫 lines, and sample headers before passing text to the lint engine', async () => {
+    const markdown = [
+      '샘플 텍스트 1: 이 줄은 제거됩니다',
+      '🚫 현재: 이 줄도 제거됩니다',
+      '```',
+      '코드 블록 내용은 제거됩니다',
+      '```',
+      '✅ 개선: 이 문장은 포함됩니다',
+      '일반 문장도 포함됩니다',
+    ].join('\n');
+
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: ' + JSON.stringify({ type: 'chunk', text: markdown }) + '\n'),
+            encoder.encode('data: ' + JSON.stringify({ type: 'done' }) + '\n'),
+          ];
+          let index = 0;
+          return {
+            async read() {
+              if (index < chunks.length) return { done: false, value: chunks[index++] };
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    let lintInput = null;
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    context.KRDSLint = {
+      lint: vi.fn((text) => {
+        lintInput = text;
+        return { score: 100, summary: { total: 0, errors: 0, warnings: 0, infos: 0 }, issues: [] };
+      }),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(context.KRDSLint.lint).toHaveBeenCalled();
+    expect(lintInput).not.toContain('샘플 텍스트 1');
+    expect(lintInput).not.toContain('🚫');
+    expect(lintInput).not.toContain('코드 블록 내용');
+    expect(lintInput).toContain('이 문장은 포함됩니다');
+    expect(lintInput).toContain('일반 문장도 포함됩니다');
+  });
 });
