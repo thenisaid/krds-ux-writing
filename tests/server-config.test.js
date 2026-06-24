@@ -1106,6 +1106,142 @@ describe('server.js configuration', () => {
     }
   });
 
+  it('fires done via the end-of-stream buffer flush when the Ollama done:true event has no trailing newline', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      await new Promise((resolve) => {
+        const chunks = [];
+        http.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            callback(res);
+            res.emit('data', Buffer.from('{"model":"test","response":"내용","done":false}\n'));
+            res.emit('data', Buffer.from('{"model":"test","done":true}'));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callOllama(
+          'http://localhost:11434', 'system', 'user', 2200,
+          (text) => { chunks.push(text); },
+          () => { expect(chunks).toEqual(['내용']); resolve(); },
+          (message) => { throw new Error('unexpected error: ' + message); },
+        );
+      });
+    } finally {
+      http.request = originalRequest;
+    }
+  });
+
+  it('fires done via sawContent fallback when Ollama content arrived but no explicit done event was sent', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      await new Promise((resolve) => {
+        const chunks = [];
+        http.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            callback(res);
+            res.emit('data', Buffer.from('{"model":"test","response":"결과","done":false}\n'));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callOllama(
+          'http://localhost:11434', 'system', 'user', 2200,
+          (text) => { chunks.push(text); },
+          () => { expect(chunks).toEqual(['결과']); resolve(); },
+          (message) => { throw new Error('unexpected error: ' + message); },
+        );
+      });
+    } finally {
+      http.request = originalRequest;
+    }
+  });
+
+  it('reports the no-content Ollama error when the stream ends with no response or done event', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      await new Promise((resolve) => {
+        http.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            callback(res);
+            res.emit('data', Buffer.from('{malformed json}\n'));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callOllama(
+          'http://localhost:11434', 'system', 'user', 2200,
+          () => {},
+          () => { throw new Error('unexpected done'); },
+          (message) => {
+            expect(message).toContain('로컬 AI 서비스 연결에 실패했습니다');
+            resolve();
+          },
+        );
+      });
+    } finally {
+      http.request = originalRequest;
+    }
+  });
+
+  it('fires an error when the Ollama response socket emits an error after the connection is established', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      await new Promise((resolve) => {
+        http.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            callback(res);
+            process.nextTick(() => res.emit('error', new Error('socket hang up')));
+          };
+          return req;
+        };
+
+        callOllama(
+          'http://localhost:11434', 'system', 'user', 2200,
+          () => {},
+          () => { throw new Error('unexpected done'); },
+          (message) => {
+            expect(message).toContain('연결이 끊겼습니다');
+            resolve();
+          },
+        );
+      });
+    } finally {
+      http.request = originalRequest;
+    }
+  });
+
   it('reports a network error when the Ollama request connection fails', async () => {
     const { callOllamaStream: callOllama } = loadFreshServerModule();
     const http = requireModule('node:http');
