@@ -70,16 +70,21 @@ function createElement(options = {}) {
       }));
     },
     querySelector(selector) {
-      const value = options.queryMap ? options.queryMap[selector] : null;
+      const elMap = element.queryMap;
+      const optMap = options.queryMap;
+      const value = (elMap && selector in elMap) ? elMap[selector] : (optMap ? optMap[selector] : null);
       if (Array.isArray(value)) return value[0] || null;
       return value || null;
     },
     querySelectorAll(selector) {
-      const value = options.queryMap ? options.queryMap[selector] : null;
+      const elMap = element.queryMap;
+      const optMap = options.queryMap;
+      const value = (elMap && selector in elMap) ? elMap[selector] : (optMap ? optMap[selector] : null);
       return Array.isArray(value) ? value : value ? [value] : [];
     },
-    closest() {
-      return null;
+    closest(selector) {
+      const map = element.closestMap || options.closestMap;
+      return (map && map[selector]) ? map[selector] : null;
     },
     focus() {},
   };
@@ -175,7 +180,7 @@ function makeContext(options = {}) {
 
   vm.runInNewContext(SOURCE, context);
 
-  return { toggle, sub, tree, document, item, link };
+  return { toggle, sub, tree, document, item, link, subLink };
 }
 
 function makeHashContext(options = {}) {
@@ -467,5 +472,54 @@ describe('shared nav tree keyboard navigation', () => {
     document.activeElement = link;
     tree.dispatch('keydown', { key: 'Tab', preventDefault: vi.fn() });
     expect(toggle.focus).not.toHaveBeenCalled();
+  });
+
+  it('expands a collapsed accordion item when ArrowRight is pressed on its chapter link', () => {
+    const { toggle, tree, document, item, link } = makeContext({ currentPath: '/krds-ux-writing/' });
+    toggle.click = () => toggle.dispatch('click');
+    link.closestMap = { '.lnb-item': item };
+    expect(item.getAttribute('aria-expanded')).toBe('false');
+    document.activeElement = link;
+    tree.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() });
+    expect(item.getAttribute('aria-expanded')).toBe('true');
+  });
+
+  it('moves focus to the first visible sub-link when ArrowRight is pressed on an expanded item', () => {
+    const { toggle, tree, document, item, link, subLink } = makeContext();
+    link.closestMap = { '.lnb-item': item };
+    expect(item.getAttribute('aria-expanded')).toBe('true');
+    document.activeElement = link;
+    subLink.focus = vi.fn();
+    item.queryMap = { '.lnb-sub:not([hidden]) .lnb-sub-a': subLink };
+    tree.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() });
+    expect(subLink.focus).toHaveBeenCalled();
+  });
+
+  it('moves focus from a sub-link to the parent chapter link when ArrowLeft is pressed', () => {
+    const { tree, document, item, link, subLink } = makeContext();
+    subLink.closestMap = { '.lnb-item': item };
+    link.focus = vi.fn();
+    document.activeElement = subLink;
+    tree.dispatch('keydown', { key: 'ArrowLeft', preventDefault: vi.fn() });
+    expect(link.focus).toHaveBeenCalled();
+  });
+
+  it('collapses an expanded accordion item when ArrowLeft is pressed on its chapter link', () => {
+    const { toggle, tree, document, item, link } = makeContext();
+    toggle.click = () => toggle.dispatch('click');
+    link.closestMap = { '.lnb-item': item };
+    expect(item.getAttribute('aria-expanded')).toBe('true');
+    document.activeElement = link;
+    tree.dispatch('keydown', { key: 'ArrowLeft', preventDefault: vi.fn() });
+    expect(item.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('collapses an expanded accordion item when Space is pressed on its toggle button', () => {
+    const { toggle, tree, document, item } = makeContext();
+    toggle.click = () => toggle.dispatch('click');
+    expect(item.getAttribute('aria-expanded')).toBe('true');
+    document.activeElement = toggle;
+    tree.dispatch('keydown', { key: ' ', preventDefault: vi.fn() });
+    expect(item.getAttribute('aria-expanded')).toBe('false');
   });
 });
