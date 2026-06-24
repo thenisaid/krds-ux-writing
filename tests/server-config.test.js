@@ -402,6 +402,7 @@ describe('server.js configuration', () => {
     expect(normalizeStaticPath('/principles')).toBe('/principles/index.html');
     expect(normalizeStaticPath('/principles/foundation/')).toBe('/principles/foundation/index.html');
     expect(normalizeStaticPath('/corpus/')).toBe('/corpus/index.html');
+    expect(normalizeStaticPath('/krds-ux-writing')).toBe('/index.html');
     expect(normalizeStaticPath('/krds-ux-writing/')).toBe('/index.html');
     expect(normalizeStaticPath('/krds-ux-writing/principles/foundation/')).toBe('/principles/foundation/index.html');
     expect(normalizeStaticPath('/krds-ux-writing/archive.html')).toBe('/archive.html');
