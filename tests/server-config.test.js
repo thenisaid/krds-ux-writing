@@ -1777,4 +1777,32 @@ describe('server.js configuration', () => {
       delete process.env.OLLAMA_URL;
     }
   });
+
+  it('accepts a string body chunk (not a Buffer) when decoding the POST request body', async () => {
+    const freshServerModule = loadFreshServerModule();
+    const freshServer = freshServerModule.server;
+
+    const responseState = { statusCode: null, body: '' };
+    await new Promise((resolve) => {
+      const req = new EventEmitter();
+      req.url = '/api/generate';
+      req.method = 'POST';
+      req.headers = { 'x-forwarded-for': '203.0.113.93' };
+      req.socket = { remoteAddress: '127.0.0.1' };
+      const res = {
+        setHeader() {},
+        writeHead(code) { responseState.statusCode = code; },
+        write() {},
+        end(chunk) { responseState.body += String(chunk || ''); resolve(); },
+      };
+
+      freshServer.emit('request', req, res);
+      // emit body as a plain string instead of a Buffer
+      req.emit('data', JSON.stringify({ agencyName: '기관', agencyType: '지방자치단체', samples: [] }));
+      req.emit('end');
+    });
+
+    expect(responseState.statusCode).toBe(400);
+    expect(JSON.parse(responseState.body)).toMatchObject({ error: expect.any(String) });
+  });
 });
