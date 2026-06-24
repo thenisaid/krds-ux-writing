@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import EventEmitter from 'node:events';
 import https from 'node:https';
 import { createRequire } from 'node:module';
@@ -862,6 +862,46 @@ describe('server.js configuration', () => {
     expect(JSON.parse(saturated.body)).toEqual({
       error: '요청 한도를 초과했습니다. 1시간 후 다시 시도해 주세요.',
     });
+  });
+
+  it('evicts expired entries from the local rate-limit map when the map is full', async () => {
+    const freshServerModule = loadFreshServerModule();
+    const freshServer = freshServerModule.server;
+    const realNow = Date.now();
+    const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+    const pastTime = realNow - RATE_LIMIT_WINDOW_MS - 1000;
+
+    vi.spyOn(Date, 'now').mockReturnValue(pastTime);
+    try {
+      for (let i = 0; i < 1000; i += 1) {
+        await runServerRequest({
+          serverInstance: freshServer,
+          headers: {
+            'content-type': 'application/json',
+            origin: 'http://localhost:3000',
+            'cf-connecting-ip': buildUniqueTestIp(i + 30000),
+          },
+          body: { agencyName: '', agencyType: '', samples: [] },
+        });
+      }
+
+      vi.spyOn(Date, 'now').mockReturnValue(realNow);
+
+      const response = await runServerRequest({
+        serverInstance: freshServer,
+        headers: {
+          'content-type': 'application/json',
+          origin: 'http://localhost:3000',
+          'cf-connecting-ip': buildUniqueTestIp(40000),
+        },
+        body: { agencyName: '', agencyType: '', samples: [] },
+      });
+
+      expect(response.statusCode).not.toBe(429);
+      expect(response.statusCode).toBe(400);
+    } finally {
+      vi.restoreAllMocks();
+    }
   });
 
   it('calls req.setTimeout with 30 000 ms on Anthropic API requests in the local server', () => {
