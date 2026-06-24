@@ -473,4 +473,207 @@ describe('before-after page interactions', () => {
     expect(elements.lintResults.innerHTML).toContain('원칙 위반이 없습니다');
     expect(elements.lintResults.innerHTML).toContain('100');
   });
+
+  it('shows the empty-input prompt when run is clicked with no text', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.lintInput.value = '  ';
+    elements.lintRunBtn.dispatch('click');
+
+    expect(elements.lintResults.classList.contains('visible')).toBe(true);
+    expect(elements.lintResults.innerHTML).toContain('텍스트를 입력해 주세요.');
+  });
+
+  it('shows the engine-loading message when KRDSLint is not available in the context', () => {
+    const { context, elements } = buildContext();
+    delete context.KRDSLint;
+    vm.runInNewContext(SOURCE, context);
+
+    elements.lintInput.value = '귀하의 신청이 완료되었습니다.';
+    elements.lintRunBtn.dispatch('click');
+
+    expect(elements.lintResults.classList.contains('visible')).toBe(true);
+    expect(elements.lintResults.innerHTML).toContain('린팅 엔진을 불러오는 중입니다.');
+  });
+
+  it('applies the "bad" score class when the lint score is below 50', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 30,
+        summary: { errors: 3, warnings: 0, infos: 0 },
+        issues: [{ severity: 'error', category: '행정어', match: '귀하', message: '어려운 표현', suggestion: '신청인' }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.lintInput.value = '귀하의 신청이 완료되었습니다.';
+    elements.lintRunBtn.dispatch('click');
+
+    expect(elements.lintResults.innerHTML).toContain('lint-score-num bad');
+    expect(elements.lintResults.innerHTML).toContain('>30<');
+  });
+
+  it('calls preventDefault and returns without focusing when the seminar overlay has no focusable elements', () => {
+    const seminarOverlay = createElement({
+      id: 'seminarOverlay',
+      classes: ['active'],
+      queryMap: {
+        'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])': [],
+        'mark.diff': [],
+      },
+    });
+    const elements = {
+      themeToggle: createElement({ id: 'themeToggle' }),
+      themeIcon: createElement({ id: 'themeIcon' }),
+      seminarOverlay,
+      seminarSlide: createElement({ id: 'seminarSlide', queryMap: { 'mark.diff': [] } }),
+      seminarPrinciple: createElement({ id: 'seminarPrinciple' }),
+      seminarCounter: createElement({ id: 'seminarCounter' }),
+      seminarPrev: createElement({ id: 'seminarPrev' }),
+      seminarNext: createElement({ id: 'seminarNext' }),
+      seminarBtn: createElement({ id: 'seminarBtn' }),
+      seminarClose: createElement({ id: 'seminarClose' }),
+    };
+    const document = createDocument(elements, { '.tab-btn': [], '.tab-panel': [], '.pair': [] });
+    const context = {
+      document,
+      window: {},
+      localStorage: { setItem() {} },
+      setTimeout(fn) { fn(); return 1; },
+      clearTimeout() {},
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    const preventDefault = vi.fn();
+    document.dispatch('keydown', { key: 'Tab', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(elements.seminarClose.focus).not.toHaveBeenCalled();
+    expect(elements.seminarNext.focus).not.toHaveBeenCalled();
+  });
+
+  it('wraps focus from the first to the last element on Shift+Tab when the first element is active', () => {
+    const seminarClose = createElement({ id: 'seminarClose' });
+    const seminarPrev = createElement({ id: 'seminarPrev' });
+    const seminarNext = createElement({ id: 'seminarNext' });
+    const seminarOverlay = createElement({
+      id: 'seminarOverlay',
+      classes: ['active'],
+      queryMap: {
+        'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])': [
+          seminarClose,
+          seminarPrev,
+          seminarNext,
+        ],
+        'mark.diff': [],
+      },
+    });
+    const elements = {
+      themeToggle: createElement({ id: 'themeToggle' }),
+      themeIcon: createElement({ id: 'themeIcon' }),
+      seminarOverlay,
+      seminarSlide: createElement({ id: 'seminarSlide', queryMap: { 'mark.diff': [] } }),
+      seminarPrinciple: createElement({ id: 'seminarPrinciple' }),
+      seminarCounter: createElement({ id: 'seminarCounter' }),
+      seminarPrev,
+      seminarNext,
+      seminarBtn: createElement({ id: 'seminarBtn' }),
+      seminarClose,
+    };
+    const document = createDocument(elements, { '.tab-btn': [], '.tab-panel': [], '.pair': [] });
+    const context = {
+      document,
+      window: {},
+      localStorage: { setItem() {} },
+      setTimeout(fn) { fn(); return 1; },
+      clearTimeout() {},
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    document.activeElement = seminarClose;
+    const preventDefault = vi.fn();
+    document.dispatch('keydown', { key: 'Tab', shiftKey: true, preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(seminarNext.focus).toHaveBeenCalled();
+    expect(seminarClose.focus).not.toHaveBeenCalled();
+  });
+
+  it('falls back to the raw principle code when the slide principle is not in PRINCIPLE_NAMES', () => {
+    const baTextBefore = createElement({ id: 'ba-text-before' });
+    baTextBefore.innerHTML = '이전 텍스트';
+    const baTextAfter = createElement({ id: 'ba-text-after' });
+    baTextAfter.innerHTML = '이후 텍스트';
+
+    const pairElement = {
+      getAttribute(name) {
+        if (name === 'data-context') return '테스트 상황';
+        if (name === 'data-principle') return 'D';
+        return null;
+      },
+      querySelector(selector) {
+        if (selector === '.ba-card.before .ba-text') return baTextBefore;
+        if (selector === '.ba-card.after .ba-text') return baTextAfter;
+        return null;
+      },
+    };
+
+    const seminarClose = createElement({ id: 'seminarClose' });
+    const seminarSlide = createElement({ id: 'seminarSlide', queryMap: { 'mark.diff': [] } });
+    const seminarPrinciple = createElement({ id: 'seminarPrinciple' });
+    const seminarOverlay = createElement({
+      id: 'seminarOverlay',
+      queryMap: {
+        'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])': [],
+        'mark.diff': [],
+      },
+    });
+    const seminarBtn = createElement({ id: 'seminarBtn' });
+
+    const elements = {
+      themeToggle: createElement({ id: 'themeToggle' }),
+      themeIcon: createElement({ id: 'themeIcon' }),
+      seminarOverlay,
+      seminarSlide,
+      seminarPrinciple,
+      seminarCounter: createElement({ id: 'seminarCounter' }),
+      seminarPrev: createElement({ id: 'seminarPrev' }),
+      seminarNext: createElement({ id: 'seminarNext' }),
+      seminarBtn,
+      seminarClose,
+    };
+    const document = createDocument(elements, {
+      '.tab-btn': [],
+      '.tab-panel': [],
+      '.pair': [pairElement],
+    });
+    const context = {
+      document,
+      window: {},
+      localStorage: { setItem() {} },
+      setTimeout(fn) { fn(); return 1; },
+      clearTimeout() {},
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    seminarBtn.dispatch('click');
+
+    expect(seminarPrinciple.textContent).toContain('D — D');
+  });
 });
