@@ -663,7 +663,7 @@ function callOllamaStream(ollamaUrl, systemPrompt, userMessage, maxTokens, onChu
       if (buffer.trim()) {
         let evt;
         try { evt = JSON.parse(buffer.trim()); } catch {}
-        if (evt && !evt.done && evt.response) onChunk(evt.response);
+        if (evt && !evt.done && evt.response) { onChunk(evt.response); sawContent = true; }
         if (evt && evt.done && !settled) { finishDone(); return; }
       }
       if (!settled) {
