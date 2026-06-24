@@ -2223,4 +2223,40 @@ describe('generator/app.js', () => {
       }, 0);
     });
   });
+
+  it('discards the onSuccess callback of a stale copy operation when a newer copy has already completed', async () => {
+    let settleFirst;
+    let callCount = 0;
+    const { context, elements, timers } = buildGeneratorContext({ manualTimers: true });
+    context.navigator.clipboard = {
+      writeText: vi.fn(() => {
+        callCount += 1;
+        if (callCount === 1) {
+          return new Promise((resolve) => { settleFirst = resolve; });
+        }
+        return Promise.resolve();
+      }),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['fallback-btn'].dispatch('click');
+    [...timers.entries()].filter(([, t]) => t.delay === 50).forEach(([id]) => timers.delete(id));
+
+    // Second click resolves immediately → sets btn to '✅' with its own reset timer
+    elements['copy-md-btn'].dispatch('click');
+    elements['copy-md-btn'].dispatch('click');
+    await Promise.resolve();
+
+    const timerCountAfterSecond = [...timers.entries()].filter(([, t]) => t.delay === 2000).length;
+    expect(timerCountAfterSecond).toBe(1);
+    expect(elements['copy-md-btn'].textContent).toBe('✅ 복사됨');
+
+    // First copy resolves — its stale onSuccess must NOT add another reset timer
+    settleFirst();
+    await Promise.resolve();
+
+    const timerCountAfterFirst = [...timers.entries()].filter(([, t]) => t.delay === 2000).length;
+    expect(timerCountAfterFirst).toBe(1); // same timer, no extra added
+  });
 });
