@@ -316,4 +316,22 @@ describe('shared nav Ctrl+K behavior', () => {
     expect(preventDefault).toHaveBeenCalled();
     expect(focus).toHaveBeenCalled();
   });
+
+  it('focuses the page search input when Command+K is pressed on Mac (metaKey branch)', () => {
+    const focus = vi.fn();
+    const select = vi.fn();
+    const preventDefault = vi.fn();
+
+    const ctx = makeContext({
+      pathname: '/krds-ux-writing/dictionary/',
+      href: 'https://example.com/krds-ux-writing/dictionary/',
+      searchInput: { focus, select },
+    });
+
+    ctx.dispatchKeydown({ ctrlKey: false, metaKey: true, key: 'k', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(focus).toHaveBeenCalled();
+    expect(select).toHaveBeenCalled();
+  });
 });
