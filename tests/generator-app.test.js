@@ -1084,6 +1084,60 @@ describe('generator/app.js', () => {
     expect(elements['sample-1'].classList.contains('has-error')).toBe(true);
   });
 
+  it('calls focus on the first invalid field when document.querySelector returns a has-error element', async () => {
+    const fetchImpl = vi.fn();
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    const focusMock = vi.fn();
+    context.document.querySelector = (selector) => {
+      if (selector === '.has-error') return { focus: focusMock };
+      return null;
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['agency-name'].value = '';
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(focusMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('silently skips an SSE data line that parses to a JSON null value', async () => {
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: null\n'),
+            encoder.encode('data: {"type":"chunk","text":"결과"}\n'),
+            encoder.encode('data: {"type":"done"}\n'),
+          ];
+          let index = 0;
+          return {
+            async read() {
+              if (index < chunks.length) return { done: false, value: chunks[index++] };
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    const { context, elements, screens } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(screens[2].classList.contains('active')).toBe(true);
+    expect(elements['output-content'].innerHTML).toContain('결과');
+  });
+
   it('strips code fences, 🚫 lines, and sample headers before passing text to the lint engine', async () => {
     const markdown = [
       '샘플 텍스트 1: 이 줄은 제거됩니다',
