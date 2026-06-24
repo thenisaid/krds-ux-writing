@@ -406,6 +406,8 @@ describe('server.js configuration', () => {
     expect(normalizeStaticPath('/krds-ux-writing/principles/foundation/')).toBe('/principles/foundation/index.html');
     expect(normalizeStaticPath('/krds-ux-writing/archive.html')).toBe('/archive.html');
     expect(normalizeStaticPath('/shared/../server.js')).toBe('/server.js');
+    expect(normalizeStaticPath('/generator')).toBe('/generator/index.html');
+    expect(normalizeStaticPath('/generator/')).toBe('/generator/index.html');
   });
 
   it('canonicalizes traversal-looking static paths without letting them into the public allowlist', () => {
