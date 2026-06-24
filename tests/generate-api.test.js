@@ -122,21 +122,17 @@ afterEach(() => {
 
 describe('generator API handlers', () => {
   it('keeps generator prompts and agency-type validation aligned across runtimes', () => {
-    const vercelPrompt = extractPrompt('api/generate.js', 'KRDS_SYSTEM_PROMPT');
-    const cloudflarePrompt = extractPrompt('functions/api/generate.js', 'KRDS_SYSTEM_PROMPT');
+    const sharedPrompt = extractPrompt('api/shared/generate-shared.js', 'KRDS_SYSTEM_PROMPT');
     const localServerPrompt = extractPrompt('server.js', 'SYSTEM_PROMPT');
 
-    expect(vercelPrompt).toBe(cloudflarePrompt);
-    expect(localServerPrompt).toBe(cloudflarePrompt);
-    expect(vercelPrompt).toContain('[한국어 작성 원칙]');
-    expect(vercelPrompt).toContain('완료 화면의 과도한 칭찬·이모지');
+    expect(localServerPrompt).toBe(sharedPrompt);
+    expect(sharedPrompt).toContain('[한국어 작성 원칙]');
+    expect(sharedPrompt).toContain('완료 화면의 과도한 칭찬·이모지');
 
-    const vercelTypes = extractAgencyTypes('api/generate.js');
-    const cloudflareTypes = extractAgencyTypes('functions/api/generate.js');
+    const sharedTypes = extractAgencyTypes('api/shared/generate-shared.js');
     const localServerTypes = extractAgencyTypes('server.js');
 
-    expect(vercelTypes).toEqual(cloudflareTypes);
-    expect(localServerTypes).toEqual(cloudflareTypes);
+    expect(localServerTypes).toEqual(sharedTypes);
   });
 
   it('returns CORS headers on Vercel validation errors', async () => {
@@ -360,6 +356,28 @@ describe('generator API handlers', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
+  it('passes derivative-guide mode context through to the Anthropic request on Vercel', async () => {
+    const fetchMock = mockAnthropicFetch();
+    global.fetch = fetchMock;
+
+    const response = await vercelHandler(buildRequest({
+      mode: 'derivative-guide',
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      screenType: '에러/경고',
+      taskBrief: '로그인과 신청 흐름을 우선 반영해 주세요.',
+      samples: ['샘플 문구'],
+    }));
+
+    expect(response.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const requestBody = JSON.parse(fetchMock.mock.calls[0][1].body);
+    expect(requestBody.max_tokens).toBe(2800);
+    expect(requestBody.messages[0].content).toContain('[작업 모드] Layer 3 파생 가이드 초안');
+    expect(requestBody.messages[0].content).toContain('화면 맥락: 에러/경고');
+    expect(requestBody.messages[0].content).toContain('추가 요청: 로그인과 신청 흐름을 우선 반영해 주세요.');
+  });
+
   it('uses a custom Anthropic base URL in the Vercel handler when configured', async () => {
     process.env.ANTHROPIC_BASE_URL = 'https://proxy.internal/v1/messages?token=a=b';
     const fetchMock = mockAnthropicFetch();
@@ -393,6 +411,35 @@ describe('generator API handlers', () => {
     expect(response.headers.get('access-control-allow-origin')).toBe(ALLOWED_ORIGIN);
     expect(await response.text()).toContain('"type":"done"');
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects invalid generator modes in deployed handlers', async () => {
+    const vercelResponse = await vercelHandler(buildRequest({
+      mode: 'not-a-real-mode',
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      samples: ['샘플 문구'],
+    }));
+
+    const cloudflareResponse = await onRequestPost({
+      request: buildRequest({
+        mode: 'not-a-real-mode',
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        samples: ['샘플 문구'],
+      }),
+      env: { ANTHROPIC_API_KEY: 'test-key' },
+    });
+
+    expect(vercelResponse.status).toBe(400);
+    expect(await vercelResponse.json()).toEqual({
+      error: '올바른 작업 모드를 선택해 주세요.',
+    });
+
+    expect(cloudflareResponse.status).toBe(400);
+    expect(await cloudflareResponse.json()).toEqual({
+      error: '올바른 작업 모드를 선택해 주세요.',
+    });
   });
 
   it('uses a custom Anthropic base URL in the Cloudflare handler when configured', async () => {
