@@ -322,6 +322,43 @@ describe('generator/app.js', () => {
     expect(elements['stream-output'].getAttribute('aria-busy')).toBe('false');
   });
 
+  it('shows the generating-error message when the SSE stream sends a type:error event', async () => {
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: {"type":"chunk","text":"# 진행 중"}\n'),
+            encoder.encode('data: {"type":"error","message":"업스트림 오류가 발생했습니다."}\n'),
+          ];
+          let index = 0;
+          return {
+            async read() {
+              if (index < chunks.length) {
+                return { done: false, value: chunks[index++] };
+              }
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    const { context, elements, screens } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(screens[1].classList.contains('active')).toBe(true);
+    expect(elements['generating-error'].classList.contains('visible')).toBe(true);
+    expect(elements['generating-error'].textContent).toBe('업스트림 오류가 발생했습니다.');
+    expect(elements['fallback-area'].style.display).toBe('block');
+  });
+
   it('sends mode and optional context fields and updates the output title for derivative guides', async () => {
     const encoder = new TextEncoder();
     const fetchImpl = vi.fn(async (url, options) => ({
