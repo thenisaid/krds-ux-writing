@@ -630,4 +630,34 @@ describe('shared nav tree keyboard navigation', () => {
     tree.dispatch('keydown', { key: ' ', preventDefault: vi.fn() });
     expect(item.getAttribute('aria-expanded')).toBe('false');
   });
+
+  it('calls preventDefault but does not move focus when ArrowDown is pressed at the last focusable element', () => {
+    const { tree, document, subLink } = makeContext();
+    const focusSpy = vi.fn();
+    subLink.focus = focusSpy;
+    document.activeElement = subLink;
+    tree.dispatch('keydown', { key: 'ArrowDown', preventDefault: vi.fn() });
+    expect(focusSpy).not.toHaveBeenCalled();
+  });
+
+  it('calls preventDefault but does not move focus when ArrowUp is pressed at the first focusable element', () => {
+    const { tree, document, link } = makeContext();
+    const focusSpy = vi.fn();
+    link.focus = focusSpy;
+    document.activeElement = link;
+    tree.dispatch('keydown', { key: 'ArrowUp', preventDefault: vi.fn() });
+    expect(focusSpy).not.toHaveBeenCalled();
+  });
+
+  it('does not toggle a collapsed chapter when ArrowLeft is pressed on it', () => {
+    const { toggle, tree, document, item, link } = makeContext({ currentPath: '/krds-ux-writing/' });
+    const clickSpy = vi.fn();
+    toggle.click = clickSpy;
+    link.closestMap = { '.lnb-item': item };
+    expect(item.getAttribute('aria-expanded')).toBe('false');
+    document.activeElement = link;
+    tree.dispatch('keydown', { key: 'ArrowLeft', preventDefault: vi.fn() });
+    expect(clickSpy).not.toHaveBeenCalled();
+    expect(item.getAttribute('aria-expanded')).toBe('false');
+  });
 });
