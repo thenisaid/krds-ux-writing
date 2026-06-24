@@ -564,6 +564,10 @@ function callClaudeStream(body, onChunk, onDone, onError) {
     res.on('error', () => finishError('연결이 끊겼습니다.'));
   });
 
+  req.setTimeout(30000, () => {
+    req.destroy();
+    finishError('응답 시간이 초과되었습니다. 다시 시도하거나 기본 양식을 사용해 주세요.');
+  });
   req.on('error', () => finishError('AI 서비스에 연결할 수 없습니다.'));
   req.write(postData);
   req.end();
@@ -667,6 +671,10 @@ function callOllamaStream(ollamaUrl, systemPrompt, userMessage, maxTokens, onChu
     res.on('error', () => finishError('연결이 끊겼습니다.'));
   });
 
+  req.setTimeout(120000, () => {
+    req.destroy();
+    finishError('로컬 AI 응답 시간이 초과되었습니다. Ollama 모델이 로드되었는지 확인하세요.');
+  });
   req.on('error', () => finishError('Ollama에 연결할 수 없습니다. http://localhost:11434 가 실행 중인지 확인하세요.'));
   req.write(postData);
   req.end();
