@@ -240,4 +240,78 @@ describe('shared nav theme behavior', () => {
     addListenerCalls[0]({ matches: false });
     expect(documentElement.getAttribute('data-theme')).toBe('light');
   });
+
+  it('falls back to system theme when localStorage.getItem throws in readStoredTheme', () => {
+    const documentElement = {
+      theme: 'dark',
+      setAttribute(name, value) { if (name === 'data-theme') this.theme = String(value); },
+      getAttribute(name) { return name === 'data-theme' ? this.theme : null; },
+    };
+    const setItem = vi.fn();
+    const context = {
+      window: {
+        location: { pathname: '/krds-ux-writing/case-studies/' },
+        matchMedia: () => ({ matches: true, addEventListener() {}, addListener() {} }),
+      },
+      document: {
+        documentElement,
+        body: { style: {} },
+        activeElement: null,
+        querySelectorAll() { return []; },
+        querySelector() { return null; },
+        getElementById() { return null; },
+        addEventListener() {},
+      },
+      localStorage: {
+        getItem() { throw new Error('SecurityError: Blocked a frame from accessing cross-origin storage'); },
+        setItem,
+      },
+      IntersectionObserver: function () { return { observe() {}, unobserve() {}, disconnect() {} }; },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(setItem).not.toHaveBeenCalled();
+  });
+
+  it('silently swallows localStorage.setItem exceptions in persistTheme when the user toggles the theme', () => {
+    const themeBtn = createElement();
+    const documentElement = {
+      theme: 'light',
+      setAttribute(name, value) { if (name === 'data-theme') this.theme = String(value); },
+      getAttribute(name) { return name === 'data-theme' ? this.theme : null; },
+    };
+    const setItem = vi.fn(() => { throw new Error('QuotaExceededError: The quota has been exceeded'); });
+    const context = {
+      window: {
+        location: { pathname: '/krds-ux-writing/case-studies/' },
+        matchMedia: () => ({ matches: false, addEventListener() {}, addListener() {} }),
+      },
+      document: {
+        documentElement,
+        body: { style: {} },
+        activeElement: null,
+        querySelectorAll() { return []; },
+        querySelector() { return null; },
+        getElementById(id) { return id === 'themeToggle' ? themeBtn : null; },
+        addEventListener() {},
+      },
+      localStorage: {
+        getItem() { return null; },
+        setItem,
+      },
+      IntersectionObserver: function () { return { observe() {}, unobserve() {}, disconnect() {} }; },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(() => themeBtn.dispatch('click')).not.toThrow();
+    expect(documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(setItem).toHaveBeenCalledWith('krds-theme', 'dark');
+  });
 });
