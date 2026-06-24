@@ -1133,6 +1133,40 @@ describe('server.js configuration', () => {
     }
   });
 
+  it('fires the error callback when the upstream SSE stream sends a type:error event in callClaudeStream', async () => {
+    const originalRequest = https.request;
+    try {
+      let errorMessage;
+      await new Promise((resolve) => {
+        https.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            res.headers = { 'content-type': 'text/event-stream' };
+            callback(res);
+            res.emit('data', Buffer.from('data: {"type":"error","error":{"type":"overloaded","message":"overloaded"}}\n'));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callFreshClaudeStream(
+          { model: 'claude-sonnet-4-6' },
+          () => {},
+          () => { throw new Error('unexpected done'); },
+          (msg) => { errorMessage = msg; resolve(); },
+        );
+      });
+
+      expect(errorMessage).toContain('AI 처리 중');
+    } finally {
+      https.request = originalRequest;
+    }
+  });
+
   it('handles the OPTIONS preflight on the local server with a 204 and no body', async () => {
     const responseState = await runServerRequest({
       method: 'OPTIONS',
