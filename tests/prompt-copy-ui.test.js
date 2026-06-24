@@ -295,6 +295,36 @@ describe('shared prompt copy behavior', () => {
     expect(context.document.execCommand).toHaveBeenCalledWith('copy');
   });
 
+  it('does nothing when the clicked copy button element has no dataset property', () => {
+    const { context, document, button } = createEnvironment();
+    const noDatasetBtn = createElement({
+      textContent: '복사',
+      classes: ['pl-copy-btn'],
+    });
+    delete noDatasetBtn.dataset;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('click', { target: noDatasetBtn });
+
+    expect(button.textContent).toBe('복사');
+  });
+
+  it('shows "복사 실패" when document.body.removeChild is not a function and the fallback cannot complete', async () => {
+    const { context, document, button } = createEnvironment({
+      clipboardImpl: vi.fn(() => Promise.reject(new Error('denied'))),
+      execCommandResult: false,
+      manualTimers: true,
+    });
+    context.document.body = { appendChild() {} };
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('click', { target: button });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(button.textContent).toBe('복사 실패');
+  });
+
   it('cancels the existing reset timer when the button is clicked again before it fires', () => {
     const clearedTimers = [];
     const { context, document, button } = createEnvironment({
