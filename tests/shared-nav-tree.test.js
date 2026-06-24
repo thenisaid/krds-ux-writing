@@ -525,6 +525,29 @@ describe('shared nav tree relationships', () => {
 });
 
 describe('shared nav tree accordion toggle', () => {
+  it('expands and collapses an item gracefully when it has no toggle button or sub-menu element', () => {
+    const { toggle, item } = makeContext({ currentPath: '/krds-ux-writing/' });
+    item.queryMap = {};
+
+    expect(item.getAttribute('aria-expanded')).toBe('false');
+    expect(() => toggle.dispatch('click')).not.toThrow();
+    expect(item.getAttribute('aria-expanded')).toBe('true');
+
+    expect(() => toggle.dispatch('click')).not.toThrow();
+    expect(item.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('uses an empty base label when the toggle has no aria-label attribute', () => {
+    const { toggle, item } = makeContext({ currentPath: '/krds-ux-writing/' });
+    toggle.removeAttribute('aria-label');
+
+    toggle.dispatch('click');
+
+    const label = toggle.getAttribute('aria-label');
+    expect(typeof label).toBe('string');
+    expect(label).toContain('접기');
+  });
+
   it('collapses an expanded accordion item when its toggle button is clicked', () => {
     const { toggle, item } = makeContext();
     expect(item.getAttribute('aria-expanded')).toBe('true');
