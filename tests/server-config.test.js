@@ -581,6 +581,39 @@ describe('server.js configuration', () => {
     }
   });
 
+  it('uses the plain HTTP transport when ANTHROPIC_BASE_URL is an HTTP URL', async () => {
+    process.env.ANTHROPIC_BASE_URL = 'http://localhost:8200/v1';
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      await new Promise((resolve, reject) => {
+        http.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            res.headers = { 'content-type': 'text/event-stream' };
+            callback(res);
+            res.emit('data', Buffer.from('data: {"type":"message_stop"}\n\n'));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        loadFreshServerModule().callClaudeStream(
+          { model: 'claude-sonnet-4-6' },
+          () => {},
+          () => resolve(),
+          (message) => reject(new Error('unexpected error: ' + message)),
+        );
+      });
+    } finally {
+      http.request = originalRequest;
+    }
+  });
+
   it('flushes a final buffered Claude chunk without a trailing newline in the local server path', async () => {
     const originalRequest = https.request;
     try {
@@ -1618,6 +1651,39 @@ describe('server.js configuration', () => {
     });
     expect(responseState.statusCode).toBe(400);
     expect(JSON.parse(responseState.body).error).toContain('기관명은');
+  });
+
+  it('accepts a request body emitted as a raw string chunk instead of a Buffer', async () => {
+    process.env.ANTHROPIC_API_KEY = '';
+    const freshServer = loadFreshServerModule().server;
+
+    const responseState = { statusCode: null, headers: {}, body: '' };
+    const req = new EventEmitter();
+    req.url = '/api/generate';
+    req.method = 'POST';
+    req.headers = { 'content-type': 'application/json', 'x-forwarded-for': '203.0.113.99' };
+    req.socket = { remoteAddress: '127.0.0.1' };
+
+    const done = new Promise((resolve) => {
+      const res = {
+        setHeader() {},
+        writeHead(statusCode) { responseState.statusCode = statusCode; },
+        end(chunk) { responseState.body += String(chunk || ''); resolve(); },
+        write(chunk) { responseState.body += String(chunk || ''); },
+      };
+      freshServer.emit('request', req, res);
+    });
+
+    req.emit('data', JSON.stringify({
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      samples: [],
+    }));
+    req.emit('end');
+
+    await done;
+    expect(responseState.statusCode).toBe(400);
+    expect(JSON.parse(responseState.body).error).toBeDefined();
   });
 
   it('routes generation requests through Ollama when OLLAMA_URL is set in the local server', async () => {
