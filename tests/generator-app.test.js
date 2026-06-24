@@ -803,4 +803,32 @@ describe('generator/app.js', () => {
     expect(elements['quality-review'].hidden).toBe(false);
     expect(elements['quality-gates'].innerHTML).toContain('자동 검수 엔진을 불러오지 못했습니다');
   });
+
+  it('blocks form submission and marks agency-name field when the name exceeds 50 characters', async () => {
+    const fetchImpl = vi.fn();
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['agency-name'].value = 'a'.repeat(51);
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(elements['agency-name'].classList.contains('has-error')).toBe(true);
+  });
+
+  it('blocks form submission and marks sample-1 field when the first sample is empty', async () => {
+    const fetchImpl = vi.fn();
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['sample-1'].value = '';
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(elements['sample-1'].classList.contains('has-error')).toBe(true);
+  });
 });
