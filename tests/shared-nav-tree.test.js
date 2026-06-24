@@ -660,6 +660,21 @@ describe('shared nav tree keyboard navigation', () => {
     expect(clickSpy).not.toHaveBeenCalled();
     expect(item.getAttribute('aria-expanded')).toBe('false');
   });
+
+  it('does not crash when ArrowRight is pressed on an expanded item with no visible sub-links', () => {
+    const { tree, document, item, link } = makeContext();
+    link.closestMap = { '.lnb-item': item };
+    expect(item.getAttribute('aria-expanded')).toBe('true');
+    document.activeElement = link;
+
+    expect(() => tree.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() })).not.toThrow();
+  });
+
+  it('does not throw when sessionStorage contains malformed JSON for the LNB accordion state', () => {
+    expect(() => makeContext({
+      sessionStorageValue: 'this-is-not-valid-json',
+    })).not.toThrow();
+  });
 });
 
 describe('shared nav LNB footer link active state', () => {
