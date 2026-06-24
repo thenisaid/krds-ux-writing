@@ -246,4 +246,52 @@ describe('shared prompt copy behavior', () => {
 
     expect(button.textContent).toBe('복사');
   });
+
+  it('shows 복사됨! when clipboard.writeText rejects but the execCommand fallback succeeds', async () => {
+    const { context, document, button } = createEnvironment({
+      clipboardImpl: vi.fn(() => Promise.reject(new Error('denied'))),
+      execCommandResult: true,
+      manualTimers: true,
+    });
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('click', { target: button });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(button.textContent).toBe('복사됨!');
+  });
+
+  it('returns false from fallbackCopy immediately when document.createElement returns null', async () => {
+    const { context, document, button } = createEnvironment({
+      clipboardImpl: vi.fn(() => Promise.reject(new Error('denied'))),
+      manualTimers: true,
+    });
+    context.document.createElement = () => null;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('click', { target: button });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(button.textContent).toBe('복사 실패');
+  });
+
+  it('skips ta.select() when the textarea element has no select method and still attempts execCommand', () => {
+    const { context, document, button } = createEnvironment({
+      execCommandResult: true,
+      manualTimers: true,
+    });
+    context.navigator = {};
+    context.document.createElement = () => ({
+      value: '',
+      style: {},
+    });
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('click', { target: button });
+
+    expect(button.textContent).toBe('복사됨!');
+    expect(context.document.execCommand).toHaveBeenCalledWith('copy');
+  });
 });
