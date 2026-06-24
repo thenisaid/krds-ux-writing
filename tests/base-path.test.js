@@ -162,4 +162,66 @@ describe('shared/base-path.js', () => {
     expect(basePath.normalizeSitePath('/preview/KRDS/?tab=overview')).toBe('/preview/KRDS/?tab=overview');
     expect(basePath.normalizeSitePath('/preview/KRDS#case-studies')).toBe('/preview/KRDS/#case-studies');
   });
+
+  it('falls back to getElementsByTagName script search when document.currentScript is absent', () => {
+    const scriptEl = { src: 'https://example.com/preview/KRDS/shared/base-path.js', getAttribute() { return null; } };
+    const document = {
+      currentScript: null,
+      querySelectorAll(selector) {
+        return selector === '[href]' || selector === '[src]' ? [] : [];
+      },
+      getElementsByTagName() {
+        return [scriptEl];
+      },
+    };
+
+    const context = {
+      document,
+      window: {
+        location: {
+          pathname: '/preview/KRDS/index.html',
+          href: 'https://example.com/preview/KRDS/index.html',
+        },
+      },
+      URL,
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(SOURCE, context);
+
+    const basePath = context.window.KRDSBasePath;
+    expect(basePath.siteRootPath).toBe('/preview/KRDS');
+    expect(basePath.buildSitePath('/principles/')).toBe('/preview/KRDS/principles/');
+  });
+
+  it('returns an empty site root path when new URL throws for the script src', () => {
+    const document = {
+      currentScript: { src: 'not-a-valid-url-at-all' },
+      querySelectorAll() { return []; },
+      getElementsByTagName() { return []; },
+    };
+
+    const FaultyURL = function (src) {
+      throw new TypeError('Invalid URL: ' + src);
+    };
+
+    const context = {
+      document,
+      window: {
+        location: { pathname: '/krds-ux-writing/', href: 'https://example.com/krds-ux-writing/' },
+      },
+      URL: FaultyURL,
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(SOURCE, context);
+
+    const basePath = context.window.KRDSBasePath;
+    expect(basePath.siteRootPath).toBe('');
+    expect(basePath.buildSitePath('/principles/')).toBe('/principles/');
+  });
 });
