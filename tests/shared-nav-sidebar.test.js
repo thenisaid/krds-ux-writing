@@ -544,6 +544,34 @@ describe('shared nav sidebar toggle', () => {
     expect(sidebar.classList.contains('open')).toBe(false);
     expect(sidebarTarget.focus).toHaveBeenCalled();
   });
+
+  it('does not focus the anchor target when the sidebar link uses an https:// URL with no path component', () => {
+    const { hamburger, sidebar, sidebarLink, sidebarTarget } = makeContext({
+      currentPath: '/krds-ux-writing/principles/',
+      targetId: 'section-1',
+      sidebarLinkHref: 'https://example.com#section-1',
+    });
+
+    hamburger.dispatch('click');
+    sidebarLink.dispatch('click');
+
+    expect(sidebar.classList.contains('open')).toBe(false);
+    expect(sidebarTarget.focus).not.toHaveBeenCalled();
+  });
+
+  it('does not focus the anchor target when the sidebar link uses a protocol-relative // URL with no path component', () => {
+    const { hamburger, sidebar, sidebarLink, sidebarTarget } = makeContext({
+      currentPath: '/krds-ux-writing/principles/',
+      targetId: 'section-1',
+      sidebarLinkHref: '//example.com#section-1',
+    });
+
+    hamburger.dispatch('click');
+    sidebarLink.dispatch('click');
+
+    expect(sidebar.classList.contains('open')).toBe(false);
+    expect(sidebarTarget.focus).not.toHaveBeenCalled();
+  });
 });
 
 describe('shared nav sidebar scroll-tracking IntersectionObserver', () => {
