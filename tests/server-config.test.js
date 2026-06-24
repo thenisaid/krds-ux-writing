@@ -411,6 +411,11 @@ describe('server.js configuration', () => {
     expect(normalizeStaticPath('/generator/')).toBe('/generator/index.html');
   });
 
+  it('prepends a leading slash when normalizeStaticPath receives a path without one', () => {
+    expect(normalizeStaticPath('principles/')).toBe('/principles/index.html');
+    expect(normalizeStaticPath('archive.html')).toBe('/archive.html');
+  });
+
   it('canonicalizes traversal-looking static paths without letting them into the public allowlist', () => {
     const safePath = resolveStaticFilePath('/principles/foundation/');
     const escapedSibling = resolveStaticFilePath('/../KRDS-evil');

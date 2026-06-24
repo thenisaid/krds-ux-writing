@@ -552,6 +552,69 @@ describe('script.js live index interactions', () => {
     expect(caseStudies.focus).not.toHaveBeenCalled();
   });
 
+  it('does not intercept cross-origin anchor links even when they contain a hash', () => {
+    const { context, document, window, elements, anchorLinks } = createEnvironment();
+    const section = createElement(document, { rect: { top: 300 } });
+    const externalLink = createElement(document, {
+      attributes: { href: 'https://external.example.com/krds-ux-writing/#case-studies' },
+    });
+    elements['case-studies'] = section;
+    anchorLinks.push(externalLink);
+    window.location.href = 'https://example.com/krds-ux-writing/';
+    window.location.pathname = '/krds-ux-writing/';
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    const preventDefault = vi.fn();
+    externalLink.dispatch('click', { preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(window.scrollTo).not.toHaveBeenCalled();
+  });
+
+  it('does not intercept absolute anchor links that point to a different page path', () => {
+    const { context, document, window, elements, anchorLinks } = createEnvironment();
+    const section = createElement(document, { rect: { top: 300 } });
+    const crossPageLink = createElement(document, {
+      attributes: { href: '/krds-ux-writing/other-page/#case-studies' },
+    });
+    elements['case-studies'] = section;
+    anchorLinks.push(crossPageLink);
+    window.location.href = 'https://example.com/krds-ux-writing/';
+    window.location.pathname = '/krds-ux-writing/';
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    const preventDefault = vi.fn();
+    crossPageLink.dispatch('click', { preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(window.scrollTo).not.toHaveBeenCalled();
+  });
+
+  it('does not intercept absolute anchor links that have no hash fragment', () => {
+    const { context, document, window, elements, anchorLinks } = createEnvironment();
+    const section = createElement(document, { rect: { top: 300 } });
+    const noHashLink = createElement(document, {
+      attributes: { href: '/krds-ux-writing/' },
+    });
+    elements['case-studies'] = section;
+    anchorLinks.push(noHashLink);
+    window.location.href = 'https://example.com/krds-ux-writing/';
+    window.location.pathname = '/krds-ux-writing/';
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    const preventDefault = vi.fn();
+    noHashLink.dispatch('click', { preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(window.scrollTo).not.toHaveBeenCalled();
+  });
+
   it('moves focus to same-page mobile menu targets instead of restoring focus to the opener only', () => {
     const { context, document, window, elements } = createEnvironment();
     const caseStudies = createElement(document, { rect: { top: 420 } });
