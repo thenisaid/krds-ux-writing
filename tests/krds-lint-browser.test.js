@@ -21,6 +21,69 @@ function loadBrowserLint() {
   return context;
 }
 
+describe('browser custom KRDS_JARGON_DICT injection', () => {
+  it('silently skips null and malformed entries in the custom jargon dictionary', () => {
+    const context = {
+      KRDS_JARGON_DICT: {
+        entries: [
+          null,
+          { banned: '', alt: '대안', cat: '테스트' },
+          { banned: '귀하', alt: '고객님', cat: '행정어' },
+        ],
+      },
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(LINT_SOURCE, context);
+    const result = context.KRDSLint.lint('귀하의 신청');
+    expect(result.issues).toHaveLength(1);
+    expect(result.issues[0].match).toBe('귀하');
+  });
+
+  it('matches date-range placeholder patterns when a jargon entry contains a 기간 bracket', () => {
+    const context = {
+      KRDS_JARGON_DICT: {
+        entries: [{ banned: '처리 기간: [기간]', alt: '언제 처리됩니다', cat: '날짜테스트' }],
+      },
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(LINT_SOURCE, context);
+    const result = context.KRDSLint.lint('처리 기간: 30일');
+    expect(result.issues.some((i) => i.category === '날짜테스트')).toBe(true);
+  });
+
+  it('matches name placeholder patterns when a jargon entry contains an 이름 bracket', () => {
+    const context = {
+      KRDS_JARGON_DICT: {
+        entries: [{ banned: '신청인: [이름]', alt: '신청인 이름을 적어 주세요', cat: '이름테스트' }],
+      },
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(LINT_SOURCE, context);
+    const result = context.KRDSLint.lint('신청인: 홍길동');
+    expect(result.issues.some((i) => i.category === '이름테스트')).toBe(true);
+  });
+
+  it('uses the default wildcard placeholder for unrecognised bracket labels like 코드', () => {
+    const context = {
+      KRDS_JARGON_DICT: {
+        entries: [{ banned: '오류 코드: [코드]', alt: '오류 상황을 설명해 주세요', cat: '코드테스트' }],
+      },
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(LINT_SOURCE, context);
+    const result = context.KRDSLint.lint('오류 코드: 404');
+    expect(result.issues.some((i) => i.category === '코드테스트')).toBe(true);
+  });
+});
+
 describe('browser jargon dictionary integration', () => {
   it('keeps jargon-dictionary.js aligned with jargon-dictionary.json', () => {
     const context = loadBrowserLint();
