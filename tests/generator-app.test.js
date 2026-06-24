@@ -804,6 +804,42 @@ describe('generator/app.js', () => {
     expect(elements['quality-gates'].innerHTML).toContain('자동 검수 엔진을 불러오지 못했습니다');
   });
 
+  it('shows rate-limit error message and fallback area when the server returns 429', async () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: false,
+      status: 429,
+      async json() { return { error: '요청 한도를 초과했습니다.' }; },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(elements['generating-error'].classList.contains('visible')).toBe(true);
+    expect(elements['generating-error'].textContent).toMatch(/1시간/);
+    expect(elements['fallback-area'].style.display).toBe('block');
+  });
+
+  it('shows the server error body message when the server returns a 400 with an error field', async () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: false,
+      status: 400,
+      async json() { return { error: '기관명은 1~50자 사이여야 합니다.' }; },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(elements['generating-error'].classList.contains('visible')).toBe(true);
+    expect(elements['generating-error'].textContent).toContain('기관명은 1~50자');
+    expect(elements['fallback-area'].style.display).toBe('block');
+  });
+
   it('blocks form submission and marks agency-name field when the name exceeds 50 characters', async () => {
     const fetchImpl = vi.fn();
     const { context, elements } = buildGeneratorContext({ fetchImpl });
