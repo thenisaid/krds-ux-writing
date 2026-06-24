@@ -1407,4 +1407,72 @@ describe('generator/app.js', () => {
     const html = elements['quality-gates'].innerHTML;
     expect(html).toContain('quality-gate--fail');
   });
+
+  it('shows a stream-incomplete error when the SSE stream ends without any chunks or a done event', async () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          return {
+            async read() {
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(elements['generating-error'].classList.contains('visible')).toBe(true);
+    expect(elements['generating-error'].textContent).toContain('응답을 끝까지 받지 못했습니다');
+    expect(elements['fallback-area'].style.display).toBe('block');
+  });
+
+  it('includes s2 and s3 sample texts in the request body when the user has filled them in', async () => {
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [encoder.encode('data: {"type":"done"}\n')];
+          let index = 0;
+          return {
+            async read() {
+              if (index < chunks.length) return { done: false, value: chunks[index++] };
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['sample-2'].value = '두 번째 샘플 문장';
+    elements['sample-3'].value = '세 번째 샘플 문장';
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const requestBody = JSON.parse(fetchImpl.mock.calls[0][1].body);
+    expect(requestBody.samples).toContain('두 번째 샘플 문장');
+    expect(requestBody.samples).toContain('세 번째 샘플 문장');
+  });
+
+  it('does not throw when the copy button is clicked before any content has been generated', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.navigator.clipboard = { writeText: vi.fn(() => Promise.resolve()) };
+    vm.runInNewContext(SOURCE, context);
+
+    expect(() => elements['copy-md-btn'].dispatch('click')).not.toThrow();
+    expect(context.navigator.clipboard.writeText).not.toHaveBeenCalled();
+  });
 });
