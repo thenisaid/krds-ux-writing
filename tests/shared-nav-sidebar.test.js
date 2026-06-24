@@ -446,6 +446,34 @@ describe('shared nav sidebar toggle', () => {
     expect(preventDefault).not.toHaveBeenCalled();
   });
 
+  it('does not intercept Tab when the focused element is not the last focusable element in the sidebar', () => {
+    const { document, sidebar, hamburger, firstLink, sidebarLink } = makeContext();
+
+    hamburger.dispatch('click');
+
+    document.activeElement = firstLink; // not the last element
+    const preventDefault = vi.fn();
+    const focusCountBefore = sidebarLink.focus.mock.calls.length;
+    sidebar.dispatch('keydown', { key: 'Tab', shiftKey: false, preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(sidebarLink.focus.mock.calls.length).toBe(focusCountBefore);
+  });
+
+  it('does not intercept Shift+Tab when the focused element is not the first focusable element in the sidebar', () => {
+    const { document, sidebar, hamburger, firstLink, sidebarLink } = makeContext();
+
+    hamburger.dispatch('click');
+
+    const firstLinkFocusCountBefore = firstLink.focus.mock.calls.length;
+    document.activeElement = sidebarLink; // not the first element
+    const preventDefault = vi.fn();
+    sidebar.dispatch('keydown', { key: 'Tab', shiftKey: true, preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(firstLink.focus.mock.calls.length).toBe(firstLinkFocusCountBefore);
+  });
+
   it('does not overwrite an existing tabindex when the sidebar anchor target already has one', () => {
     const { hamburger, sidebarLink, sidebarTarget } = makeContext();
     sidebarTarget.setAttribute('tabindex', '0');
