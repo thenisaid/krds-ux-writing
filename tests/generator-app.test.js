@@ -1449,6 +1449,63 @@ describe('generator/app.js', () => {
     expect(html).toContain('quality-gate--fail');
   });
 
+  it('shows 보이스·톤 보완 필요 when emoji characters appear in the reviewed text', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 90,
+        summary: { total: 0, errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      })),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    // fallback-btn generates markdown without emojis; trigger via custom stream with emoji
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: ' + JSON.stringify({ type: 'chunk', text: '## 안내\n감사합니다 😊 이용해 주세요.' }) + '\n'),
+            encoder.encode('data: ' + JSON.stringify({ type: 'done' }) + '\n'),
+          ];
+          let index = 0;
+          return {
+            async read() {
+              if (index < chunks.length) return { done: false, value: chunks[index++] };
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    const { context: ctx2, elements: els2 } = buildGeneratorContext({ fetchImpl });
+    ctx2.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 90,
+        summary: { total: 0, errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      })),
+    };
+
+    vm.runInNewContext(SOURCE, ctx2);
+    els2['generator-form'].dispatch('submit');
+
+    return new Promise((resolve) => {
+      setTimeout(async () => {
+        await new Promise((r) => setTimeout(r, 0));
+        const html = els2['quality-gates'].innerHTML;
+        const hasWarnOrFail = html.includes('quality-gate--warn') || html.includes('quality-gate--fail');
+        expect(hasWarnOrFail).toBe(true);
+        resolve();
+      }, 0);
+    });
+  });
+
   it('uses the rewrite fallback template when the generator mode is set to rewrite', () => {
     const { context, elements } = buildGeneratorContext();
     elements['generator-mode'].value = 'rewrite';
