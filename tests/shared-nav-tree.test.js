@@ -365,6 +365,30 @@ describe('shared nav tree relationships', () => {
     expect(remoteSubLink.getAttribute('aria-current')).toBe(null);
     expect(observedTargets).toEqual([]);
   });
+
+  it('marks a pure fragment href active on load when the page hash matches', () => {
+    const { localSubLink, remoteSubLink } = makeHashContext({
+      hash: '#overview',
+      localHref: '#overview',
+    });
+
+    expect(localSubLink.classList.contains('active')).toBe(true);
+    expect(localSubLink.getAttribute('aria-current')).toBe('location');
+    expect(remoteSubLink.classList.contains('active')).toBe(false);
+  });
+
+  it('does not update active state when the IntersectionObserver fires with isIntersecting false', () => {
+    const { localSubLink, remoteSubLink, overviewTarget, observerCallback } = makeHashContext();
+
+    expect(localSubLink.classList.contains('active')).toBe(false);
+
+    observerCallback([
+      { isIntersecting: false, target: overviewTarget },
+    ]);
+
+    expect(localSubLink.classList.contains('active')).toBe(false);
+    expect(remoteSubLink.classList.contains('active')).toBe(false);
+  });
 });
 
 describe('shared nav tree accordion toggle', () => {
