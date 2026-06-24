@@ -1945,4 +1945,44 @@ describe('server.js configuration', () => {
     expect(responseState.statusCode).toBe(400);
     expect(JSON.parse(responseState.body)).toMatchObject({ error: expect.any(String) });
   });
+
+  it('sends max_tokens=2800 to Claude when the generator mode is derivative-guide', async () => {
+    process.env.ANTHROPIC_API_KEY = 'test-key-for-derivative-guide';
+    const originalRequest = https.request;
+    try {
+      let capturedBody;
+
+      await new Promise((resolve) => {
+        https.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function (chunk) { capturedBody = chunk; };
+          req.setTimeout = function () {};
+          req.destroy = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            res.headers = { 'content-type': 'text/event-stream' };
+            callback(res);
+            res.emit('data', Buffer.from('data: {"type":"message_stop"}\n\n'));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        runServerRequest({
+          headers: { 'cf-connecting-ip': '203.0.113.99' },
+          body: {
+            agencyName: '테스트 기관',
+            agencyType: '지방자치단체',
+            mode: 'derivative-guide',
+            samples: ['샘플 문구'],
+          },
+        }).then(resolve);
+      });
+
+      expect(JSON.parse(capturedBody).max_tokens).toBe(2800);
+    } finally {
+      https.request = originalRequest;
+    }
+  });
 });
