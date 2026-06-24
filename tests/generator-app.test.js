@@ -2362,6 +2362,46 @@ describe('generator/app.js', () => {
     expect(elements['output-content'].innerHTML).toContain('결과 텍스트');
   });
 
+  it('silently ignores an AbortError thrown by fetch when the user cancels the request', async () => {
+    const abortError = new Error('aborted');
+    abortError.name = 'AbortError';
+    const fetchImpl = vi.fn(async () => { throw abortError; });
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(elements['generating-error'].classList.contains('visible')).toBe(false);
+  });
+
+  it('silently ignores an AbortError thrown during stream reading when the user cancels mid-stream', async () => {
+    const abortError = new Error('aborted');
+    abortError.name = 'AbortError';
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          return {
+            async read() { throw abortError; },
+            cancel: vi.fn(),
+          };
+        },
+      },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(elements['generating-error'].classList.contains('visible')).toBe(false);
+  });
+
   it('uses a 5xx error body message when the server returns an error field in the response', async () => {
     const fetchImpl = vi.fn(async () => ({
       ok: false,

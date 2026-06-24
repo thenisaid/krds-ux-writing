@@ -1778,6 +1778,72 @@ describe('server.js configuration', () => {
     }
   });
 
+  it('fires the error callback when a 4xx Claude response socket emits an error event', async () => {
+    const originalRequest = https.request;
+    try {
+      let errorMessage;
+      await new Promise((resolve) => {
+        https.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 401;
+            callback(res);
+            process.nextTick(() => res.emit('error', new Error('socket reset')));
+          };
+          return req;
+        };
+
+        callFreshClaudeStream(
+          { model: 'claude-sonnet-4-6' },
+          () => {},
+          () => { throw new Error('unexpected done'); },
+          (msg) => { errorMessage = msg; resolve(); },
+        );
+      });
+
+      expect(errorMessage).toContain('끊겼습니다');
+    } finally {
+      https.request = originalRequest;
+    }
+  });
+
+  it('fires the error callback when a 4xx Ollama response socket emits an error event', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      let errorMessage;
+      await new Promise((resolve) => {
+        http.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 503;
+            callback(res);
+            process.nextTick(() => res.emit('error', new Error('socket reset')));
+          };
+          return req;
+        };
+
+        callOllama(
+          'http://localhost:11434', 'system', 'user', 2200,
+          () => {},
+          () => { throw new Error('unexpected done'); },
+          (msg) => { errorMessage = msg; resolve(); },
+        );
+      });
+
+      expect(errorMessage).toContain('끊겼습니다');
+    } finally {
+      http.request = originalRequest;
+    }
+  });
+
   it('accepts a string body chunk (not a Buffer) when decoding the POST request body', async () => {
     const freshServerModule = loadFreshServerModule();
     const freshServer = freshServerModule.server;
