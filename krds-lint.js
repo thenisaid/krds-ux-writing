@@ -114,7 +114,7 @@
   // jargon-dictionary.json이 로드되면 INLINE_JARGON을 병합 (dedup by banned)
   const ADMIN_JARGON = (jargonDict && jargonDict.entries)
     ? buildJargonEntries([...jargonDict.entries, ...INLINE_JARGON.filter(function(e) {
-        return !jargonDict.entries.some(function(d) { return d.banned === e.banned; });
+        return !jargonDict.entries.some(function(d) { return d && d.banned === e.banned; });
       })])
     : buildJargonEntries([
     // 카테고리 1: 행정 관습어 (한자어·관청 은어)
