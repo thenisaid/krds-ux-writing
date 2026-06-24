@@ -445,4 +445,15 @@ describe('shared nav sidebar toggle', () => {
 
     expect(preventDefault).not.toHaveBeenCalled();
   });
+
+  it('does not overwrite an existing tabindex when the sidebar anchor target already has one', () => {
+    const { hamburger, sidebarLink, sidebarTarget } = makeContext();
+    sidebarTarget.setAttribute('tabindex', '0');
+
+    hamburger.dispatch('click');
+    sidebarLink.dispatch('click');
+
+    expect(sidebarTarget.getAttribute('tabindex')).toBe('0');
+    expect(sidebarTarget.focus).toHaveBeenCalled();
+  });
 });

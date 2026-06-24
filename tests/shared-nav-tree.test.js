@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -364,5 +364,64 @@ describe('shared nav tree relationships', () => {
     expect(remoteSubLink.classList.contains('active')).toBe(false);
     expect(remoteSubLink.getAttribute('aria-current')).toBe(null);
     expect(observedTargets).toEqual([]);
+  });
+});
+
+describe('shared nav tree accordion toggle', () => {
+  it('collapses an expanded accordion item when its toggle button is clicked', () => {
+    const { toggle, item } = makeContext();
+    expect(item.getAttribute('aria-expanded')).toBe('true');
+    toggle.dispatch('click');
+    expect(item.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('expands a collapsed accordion item when its toggle button is clicked', () => {
+    const { toggle, item } = makeContext({ currentPath: '/krds-ux-writing/' });
+    expect(item.getAttribute('aria-expanded')).toBe('false');
+    toggle.dispatch('click');
+    expect(item.getAttribute('aria-expanded')).toBe('true');
+  });
+
+  it('restores previously expanded accordion items from sessionStorage on load', () => {
+    const { item } = makeContext({
+      currentPath: '/krds-ux-writing/',
+      sessionStorageValue: JSON.stringify(['/principles/foundation/']),
+    });
+    expect(item.getAttribute('aria-expanded')).toBe('true');
+  });
+});
+
+describe('shared nav tree keyboard navigation', () => {
+  it('moves focus to the next focusable element when ArrowDown is pressed', () => {
+    const { toggle, tree, document, link } = makeContext({ currentPath: '/krds-ux-writing/' });
+    toggle.focus = vi.fn();
+    document.activeElement = link;
+    tree.dispatch('keydown', { key: 'ArrowDown', preventDefault: vi.fn() });
+    expect(toggle.focus).toHaveBeenCalled();
+  });
+
+  it('moves focus to the previous focusable element when ArrowUp is pressed', () => {
+    const { tree, document, link, toggle } = makeContext({ currentPath: '/krds-ux-writing/' });
+    link.focus = vi.fn();
+    document.activeElement = toggle;
+    tree.dispatch('keydown', { key: 'ArrowUp', preventDefault: vi.fn() });
+    expect(link.focus).toHaveBeenCalled();
+  });
+
+  it('collapses an expanded accordion item when Enter is pressed on its toggle button', () => {
+    const { toggle, tree, document, item } = makeContext();
+    toggle.click = () => toggle.dispatch('click');
+    expect(item.getAttribute('aria-expanded')).toBe('true');
+    document.activeElement = toggle;
+    tree.dispatch('keydown', { key: 'Enter', preventDefault: vi.fn() });
+    expect(item.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('ignores unrelated keys and does not move focus in the tree', () => {
+    const { toggle, tree, document, link } = makeContext({ currentPath: '/krds-ux-writing/' });
+    toggle.focus = vi.fn();
+    document.activeElement = link;
+    tree.dispatch('keydown', { key: 'Tab', preventDefault: vi.fn() });
+    expect(toggle.focus).not.toHaveBeenCalled();
   });
 });
