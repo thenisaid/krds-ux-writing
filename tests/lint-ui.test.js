@@ -623,6 +623,58 @@ describe('lint-ui stale result handling', () => {
     expect(elements.improvedText.textContent).toBe('파일로 제출해 주세요.');
   });
 
+  it('corrects particle from "가" to "이" when the replacement text ends with a consonant batchim', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1,
+          col: 1,
+          severity: 'error',
+          category: '행정어',
+          message: '행정어/금지어: "귀하"',
+          match: '귀하',
+          suggestion: '→ 신청인',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하가 제출해 주세요.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).toBe('신청인이 제출해 주세요.');
+  });
+
+  it('leaves particle unchanged when the replacement text ends with a vowel syllable and no batchim', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1,
+          col: 1,
+          severity: 'error',
+          category: '행정어',
+          message: '행정어/금지어: "파기"',
+          match: '파기',
+          suggestion: '→ 삭제',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '파기가 필요합니다.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).toBe('삭제가 필요합니다.');
+  });
+
   it('shows a failure toast when CSV download APIs are unavailable', () => {
     const { context, elements } = buildContext();
     context.URL = {
