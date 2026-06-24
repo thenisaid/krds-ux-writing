@@ -735,6 +735,24 @@ describe('lint-ui stale result handling', () => {
     expect(elements.historyList.innerHTML).toContain('이슈 1개');
   });
 
+  it('escapes HTML special characters in the history date field to prevent localStorage injection', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      {
+        date: '<script>alert(1)</script>',
+        score: 90,
+        text: '안전한 텍스트',
+        fullText: '안전한 텍스트',
+        issueCount: 0,
+      },
+    ]));
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.historyList.innerHTML).not.toContain('<script>');
+    expect(elements.historyList.innerHTML).toContain('&lt;script&gt;');
+  });
+
   it('ignores non-element history click targets without throwing', () => {
     const { context, elements } = buildContext();
     context.localStorage.setItem('krds-lint-history', JSON.stringify([
