@@ -885,4 +885,89 @@ describe('generator API handlers', () => {
     expect(capturedOptions?.signal).toBeDefined();
     expect(capturedOptions.signal).toBeInstanceOf(AbortSignal);
   });
+
+  it('uses Vercel KV to track rate limits and sets TTL on the first request', async () => {
+    const kvUrl = 'https://kv.example.com';
+    process.env.KV_REST_API_URL = kvUrl;
+    process.env.KV_REST_API_TOKEN = 'kv-token';
+
+    let kvIncrCalled = false;
+    let kvExpireCalled = false;
+
+    global.fetch = vi.fn(async (url) => {
+      const u = String(url);
+      if (u.includes('/incr/')) {
+        kvIncrCalled = true;
+        return new Response(JSON.stringify({ result: 1 }), { status: 200 });
+      }
+      if (u.includes('/expire/')) {
+        kvExpireCalled = true;
+        return new Response(JSON.stringify({ result: 1 }), { status: 200 });
+      }
+      return new Response('data: {"type":"message_stop"}\n\n', {
+        status: 200,
+        headers: { 'Content-Type': 'text/event-stream' },
+      });
+    });
+
+    const response = await vercelHandler(buildRequest({
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      mode: 'rewrite',
+      samples: ['문장 하나'],
+    }));
+
+    expect(response.status).toBe(200);
+    expect(kvIncrCalled).toBe(true);
+    expect(kvExpireCalled).toBe(true);
+  });
+
+  it('rejects a Vercel request when the KV counter exceeds the rate limit', async () => {
+    const kvUrl = 'https://kv.example.com';
+    process.env.KV_REST_API_URL = kvUrl;
+    process.env.KV_REST_API_TOKEN = 'kv-token';
+
+    global.fetch = vi.fn(async (url) => {
+      if (String(url).includes('/incr/')) {
+        return new Response(JSON.stringify({ result: 6 }), { status: 200 }); // > RATE_LIMIT_MAX (5)
+      }
+      return new Response(JSON.stringify({ result: 1 }), { status: 200 });
+    });
+
+    const response = await vercelHandler(buildRequest({
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      mode: 'rewrite',
+      samples: ['문장 하나'],
+    }));
+
+    expect(response.status).toBe(429);
+    const body = await response.json();
+    expect(body.error).toMatch(/1시간/);
+  });
+
+  it('falls back to in-memory rate limiting when the KV fetch throws on Vercel', async () => {
+    const kvUrl = 'https://kv.example.com';
+    process.env.KV_REST_API_URL = kvUrl;
+    process.env.KV_REST_API_TOKEN = 'kv-token';
+
+    global.fetch = vi.fn(async (url) => {
+      if (String(url).includes('/incr/') || String(url).includes('/expire/')) {
+        throw new Error('KV network error');
+      }
+      return new Response('data: {"type":"message_stop"}\n\n', {
+        status: 200,
+        headers: { 'Content-Type': 'text/event-stream' },
+      });
+    });
+
+    const response = await vercelHandler(buildRequest({
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      mode: 'rewrite',
+      samples: ['문장 하나'],
+    }));
+
+    expect(response.status).toBe(200);
+  });
 });
