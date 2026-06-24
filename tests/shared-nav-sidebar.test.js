@@ -488,4 +488,32 @@ describe('shared nav sidebar toggle', () => {
     expect(hamburger.getAttribute('aria-expanded')).toBe('false');
     expect(sidebarTarget.focus).not.toHaveBeenCalled();
   });
+
+  it('closes the sidebar without focusing any target when the sidebar link href is exactly "#"', () => {
+    const { hamburger, sidebar, sidebarLink, sidebarTarget } = makeContext({
+      sidebarLinkHref: '#',
+      targetId: 'section-1',
+    });
+
+    hamburger.dispatch('click');
+    sidebarLink.dispatch('click');
+
+    expect(sidebar.classList.contains('open')).toBe(false);
+    expect(hamburger.getAttribute('aria-expanded')).toBe('false');
+    expect(sidebarTarget.focus).not.toHaveBeenCalled();
+  });
+
+  it('closes the sidebar without focusing any target when the sidebar link href has no hash fragment', () => {
+    const { hamburger, sidebar, sidebarLink, sidebarTarget } = makeContext({
+      sidebarLinkHref: '/principles/foundation/',
+      targetId: 'section-1',
+    });
+
+    hamburger.dispatch('click');
+    sidebarLink.dispatch('click');
+
+    expect(sidebar.classList.contains('open')).toBe(false);
+    expect(hamburger.getAttribute('aria-expanded')).toBe('false');
+    expect(sidebarTarget.focus).not.toHaveBeenCalled();
+  });
 });
