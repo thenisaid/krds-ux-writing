@@ -2503,6 +2503,24 @@ describe('generator/app.js', () => {
     expect(elements['generating-error'].textContent).toContain('상류 서비스가 일시적으로 중단되었습니다.');
   });
 
+  it('shows the generic server-error message with the status code when a 5xx response has no parseable error body', async () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: false,
+      status: 502,
+      async json() { throw new Error('not json'); },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(elements['generating-error'].classList.contains('visible')).toBe(true);
+    expect(elements['generating-error'].textContent).toContain('서버 오류가 발생했습니다');
+    expect(elements['generating-error'].textContent).toContain('502');
+  });
+
   it('defaults to guide-draft mode when the generator-mode element is absent from the DOM', () => {
     const fetchImpl = vi.fn(async () => ({
       ok: true,

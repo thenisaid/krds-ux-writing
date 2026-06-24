@@ -1513,6 +1513,42 @@ describe('server.js configuration', () => {
     }
   });
 
+  it('calls onDone (not onError) when the end-of-stream buffer flush contains malformed JSON but prior content was received', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      await new Promise((resolve) => {
+        const chunks = [];
+        http.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            callback(res);
+            // Valid chunk with newline → sawContent = true
+            res.emit('data', Buffer.from('{"model":"test","response":"선행 내용","done":false}\n'));
+            // Malformed JSON without newline → stays in buffer until 'end'
+            res.emit('data', Buffer.from('{malformed'));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callOllama(
+          'http://localhost:11434', 'system', 'user', 2200,
+          (text) => { chunks.push(text); },
+          () => { expect(chunks).toEqual(['선행 내용']); resolve(); },
+          (message) => { throw new Error('unexpected error: ' + message); },
+        );
+      });
+    } finally {
+      http.request = originalRequest;
+    }
+  });
+
   it('fires an error when the Ollama response socket emits an error after the connection is established', async () => {
     const { callOllamaStream: callOllama } = loadFreshServerModule();
     const http = requireModule('node:http');
