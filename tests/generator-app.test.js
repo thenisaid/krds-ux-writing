@@ -2126,4 +2126,15 @@ describe('generator/app.js', () => {
     expect(screens[2].classList.contains('active')).toBe(true);
     expect(elements['output-content'].innerHTML).toContain('# 결과');
   });
+
+  it('does not crash when the cancel button is clicked before any generation has started', () => {
+    const { context, elements, screens } = buildGeneratorContext();
+    vm.runInNewContext(SOURCE, context);
+
+    expect(screens[0].classList.contains('active')).toBe(true);
+
+    elements['cancel-btn'].dispatch('click');
+
+    expect(screens[0].classList.contains('active')).toBe(true);
+  });
 });
