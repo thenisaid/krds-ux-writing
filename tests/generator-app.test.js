@@ -2592,4 +2592,23 @@ describe('generator/app.js', () => {
 
     expect(elements['quality-issues-list'].innerHTML).toContain('검수 항목');
   });
+
+  it('shows 심리적 안전망 통과 when mode is tone-adjust even if text has no action or structure cues', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 100,
+        summary: { total: 0, errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      })),
+    };
+    elements['generator-mode'].value = 'tone-adjust';
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    const html = elements['quality-gates'].innerHTML;
+    // mode === 'tone-adjust' makes the 심리적 안전망 condition pass even without action/structure cues
+    expect(html).not.toContain('quality-gate--warn');
+    expect(html).not.toContain('quality-gate--fail');
+  });
 });
