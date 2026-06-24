@@ -1084,6 +1084,46 @@ describe('server.js configuration', () => {
     }
   });
 
+  it('silently skips a malformed-JSON data: line and still fires done from the next valid message_stop', async () => {
+    const originalRequest = https.request;
+    try {
+      await new Promise((resolve) => {
+        const chunks = [];
+
+        https.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            res.headers = { 'content-type': 'text/event-stream' };
+            callback(res);
+            res.emit('data', Buffer.from(
+              'data: {not valid json}\n' +
+              'data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"텍스트"}}\n' +
+              'data: {"type":"message_stop"}\n\n',
+            ));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callFreshClaudeStream(
+          { model: 'claude-sonnet-4-6' },
+          (text) => { chunks.push(text); },
+          () => {
+            expect(chunks).toEqual(['텍스트']);
+            resolve();
+          },
+          (message) => { throw new Error('unexpected error: ' + message); },
+        );
+      });
+    } finally {
+      https.request = originalRequest;
+    }
+  });
+
   it('handles the OPTIONS preflight on the local server with a 204 and no body', async () => {
     const responseState = await runServerRequest({
       method: 'OPTIONS',

@@ -483,6 +483,13 @@ describe('generator API handlers', () => {
     });
     expect(cfToneTargetOverlong.status).toBe(400);
     expect(await cfToneTargetOverlong.json()).toEqual({ error: '목표 톤 값을 확인해 주세요.' });
+
+    const cfTaskBriefOverlong = await onRequestPost({
+      request: buildRequest({ ...basePayload, taskBrief: longTaskBrief }),
+      env: { ANTHROPIC_API_KEY: 'test-key' },
+    });
+    expect(cfTaskBriefOverlong.status).toBe(400);
+    expect(await cfTaskBriefOverlong.json()).toEqual({ error: '추가 요청은 300자 이하여야 합니다.' });
   });
 
   it('uses a custom Anthropic base URL in the Cloudflare handler when configured', async () => {
