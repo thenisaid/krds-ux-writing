@@ -98,6 +98,16 @@ describe('browser custom KRDS_JARGON_DICT injection', () => {
   });
 });
 
+describe('browser inline fallback (no KRDS_JARGON_DICT)', () => {
+  it('uses the inline jargon list when KRDS_JARGON_DICT is not set in the browser context', () => {
+    const context = { console, globalThis: null };
+    context.globalThis = context;
+    vm.runInNewContext(LINT_SOURCE, context);
+    const result = context.KRDSLint.lint('잘못 입력하셨습니다.');
+    expect(result.issues.some((i) => i.match === '잘못 입력하셨습니다')).toBe(true);
+  });
+});
+
 describe('browser jargon dictionary integration', () => {
   it('keeps jargon-dictionary.js aligned with jargon-dictionary.json', () => {
     const context = loadBrowserLint();
