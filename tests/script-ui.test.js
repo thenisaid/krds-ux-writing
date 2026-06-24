@@ -761,4 +761,274 @@ describe('script.js live index interactions', () => {
     expect(dictionary.hidden).toBe(false);
     expect(status.textContent).toBe('"사전" · 용어 찾기 기준으로 1개 섹션이 보여요.');
   });
+
+  it('falls back to light theme when localStorage.getItem throws a security error', () => {
+    const { context, document, elements } = createEnvironment();
+    context.localStorage = {
+      getItem() { throw new Error('security'); },
+      setItem() {},
+    };
+    elements.themeToggle = createElement(document);
+    elements.themeIcon = createElement(document, { attributes: { d: DARK_ICON } });
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+    expect(elements.themeIcon.getAttribute('d')).toBe(LIGHT_ICON);
+  });
+
+  it('applies the theme toggle even when localStorage.setItem throws a security error', () => {
+    const { context, document, elements } = createEnvironment();
+    context.localStorage = {
+      getItem() { return null; },
+      setItem() { throw new Error('security'); },
+    };
+    elements.themeToggle = createElement(document);
+    elements.themeIcon = createElement(document, { attributes: { d: LIGHT_ICON } });
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    elements.themeToggle.dispatch('click');
+
+    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(elements.themeIcon.getAttribute('d')).toBe(DARK_ICON);
+  });
+
+  it('adds and removes the scrolled class on the GNB as the page scrolls past and back below 10 pixels', () => {
+    const { context, document, window, elements } = createEnvironment();
+    elements.gnb = createElement(document);
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    window.scrollY = 20;
+    window.dispatch('scroll');
+    expect(elements.gnb.classList.contains('scrolled')).toBe(true);
+
+    window.scrollY = 5;
+    window.dispatch('scroll');
+    expect(elements.gnb.classList.contains('scrolled')).toBe(false);
+  });
+
+  it('wraps focus forward to the first menu element when Tab is pressed on the last focusable element', () => {
+    const { context, document, elements } = createEnvironment();
+    const firstLink = createElement(document, { attributes: { href: '#first' } });
+    const lastLink = createElement(document, { attributes: { href: '#last' } });
+    const mobileMenu = createElement(document, {
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [firstLink, lastLink] },
+    });
+    const mobileMenuBtn = createElement(document, {
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    elements.mobileMenu = mobileMenu;
+    elements.mobileMenuBtn = mobileMenuBtn;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+    mobileMenuBtn.dispatch('click');
+
+    document.activeElement = lastLink;
+    const preventDefault = vi.fn();
+    mobileMenu.dispatch('keydown', { key: 'Tab', shiftKey: false, preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(firstLink.focus).toHaveBeenCalled();
+  });
+
+  it('wraps focus backward to the last menu element when Shift+Tab is pressed on the first focusable element', () => {
+    const { context, document, elements } = createEnvironment();
+    const firstLink = createElement(document, { attributes: { href: '#first' } });
+    const lastLink = createElement(document, { attributes: { href: '#last' } });
+    const mobileMenu = createElement(document, {
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [firstLink, lastLink] },
+    });
+    const mobileMenuBtn = createElement(document, {
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    elements.mobileMenu = mobileMenu;
+    elements.mobileMenuBtn = mobileMenuBtn;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+    mobileMenuBtn.dispatch('click');
+
+    document.activeElement = firstLink;
+    const preventDefault = vi.fn();
+    mobileMenu.dispatch('keydown', { key: 'Tab', shiftKey: true, preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(lastLink.focus).toHaveBeenCalled();
+  });
+
+  it('does not intercept Tab when the focused element is not the last focusable element in the mobile menu', () => {
+    const { context, document, elements } = createEnvironment();
+    const firstLink = createElement(document, { attributes: { href: '#first' } });
+    const lastLink = createElement(document, { attributes: { href: '#last' } });
+    const mobileMenu = createElement(document, {
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [firstLink, lastLink] },
+    });
+    const mobileMenuBtn = createElement(document, {
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    elements.mobileMenu = mobileMenu;
+    elements.mobileMenuBtn = mobileMenuBtn;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+    mobileMenuBtn.dispatch('click');
+
+    document.activeElement = firstLink;
+    const preventDefault = vi.fn();
+    mobileMenu.dispatch('keydown', { key: 'Tab', shiftKey: false, preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(lastLink.focus).not.toHaveBeenCalled();
+  });
+
+  it('does not intercept Shift+Tab when the focused element is not the first focusable element in the mobile menu', () => {
+    const { context, document, elements } = createEnvironment();
+    const firstLink = createElement(document, { attributes: { href: '#first' } });
+    const lastLink = createElement(document, { attributes: { href: '#last' } });
+    const mobileMenu = createElement(document, {
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [firstLink, lastLink] },
+    });
+    const mobileMenuBtn = createElement(document, {
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    elements.mobileMenu = mobileMenu;
+    elements.mobileMenuBtn = mobileMenuBtn;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+    mobileMenuBtn.dispatch('click');
+
+    document.activeElement = lastLink;
+    const preventDefault = vi.fn();
+    mobileMenu.dispatch('keydown', { key: 'Tab', shiftKey: true, preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(lastLink.focus).not.toHaveBeenCalled();
+  });
+
+  it('opens the mobile menu without installing a focus trap when all candidate links are aria-hidden', () => {
+    const { context, document, elements } = createEnvironment();
+    const ariaHiddenLink = createElement(document, {
+      attributes: { href: '#', 'aria-hidden': 'true' },
+    });
+    const mobileMenu = createElement(document, {
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [ariaHiddenLink] },
+    });
+    const mobileMenuBtn = createElement(document, {
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    elements.mobileMenu = mobileMenu;
+    elements.mobileMenuBtn = mobileMenuBtn;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+    mobileMenuBtn.dispatch('click');
+
+    expect(mobileMenu.classList.contains('open')).toBe(true);
+    ariaHiddenLink.focus.mockClear();
+    expect(() => mobileMenu.dispatch('keydown', { key: 'Tab', shiftKey: false, preventDefault: vi.fn() })).not.toThrow();
+    expect(ariaHiddenLink.focus).not.toHaveBeenCalled();
+  });
+
+  it('focuses the anchor target without calling scrollTo when window.scrollTo is not a function', () => {
+    const { context, document, elements } = createEnvironment();
+    const caseStudies = createElement(document, { rect: { top: 420 } });
+    const samePageLink = createElement(document, {
+      classes: ['mobile-menu-link'],
+      attributes: { href: '/krds-ux-writing/#case-studies' },
+      closestSelectors: ['.mobile-menu-item, .mobile-menu-link'],
+    });
+    const mobileMenu = createElement(document, {
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [samePageLink] },
+    });
+    const mobileMenuBtn = createElement(document, {
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    elements.mobileMenu = mobileMenu;
+    elements.mobileMenuBtn = mobileMenuBtn;
+    elements['case-studies'] = caseStudies;
+    context.window.scrollTo = undefined;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    mobileMenuBtn.dispatch('click');
+    mobileMenu.dispatch('click', { target: samePageLink, preventDefault: vi.fn() });
+
+    expect(caseStudies.getAttribute('tabindex')).toBe('-1');
+    expect(caseStudies.focus).toHaveBeenCalled();
+  });
+
+  it('focuses the anchor target without scrolling when the target has no getBoundingClientRect method', () => {
+    const { context, document, window, elements } = createEnvironment();
+    const caseStudies = createElement(document, { rect: { top: 420 } });
+    const samePageLink = createElement(document, {
+      classes: ['mobile-menu-link'],
+      attributes: { href: '/krds-ux-writing/#case-studies' },
+      closestSelectors: ['.mobile-menu-item, .mobile-menu-link'],
+    });
+    const mobileMenu = createElement(document, {
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [samePageLink] },
+    });
+    const mobileMenuBtn = createElement(document, {
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    elements.mobileMenu = mobileMenu;
+    elements.mobileMenuBtn = mobileMenuBtn;
+    elements['case-studies'] = caseStudies;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    delete caseStudies.getBoundingClientRect;
+    mobileMenuBtn.dispatch('click');
+    mobileMenu.dispatch('click', { target: samePageLink, preventDefault: vi.fn() });
+
+    expect(caseStudies.focus).toHaveBeenCalled();
+    expect(window.scrollTo).not.toHaveBeenCalled();
+  });
+
+  it('sets tabindex and scrolls without throwing when the anchor target has no focus method', () => {
+    const { context, document, window, elements } = createEnvironment();
+    const caseStudies = createElement(document, { rect: { top: 420 } });
+    const samePageLink = createElement(document, {
+      classes: ['mobile-menu-link'],
+      attributes: { href: '/krds-ux-writing/#case-studies' },
+      closestSelectors: ['.mobile-menu-item, .mobile-menu-link'],
+    });
+    const mobileMenu = createElement(document, {
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [samePageLink] },
+    });
+    const mobileMenuBtn = createElement(document, {
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    elements.mobileMenu = mobileMenu;
+    elements.mobileMenuBtn = mobileMenuBtn;
+    elements['case-studies'] = caseStudies;
+    window.scrollY = 60;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    caseStudies.focus = undefined;
+    mobileMenuBtn.dispatch('click');
+    expect(() => mobileMenu.dispatch('click', { target: samePageLink, preventDefault: vi.fn() })).not.toThrow();
+
+    expect(caseStudies.getAttribute('tabindex')).toBe('-1');
+    expect(window.scrollTo).toHaveBeenCalledWith({ top: 480, behavior: 'auto' });
+  });
 });
