@@ -689,4 +689,48 @@ describe('script.js live index interactions', () => {
     expect(chips[1].getAttribute('aria-pressed')).toBe('false');
     expect(status.textContent).toBe('2개 섹션이 준비되어 있어요.');
   });
+
+  it('shows combined chip label and query in the status when both a chip and a search term narrow results', () => {
+    const { context, document, elements, querySelectorAllMap } = createEnvironment();
+    const searchInput = createElement(document, { attributes: { type: 'search' } });
+    const clearButton = createElement(document, { hidden: true, attributes: { hidden: '' } });
+    const status = createElement(document);
+    const emptyState = createElement(document, { hidden: true, attributes: { hidden: '' } });
+
+    const principles = createElement(document, {
+      attributes: {
+        'data-filter-group': 'learn',
+        'data-filter-keywords': '원칙 파운데이션',
+      },
+    });
+    const dictionary = createElement(document, {
+      attributes: {
+        'data-filter-group': 'terms',
+        'data-filter-keywords': '사전 dictionary 행정용어',
+      },
+    });
+
+    const chips = [
+      createElement(document, { textContent: '전체', attributes: { 'data-section-filter': 'all', 'aria-pressed': 'true' } }),
+      createElement(document, { textContent: '용어 찾기', attributes: { 'data-section-filter': 'terms', 'aria-pressed': 'false' } }),
+    ];
+
+    elements.sectionSearchInput = searchInput;
+    elements.sectionSearchClear = clearButton;
+    elements.sectionFilterStatus = status;
+    elements.sectionEditorialEmpty = emptyState;
+    querySelectorAllMap['.editorial-item[data-filter-keywords]'] = [principles, dictionary];
+    querySelectorAllMap['.section-filter-chip'] = chips;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    chips[1].dispatch('click');
+    searchInput.value = '사전';
+    searchInput.dispatch('input');
+
+    expect(principles.hidden).toBe(true);
+    expect(dictionary.hidden).toBe(false);
+    expect(status.textContent).toBe('"사전" · 용어 찾기 기준으로 1개 섹션이 보여요.');
+  });
 });
