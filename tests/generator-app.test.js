@@ -359,6 +359,38 @@ describe('generator/app.js', () => {
     expect(elements['fallback-area'].style.display).toBe('block');
   });
 
+  it('shows the generic error fallback text when a type:error SSE event has no message field', async () => {
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: {"type":"error"}\n'),
+          ];
+          let index = 0;
+          return {
+            async read() {
+              if (index < chunks.length) return { done: false, value: chunks[index++] };
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(elements['generating-error'].classList.contains('visible')).toBe(true);
+    expect(elements['generating-error'].textContent).toContain('가이드라인 생성 중 오류가 발생했습니다');
+  });
+
   it('sends mode and optional context fields and updates the output title for derivative guides', async () => {
     const encoder = new TextEncoder();
     const fetchImpl = vi.fn(async (url, options) => ({
