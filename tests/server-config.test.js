@@ -828,4 +828,66 @@ describe('server.js configuration', () => {
       https.request = originalRequest;
     }
   });
+
+  it('calls req.setTimeout with 120 000 ms on Ollama API requests in the local server', () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    let capturedTimeout;
+    try {
+      http.request = function (options, callback) {
+        const req = new EventEmitter();
+        req.write = function () {};
+        req.end = function () {};
+        req.destroy = function () {};
+        req.setTimeout = function (ms) { capturedTimeout = ms; };
+        return req;
+      };
+
+      callOllama('http://localhost:11434', 'system', 'user message', 2200, () => {}, () => {}, () => {});
+
+      expect(capturedTimeout).toBe(120000);
+    } finally {
+      http.request = originalRequest;
+    }
+  });
+
+  it('reports a timeout error when the Ollama socket stalls and destroys the request', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      let timeoutCallback;
+      let reqDestroyed = false;
+      let errorMessage;
+
+      await new Promise((resolve) => {
+        http.request = function (options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.end = function () {};
+          req.destroy = function () { reqDestroyed = true; };
+          req.setTimeout = function (ms, cb) { timeoutCallback = cb; };
+          return req;
+        };
+
+        callOllama(
+          'http://localhost:11434',
+          'system',
+          'user message',
+          2200,
+          () => {},
+          () => {},
+          (message) => { errorMessage = message; resolve(); },
+        );
+
+        setTimeout(() => { if (timeoutCallback) timeoutCallback(); }, 0);
+      });
+
+      expect(reqDestroyed).toBe(true);
+      expect(errorMessage).toMatch(/초과/);
+    } finally {
+      http.request = originalRequest;
+    }
+  });
 });

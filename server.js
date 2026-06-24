@@ -928,6 +928,7 @@ module.exports = {
   isWithinRoot,
   isPublicStaticPath,
   callClaudeStream,
+  callOllamaStream,
   normalizeStaticPath,
   parseEnvValue,
   resolveStaticFilePath,
