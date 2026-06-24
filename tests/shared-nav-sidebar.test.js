@@ -456,4 +456,36 @@ describe('shared nav sidebar toggle', () => {
     expect(sidebarTarget.getAttribute('tabindex')).toBe('0');
     expect(sidebarTarget.focus).toHaveBeenCalled();
   });
+
+  it('closes the sidebar and restores hamburger state when the backdrop is clicked', () => {
+    const { sidebar, backdrop, hamburger, document } = makeContext();
+
+    hamburger.dispatch('click');
+    expect(sidebar.classList.contains('open')).toBe(true);
+    expect(backdrop.classList.contains('open')).toBe(true);
+    expect(document.body.style.overflow).toBe('hidden');
+
+    backdrop.dispatch('click');
+
+    expect(sidebar.classList.contains('open')).toBe(false);
+    expect(backdrop.classList.contains('open')).toBe(false);
+    expect(hamburger.getAttribute('aria-expanded')).toBe('false');
+    expect(hamburger.getAttribute('aria-label')).toBe('메뉴 열기');
+    expect(document.body.style.overflow).toBe('');
+    expect(hamburger.focus).toHaveBeenCalled();
+  });
+
+  it('closes the sidebar without focusing the anchor target when the sidebar link points to a missing element', () => {
+    const { hamburger, sidebar, sidebarLink, sidebarTarget } = makeContext({
+      sidebarLinkHref: '#nonexistent-element',
+      targetId: 'section-1',
+    });
+
+    hamburger.dispatch('click');
+    sidebarLink.dispatch('click');
+
+    expect(sidebar.classList.contains('open')).toBe(false);
+    expect(hamburger.getAttribute('aria-expanded')).toBe('false');
+    expect(sidebarTarget.focus).not.toHaveBeenCalled();
+  });
 });
