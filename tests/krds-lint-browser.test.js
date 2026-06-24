@@ -82,6 +82,20 @@ describe('browser custom KRDS_JARGON_DICT injection', () => {
     const result = context.KRDSLint.lint('오류 코드: 404');
     expect(result.issues.some((i) => i.category === '코드테스트')).toBe(true);
   });
+
+  it('matches currency amount placeholder patterns when a jargon entry contains a 금액 bracket', () => {
+    const context = {
+      KRDS_JARGON_DICT: {
+        entries: [{ banned: '납부 금액: [금액]', alt: '얼마를 내야 하는지 구체적으로 써 주세요', cat: '금액테스트' }],
+      },
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(LINT_SOURCE, context);
+    const result = context.KRDSLint.lint('납부 금액: 50,000원');
+    expect(result.issues.some((i) => i.category === '금액테스트')).toBe(true);
+  });
 });
 
 describe('browser jargon dictionary integration', () => {
