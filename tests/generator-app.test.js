@@ -2502,4 +2502,41 @@ describe('generator/app.js', () => {
     expect(elements['generating-error'].classList.contains('visible')).toBe(true);
     expect(elements['generating-error'].textContent).toContain('상류 서비스가 일시적으로 중단되었습니다.');
   });
+
+  it('defaults to guide-draft mode when the generator-mode element is absent from the DOM', () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: { getReader() { return { async read() { return { done: true }; } }; } },
+    }));
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    // Remove the optional mode element so getCurrentMode() falls back to 'guide-draft'
+    elements['generator-mode'] = null;
+
+    elements['agency-name'].value = '기관';
+    elements['agency-type'].value = '지방자치단체';
+    elements['sample-1'].value = '문장 하나';
+
+    vm.runInNewContext(SOURCE, context);
+    elements['generator-form'].dispatch('submit');
+
+    expect(fetchImpl).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        body: expect.stringContaining('"mode":"guide-draft"'),
+      }),
+    );
+  });
+
+  it('does not crash in applyModeUi when the tone-target-group element is absent from the DOM', () => {
+    const { context, elements } = buildGeneratorContext();
+    // Remove the optional element — the if (toneTargetGroup) guard should prevent any error
+    elements['tone-target-group'] = null;
+
+    vm.runInNewContext(SOURCE, context);
+
+    // Changing mode still works without the optional element
+    elements['generator-mode'].value = 'tone-adjust';
+    expect(() => elements['generator-mode'].dispatch('change')).not.toThrow();
+  });
 });
