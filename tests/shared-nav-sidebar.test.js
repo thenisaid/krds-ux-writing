@@ -572,6 +572,19 @@ describe('shared nav sidebar toggle', () => {
     expect(sidebar.classList.contains('open')).toBe(false);
     expect(sidebarTarget.focus).not.toHaveBeenCalled();
   });
+
+  it('keeps the sidebar open when a resize fires at or below the mobile breakpoint', () => {
+    const { context, sidebar, hamburger } = makeContext();
+
+    hamburger.dispatch('click');
+    expect(sidebar.classList.contains('open')).toBe(true);
+
+    context.window.innerWidth = 480;
+    context.window.dispatch('resize');
+
+    expect(sidebar.classList.contains('open')).toBe(true);
+    expect(hamburger.getAttribute('aria-expanded')).toBe('true');
+  });
 });
 
 describe('shared nav sidebar scroll-tracking IntersectionObserver', () => {
