@@ -1059,4 +1059,42 @@ describe('lint-ui stale result handling', () => {
     expect(elements.shareLinkBtn.disabled).toBe(true);
     expect(elements.shareLinkBtn.title).toBe('텍스트가 변경되었습니다. 다시 검사해 주세요');
   });
+
+  it('focuses the input field and skips analysis when the lint button is clicked with empty text', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.inputText.focus).toHaveBeenCalled();
+    expect(context.KRDSLint.lint).not.toHaveBeenCalled();
+  });
+
+  it('auto-loads and lints text from the URL t= query parameter without showing a toast on failure', () => {
+    const { context, elements } = buildContext();
+    context.window.location.search = '?t=' + encodeURIComponent('귀하의 신청이 접수되었습니다.');
+
+    context.KRDSLint.lint = vi.fn(() => ({
+      score: 82,
+      summary: { total: 1, errors: 1, warnings: 0, infos: 0 },
+      issues: [{ line: 1, col: 1, severity: 'error', category: '행정어', message: '"귀하" 사용', match: '귀하', suggestion: '→ 고객님', type: 'admin-jargon' }],
+    }));
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.inputText.value).toBe('귀하의 신청이 접수되었습니다.');
+    expect(context.KRDSLint.lint).toHaveBeenCalledWith('귀하의 신청이 접수되었습니다.', expect.anything());
+  });
+
+  it('suppresses the error toast when URL param lint fails due to lint engine unavailability', () => {
+    const { context, elements } = buildContext();
+    context.window.location.search = '?t=' + encodeURIComponent('귀하의 신청이 접수되었습니다.');
+    context.KRDSLint = undefined;
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.toast.textContent).toBe('');
+    expect(elements.inputText.value).toBe('귀하의 신청이 접수되었습니다.');
+  });
 });

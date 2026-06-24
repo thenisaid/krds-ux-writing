@@ -530,4 +530,14 @@ describe('KRDSLint public API', () => {
     expect(typeof formatted).toBe('string');
     expect(formatted).toContain('품질 점수');
   });
+
+  it('uses the bullet fallback icon when an issue has an unrecognized severity value', () => {
+    const formatted = KRDSLint.formatCLI({
+      issues: [{ line: 1, col: 1, severity: 'unknown-severity', category: '테스트', message: '테스트 메시지', suggestion: '→ 대안' }],
+      summary: { total: 1, errors: 0, warnings: 0, infos: 1 },
+      score: 90,
+    });
+    expect(formatted).toContain('•');
+    expect(formatted).toContain('테스트 메시지');
+  });
 });
