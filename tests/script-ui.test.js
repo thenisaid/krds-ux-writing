@@ -477,6 +477,59 @@ describe('script.js live index interactions', () => {
     expect(window.scrollTo).toHaveBeenCalledWith({ top: 394, behavior: 'smooth' });
   });
 
+  it('does not scroll or focus when the anchor href is a bare hash "#"', () => {
+    const { context, document, window, anchorLinks } = createEnvironment();
+    const bareHashLink = createElement(document, { attributes: { href: '#' } });
+    anchorLinks.push(bareHashLink);
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    const preventDefault = vi.fn();
+    bareHashLink.dispatch('click', { preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(window.scrollTo).not.toHaveBeenCalled();
+  });
+
+  it('does not scroll or focus when the URL constructor is not available for an absolute anchor href', () => {
+    const { context, document, window, elements, anchorLinks } = createEnvironment();
+    const gnbLink = createElement(document, {
+      attributes: { href: '/krds-ux-writing/#case-studies' },
+    });
+    elements['case-studies'] = createElement(document, { rect: { top: 300 } });
+    anchorLinks.push(gnbLink);
+    context.URL = undefined;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    const preventDefault = vi.fn();
+    gnbLink.dispatch('click', { preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(window.scrollTo).not.toHaveBeenCalled();
+  });
+
+  it('does not scroll or focus when the URL constructor throws for an anchor href', () => {
+    const { context, document, window, elements, anchorLinks } = createEnvironment();
+    const gnbLink = createElement(document, {
+      attributes: { href: '/krds-ux-writing/#case-studies' },
+    });
+    elements['case-studies'] = createElement(document, { rect: { top: 300 } });
+    anchorLinks.push(gnbLink);
+    context.URL = function () { throw new TypeError('Invalid URL'); };
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    const preventDefault = vi.fn();
+    gnbLink.dispatch('click', { preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(window.scrollTo).not.toHaveBeenCalled();
+  });
+
   it('does not intercept anchor links that change the current query string', () => {
     const { context, document, window, elements, anchorLinks } = createEnvironment();
     const caseStudies = createElement(document, { rect: { top: 420 } });
