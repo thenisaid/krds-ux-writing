@@ -450,3 +450,92 @@ describe('archive page initialization', () => {
     expect(html).toContain('&lt;script&gt;');
   });
 });
+
+describe('archive page — additional branch coverage', () => {
+  it('shows "검색 결과가 없습니다." when no issues match the active search', async () => {
+    const { context, elements } = buildContext();
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    elements['arc-search-hometax'].value = '일치하지않는검색어ZZZ';
+    elements['arc-search-hometax'].dispatch('input');
+
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('검색 결과가 없습니다.');
+  });
+
+  it('displays "로딩 실패" when the fetch responds with a non-OK HTTP status', async () => {
+    const { context, elements } = buildContext();
+    context.fetch = vi.fn(async () => ({ ok: false, status: 503 }));
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('로딩 실패');
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('HTTP 503');
+    expect(elements['arc-grid-hometax'].innerHTML).not.toContain('<script>');
+  });
+
+  it('calls applyFilters without a new fetch when the same tab is clicked after its data is loaded', async () => {
+    const { context, tabs, elements } = buildContext();
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    const fetchCountBefore = context.fetch.mock.calls.length;
+    tabs[1].dispatch('click');
+
+    expect(context.fetch.mock.calls.length).toBe(fetchCountBefore);
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('H1');
+  });
+
+  it('matches issues by principle name when the search term is a Korean principle label like "무번역"', async () => {
+    const { context, elements } = buildContext({
+      markdown: [
+        '## Cycle 1',
+        '### H1 — 무번역 원칙 이슈 ★ [A]',
+        '**원문**: 텍스트',
+        '**문제**: 설명',
+        '**권장 개선안**: 개선',
+        '',
+        '### H2 — 정보핵심화 이슈 ★★ [B]',
+        '**원문**: 다른 텍스트',
+        '**문제**: 설명',
+        '**권장 개선안**: 개선',
+      ].join('\n'),
+    });
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    elements['arc-search-hometax'].value = '무번역';
+    elements['arc-search-hometax'].dispatch('input');
+
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('H1');
+    expect(elements['arc-grid-hometax'].innerHTML).not.toContain('H2');
+  });
+
+  it('renders a card with an empty principle bracket when severity is set but no principle code is found', async () => {
+    const { context, elements } = buildContext({
+      markdown: [
+        '## Cycle 1',
+        '### H99 — 원칙 없는 이슈',
+        '',
+        '| 항목 | 내용 |',
+        '|------|------|',
+        '| **심각도** | ★★★ |',
+        '',
+        '**문제**: 설명',
+        '**권장 개선안**: 개선',
+      ].join('\n'),
+    });
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    const html = elements['arc-grid-hometax'].innerHTML;
+    expect(html).toContain('H99');
+    expect(html).toContain('★★★');
+    expect(html).toContain('[]');
+  });
+});
