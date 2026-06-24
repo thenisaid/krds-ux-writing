@@ -1521,6 +1521,73 @@ describe('generator API handlers', () => {
     expect(cloudflareResponse.status).toBe(400);
     expect(await cloudflareResponse.json()).toEqual({ error: '요청 형식이 올바르지 않습니다.' });
   });
+
+  it('sends an SSE error event when the fetch itself throws in the Cloudflare handler', async () => {
+    global.fetch = vi.fn(async () => { throw new Error('network failure'); });
+
+    const response = await onRequestPost({
+      request: buildRequest({
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        samples: ['샘플 문구'],
+      }),
+      env: { ANTHROPIC_API_KEY: 'test-key' },
+    });
+    const body = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(body).toContain('"type":"error"');
+    expect(body).toContain('AI 서비스에 연결할 수 없습니다');
+  });
+
+  it('sends an SSE error event when the readable stream errors mid-transfer in the Cloudflare handler', async () => {
+    global.fetch = vi.fn(async () => {
+      const readable = new ReadableStream({
+        start(controller) {
+          controller.error(new Error('socket dropped'));
+        },
+      });
+      return new Response(readable, {
+        status: 200,
+        headers: { 'Content-Type': 'text/event-stream' },
+      });
+    });
+
+    const response = await onRequestPost({
+      request: buildRequest({
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        samples: ['샘플 문구'],
+      }),
+      env: { ANTHROPIC_API_KEY: 'test-key' },
+    });
+    const body = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(body).toContain('"type":"error"');
+    expect(body).toContain('연결이 끊겼습니다');
+  });
+
+  it('sends an SSE error event when the upstream Claude SSE stream contains a type:error event in the Cloudflare handler', async () => {
+    global.fetch = vi.fn(async () => new Response(
+      'data: {"type":"error","error":{"type":"overloaded_error","message":"overloaded"}}\n\n',
+      { status: 200, headers: { 'Content-Type': 'text/event-stream' } },
+    ));
+
+    const response = await onRequestPost({
+      request: buildRequest({
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        samples: ['샘플 문구'],
+      }),
+      env: { ANTHROPIC_API_KEY: 'test-key' },
+    });
+    const body = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(body).toContain('"type":"error"');
+    expect(body).toContain('AI 처리 중 오류');
+  });
 });
 
 describe('generate-shared.js — buildUserMessage and readOptionalStringField', () => {
