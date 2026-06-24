@@ -781,7 +781,7 @@
         var color = h.score >= 80 ? 'var(--color-success-50)' : h.score >= 50 ? 'var(--color-warning-50)' : 'var(--color-danger-50)';
         return '<button data-idx="' + i + '" style="text-align:left; width:100%; background:var(--color-surface-sub); border:1px solid var(--color-border); border-radius:8px; padding:10px 14px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">' +
           '<div>' +
-          '<div style="font-size:12px; color:var(--color-text-sub);">' + h.date + ' · 이슈 ' + h.issueCount + '개</div>' +
+          '<div style="font-size:12px; color:var(--color-text-sub);">' + escapeHtml(h.date) + ' · 이슈 ' + h.issueCount + '개</div>' +
           '<div style="font-size:13px; color:var(--color-text); margin-top:2px;">' + escapeHtml(h.text) + (h.text.length >= 80 ? '…' : '') + '</div>' +
           '</div>' +
           '<span style="font-weight:700; color:' + color + '; font-size:16px; margin-left:12px;">' + h.score + '</span>' +
