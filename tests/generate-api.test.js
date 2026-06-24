@@ -1439,4 +1439,35 @@ describe('generator API handlers', () => {
     expect(body).toContain('"type":"chunk"');
     expect(body).not.toContain('"type":"error"');
   });
+
+  it('falls back to the unknown IP bucket when X-Forwarded-For is non-empty but all parts are blank in the Vercel handler', async () => {
+    const { default: freshVercelHandler } = await importFreshModule('api/generate.js');
+    global.fetch = mockAnthropicFetch();
+
+    const response = await freshVercelHandler(buildRequest(
+      { agencyName: '테스트 기관', agencyType: '지방자치단체', samples: ['샘플 문구'] },
+      ALLOWED_ORIGIN,
+      { 'X-Forwarded-For': ',' },
+    ));
+
+    expect(response.status).toBe(200);
+    expect(await response.text()).toContain('"type":"done"');
+  });
+
+  it('falls back to the unknown IP bucket when X-Forwarded-For is non-empty but all parts are blank in the Cloudflare handler', async () => {
+    const { onRequestPost: freshOnRequestPost } = await importFreshModule('functions/api/generate.js');
+    global.fetch = mockAnthropicFetch();
+
+    const response = await freshOnRequestPost({
+      request: buildRequest(
+        { agencyName: '테스트 기관', agencyType: '지방자치단체', samples: ['샘플 문구'] },
+        ALLOWED_ORIGIN,
+        { 'X-Forwarded-For': ',' },
+      ),
+      env: { ANTHROPIC_API_KEY: 'test-key' },
+    });
+
+    expect(response.status).toBe(200);
+    expect(await response.text()).toContain('"type":"done"');
+  });
 });
