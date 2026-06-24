@@ -5,6 +5,9 @@
  */
 import { describe, it, expect } from 'vitest';
 import KRDSLint from '../krds-lint.js';
+import vm from 'vm';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 
 // ── ADMIN JARGON ─────────────────────────────────────────────────────────────
 
@@ -539,5 +542,78 @@ describe('KRDSLint public API', () => {
     });
     expect(formatted).toContain('•');
     expect(formatted).toContain('테스트 메시지');
+  });
+});
+
+describe('placeholderPattern branches via synthetic dictionary', () => {
+  // Run the UMD factory in a VM browser-path to inject a custom jargonDict.
+  // When `module` is absent from the sandbox, the IIFE takes the browser branch
+  // and sets root.KRDSLint = factory(root.KRDS_JARGON_DICT).
+  const LINT_SOURCE = fs.readFileSync(
+    fileURLToPath(new URL('../krds-lint.js', import.meta.url)),
+    'utf8',
+  );
+
+  function makeCustomLint(entries) {
+    const root = { KRDS_JARGON_DICT: { entries } };
+    vm.runInNewContext(LINT_SOURCE, root);
+    return root.KRDSLint;
+  }
+
+  it('builds a date-range regex when the placeholder label contains "기간"', () => {
+    const lint = makeCustomLint([
+      { banned: '신청기간: [기간]', alt: '신청 기간을 명시하세요', cat: '행정 관습어' },
+    ]);
+    const result = lint.lint('신청기간: 2024.01~2024.03');
+    const issue = result.issues.find(i => i.type === 'admin-jargon');
+    expect(issue).toBeDefined();
+    expect(issue.match).toMatch(/신청기간/);
+  });
+
+  it('builds a name/org regex when the placeholder label contains "기관"', () => {
+    const lint = makeCustomLint([
+      { banned: '담당기관: [기관]', alt: '담당 기관명을 명시하세요', cat: '행정 관습어' },
+    ]);
+    const result = lint.lint('담당기관: 행정안전부');
+    const issue = result.issues.find(i => i.type === 'admin-jargon');
+    expect(issue).toBeDefined();
+    expect(issue.match).toMatch(/담당기관/);
+  });
+
+  it('uses the generic fallback pattern when the placeholder label is unrecognized', () => {
+    const lint = makeCustomLint([
+      { banned: '처리번호: [코드]', alt: '처리 번호를 명시하세요', cat: '행정 관습어' },
+    ]);
+    const result = lint.lint('처리번호: ABC-001');
+    const issue = result.issues.find(i => i.type === 'admin-jargon');
+    expect(issue).toBeDefined();
+    expect(issue.match).toMatch(/처리번호/);
+  });
+
+  it('silently drops null entries in a custom dictionary without crashing', () => {
+    const lint = makeCustomLint([
+      null,
+      { banned: '귀책사유', alt: '잘못, 책임', cat: '행정 관습어' },
+    ]);
+    const result = lint.lint('귀책사유');
+    expect(result.issues.find(i => i.match === '귀책사유')).toBeDefined();
+  });
+
+  it('silently drops non-object entries (e.g. a string) in a custom dictionary', () => {
+    const lint = makeCustomLint([
+      '잘못된 엔트리',
+      { banned: '귀하', alt: '고객님', cat: '행정 관습어' },
+    ]);
+    const result = lint.lint('귀하');
+    expect(result.issues.find(i => i.match === '귀하')).toBeDefined();
+  });
+
+  it('silently drops entries whose banned phrase normalises to an empty string', () => {
+    const lint = makeCustomLint([
+      { banned: '', alt: '대안', cat: '행정 관습어' },
+      { banned: '귀하', alt: '고객님', cat: '행정 관습어' },
+    ]);
+    const result = lint.lint('귀하');
+    expect(result.issues.find(i => i.match === '귀하')).toBeDefined();
   });
 });
