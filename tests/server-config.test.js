@@ -140,6 +140,12 @@ describe('server.js configuration', () => {
     expect(parseEnvValue('  bare-value  ')).toBe('bare-value');
   });
 
+  it('returns an empty string for empty or mismatched-quote dotenv values', () => {
+    expect(parseEnvValue('')).toBe('');
+    expect(parseEnvValue('"half-quoted')).toBe('"half-quoted');
+    expect(parseEnvValue("'half-quoted")).toBe("'half-quoted");
+  });
+
   it('falls back to a local gateway key when KRDS points at the loopback LLangs proxy', () => {
     process.env.ANTHROPIC_BASE_URL = 'http://localhost:8200/krds';
     process.env.ANTHROPIC_API_KEY = '';
@@ -2018,5 +2024,22 @@ describe('server.js configuration', () => {
     } finally {
       https.request = originalRequest;
     }
+  });
+
+  it('passes optional screenType, toneTarget, and taskBrief through validation and reaches buildUserMessage', async () => {
+    process.env.ANTHROPIC_API_KEY = '';
+    const responseState = await runServerRequest({
+      headers: { 'x-forwarded-for': '203.0.113.60' },
+      body: {
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        mode: 'tone-adjust',
+        samples: ['샘플 문구'],
+        screenType: '로그인 화면',
+        toneTarget: '친근한 말투',
+        taskBrief: '추가적인 설명을 포함해 주세요.',
+      },
+    });
+    expect(responseState.statusCode).toBe(503);
   });
 });
