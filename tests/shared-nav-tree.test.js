@@ -569,6 +569,112 @@ describe('shared nav tree accordion toggle', () => {
     });
     expect(item.getAttribute('aria-expanded')).toBe('true');
   });
+
+  it('calls handleMobileSidebarLinkClick when an LNB link is clicked on a narrow viewport', () => {
+    const toggle = createElement({ attributes: { 'aria-label': '1장 펼치기/접기' }, classes: ['lnb-tog'] });
+    const link = createElement({ classes: ['lnb-item-a'] });
+    const subLink = createElement({ classes: ['lnb-sub-a'] });
+    const sub = createElement({ classes: ['lnb-sub'], queryMap: { '.lnb-sub-a': [subLink] } });
+    const item = createElement({
+      attributes: { 'aria-expanded': 'true', 'data-path': '/principles/foundation/' },
+      classes: ['lnb-item'],
+      queryMap: {
+        '.lnb-tog': toggle,
+        '.lnb-sub': sub,
+        '.lnb-item-a': link,
+        '.lnb-item-a, .lnb-sub-a': [link, subLink],
+      },
+    });
+    const tree = createElement({
+      classes: ['lnb-tree'],
+      queryMap: {
+        '.lnb-item': [item],
+        '.lnb-item-a, .lnb-tog, .lnb-sub-a': [link, toggle, subLink],
+        '.lnb-sub-a': [subLink],
+      },
+    });
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: null,
+      querySelector(selector) { return selector === '.lnb-tree' ? tree : null; },
+      querySelectorAll() { return []; },
+      getElementById() { return null; },
+      addEventListener() {},
+    };
+    const context = {
+      window: { innerWidth: 480, location: { pathname: '/krds-ux-writing/principles/foundation/' } },
+      location: { pathname: '/krds-ux-writing/principles/foundation/', hash: '' },
+      document,
+      localStorage: { getItem() { return null; }, setItem() {} },
+      sessionStorage: { getItem() { return null; }, setItem() {} },
+      IntersectionObserver: function () { return { observe() {}, unobserve() {}, disconnect() {} }; },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    // nav.js sets sharedNav.handleMobileSidebarLinkClick on window.KRDSSharedNav;
+    // replace it with a spy after the IIFE runs so the closure picks it up at call time.
+    const spy = vi.fn();
+    context.window.KRDSSharedNav.handleMobileSidebarLinkClick = spy;
+
+    link.dispatch('click', { preventDefault() {} });
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('skips handleMobileSidebarLinkClick when the viewport is wider than 900px', () => {
+    const toggle = createElement({ attributes: { 'aria-label': '1장 펼치기/접기' }, classes: ['lnb-tog'] });
+    const link = createElement({ classes: ['lnb-item-a'] });
+    const subLink = createElement({ classes: ['lnb-sub-a'] });
+    const sub = createElement({ classes: ['lnb-sub'], queryMap: { '.lnb-sub-a': [subLink] } });
+    const item = createElement({
+      attributes: { 'aria-expanded': 'true', 'data-path': '/principles/foundation/' },
+      classes: ['lnb-item'],
+      queryMap: {
+        '.lnb-tog': toggle,
+        '.lnb-sub': sub,
+        '.lnb-item-a': link,
+        '.lnb-item-a, .lnb-sub-a': [link, subLink],
+      },
+    });
+    const tree = createElement({
+      classes: ['lnb-tree'],
+      queryMap: {
+        '.lnb-item': [item],
+        '.lnb-item-a, .lnb-tog, .lnb-sub-a': [link, toggle, subLink],
+        '.lnb-sub-a': [subLink],
+      },
+    });
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: null,
+      querySelector(selector) { return selector === '.lnb-tree' ? tree : null; },
+      querySelectorAll() { return []; },
+      getElementById() { return null; },
+      addEventListener() {},
+    };
+    const context = {
+      window: { innerWidth: 1280, location: { pathname: '/krds-ux-writing/principles/foundation/' } },
+      location: { pathname: '/krds-ux-writing/principles/foundation/', hash: '' },
+      document,
+      localStorage: { getItem() { return null; }, setItem() {} },
+      sessionStorage: { getItem() { return null; }, setItem() {} },
+      IntersectionObserver: function () { return { observe() {}, unobserve() {}, disconnect() {} }; },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    const spy = vi.fn();
+    context.window.KRDSSharedNav.handleMobileSidebarLinkClick = spy;
+
+    link.dispatch('click', { preventDefault() {} });
+    expect(spy).not.toHaveBeenCalled();
+  });
 });
 
 describe('shared nav tree keyboard navigation', () => {
