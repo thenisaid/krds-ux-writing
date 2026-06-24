@@ -483,6 +483,83 @@ describe('generator/app.js', () => {
     expect(elements['copy-md-btn'].textContent).toBe('❌ 복사 실패');
   });
 
+  it('falls back to plaintext when markdownit is available but DOMPurify is absent', async () => {
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: {"type":"chunk","text":"# 마크다운 헤딩"}\n'),
+            encoder.encode('data: {"type":"done"}\n'),
+          ];
+          let index = 0;
+          return {
+            async read() {
+              if (index < chunks.length) return { done: false, value: chunks[index++] };
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    const { context, elements, screens } = buildGeneratorContext({ fetchImpl });
+    context.markdownit = function () {
+      return { render: (text) => '<h1>' + text.trim() + '</h1>' };
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(screens[2].classList.contains('active')).toBe(true);
+    expect(elements['output-content'].innerHTML).toContain('마크다운 헤딩');
+  });
+
+  it('sanitizes rendered markdown through DOMPurify when both markdownit and DOMPurify are available', async () => {
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: {"type":"chunk","text":"## 섹션"}\n'),
+            encoder.encode('data: {"type":"done"}\n'),
+          ];
+          let index = 0;
+          return {
+            async read() {
+              if (index < chunks.length) return { done: false, value: chunks[index++] };
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    const { context, elements, screens } = buildGeneratorContext({ fetchImpl });
+    const sanitizeMock = vi.fn((html) => '<sanitized>' + html + '</sanitized>');
+    context.markdownit = function () {
+      return { render: (text) => '<h2>' + text.trim() + '</h2>' };
+    };
+    context.DOMPurify = { sanitize: sanitizeMock };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(screens[2].classList.contains('active')).toBe(true);
+    expect(sanitizeMock).toHaveBeenCalled();
+    expect(elements['output-content'].innerHTML).toContain('<sanitized>');
+  });
+
   it('shows a readable error message when HTML download fails', () => {
     const { context, elements } = buildGeneratorContext();
     context.URL = {
