@@ -661,3 +661,75 @@ describe('shared nav tree keyboard navigation', () => {
     expect(item.getAttribute('aria-expanded')).toBe('false');
   });
 });
+
+describe('shared nav LNB footer link active state', () => {
+  function makeFooterContext(options = {}) {
+    const footerHref = 'footerHref' in options ? options.footerHref : '/krds-ux-writing/principles/';
+    const footerLink = createElement({
+      classes: ['lnb-footer-a'],
+      attributes: { href: footerHref },
+    });
+    const tree = createElement({
+      classes: ['lnb-tree'],
+      queryMap: {
+        '.lnb-item': [],
+        '.lnb-item-a, .lnb-tog, .lnb-sub-a': [],
+        '.lnb-sub-a': [],
+      },
+    });
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: null,
+      querySelector(selector) {
+        if (selector === '.lnb-tree') return tree;
+        return null;
+      },
+      querySelectorAll(selector) {
+        if (selector === '.lnb-footer-a') return [footerLink];
+        return [];
+      },
+      getElementById() { return null; },
+      addEventListener() {},
+    };
+    const context = {
+      window: {
+        innerWidth: 1280,
+        location: { pathname: options.currentPath || '/krds-ux-writing/principles/foundation/' },
+      },
+      location: { pathname: options.currentPath || '/krds-ux-writing/principles/foundation/', hash: '' },
+      document,
+      localStorage: { getItem() { return null; }, setItem() {} },
+      sessionStorage: { getItem() { return null; }, setItem() {} },
+      IntersectionObserver: function () { return { observe() {}, unobserve() {}, disconnect() {} }; },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(SOURCE, context);
+    return { footerLink };
+  }
+
+  it('marks a footer link active when the current path starts with its site-relative href', () => {
+    const { footerLink } = makeFooterContext({
+      currentPath: '/krds-ux-writing/principles/foundation/',
+      footerHref: '/krds-ux-writing/principles/',
+    });
+    expect(footerLink.classList.contains('active')).toBe(true);
+  });
+
+  it('does not mark a footer link active when the current path is on a different section', () => {
+    const { footerLink } = makeFooterContext({
+      currentPath: '/krds-ux-writing/dictionary/',
+      footerHref: '/krds-ux-writing/principles/',
+    });
+    expect(footerLink.classList.contains('active')).toBe(false);
+  });
+
+  it('does not mark a footer link active when its href is empty', () => {
+    const { footerLink } = makeFooterContext({
+      currentPath: '/krds-ux-writing/principles/foundation/',
+      footerHref: '',
+    });
+    expect(footerLink.classList.contains('active')).toBe(false);
+  });
+});
