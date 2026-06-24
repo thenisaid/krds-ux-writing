@@ -463,6 +463,15 @@ describe('server.js configuration', () => {
     expect(traversedTestSource.body).toBe('Not Found');
   });
 
+  it('returns 404 when a public-path URL resolves to a file that does not exist on disk', async () => {
+    const responseState = await runServerRequest({
+      method: 'GET',
+      url: '/corpus/does-not-exist-at-all.json',
+    });
+    expect(responseState.statusCode).toBe(404);
+    expect(responseState.body).toBe('Not Found');
+  });
+
   it('treats upstream non-SSE HTTP failures as errors instead of synthetic completion', async () => {
     const originalRequest = https.request;
     try {
