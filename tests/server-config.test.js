@@ -1668,6 +1668,40 @@ describe('server.js configuration', () => {
     }
   });
 
+  it('uses the https transport module when the Ollama URL scheme is https', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const originalRequest = https.request;
+    let httpsUsed = false;
+    try {
+      await new Promise((resolve) => {
+        https.request = function (_options, callback) {
+          httpsUsed = true;
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            callback(res);
+            res.emit('data', Buffer.from('{"model":"test","response":"안녕","done":false}\n'));
+            res.emit('data', Buffer.from('{"model":"test","done":true}\n'));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callOllama(
+          'https://ollama.internal:443', 'system', 'user', 2200,
+          () => {},
+          () => { expect(httpsUsed).toBe(true); resolve(); },
+          (message) => { throw new Error('unexpected error: ' + message); },
+        );
+      });
+    } finally {
+      https.request = originalRequest;
+    }
+  });
+
   it('rejects a local server request when screenType exceeds the 40-character limit', async () => {
     const responseState = await runServerRequest({
       headers: { 'x-forwarded-for': '203.0.113.50' },
