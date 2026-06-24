@@ -1529,4 +1529,31 @@ describe('server.js configuration', () => {
     expect(responseState.statusCode).toBe(400);
     expect(JSON.parse(responseState.body).error).toBeDefined();
   });
+
+  it('rejects a local server request with an invalid agency type', async () => {
+    const responseState = await runServerRequest({
+      headers: { 'x-forwarded-for': '203.0.113.53' },
+      body: {
+        agencyName: '테스트 기관',
+        agencyType: '알 수 없는 유형',
+        samples: ['샘플 문구'],
+      },
+    });
+    expect(responseState.statusCode).toBe(400);
+    expect(JSON.parse(responseState.body).error).toContain('기관 유형');
+  });
+
+  it('rejects a local server request with an invalid generator mode', async () => {
+    const responseState = await runServerRequest({
+      headers: { 'x-forwarded-for': '203.0.113.54' },
+      body: {
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        mode: 'not-a-valid-mode',
+        samples: ['샘플 문구'],
+      },
+    });
+    expect(responseState.statusCode).toBe(400);
+    expect(JSON.parse(responseState.body).error).toContain('작업 모드');
+  });
 });
