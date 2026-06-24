@@ -317,7 +317,6 @@ export default async function handler(request) {
       );
 
       if (!claudeResponse.ok) {
-        const errText = await claudeResponse.text().catch(() => '');
         writeSSE({
           type: 'error',
           message:
@@ -413,7 +412,7 @@ export default async function handler(request) {
           });
         }
         writer.close();
-      } catch (readErr) {
+      } catch {
         await closeReader();
         writeSSE({
           type: 'error',
@@ -422,7 +421,7 @@ export default async function handler(request) {
         });
         writer.close();
       }
-    } catch (fetchErr) {
+    } catch {
       writeSSE({
         type: 'error',
         message:
