@@ -1929,6 +1929,53 @@ describe('generator/app.js', () => {
     expect(item1.focus).toHaveBeenCalled();
   });
 
+  it('closes the format dropdown and moves focus to the next element when Tab is pressed with no menu items', () => {
+    const { context, elements } = buildGeneratorContext({ menuItems: [] });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['dl-chevron'].dispatch('click');
+    expect(elements['dl-menu'].classList.contains('open')).toBe(true);
+
+    const preventDefault = vi.fn();
+    elements['dl-menu'].dispatch('keydown', { key: 'Tab', shiftKey: false, preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(elements['dl-menu'].classList.contains('open')).toBe(false);
+    expect(elements['dl-chevron'].getAttribute('aria-expanded')).toBe('false');
+    expect(elements['restart-btn'].focus).toHaveBeenCalled();
+  });
+
+  it('closes the format dropdown and restores focus to the chevron when Shift+Tab is pressed with no menu items', () => {
+    const { context, elements } = buildGeneratorContext({ menuItems: [] });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['dl-chevron'].dispatch('click');
+    expect(elements['dl-menu'].classList.contains('open')).toBe(true);
+
+    const preventDefault = vi.fn();
+    elements['dl-menu'].dispatch('keydown', { key: 'Tab', shiftKey: true, preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(elements['dl-menu'].classList.contains('open')).toBe(false);
+    expect(elements['dl-chevron'].focus).toHaveBeenCalled();
+  });
+
+  it('closes the format dropdown and moves focus to the next element when Tab is pressed with menu items', () => {
+    const item1 = createElement({ dataset: { format: 'html' }, classes: ['dl-menu-item'] });
+    const { context, elements } = buildGeneratorContext({ menuItems: [item1] });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['dl-chevron'].dispatch('click');
+    expect(elements['dl-menu'].classList.contains('open')).toBe(true);
+
+    const preventDefault = vi.fn();
+    elements['dl-menu'].dispatch('keydown', { key: 'Tab', shiftKey: false, preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(elements['dl-menu'].classList.contains('open')).toBe(false);
+    expect(elements['restart-btn'].focus).toHaveBeenCalled();
+  });
+
   it('shows a "Word 변환에 실패했습니다" error for unrecognised non-HWP download formats', () => {
     const docxItem = createElement({ dataset: { format: 'docx' }, classes: ['dl-menu-item'] });
     const { context, elements } = buildGeneratorContext({
