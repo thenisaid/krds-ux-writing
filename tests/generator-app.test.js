@@ -2023,4 +2023,92 @@ describe('generator/app.js', () => {
     expect(elements['download-error'].classList.contains('visible')).toBe(true);
     expect(elements['download-error'].textContent).toContain('Word 변환에 실패했습니다');
   });
+
+  it('blocks form submission and marks agency-type field when agency type is empty', async () => {
+    const fetchImpl = vi.fn();
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['agency-type'].value = '';
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(elements['agency-type'].classList.contains('has-error')).toBe(true);
+  });
+
+  it('closes the format dropdown when a document click event fires on an element outside the button group', () => {
+    const { context, elements } = buildGeneratorContext();
+    const docListeners = new Map();
+    context.document.addEventListener = (type, handler) => {
+      const arr = docListeners.get(type) || [];
+      arr.push(handler);
+      docListeners.set(type, arr);
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['dl-chevron'].dispatch('click');
+    expect(elements['dl-menu'].classList.contains('open')).toBe(true);
+
+    const clickHandlers = docListeners.get('click') || [];
+    clickHandlers.forEach((h) => h({ target: elements['agency-name'] }));
+
+    expect(elements['dl-menu'].classList.contains('open')).toBe(false);
+    expect(elements['dl-chevron'].getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('closes the format dropdown when a document click target has no closest method', () => {
+    const { context, elements } = buildGeneratorContext();
+    const docListeners = new Map();
+    context.document.addEventListener = (type, handler) => {
+      const arr = docListeners.get(type) || [];
+      arr.push(handler);
+      docListeners.set(type, arr);
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['dl-chevron'].dispatch('click');
+    expect(elements['dl-menu'].classList.contains('open')).toBe(true);
+
+    const clickHandlers = docListeners.get('click') || [];
+    clickHandlers.forEach((h) => h({ target: { textContent: 'no closest method' } }));
+
+    expect(elements['dl-menu'].classList.contains('open')).toBe(false);
+  });
+
+  it('silently skips an SSE payload that is valid JSON but not an object (e.g. a number)', async () => {
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: 42\n'),
+            encoder.encode('data: {"type":"chunk","text":"# 결과"}\n'),
+            encoder.encode('data: {"type":"done"}\n'),
+          ];
+          let index = 0;
+          return {
+            async read() {
+              if (index < chunks.length) return { done: false, value: chunks[index++] };
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    const { context, elements, screens } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(screens[2].classList.contains('active')).toBe(true);
+    expect(elements['output-content'].innerHTML).toContain('# 결과');
+  });
 });
