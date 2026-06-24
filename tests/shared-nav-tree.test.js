@@ -389,6 +389,26 @@ describe('shared nav tree relationships', () => {
     expect(localSubLink.classList.contains('active')).toBe(false);
     expect(remoteSubLink.classList.contains('active')).toBe(false);
   });
+
+  it('recognises an absolute same-origin https:// LNB sub-link as a same-page hash link on load', () => {
+    const { localSubLink } = makeHashContext({
+      hash: '#overview',
+      localHref: 'https://example.com/krds-ux-writing/principles/core-info/#overview',
+    });
+
+    expect(localSubLink.classList.contains('active')).toBe(true);
+    expect(localSubLink.getAttribute('aria-current')).toBe('location');
+  });
+
+  it('recognises a protocol-relative // LNB sub-link as a same-page hash link on load', () => {
+    const { localSubLink } = makeHashContext({
+      hash: '#overview',
+      localHref: '//example.com/krds-ux-writing/principles/core-info/#overview',
+    });
+
+    expect(localSubLink.classList.contains('active')).toBe(true);
+    expect(localSubLink.getAttribute('aria-current')).toBe('location');
+  });
 });
 
 describe('shared nav tree accordion toggle', () => {
