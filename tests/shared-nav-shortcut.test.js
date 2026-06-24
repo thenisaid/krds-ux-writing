@@ -317,6 +317,44 @@ describe('shared nav Ctrl+K behavior', () => {
     expect(focus).toHaveBeenCalled();
   });
 
+  it('treats a SELECT target as a text-entry field and does not hijack Ctrl+K', () => {
+    const focus = vi.fn();
+    const preventDefault = vi.fn();
+    const searchInput = { focus, select: vi.fn() };
+    const selectTarget = { tagName: 'SELECT' };
+
+    const ctx = makeContext({
+      pathname: '/krds-ux-writing/dictionary/',
+      searchInput,
+    });
+
+    ctx.dispatchKeydown({
+      ctrlKey: true, metaKey: false, key: 'k', preventDefault, target: selectTarget,
+    });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(focus).not.toHaveBeenCalled();
+  });
+
+  it('treats a contenteditable element with a tagName as a text-entry target and skips Ctrl+K', () => {
+    const focus = vi.fn();
+    const preventDefault = vi.fn();
+    const searchInput = { focus, select: vi.fn() };
+    const editableDiv = { tagName: 'DIV', isContentEditable: true };
+
+    const ctx = makeContext({
+      pathname: '/krds-ux-writing/dictionary/',
+      searchInput,
+    });
+
+    ctx.dispatchKeydown({
+      ctrlKey: true, metaKey: false, key: 'k', preventDefault, target: editableDiv,
+    });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(focus).not.toHaveBeenCalled();
+  });
+
   it('focuses the page search input when Command+K is pressed on Mac (metaKey branch)', () => {
     const focus = vi.fn();
     const select = vi.fn();
