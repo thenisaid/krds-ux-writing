@@ -1520,4 +1520,13 @@ describe('server.js configuration', () => {
     expect(responseState.statusCode).toBe(400);
     expect(JSON.parse(responseState.body).error).toContain('추가 요청');
   });
+
+  it('routes requests arriving on the SITE_BASE_PATH-prefixed URL to the generate handler', async () => {
+    const responseState = await runServerRequest({
+      url: `${SITE_BASE_PATH}/api/generate`,
+      body: { agencyName: '테스트 기관', agencyType: '지방자치단체', samples: [] },
+    });
+    expect(responseState.statusCode).toBe(400);
+    expect(JSON.parse(responseState.body).error).toBeDefined();
+  });
 });
