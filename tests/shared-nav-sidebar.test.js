@@ -406,4 +406,43 @@ describe('shared nav sidebar toggle', () => {
     expect(document.body.style.overflow).toBe('');
     expect(hamburger.focus).not.toHaveBeenCalled();
   });
+
+  it('wraps Tab forward focus from the last to the first element when the sidebar focus trap is active', () => {
+    const { document, sidebar, hamburger, firstLink, sidebarLink } = makeContext();
+
+    hamburger.dispatch('click');
+
+    const focusCallsBefore = firstLink.focus.mock.calls.length;
+    document.activeElement = sidebarLink;
+    const preventDefault = vi.fn();
+    sidebar.dispatch('keydown', { key: 'Tab', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(firstLink.focus.mock.calls.length).toBe(focusCallsBefore + 1);
+  });
+
+  it('wraps Shift+Tab backward focus from the first to the last element when the sidebar focus trap is active', () => {
+    const { document, sidebar, hamburger, firstLink, sidebarLink } = makeContext();
+
+    hamburger.dispatch('click');
+
+    document.activeElement = firstLink;
+    const preventDefault = vi.fn();
+    sidebar.dispatch('keydown', { key: 'Tab', shiftKey: true, preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(sidebarLink.focus).toHaveBeenCalled();
+  });
+
+  it('ignores non-Tab keydown events in the sidebar focus trap and does not call preventDefault', () => {
+    const { document, sidebar, hamburger, firstLink } = makeContext();
+
+    hamburger.dispatch('click');
+
+    document.activeElement = firstLink;
+    const preventDefault = vi.fn();
+    sidebar.dispatch('keydown', { key: 'ArrowDown', preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+  });
 });
