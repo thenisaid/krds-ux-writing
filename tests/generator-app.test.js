@@ -804,6 +804,40 @@ describe('generator/app.js', () => {
     expect(elements['quality-gates'].innerHTML).toContain('자동 검수 엔진을 불러오지 못했습니다');
   });
 
+  it('renders quality-gate--pass class when all issues are zero and the output is clean', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 100,
+        summary: { total: 0, errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      })),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    const html = elements['quality-gates'].innerHTML;
+    expect(html).toContain('quality-gate--pass');
+    expect(html).not.toContain('quality-gate--fail');
+    expect(html).not.toContain('quality-gate--warn');
+  });
+
+  it('shows a lint-calculation error message in quality-gates when the lint engine throws', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => {
+        throw new Error('lint engine internal error');
+      }),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    expect(elements['quality-review'].hidden).toBe(false);
+    expect(elements['quality-gates'].innerHTML).toContain('자동 검수 계산 중 오류가 발생했습니다');
+  });
+
   it('shows rate-limit error message and fallback area when the server returns 429', async () => {
     const fetchImpl = vi.fn(async () => ({
       ok: false,
