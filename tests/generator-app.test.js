@@ -752,4 +752,55 @@ describe('generator/app.js', () => {
     expect(fetchImpl.mock.calls[0][0]).toBe('/preview/KRDS/api/generate');
     expect(context.window.KRDSBasePath.buildSitePath).toHaveBeenCalledWith('/api/generate');
   });
+
+  it('renders quality-gate--warn class when a gate has 주의 status', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 85,
+        summary: { total: 2, errors: 0, warnings: 2, infos: 0 },
+        issues: [
+          { type: 'double-passive', category: '이중피동', message: '이중피동 표현', suggestion: '단순형으로 수정' },
+          { type: 'subjective-adverb', category: '주관적 부사', message: '빠르게', suggestion: '구체적 수치 사용' },
+        ],
+      })),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    const html = elements['quality-gates'].innerHTML;
+    expect(html).toContain('quality-gate--warn');
+  });
+
+  it('renders quality-gate--fail class when a gate has 보완 필요 status', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 60,
+        summary: { total: 5, errors: 3, warnings: 2, infos: 0 },
+        issues: [
+          { type: 'admin-jargon', category: '행정어', message: '접수하다', suggestion: '제출하다' },
+          { type: 'admin-jargon', category: '행정어', message: '시행하다', suggestion: '실시하다' },
+          { type: 'admin-jargon', category: '행정어', message: '검토하다', suggestion: '살펴보다' },
+        ],
+      })),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    const html = elements['quality-gates'].innerHTML;
+    expect(html).toContain('quality-gate--fail');
+  });
+
+  it('shows the quality-empty fallback message when the lint engine is unavailable', () => {
+    const { context, elements } = buildGeneratorContext();
+
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    expect(elements['quality-review'].hidden).toBe(false);
+    expect(elements['quality-gates'].innerHTML).toContain('자동 검수 엔진을 불러오지 못했습니다');
+  });
 });
