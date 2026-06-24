@@ -1287,4 +1287,124 @@ describe('generator/app.js', () => {
 
     expect(elements['output-title'].textContent).toContain('톤 조정안');
   });
+
+  it('uses the derivative-guide fallback template when the generator mode is set to derivative-guide', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['generator-mode'].value = 'derivative-guide';
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    expect(elements['output-title'].textContent).toContain('파생 가이드');
+  });
+
+  it('uses the generic guide-draft fallback template for unrecognized mode strings', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['generator-mode'].value = 'unknown-mode-xyz';
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    expect(elements['output-content'].innerHTML).toContain('무번역 원칙');
+  });
+
+  it('shows 심리적 안전망 통과 when mode is rewrite even if text has no action or structure cues', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 100,
+        summary: { total: 0, errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      })),
+    };
+    elements['generator-mode'].value = 'rewrite';
+    vm.runInNewContext(SOURCE, context);
+    elements['fallback-btn'].dispatch('click');
+
+    const html = elements['quality-gates'].innerHTML;
+    expect(html).toContain('quality-gate--pass');
+    expect(html).not.toContain('quality-gate--warn');
+    expect(html).not.toContain('quality-gate--fail');
+  });
+
+  it('flags 정보핵심화 as 주의 when the reviewed text contains one long sentence and no pattern issues', async () => {
+    const longLine = 'a'.repeat(80);
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode(`data: {"type":"chunk","text":"${longLine}"}\n`),
+            encoder.encode('data: {"type":"done"}\n'),
+          ];
+          let index = 0;
+          return {
+            async read() {
+              if (index < chunks.length) return { done: false, value: chunks[index++] };
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 100,
+        summary: { total: 0, errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      })),
+    };
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const html = elements['quality-gates'].innerHTML;
+    expect(html).toContain('quality-gate--warn');
+    expect(context.KRDSLint.lint).toHaveBeenCalled();
+  });
+
+  it('flags 정보핵심화 as 보완 필요 when the reviewed text has more than one long sentence', async () => {
+    const longLine = 'a'.repeat(80);
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode(`data: {"type":"chunk","text":"${longLine}\\n${longLine}"}\n`),
+            encoder.encode('data: {"type":"done"}\n'),
+          ];
+          let index = 0;
+          return {
+            async read() {
+              if (index < chunks.length) return { done: false, value: chunks[index++] };
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 100,
+        summary: { total: 0, errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      })),
+    };
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const html = elements['quality-gates'].innerHTML;
+    expect(html).toContain('quality-gate--fail');
+  });
 });
