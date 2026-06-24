@@ -2309,4 +2309,73 @@ describe('generator/app.js', () => {
     const timerCountAfterFirst = [...timers.entries()].filter(([, t]) => t.delay === 2000).length;
     expect(timerCountAfterFirst).toBe(1); // same timer, no extra added
   });
+
+  it('shows a stream-unavailable error when the response body has no getReader method', async () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {},
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(elements['generating-error'].classList.contains('visible')).toBe(true);
+    expect(elements['generating-error'].textContent).toContain('응답 스트림을 읽을 수 없습니다');
+  });
+
+  it('silently skips non-data SSE lines and processes subsequent data lines normally', async () => {
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('event: content_block_start\n'),
+            encoder.encode('data: ' + JSON.stringify({ type: 'chunk', text: '결과 텍스트' }) + '\n'),
+            encoder.encode('data: ' + JSON.stringify({ type: 'done' }) + '\n'),
+          ];
+          let i = 0;
+          return {
+            async read() {
+              if (i < chunks.length) return { done: false, value: chunks[i++] };
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    const { context, elements, screens } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(screens[2].classList.contains('active')).toBe(true);
+    expect(elements['output-content'].innerHTML).toContain('결과 텍스트');
+  });
+
+  it('uses a 5xx error body message when the server returns an error field in the response', async () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: false,
+      status: 503,
+      async json() { return { error: '상류 서비스가 일시적으로 중단되었습니다.' }; },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(elements['generating-error'].classList.contains('visible')).toBe(true);
+    expect(elements['generating-error'].textContent).toContain('상류 서비스가 일시적으로 중단되었습니다.');
+  });
 });

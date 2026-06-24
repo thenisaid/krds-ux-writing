@@ -1470,4 +1470,18 @@ describe('generator API handlers', () => {
     expect(response.status).toBe(200);
     expect(await response.text()).toContain('"type":"done"');
   });
+
+  it('rejects an array JSON body in deployed handlers', async () => {
+    const vercelResponse = await vercelHandler(buildRawJsonRequest('[1,2,3]'));
+    const cloudflareResponse = await onRequestPost({
+      request: buildRawJsonRequest('[1,2,3]'),
+      env: {},
+    });
+
+    expect(vercelResponse.status).toBe(400);
+    expect(await vercelResponse.json()).toEqual({ error: '요청 형식이 올바르지 않습니다.' });
+
+    expect(cloudflareResponse.status).toBe(400);
+    expect(await cloudflareResponse.json()).toEqual({ error: '요청 형식이 올바르지 않습니다.' });
+  });
 });
