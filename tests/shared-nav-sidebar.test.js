@@ -599,6 +599,38 @@ describe('shared nav sidebar toggle', () => {
     expect(sidebar.classList.contains('open')).toBe(true);
     expect(hamburger.getAttribute('aria-expanded')).toBe('true');
   });
+
+  it('focuses the anchor target without calling scrollTo when window.scrollTo is not available', () => {
+    const { context, hamburger, sidebarLink, sidebarTarget } = makeContext();
+    context.window.scrollTo = undefined;
+
+    hamburger.dispatch('click');
+    sidebarLink.dispatch('click');
+
+    expect(sidebarTarget.focus).toHaveBeenCalled();
+  });
+
+  it('focuses the anchor target without calling scrollTo when the target exposes no getBoundingClientRect method', () => {
+    const { context, hamburger, sidebarLink, sidebarTarget } = makeContext();
+    delete sidebarTarget.getBoundingClientRect;
+
+    hamburger.dispatch('click');
+    sidebarLink.dispatch('click');
+
+    expect(sidebarTarget.focus).toHaveBeenCalled();
+    expect(context.window.scrollTo).not.toHaveBeenCalled();
+  });
+
+  it('gracefully skips calling focus when the anchor target has no focus method', () => {
+    const { context, hamburger, sidebarLink, sidebarTarget } = makeContext();
+    sidebarTarget.focus = undefined;
+
+    hamburger.dispatch('click');
+    expect(() => sidebarLink.dispatch('click')).not.toThrow();
+
+    expect(sidebarTarget.getAttribute('tabindex')).toBe('-1');
+    expect(context.window.scrollTo).toHaveBeenCalled();
+  });
 });
 
 describe('shared nav sidebar scroll-tracking IntersectionObserver', () => {
