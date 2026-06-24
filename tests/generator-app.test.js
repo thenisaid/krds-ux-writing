@@ -1814,6 +1814,32 @@ describe('generator/app.js', () => {
     expect(elements['mode-help'].textContent).not.toBe('');
   });
 
+  it('fills sample fields with message-pack defaults when mode is message-pack and all samples are empty', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['sample-1'].value = '';
+    elements['sample-2'].value = '';
+    elements['sample-3'].value = '';
+    elements['generator-mode'].value = 'message-pack';
+
+    vm.runInNewContext(SOURCE, context);
+
+    // applyModeUi('message-pack', false) is called at init; samples empty → getModeSamples('message-pack') fills them
+    expect(elements['sample-1'].value).toContain('ERROR');
+  });
+
+  it('fills sample fields with 기타공공기관 defaults when an unrecognized mode is initialised with empty samples', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['sample-1'].value = '';
+    elements['sample-2'].value = '';
+    elements['sample-3'].value = '';
+    elements['generator-mode'].value = 'unknown-future-mode';
+
+    vm.runInNewContext(SOURCE, context);
+
+    // getModeSamples default fallback → TYPE_SAMPLES['기타공공기관']
+    expect(elements['sample-1'].value).toContain('신청이 접수되었습니다');
+  });
+
   it('uses window.KRDSLint as the lint engine when the global KRDSLint identifier is not defined', () => {
     const { context, elements } = buildGeneratorContext();
     const lintMock = vi.fn(() => ({

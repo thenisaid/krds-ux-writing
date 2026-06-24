@@ -1010,6 +1010,29 @@ describe('lint-ui stale result handling', () => {
     expect(elements.historyCard.style.display).toBe('none');
   });
 
+  it('trims saved history to 5 entries when a new lint result is saved and the existing history is already full', () => {
+    const { context, elements } = buildContext();
+    const existingEntries = Array.from({ length: 5 }, (_, i) => ({
+      date: '2026. 1. ' + (i + 1) + '.',
+      score: 80,
+      text: '기존 항목 ' + (i + 1),
+      fullText: '기존 항목 ' + (i + 1),
+      issueCount: 0,
+    }));
+    context.localStorage.setItem('krds-lint-history', JSON.stringify(existingEntries));
+
+    vm.runInNewContext(SOURCE, context);
+
+    // Triggering lint saves a 6th entry — saveHistory must trim to 5
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    const saved = JSON.parse(context.localStorage.getItem('krds-lint-history'));
+    expect(saved).toHaveLength(5);
+    // Newest entry comes first
+    expect(saved[0].fullText).toBe('귀하의 신청이 접수되었습니다.');
+  });
+
   it('shows the CLI banner when text length exceeds 300 characters even if the lint score is high', () => {
     const { context, elements } = buildContext({
       lintResult: {
