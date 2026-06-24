@@ -1263,4 +1263,68 @@ describe('generator API handlers', () => {
     expect(body).toContain('"type":"done"');
     expect(body).not.toContain('"type":"error"');
   });
+
+  it('returns 405 for non-POST methods in the Vercel handler', async () => {
+    const request = new Request('http://localhost/api/generate', {
+      method: 'GET',
+      headers: {
+        Origin: ALLOWED_ORIGIN,
+        'CF-Connecting-IP': buildUniqueTestIp(++defaultRequestIpCounter),
+      },
+    });
+    const response = await vercelHandler(request);
+    expect(response.status).toBe(405);
+    expect(await response.json()).toEqual({ error: '허용되지 않는 메서드입니다.' });
+  });
+
+  it('rejects a Vercel request when agencyName exceeds 50 characters', async () => {
+    const response = await vercelHandler(buildRequest({
+      agencyName: 'a'.repeat(51),
+      agencyType: '지방자치단체',
+      samples: ['샘플 문구'],
+    }));
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ error: '기관명은 1~50자 사이여야 합니다.' });
+  });
+
+  it('silently skips SSE data lines with invalid JSON and continues streaming', async () => {
+    global.fetch = vi.fn(async () => new Response(
+      'data: not-valid-json\n' +
+      'data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"결과"}}\n' +
+      'data: {"type":"message_stop"}\n\n',
+      { status: 200, headers: { 'Content-Type': 'text/event-stream' } },
+    ));
+
+    const response = await vercelHandler(buildRequest({
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      samples: ['샘플 문구'],
+    }));
+    const body = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(body).toContain('"type":"chunk"');
+    expect(body).not.toContain('"type":"error"');
+  });
+
+  it('silently skips non-data SSE lines such as event: and comment lines', async () => {
+    global.fetch = vi.fn(async () => new Response(
+      ': comment line\n' +
+      'event: content_block_delta\n' +
+      'data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"결과"}}\n' +
+      'data: {"type":"message_stop"}\n\n',
+      { status: 200, headers: { 'Content-Type': 'text/event-stream' } },
+    ));
+
+    const response = await vercelHandler(buildRequest({
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      samples: ['샘플 문구'],
+    }));
+    const body = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(body).toContain('"type":"chunk"');
+    expect(body).not.toContain('"type":"error"');
+  });
 });
