@@ -207,4 +207,33 @@ describe('shared prompt copy behavior', () => {
 
     expect(button.textContent).toBe('복사');
   });
+
+  it('shows "복사 실패" when clipboard is unavailable and execCommand also fails', () => {
+    const { context, document, button } = createEnvironment({
+      execCommandResult: false,
+      manualTimers: true,
+    });
+    context.navigator = {};
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('click', { target: button });
+
+    expect(button.textContent).toBe('복사 실패');
+  });
+
+  it('returns false immediately from fallbackCopy when document.body is missing', async () => {
+    const { context, document, button } = createEnvironment({
+      clipboardImpl: vi.fn(() => Promise.reject(new Error('denied'))),
+      execCommandResult: false,
+      manualTimers: true,
+    });
+    context.document.body = null;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('click', { target: button });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(button.textContent).toBe('복사 실패');
+  });
 });
