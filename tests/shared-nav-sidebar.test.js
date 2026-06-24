@@ -516,4 +516,32 @@ describe('shared nav sidebar toggle', () => {
     expect(hamburger.getAttribute('aria-expanded')).toBe('false');
     expect(sidebarTarget.focus).not.toHaveBeenCalled();
   });
+
+  it('focuses the anchor target when the sidebar link uses an absolute https:// same-page URL', () => {
+    const { hamburger, sidebar, sidebarLink, sidebarTarget } = makeContext({
+      currentPath: '/krds-ux-writing/principles/',
+      targetId: 'section-1',
+      sidebarLinkHref: 'https://example.com/krds-ux-writing/principles/#section-1',
+    });
+
+    hamburger.dispatch('click');
+    sidebarLink.dispatch('click');
+
+    expect(sidebar.classList.contains('open')).toBe(false);
+    expect(sidebarTarget.focus).toHaveBeenCalled();
+  });
+
+  it('focuses the anchor target when the sidebar link uses a protocol-relative // same-page URL', () => {
+    const { hamburger, sidebar, sidebarLink, sidebarTarget } = makeContext({
+      currentPath: '/krds-ux-writing/principles/',
+      targetId: 'section-1',
+      sidebarLinkHref: '//example.com/krds-ux-writing/principles/#section-1',
+    });
+
+    hamburger.dispatch('click');
+    sidebarLink.dispatch('click');
+
+    expect(sidebar.classList.contains('open')).toBe(false);
+    expect(sidebarTarget.focus).toHaveBeenCalled();
+  });
 });
