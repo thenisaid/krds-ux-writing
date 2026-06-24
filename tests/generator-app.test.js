@@ -1471,6 +1471,50 @@ describe('generator/app.js', () => {
     expect(elements['fallback-area'].style.display).toBe('block');
   });
 
+  it('shows a network error message when the fetch itself throws a non-abort error', async () => {
+    const fetchImpl = vi.fn(async () => {
+      throw new Error('ECONNREFUSED');
+    });
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(elements['generating-error'].classList.contains('visible')).toBe(true);
+    expect(elements['generating-error'].textContent).toContain('네트워크 오류');
+    expect(elements['fallback-area'].style.display).toBe('block');
+  });
+
+  it('shows a disconnection error message when the response stream reader throws a non-abort error', async () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          return {
+            async read() {
+              throw new Error('socket hang up');
+            },
+            cancel: vi.fn(),
+          };
+        },
+      },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(elements['generating-error'].classList.contains('visible')).toBe(true);
+    expect(elements['generating-error'].textContent).toContain('연결이 끊겼습니다');
+    expect(elements['fallback-area'].style.display).toBe('block');
+  });
+
   it('includes s2 and s3 sample texts in the request body when the user has filled them in', async () => {
     const encoder = new TextEncoder();
     const fetchImpl = vi.fn(async () => ({
