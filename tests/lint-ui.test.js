@@ -520,6 +520,38 @@ describe('lint-ui stale result handling', () => {
     expect(elements.copyBtn.textContent).toBe('✅ 복사됨');
   });
 
+  it('falls back to buildCliFallback when formatCLI returns an empty string', async () => {
+    const { context, elements } = buildContext();
+    context.KRDSLint.formatCLI = vi.fn(() => '');
+    context.navigator.clipboard = {
+      writeText: vi.fn(() => Promise.resolve()),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+    elements.copyBtn.dispatch('click');
+    await Promise.resolve();
+
+    expect(context.navigator.clipboard.writeText).toHaveBeenCalledTimes(1);
+    expect(context.navigator.clipboard.writeText.mock.calls[0][0]).toContain('품질 점수');
+    expect(elements.copyBtn.textContent).toBe('✅ 복사됨');
+  });
+
+  it('shows an error toast when formatResultForClipboard throws', () => {
+    const { context, elements } = buildContext();
+    context.KRDSLint.formatCLI = vi.fn(() => { throw new Error('format error'); });
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+    elements.copyBtn.dispatch('click');
+
+    expect(elements.toast.textContent).toContain('❌');
+  });
+
   it('uses only the first slash-separated suggestion when rendering improved text', () => {
     const { context, elements } = buildContext({
       lintResult: {
