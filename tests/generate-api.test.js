@@ -252,6 +252,30 @@ describe('generator API handlers', () => {
     });
   });
 
+  it('rejects requests where all samples are blank or whitespace-only in deployed handlers', async () => {
+    const payload = {
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      samples: ['   ', ''],
+    };
+
+    const vercelResponse = await vercelHandler(buildRequest(payload));
+    const cloudflareResponse = await onRequestPost({
+      request: buildRequest(payload),
+      env: { ANTHROPIC_API_KEY: 'test-key' },
+    });
+
+    expect(vercelResponse.status).toBe(400);
+    expect(await vercelResponse.json()).toEqual({
+      error: '유효한 샘플 텍스트를 1개 이상 입력해 주세요.',
+    });
+
+    expect(cloudflareResponse.status).toBe(400);
+    expect(await cloudflareResponse.json()).toEqual({
+      error: '유효한 샘플 텍스트를 1개 이상 입력해 주세요.',
+    });
+  });
+
   it('fails fast with 503 on Vercel when the Anthropic API key is missing', async () => {
     delete process.env.ANTHROPIC_API_KEY;
     const fetchMock = vi.fn();
