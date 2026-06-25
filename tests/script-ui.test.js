@@ -1577,4 +1577,19 @@ describe('script.js live index interactions', () => {
     expect(mobileMenu.classList.contains('open')).toBe(true);
     expect(mobileMenuBtn.focus).not.toHaveBeenCalled();
   });
+
+  it('returns early from initSectionExplorer without throwing when input and status exist but there are no editorial items (!items.length branch)', () => {
+    const { context, document, elements } = createEnvironment();
+    const searchInput = createElement(document);
+    const status = createElement(document);
+    elements.sectionSearchInput = searchInput;
+    elements.sectionFilterStatus = status;
+    // querySelectorAllMap has no entry for '.editorial-item[data-filter-keywords]',
+    // so items = [] → !items.length → early return before any filter logic runs
+
+    vm.runInNewContext(SOURCE, context);
+    expect(() => document.dispatch('DOMContentLoaded')).not.toThrow();
+    // status.textContent remains unset (no "N개 섹션" message rendered)
+    expect(status.textContent).toBe('');
+  });
 });
