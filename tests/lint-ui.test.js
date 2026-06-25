@@ -1546,6 +1546,28 @@ describe('lint-ui stale result handling', () => {
     expect(elements.historyList.innerHTML).not.toContain('var(--color-warning-50)');
   });
 
+  it('renders history score badge in warning color when the score is between 50 and 79', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      { date: '2026. 1. 1.', score: 65, text: '보통 품질의 텍스트입니다.', fullText: '보통 품질의 텍스트입니다.', issueCount: 2 },
+    ]));
+    vm.runInNewContext(SOURCE, context);
+    expect(elements.historyList.innerHTML).toContain('var(--color-warning-50)');
+    expect(elements.historyList.innerHTML).not.toContain('var(--color-success-50)');
+    expect(elements.historyList.innerHTML).not.toContain('var(--color-danger-50)');
+  });
+
+  it('renders history score badge in success color when the score is 80 or above', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      { date: '2026. 1. 1.', score: 95, text: '좋은 품질의 텍스트입니다.', fullText: '좋은 품질의 텍스트입니다.', issueCount: 0 },
+    ]));
+    vm.runInNewContext(SOURCE, context);
+    expect(elements.historyList.innerHTML).toContain('var(--color-success-50)');
+    expect(elements.historyList.innerHTML).not.toContain('var(--color-warning-50)');
+    expect(elements.historyList.innerHTML).not.toContain('var(--color-danger-50)');
+  });
+
   it('treats stored non-array JSON as an empty history and hides the card', () => {
     const { context, elements } = buildContext();
     context.localStorage.setItem('krds-lint-history', JSON.stringify({ not: 'an array' }));
