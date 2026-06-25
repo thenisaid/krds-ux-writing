@@ -1561,6 +1561,74 @@ describe('correctParticleForReplacement — vowel-form correction', () => {
     expect(elements.improvedCard.style.display).toBe('block');
     expect(elements.improvedText.textContent).toBe('행정 제재가 내려집니다.');
   });
+
+  it('keeps "로" when the replacement ends with a vowel Korean syllable (로/으로 branch)', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1, col: 1, severity: 'error', category: '행정 관습어',
+          message: '행정어/금지어: "이 서비스"', match: '이 서비스',
+          suggestion: '→ 이 정보', type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    // '이 서비스' followed by '로' in source; replacement '이 정보' ends with '보' (no batchim, jongseong=0)
+    // → jongseong === 0 → '로' stays '로'
+    elements.inputText.value = '이 서비스로 신청하세요.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).toBe('이 정보로 신청하세요.');
+  });
+
+  it('converts "가" to "이" when the replacement ends with a batchim Korean syllable (hasBatchim branch)', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1, col: 1, severity: 'error', category: '행정 관습어',
+          message: '행정어/금지어: "귀하"', match: '귀하',
+          suggestion: '→ 시민', type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    // '귀하' followed by '가'; replacement '시민' ends with '민' (batchim ㄴ, jongseong=4)
+    // hasBatchim=true → '가' must become '이'
+    elements.inputText.value = '귀하가 신청하세요.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).toBe('시민이 신청하세요.');
+  });
+
+  it('passes the particle through unchanged when the replacement ends with a non-Korean character', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1, col: 1, severity: 'error', category: '행정 관습어',
+          message: '행정어/금지어: "귀하"', match: '귀하',
+          suggestion: '→ User', type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    // replacement 'User' ends with 'r' (non-Korean) → isKorean=false → particle unchanged
+    elements.inputText.value = '귀하가 신청하세요.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).toBe('User가 신청하세요.');
+  });
 });
 
 describe('lint-ui CLI banner close and copy buttons', () => {
