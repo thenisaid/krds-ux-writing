@@ -298,4 +298,28 @@ describe('dictionary full page script', () => {
     expect(filterBtns[0].querySelector('.count').textContent).toBe('5');
     expect(elements.dictBody.innerHTML).toContain('귀하');
   });
+
+  it('reads KRDS_JARGON_DICT from globalThis when window.KRDS_JARGON_DICT is absent', () => {
+    const { context, elements } = buildContext();
+    context.window.KRDS_JARGON_DICT = null;
+
+    vm.runInNewContext(SCRIPT_SOURCE, context);
+
+    expect(elements.dictBody.innerHTML).toContain('귀하');
+    expect(elements.fullGlossaryTotal.textContent).toBe('5');
+  });
+
+  it('falls back to "공통" for the context column when entry.context is absent', () => {
+    const { context, elements } = buildContext({
+      dictData: {
+        generated: '2026-01-01',
+        entries: [
+          { banned: '귀하', alt: '신청인', cat: '행정 관습어' },
+        ],
+      },
+    });
+    vm.runInNewContext(SCRIPT_SOURCE, context);
+
+    expect(elements.dictBody.innerHTML).toContain('공통');
+  });
 });
