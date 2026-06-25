@@ -676,4 +676,117 @@ describe('before-after page interactions', () => {
 
     expect(seminarPrinciple.textContent).toContain('D — D');
   });
+
+  it('advances to the next slide when ArrowDown is pressed and returns to the previous slide when ArrowUp is pressed', () => {
+    const makePair = (ctx, principle) => {
+      const beforeEl = { innerHTML: '<p>before</p>' };
+      const afterEl = { innerHTML: '<p>after</p>' };
+      return {
+        getAttribute(name) {
+          if (name === 'data-context') return ctx;
+          if (name === 'data-principle') return principle;
+          return null;
+        },
+        querySelector(selector) {
+          if (selector === '.ba-card.before .ba-text') return beforeEl;
+          if (selector === '.ba-card.after .ba-text') return afterEl;
+          return null;
+        },
+      };
+    };
+
+    const seminarOverlay = createElement({
+      id: 'seminarOverlay',
+      queryMap: {
+        'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])': [],
+        'mark.diff': [],
+      },
+    });
+    const seminarCounter = createElement({ id: 'seminarCounter' });
+    const seminarPrev = createElement({ id: 'seminarPrev' });
+    const seminarNext = createElement({ id: 'seminarNext' });
+    const seminarClose = createElement({ id: 'seminarClose' });
+    const seminarBtn = createElement({ id: 'seminarBtn' });
+
+    const elements = {
+      themeToggle: createElement({ id: 'themeToggle' }),
+      themeIcon: createElement({ id: 'themeIcon' }),
+      seminarOverlay,
+      seminarSlide: createElement({ id: 'seminarSlide', queryMap: { 'mark.diff': [] } }),
+      seminarPrinciple: createElement({ id: 'seminarPrinciple' }),
+      seminarCounter,
+      seminarPrev,
+      seminarNext,
+      seminarBtn,
+      seminarClose,
+      'panel-a': createElement({ id: 'panel-a', classes: ['tab-panel', 'active'], queryMap: { 'mark.diff': [] } }),
+    };
+
+    const document = createDocument(elements, {
+      '.tab-btn': [],
+      '.tab-panel': [],
+      '.pair': [makePair('상황 A', 'A'), makePair('상황 B', 'B')],
+    });
+
+    const context = {
+      document,
+      window: {},
+      localStorage: { setItem() {} },
+      setTimeout(fn) { fn(); return 1; },
+      clearTimeout() {},
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    seminarBtn.dispatch('click');
+    expect(seminarCounter.textContent).toBe('1 / 2');
+
+    document.dispatch('keydown', { key: 'ArrowDown', preventDefault: vi.fn() });
+    expect(seminarCounter.textContent).toBe('2 / 2');
+
+    document.dispatch('keydown', { key: 'ArrowUp', preventDefault: vi.fn() });
+    expect(seminarCounter.textContent).toBe('1 / 2');
+  });
+
+  it('does not call setTimeout for the initial mark animation when panel-a is absent from the DOM', () => {
+    const setTimeoutSpy = vi.fn();
+    const tabA = createElement({
+      id: 'tab-a',
+      classes: ['tab-btn', 'active'],
+      attributes: { 'aria-controls': 'panel-a', 'aria-selected': 'true' },
+    });
+    const elements = {
+      themeToggle: createElement({ id: 'themeToggle' }),
+      themeIcon: createElement({ id: 'themeIcon' }),
+      seminarOverlay: createElement({ id: 'seminarOverlay', queryMap: { 'mark.diff': [] } }),
+      seminarSlide: createElement({ id: 'seminarSlide', queryMap: { 'mark.diff': [] } }),
+      seminarPrinciple: createElement({ id: 'seminarPrinciple' }),
+      seminarCounter: createElement({ id: 'seminarCounter' }),
+      seminarPrev: createElement({ id: 'seminarPrev' }),
+      seminarNext: createElement({ id: 'seminarNext' }),
+      seminarBtn: createElement({ id: 'seminarBtn' }),
+      seminarClose: createElement({ id: 'seminarClose' }),
+      'tab-a': tabA,
+    };
+    const document = createDocument(elements, { '.tab-btn': [tabA], '.tab-panel': [], '.pair': [] });
+    const context = {
+      document,
+      window: {},
+      localStorage: { setItem() {} },
+      setTimeout: setTimeoutSpy,
+      clearTimeout() {},
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(setTimeoutSpy).not.toHaveBeenCalled();
+  });
 });
