@@ -1905,4 +1905,29 @@ describe('lint-ui uncovered branch coverage', () => {
     expect(elements.copyBtn.textContent).toBe('❌ 복사 실패');
   });
 
+  it('copies the share link without calling ta.select() when the textarea element has no select method', async () => {
+    const { context, elements } = buildContext();
+    // Return a textarea-like element without a .select() method
+    context.document.createElement = () => ({
+      value: '',
+      style: {},
+      appendChild() {},
+      removeChild() {},
+    });
+    context.document.execCommand = vi.fn(() => true);
+    context.navigator = {};
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    elements.shareLinkBtn.dispatch('click');
+    await Promise.resolve();
+
+    // execCommand was used (no async clipboard, no ta.select) — copy still proceeds
+    expect(context.document.execCommand).toHaveBeenCalledWith('copy');
+    expect(elements.toast.textContent).toBe('✅ 링크가 클립보드에 복사되었습니다');
+  });
+
 });
