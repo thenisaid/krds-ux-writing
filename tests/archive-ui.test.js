@@ -773,4 +773,13 @@ describe('archive page — additional branch coverage', () => {
 
     expect(elements['arc-grid-jeongbu24'].innerHTML).toBe('');
   });
+
+  it('skips search initialisation for an agency whose search input is absent from the DOM', async () => {
+    const { context, elements } = buildContext();
+    delete elements['arc-search-hometax'];
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('H1');
+  });
 });
