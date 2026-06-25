@@ -152,6 +152,21 @@ describe('bin/krds-lint CLI', () => {
     expect(result.stdout).toContain('품질 점수: 100/100');
   });
 
+  it('uses multi-file format when two explicit file paths are given without a directory', () => {
+    const dir = makeTempDir();
+    const file1 = path.join(dir, 'first.txt');
+    const file2 = path.join(dir, 'second.txt');
+    fs.writeFileSync(file1, '귀하의 신청이 접수되었습니다.\n', 'utf8');
+    fs.writeFileSync(file2, '신청이 접수되었습니다.\n', 'utf8');
+
+    const result = runCli([file1, file2]);
+
+    expect(result.status).toBe(1);
+    expect(result.stdout).toContain('파일:');
+    expect(result.stdout).toContain('검사 파일: 2개');
+    expect(result.stdout).toContain('이슈 있는 파일: 1개');
+  });
+
   it('exits 1 and writes to stderr when stdin text is blank', () => {
     const result = runCli([], '   \n  ');
 
