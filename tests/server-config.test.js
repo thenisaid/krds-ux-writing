@@ -155,6 +155,27 @@ describe('server.js configuration', () => {
     expect(loadFreshServerModule().getAnthropicApiKey()).toBe('');
   });
 
+  it('recognises 127.0.0.1 as a loopback host and returns local-llm when the API key is empty', () => {
+    process.env.ANTHROPIC_BASE_URL = 'http://127.0.0.1:8200/krds';
+    process.env.ANTHROPIC_API_KEY = '';
+    expect(loadFreshServerModule().getAnthropicApiKey()).toBe('local-llm');
+  });
+
+  it('reads the module-level API_KEY constant when ANTHROPIC_API_KEY is absent from process.env at call time', () => {
+    process.env.ANTHROPIC_API_KEY = 'module-load-time-key';
+    const mod = loadFreshServerModule();
+    delete process.env.ANTHROPIC_API_KEY;
+    expect(mod.getAnthropicApiKey()).toBe('module-load-time-key');
+  });
+
+  it('reads the module-level BASE_URL constant when ANTHROPIC_BASE_URL is absent from process.env at call time', () => {
+    process.env.ANTHROPIC_BASE_URL = 'http://localhost:8200/krds';
+    process.env.ANTHROPIC_API_KEY = '';
+    const mod = loadFreshServerModule();
+    delete process.env.ANTHROPIC_BASE_URL;
+    expect(mod.getAnthropicApiKey()).toBe('local-llm');
+  });
+
   it('does not let the local .env override an explicitly exported Anthropic base URL', () => {
     process.env.ANTHROPIC_BASE_URL = 'https://proxy.internal/custom';
 
