@@ -1831,6 +1831,88 @@ describe('anthropic-edge.js — buildApiEndpoint and getAnthropicApiKey', () => 
   });
 });
 
+describe('checkRateLimit — rate-limit map full with expired entries (eviction succeeds)', () => {
+  it('accepts a new Vercel IP after evicting expired entries from a full rate-limit map', async () => {
+    const { default: freshVercelHandler } = await importFreshModule('api/generate.js');
+    const realNow = Date.now();
+    const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+    const pastTime = realNow - RATE_LIMIT_WINDOW_MS - 1000;
+
+    vi.spyOn(Date, 'now').mockReturnValue(pastTime);
+    try {
+      for (let i = 0; i < 1000; i++) {
+        await freshVercelHandler(new Request('http://localhost/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Origin: ALLOWED_ORIGIN,
+            'CF-Connecting-IP': buildUniqueTestIp(i + 92000),
+          },
+          body: JSON.stringify({ agencyName: '', agencyType: '', samples: [] }),
+        }));
+      }
+
+      vi.spyOn(Date, 'now').mockReturnValue(realNow);
+
+      const response = await freshVercelHandler(new Request('http://localhost/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: ALLOWED_ORIGIN,
+          'CF-Connecting-IP': buildUniqueTestIp(93000),
+        },
+        body: JSON.stringify({ agencyName: '', agencyType: '', samples: [] }),
+      }));
+      expect(response.status).not.toBe(429);
+    } finally {
+      vi.restoreAllMocks();
+    }
+  });
+
+  it('accepts a new Cloudflare IP after evicting expired entries from a full rate-limit map', async () => {
+    const { onRequestPost: freshOnRequestPost } = await importFreshModule('functions/api/generate.js');
+    const realNow = Date.now();
+    const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+    const pastTime = realNow - RATE_LIMIT_WINDOW_MS - 1000;
+
+    vi.spyOn(Date, 'now').mockReturnValue(pastTime);
+    try {
+      for (let i = 0; i < 1000; i++) {
+        await freshOnRequestPost({
+          request: new Request('http://localhost/api/generate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Origin: ALLOWED_ORIGIN,
+              'CF-Connecting-IP': buildUniqueTestIp(i + 94000),
+            },
+            body: JSON.stringify({ agencyName: '', agencyType: '', samples: [] }),
+          }),
+          env: { ANTHROPIC_API_KEY: 'test-key' },
+        });
+      }
+
+      vi.spyOn(Date, 'now').mockReturnValue(realNow);
+
+      const response = await freshOnRequestPost({
+        request: new Request('http://localhost/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Origin: ALLOWED_ORIGIN,
+            'CF-Connecting-IP': buildUniqueTestIp(95000),
+          },
+          body: JSON.stringify({ agencyName: '', agencyType: '', samples: [] }),
+        }),
+        env: { ANTHROPIC_API_KEY: 'test-key' },
+      });
+      expect(response.status).not.toBe(429);
+    } finally {
+      vi.restoreAllMocks();
+    }
+  });
+});
+
 describe('checkRateLimit — rate-limit map full with non-expired entries', () => {
   it('returns 429 for a new Vercel IP when the in-memory map is full of non-expired entries', async () => {
     const { default: freshVercelHandler } = await importFreshModule('api/generate.js');
