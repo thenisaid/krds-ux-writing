@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
@@ -11,6 +12,7 @@ const {
   buildBrowserBundle,
   mergeEntries,
   syncJargonDictionary,
+  readExistingOutput,
 } = require('../scripts/extract-jargon.js');
 
 const ROOT = process.cwd();
@@ -756,5 +758,72 @@ describe('scripts/extract-jargon.js', () => {
     const stderr = stderrLines.join('');
     expect(stderr).toContain('브라우저 번들 저장 위치');
     expect(stderr).not.toContain('JSON 저장 위치');
+  });
+});
+
+describe('extract-jargon.js — uncovered branch paths', () => {
+  it('detectCat falls back to header.trim() when the category does not match any CAT_MAP key', () => {
+    const md = [
+      '### 2.1 행정어·전문용어 대체어 사전',
+      '#### 카테고리 99. 알수없는특수범주',
+      '| 쓰지 마세요 | 대신 쓰세요 |',
+      '|---|---|',
+      '| 특수어 | 쉬운말 |',
+      '### 2.1 부록',
+    ].join('\n');
+    const entries = parse(md);
+    expect(entries).toHaveLength(1);
+    expect(entries[0].cat).toBe('알수없는특수범주');
+  });
+
+  it('parse skips a table row whose banned cell is exactly "..." (ellipsis placeholder)', () => {
+    const md = [
+      '### 2.1 행정어·전문용어 대체어 사전',
+      '#### 카테고리 1. 행정 관습어',
+      '| 쓰지 마세요 | 대신 쓰세요 |',
+      '|---|---|',
+      '| ... | 대체어 |',
+      '| 귀하 | 고객님 |',
+      '### 2.1 부록',
+    ].join('\n');
+    const entries = parse(md);
+    expect(entries.map((e) => e.banned)).not.toContain('...');
+    expect(entries.some((e) => e.banned === '귀하')).toBe(true);
+  });
+
+  it('parse skips a table row whose banned cell starts with "**" (markdown bold)', () => {
+    const md = [
+      '### 2.1 행정어·전문용어 대체어 사전',
+      '#### 카테고리 1. 행정 관습어',
+      '| 쓰지 마세요 | 대신 쓰세요 |',
+      '|---|---|',
+      '| **Bold Header** | 설명 |',
+      '| 귀하 | 고객님 |',
+      '### 2.1 부록',
+    ].join('\n');
+    const entries = parse(md);
+    expect(entries.map((e) => e.banned)).not.toContain('**Bold Header**');
+    expect(entries.some((e) => e.banned === '귀하')).toBe(true);
+  });
+
+  it('isMoreDescriptiveEntry returns false immediately when candidate alt is shorter than current (first-branch false path)', () => {
+    const entries = [
+      { banned: '공고문', alt: '길고상세한대체어입니다', cat: '행정 관습어' },
+      { banned: '공고문', alt: 'AB', cat: '행정 관습어' },
+    ];
+    const result = mergeEntries(entries);
+    expect(result).toHaveLength(1);
+    expect(result[0].alt).toBe('길고상세한대체어입니다');
+  });
+
+  it('readExistingOutput returns null when the file contains invalid JSON (catch branch)', () => {
+    const tmpFile = path.join(os.tmpdir(), 'krds-test-corrupt-' + Date.now() + '.json');
+    fs.writeFileSync(tmpFile, '{ not valid json }', 'utf8');
+    try {
+      const result = readExistingOutput(tmpFile);
+      expect(result).toBeNull();
+    } finally {
+      fs.unlinkSync(tmpFile);
+    }
   });
 });
