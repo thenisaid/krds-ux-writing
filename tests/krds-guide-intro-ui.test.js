@@ -259,4 +259,80 @@ describe('guide intro slides', () => {
     expect(preventDefault).toHaveBeenCalled();
     expect(container.listenerCount('transitionend')).toBe(0);
   });
+
+  it('advances to the next slide when the user swipes left (negative dx > 50)', async () => {
+    const { context, container, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    container.dispatch('pointerdown', { clientX: 300 });
+    container.dispatch('pointerup', { clientX: 200 });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(history.replaceState).toHaveBeenCalledWith(null, '', '#slide-2');
+  });
+
+  it('ignores a swipe whose absolute dx is 50 px or less (below the threshold)', () => {
+    const { context, container, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    container.dispatch('pointerdown', { clientX: 200 });
+    container.dispatch('pointerup', { clientX: 150 });
+
+    expect(history.replaceState).not.toHaveBeenCalled();
+  });
+
+  it('skips the keyboard handler when the event target is an interactive element', () => {
+    const { context, document, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    document.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn(), target: { tagName: 'BUTTON', isContentEditable: false } });
+
+    expect(history.replaceState).not.toHaveBeenCalled();
+  });
+
+  it('navigates to the first slide when Home is pressed after advancing', async () => {
+    const { context, document, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    document.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    history.replaceState.mockClear();
+
+    document.dispatch('keydown', { key: 'Home', preventDefault: vi.fn() });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(history.replaceState).toHaveBeenCalledWith(null, '', '#slide-1');
+  });
+
+  it('reveals build items on the current slide when the hashchange target matches the active slide', async () => {
+    const buildItems = [
+      createElement({ classes: ['b'] }),
+      createElement({ classes: ['b'] }),
+    ];
+    const { context } = buildContext({
+      slides: [
+        { dataset: { slide: '0' }, buildItems },
+        { dataset: { slide: '1' }, buildItems: [] },
+      ],
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    context.location.hash = '#slide-1';
+    context.window.dispatch('hashchange');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(buildItems[0].classList.contains('shown')).toBe(true);
+    expect(buildItems[1].classList.contains('shown')).toBe(true);
+  });
+
+  it('advances the slide with the Space key', async () => {
+    const { context, document, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    document.dispatch('keydown', { key: ' ', preventDefault: vi.fn() });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(history.replaceState).toHaveBeenCalledWith(null, '', '#slide-2');
+  });
 });
