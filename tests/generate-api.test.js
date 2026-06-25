@@ -1155,6 +1155,36 @@ describe('generator API handlers', () => {
     expect(kvExpireCalled).toBe(false);
   });
 
+  it('falls back to in-memory rate limiting when the KV expire endpoint throws on the first request', async () => {
+    const kvUrl = 'https://kv.example.com';
+    process.env.KV_REST_API_URL = kvUrl;
+    process.env.KV_REST_API_TOKEN = 'kv-token';
+
+    global.fetch = vi.fn(async (url) => {
+      const u = String(url);
+      if (u.includes('/incr/')) {
+        // count=1: first request — triggers /expire/ call
+        return new Response(JSON.stringify({ result: 1 }), { status: 200 });
+      }
+      if (u.includes('/expire/')) {
+        throw new Error('expire endpoint unreachable');
+      }
+      return new Response('data: {"type":"message_stop"}\n\n', {
+        status: 200,
+        headers: { 'Content-Type': 'text/event-stream' },
+      });
+    });
+
+    const response = await vercelHandler(buildRequest({
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      mode: 'rewrite',
+      samples: ['문장 하나'],
+    }));
+
+    expect(response.status).toBe(200);
+  });
+
   it('rejects all-whitespace samples as having no valid content in deployed handlers', async () => {
     const payload = {
       agencyName: '테스트 기관',

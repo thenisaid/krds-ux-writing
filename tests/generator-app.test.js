@@ -2765,4 +2765,28 @@ describe('generator/app.js', () => {
 
     expect(elements['tone-target-group'].style.display).toBe('none');
   });
+
+  it('does not throw in showScreen when the target screen element is absent from the DOM', () => {
+    const { context, elements } = buildGeneratorContext();
+    vm.runInNewContext(SOURCE, context);
+
+    // Remove screen-input so getElementById returns null when restart-btn is clicked
+    delete elements['screen-input'];
+
+    expect(() => elements['restart-btn'].dispatch('click')).not.toThrow();
+  });
+
+  it('does not throw in setTextIfPresent when the optional mode-help element is absent from the DOM', () => {
+    const { context, elements } = buildGeneratorContext();
+    delete elements['mode-help'];
+
+    expect(() => vm.runInNewContext(SOURCE, context)).not.toThrow();
+  });
+
+  it('does not throw in setHtmlIfPresent when the optional page-subtitle element is absent from the DOM', () => {
+    const { context, elements } = buildGeneratorContext();
+    delete elements['page-subtitle'];
+
+    expect(() => vm.runInNewContext(SOURCE, context)).not.toThrow();
+  });
 });
