@@ -800,4 +800,47 @@ describe('archive page — additional branch coverage', () => {
     expect(html).not.toContain('arc-card-label">문제');
     expect(html).not.toContain('arc-card-rec');
   });
+
+  it('falls back to "all" when the active filter button exists but has no data-principle attribute', async () => {
+    const { context, elements, filterBtns } = buildContext({
+      markdown: [
+        '## Cycle 1',
+        '### H10 — 이슈 ★ [A]',
+        '**문제**: 설명',
+        '**권장 개선안**: 개선안',
+      ].join('\n'),
+    });
+    filterBtns[1].dataset.principle = '';
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('H10');
+  });
+
+  it('returns empty recommendation when the B/A comparison table has no data rows after the separator', async () => {
+    const { context, elements } = buildContext({
+      markdown: [
+        '## Cycle 1',
+        '### H55 — B/A 헤더만 있는 이슈',
+        '',
+        '| 항목 | 내용 |',
+        '|------|------|',
+        '| **원칙** | A |',
+        '| **심각도** | ★★ |',
+        '',
+        '**문제**: 설명',
+        '',
+        '| B (현재) | A (개선) |',
+        '|----------|----------|',
+      ].join('\n'),
+    });
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    const html = elements['arc-grid-hometax'].innerHTML;
+    expect(html).toContain('H55');
+    expect(html).not.toContain('arc-card-rec');
+  });
 });
