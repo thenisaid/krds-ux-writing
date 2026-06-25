@@ -672,4 +672,52 @@ describe('archive page — additional branch coverage', () => {
     expect(tabs[1].getAttribute('aria-selected')).toBe('true');
     expect(tabs[0].getAttribute('aria-selected')).toBe('false');
   });
+
+  it('uses the "개선안" field as the recommendation when "권장 개선안" and "수정 제안" are absent', async () => {
+    const { context, elements } = buildContext({
+      markdown: [
+        '## Cycle 1',
+        '### H90 — 개선안 세 번째 폴백 ★ [A]',
+        '**원문**: 원문 텍스트',
+        '**문제**: 설명',
+        '**개선안**: 세 번째 폴백 개선안 내용',
+      ].join('\n'),
+    });
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    const html = elements['arc-grid-hometax'].innerHTML;
+    expect(html).toContain('H90');
+    expect(html).toContain('세 번째 폴백 개선안 내용');
+  });
+
+  it('uses window.KRDSBasePath.buildSitePath to construct the markdown fetch URL', async () => {
+    const { context, elements } = buildContext();
+    context.window.KRDSBasePath = { buildSitePath: (p) => '/custom' + p };
+    context.fetch = vi.fn(async (url) => {
+      if (!String(url).includes('/custom/derived/hometax-guide.md')) {
+        throw new Error('unexpected url ' + url);
+      }
+      return {
+        ok: true,
+        async text() {
+          return [
+            '## Cycle 1',
+            '### H1 — 기본 이슈 ★ [A]',
+            '**원문**: 텍스트',
+            '**문제**: 설명',
+            '**권장 개선안**: 개선',
+          ].join('\n');
+        },
+      };
+    });
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    expect(context.fetch).toHaveBeenCalledTimes(1);
+    expect(String(context.fetch.mock.calls[0][0])).toContain('/custom/derived/hometax-guide.md');
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('H1');
+  });
 });
