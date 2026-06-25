@@ -1651,6 +1651,27 @@ describe('pickPrimarySuggestion — bracket nesting prevents slash split', () =>
     // slash is inside [] → no split
     expect(elements.improvedText.textContent).toBe('시스템 [또는 / 서비스]가 필요합니다.');
   });
+
+  it('does not split on a slash inside curly braces in the suggestion string', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1, col: 1, severity: 'error', category: '전문 용어',
+          message: '행정어: "API"', match: 'API',
+          suggestion: '→ 시스템 {또는 / 서비스}', type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = 'API가 필요합니다.';
+    elements.lintBtn.dispatch('click');
+
+    // slash is inside {} → no split
+    expect(elements.improvedText.textContent).toBe('시스템 {또는 / 서비스}가 필요합니다.');
+  });
 });
 
 describe('correctParticleForReplacement — vowel-form correction', () => {
