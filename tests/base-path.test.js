@@ -333,4 +333,37 @@ describe('shared/base-path.js', () => {
     expect(relativeNode.getAttribute('href')).toBe('/other/path');
     expect(validNode.getAttribute('href')).toBe('/preview/KRDS/principles/');
   });
+
+  it('returns empty site root path when currentScript src is a valid URL but its pathname lacks the base-path.js marker (markerIndex -1 branch)', () => {
+    const document = {
+      currentScript: { src: 'https://example.com/other-script.js' },
+      querySelectorAll() { return []; },
+      getElementsByTagName() { return []; },
+    };
+    const context = {
+      document,
+      window: { location: { pathname: '/krds-ux-writing/', href: 'https://example.com/krds-ux-writing/' } },
+      URL,
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(SOURCE, context);
+
+    expect(context.window.KRDSBasePath.siteRootPath).toBe('');
+  });
+
+  it('silently skips a node with no getAttribute function during rewriteStaticLinks', () => {
+    const badNode = { href: '/krds-ux-writing/principles/' };
+    const validNode = makeNode({ href: '/krds-ux-writing/principles/' });
+
+    runBasePath({
+      pathname: '/preview/KRDS/index.html',
+      scriptPath: '/preview/KRDS/shared/base-path.js',
+      hrefNodes: [badNode, validNode],
+    });
+
+    expect(validNode.getAttribute('href')).toBe('/preview/KRDS/principles/');
+  });
 });

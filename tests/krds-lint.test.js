@@ -406,6 +406,15 @@ describe('lint() summary counts', () => {
       expect(lines[i]).toBeGreaterThanOrEqual(lines[i - 1]);
     }
   });
+
+  it('issues on the same line are sorted by col (a.col - b.col sort branch)', () => {
+    const result = KRDSLint.lint('귀하 귀하');
+    const sameLineIssues = result.issues.filter(i => i.line === 1);
+    expect(sameLineIssues.length).toBeGreaterThanOrEqual(2);
+    for (let i = 1; i < sameLineIssues.length; i++) {
+      expect(sameLineIssues[i].col).toBeGreaterThanOrEqual(sameLineIssues[i - 1].col);
+    }
+  });
 });
 
 // ── MULTILINE ────────────────────────────────────────────────────────────────
