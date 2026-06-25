@@ -1557,4 +1557,24 @@ describe('script.js live index interactions', () => {
     expect(preventDefault).toHaveBeenCalled();
     expect(window.scrollTo).toHaveBeenCalledWith({ top: 114, behavior: 'smooth' });
   });
+
+  it('opens the mobile menu without focusing when the menu has no focusable elements (firstFocusable null guard)', () => {
+    const { context, document, elements } = createEnvironment();
+    const mobileMenu = createElement(document, {
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: {},
+    });
+    const mobileMenuBtn = createElement(document, {
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    elements.mobileMenu = mobileMenu;
+    elements.mobileMenuBtn = mobileMenuBtn;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    expect(() => mobileMenuBtn.dispatch('click')).not.toThrow();
+    expect(mobileMenu.classList.contains('open')).toBe(true);
+    expect(mobileMenuBtn.focus).not.toHaveBeenCalled();
+  });
 });
