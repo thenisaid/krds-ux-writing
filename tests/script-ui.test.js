@@ -1395,4 +1395,44 @@ describe('script.js live index interactions', () => {
     expect(mobileMenuBtn.getAttribute('aria-expanded')).toBe('false');
     expect(mobileMenuBtn.focus).not.toHaveBeenCalled();
   });
+
+  it('does not intercept anchor click when window.location is null even though URL is available', () => {
+    const { context, document, window, elements, anchorLinks } = createEnvironment();
+    const target = createElement(document, { rect: { top: 300 } });
+    const gnbLink = createElement(document, {
+      attributes: { href: '/krds-ux-writing/#hero' },
+    });
+    elements['hero'] = target;
+    anchorLinks.push(gnbLink);
+    context.window.location = null;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    const preventDefault = vi.fn();
+    gnbLink.dispatch('click', { preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(window.scrollTo).not.toHaveBeenCalled();
+  });
+
+  it('does not intercept anchor click when window.location.href is absent even though URL is available', () => {
+    const { context, document, window, elements, anchorLinks } = createEnvironment();
+    const target = createElement(document, { rect: { top: 300 } });
+    const gnbLink = createElement(document, {
+      attributes: { href: '/krds-ux-writing/#hero' },
+    });
+    elements['hero'] = target;
+    anchorLinks.push(gnbLink);
+    context.window.location = { pathname: '/krds-ux-writing/' };
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    const preventDefault = vi.fn();
+    gnbLink.dispatch('click', { preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(window.scrollTo).not.toHaveBeenCalled();
+  });
 });
