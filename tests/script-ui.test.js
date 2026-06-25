@@ -1455,4 +1455,58 @@ describe('script.js live index interactions', () => {
     expect(preventDefault).not.toHaveBeenCalled();
     expect(target.focus).not.toHaveBeenCalled();
   });
+
+  it('does not call preventDefault when a non-Tab key is dispatched inside the focus trap (e.key !== Tab early return)', () => {
+    const { context, document, elements } = createEnvironment();
+    const firstLink = createElement(document, { attributes: { href: '#first' } });
+    const lastLink = createElement(document, { attributes: { href: '#last' } });
+    const mobileMenu = createElement(document, {
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [firstLink, lastLink] },
+    });
+    const mobileMenuBtn = createElement(document, {
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    elements.mobileMenu = mobileMenu;
+    elements.mobileMenuBtn = mobileMenuBtn;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+    mobileMenuBtn.dispatch('click');
+
+    // openMobileMenu calls firstLink.focus() — clear before testing the trap handler
+    firstLink.focus.mockClear();
+    lastLink.focus.mockClear();
+
+    const preventDefault = vi.fn();
+    mobileMenu.dispatch('keydown', { key: 'Escape', shiftKey: false, preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(firstLink.focus).not.toHaveBeenCalled();
+    expect(lastLink.focus).not.toHaveBeenCalled();
+  });
+
+  it('does nothing when Escape is pressed in the section search input while the value is already empty', () => {
+    const { context, document, elements, querySelectorAllMap } = createEnvironment();
+    const searchInput = createElement(document, { attributes: { type: 'search' } });
+    searchInput.value = '';
+    const status = createElement(document);
+    const item = createElement(document, {
+      attributes: { 'data-filter-keywords': '원칙 파운데이션' },
+    });
+
+    elements.sectionSearchInput = searchInput;
+    elements.sectionFilterStatus = status;
+    querySelectorAllMap['.editorial-item[data-filter-keywords]'] = [item];
+    querySelectorAllMap['.section-filter-chip'] = [];
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    // input is empty → `if (e.key === 'Escape' && input.value)` is false → no-op
+    searchInput.dispatch('keydown', { key: 'Escape' });
+
+    expect(searchInput.value).toBe('');
+    expect(item.hidden).toBe(false);
+  });
 });
