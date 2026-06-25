@@ -994,6 +994,164 @@ describe('before-after page interactions', () => {
     expect(seminarCounter.textContent).toBe('1 / 2');
   });
 
+  it('wraps Tab forward to the first element when the last focusable element is active (active === last branch)', () => {
+    const seminarClose = createElement({ id: 'seminarClose' });
+    const seminarPrev = createElement({ id: 'seminarPrev' });
+    const seminarNext = createElement({ id: 'seminarNext' });
+    const seminarOverlay = createElement({
+      id: 'seminarOverlay',
+      classes: ['active'],
+      queryMap: {
+        'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])': [
+          seminarClose,
+          seminarPrev,
+          seminarNext,
+        ],
+        'mark.diff': [],
+      },
+    });
+    const elements = {
+      themeToggle: createElement({ id: 'themeToggle' }),
+      themeIcon: createElement({ id: 'themeIcon' }),
+      seminarOverlay,
+      seminarSlide: createElement({ id: 'seminarSlide', queryMap: { 'mark.diff': [] } }),
+      seminarPrinciple: createElement({ id: 'seminarPrinciple' }),
+      seminarCounter: createElement({ id: 'seminarCounter' }),
+      seminarPrev,
+      seminarNext,
+      seminarBtn: createElement({ id: 'seminarBtn' }),
+      seminarClose,
+    };
+    const document = createDocument(elements, { '.tab-btn': [], '.tab-panel': [], '.pair': [] });
+    const context = {
+      document,
+      window: {},
+      localStorage: { setItem() {} },
+      setTimeout(fn) { fn(); return 1; },
+      clearTimeout() {},
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    document.activeElement = seminarNext; // last element
+    const preventDefault = vi.fn();
+    document.dispatch('keydown', { key: 'Tab', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(seminarClose.focus).toHaveBeenCalled(); // wraps to first
+    expect(seminarNext.focus).not.toHaveBeenCalled();
+  });
+
+  it('does not wrap or call preventDefault when Tab is pressed with a middle focusable element active', () => {
+    const seminarClose = createElement({ id: 'seminarClose' });
+    const seminarPrev = createElement({ id: 'seminarPrev' });
+    const seminarNext = createElement({ id: 'seminarNext' });
+    const seminarOverlay = createElement({
+      id: 'seminarOverlay',
+      classes: ['active'],
+      queryMap: {
+        'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])': [
+          seminarClose,
+          seminarPrev,
+          seminarNext,
+        ],
+        'mark.diff': [],
+      },
+    });
+    const elements = {
+      themeToggle: createElement({ id: 'themeToggle' }),
+      themeIcon: createElement({ id: 'themeIcon' }),
+      seminarOverlay,
+      seminarSlide: createElement({ id: 'seminarSlide', queryMap: { 'mark.diff': [] } }),
+      seminarPrinciple: createElement({ id: 'seminarPrinciple' }),
+      seminarCounter: createElement({ id: 'seminarCounter' }),
+      seminarPrev,
+      seminarNext,
+      seminarBtn: createElement({ id: 'seminarBtn' }),
+      seminarClose,
+    };
+    const document = createDocument(elements, { '.tab-btn': [], '.tab-panel': [], '.pair': [] });
+    const context = {
+      document,
+      window: {},
+      localStorage: { setItem() {} },
+      setTimeout(fn) { fn(); return 1; },
+      clearTimeout() {},
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    document.activeElement = seminarPrev; // middle element — not first, not last
+    const preventDefault = vi.fn();
+    document.dispatch('keydown', { key: 'Tab', preventDefault });
+
+    // Neither wrap condition fires → fall-through, no focus reassignment
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(seminarClose.focus).not.toHaveBeenCalled();
+    expect(seminarNext.focus).not.toHaveBeenCalled();
+  });
+
+  it('does not wrap or call preventDefault when Shift+Tab is pressed with a middle focusable element active', () => {
+    const seminarClose = createElement({ id: 'seminarClose' });
+    const seminarPrev = createElement({ id: 'seminarPrev' });
+    const seminarNext = createElement({ id: 'seminarNext' });
+    const seminarOverlay = createElement({
+      id: 'seminarOverlay',
+      classes: ['active'],
+      queryMap: {
+        'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])': [
+          seminarClose,
+          seminarPrev,
+          seminarNext,
+        ],
+        'mark.diff': [],
+      },
+    });
+    const elements = {
+      themeToggle: createElement({ id: 'themeToggle' }),
+      themeIcon: createElement({ id: 'themeIcon' }),
+      seminarOverlay,
+      seminarSlide: createElement({ id: 'seminarSlide', queryMap: { 'mark.diff': [] } }),
+      seminarPrinciple: createElement({ id: 'seminarPrinciple' }),
+      seminarCounter: createElement({ id: 'seminarCounter' }),
+      seminarPrev,
+      seminarNext,
+      seminarBtn: createElement({ id: 'seminarBtn' }),
+      seminarClose,
+    };
+    const document = createDocument(elements, { '.tab-btn': [], '.tab-panel': [], '.pair': [] });
+    const context = {
+      document,
+      window: {},
+      localStorage: { setItem() {} },
+      setTimeout(fn) { fn(); return 1; },
+      clearTimeout() {},
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    document.activeElement = seminarPrev; // middle element — not first, not last
+    const preventDefault = vi.fn();
+    document.dispatch('keydown', { key: 'Tab', shiftKey: true, preventDefault });
+
+    // Shift+Tab with middle element: active !== first AND indexOf !== -1 → fall-through
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(seminarClose.focus).not.toHaveBeenCalled();
+    expect(seminarNext.focus).not.toHaveBeenCalled();
+  });
+
   it('does not call setTimeout for the initial mark animation when panel-a is absent from the DOM', () => {
     const setTimeoutSpy = vi.fn();
     const tabA = createElement({
