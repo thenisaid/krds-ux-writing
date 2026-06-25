@@ -214,4 +214,58 @@ describe('dictionary full page script', () => {
     expect(elements.emptyState.style.display).toBe('none');
     expect(table.style.display).toBe('');
   });
+
+  it('maps 외래어 category to the foreign key (second switch case)', () => {
+    const { context, elements } = buildContext({
+      dictData: {
+        generated: '2026-01-01',
+        entries: [
+          { banned: '인보이스', alt: '청구서', cat: '외래어', context: '공통' },
+        ],
+      },
+    });
+    vm.runInNewContext(SCRIPT_SOURCE, context);
+
+    expect(elements.dictBody.innerHTML).toContain('cat-foreign');
+    expect(elements.dictBody.innerHTML).toContain('외래어·전문용어');
+  });
+
+  it('maps an unrecognised category to admin via the default switch case', () => {
+    const { context, elements } = buildContext({
+      dictData: {
+        generated: '2026-01-01',
+        entries: [
+          { banned: '미지정', alt: '기타', cat: '알 수 없는 분류', context: '공통' },
+        ],
+      },
+    });
+    vm.runInNewContext(SCRIPT_SOURCE, context);
+
+    expect(elements.dictBody.innerHTML).toContain('cat-admin');
+  });
+
+  it('shows a dash for the generated date when rawData.generated is absent', () => {
+    const { context, elements } = buildContext({
+      dictData: {
+        entries: [
+          { banned: '귀하', alt: '신청인', cat: '행정 관습어', context: '공통' },
+        ],
+      },
+    });
+    vm.runInNewContext(SCRIPT_SOURCE, context);
+
+    expect(elements.fullGlossaryGenerated.textContent).toBe('-');
+  });
+
+  it('renders no rows and shows zero count when rawData is null (buildEntries returns [])', () => {
+    const { context, elements } = buildContext({
+      dictData: null,
+    });
+    context.window.KRDS_JARGON_DICT = null;
+    context.KRDS_JARGON_DICT = null;
+    vm.runInNewContext(SCRIPT_SOURCE, context);
+
+    expect(elements.resultCount.innerHTML).toContain('<strong>0</strong>');
+    expect(elements.dictBody.innerHTML).toBe('');
+  });
 });
