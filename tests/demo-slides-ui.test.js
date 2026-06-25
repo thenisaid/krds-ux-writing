@@ -380,4 +380,59 @@ describe('demo slides help overlay', () => {
     expect(helpOverlay.classList.contains('visible')).toBe(false);
     expect(slides[0].focus).toHaveBeenCalled();
   });
+
+  it('navigates to the initial slide when the page loads with a hash already set', () => {
+    const { context, container, history } = buildContext();
+    context.location.hash = '#slide-2';
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(container.style.transform).toBe('translateX(-100%)');
+    expect(history.replaceState).toHaveBeenCalledWith(null, '', '#slide-2');
+  });
+
+  it('reveals current-slide build items and focuses the slide when hashchange lands on the same slide', () => {
+    const buildItem = createElement({ classes: ['build-item'], dataset: { build: '0' } });
+    const windowListeners = new Map();
+    const { context, slides, history } = buildContext({
+      slides: [
+        { dataset: { slide: '0' }, buildItems: [buildItem] },
+        { dataset: { slide: '1' }, buildItems: [] },
+      ],
+    });
+    context.window.addEventListener = (type, handler) => {
+      const arr = windowListeners.get(type) || [];
+      arr.push(handler);
+      windowListeners.set(type, arr);
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    context.location.hash = '#slide-1';
+    const handlers = windowListeners.get('hashchange') || [];
+    handlers.forEach((h) => h());
+
+    expect(buildItem.classList.contains('shown')).toBe(true);
+    expect(slides[0].focus).toHaveBeenCalled();
+    expect(history.replaceState).not.toHaveBeenCalled();
+  });
+
+  it('ignores a prev() call when already on the first slide (goTo index < 0)', () => {
+    const windowListeners = new Map();
+    const { context, container, history } = buildContext();
+    context.window.addEventListener = (type, handler) => {
+      const arr = windowListeners.get(type) || [];
+      arr.push(handler);
+      windowListeners.set(type, arr);
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    context.location.hash = '#slide-0';
+    const handlers = windowListeners.get('hashchange') || [];
+    handlers.forEach((h) => h());
+
+    expect(container.style.transform || '').toBe('');
+    expect(history.replaceState).not.toHaveBeenCalled();
+  });
 });
