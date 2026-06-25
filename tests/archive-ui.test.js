@@ -981,6 +981,54 @@ describe('archive page — additional branch coverage', () => {
     expect(html).not.toContain('arc-card-rec');
   });
 
+  it('silently skips an issue block whose heading has no star, no principle table cell, and no blockquote metadata (!principle && !severity → continue)', async () => {
+    const { context, elements } = buildContext({
+      markdown: [
+        '## Cycle 1',
+        '### H1 — 정상 이슈 ★ [A]',
+        '**원문**: 텍스트',
+        '**문제**: 설명',
+        '**권장 개선안**: 개선',
+        '',
+        '### H99 — 원칙도 없고 심각도도 없는 블록',
+        '단순 텍스트만 있어서 파싱에서 제외됩니다',
+      ].join('\n'),
+    });
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    const html = elements['arc-grid-hometax'].innerHTML;
+    expect(html).toContain('H1');
+    expect(html).not.toContain('H99');
+    expect(elements['arc-count-badge-hometax'].textContent).toBe(1);
+  });
+
+  it('does not match an issue with empty principle when the search term is a Korean principle name (PRINCIPLE_NAMES fallback to empty string)', async () => {
+    const { context, elements } = buildContext({
+      markdown: [
+        '## Cycle 1',
+        '### H30 — 심각도만 있는 이슈',
+        '',
+        '| 항목 | 내용 |',
+        '|------|------|',
+        '| **심각도** | ★★ |',
+        '',
+        '**문제**: 원칙 없는 이슈 설명',
+        '**권장 개선안**: 개선',
+      ].join('\n'),
+    });
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    elements['arc-search-hometax'].value = '무번역';
+    elements['arc-search-hometax'].dispatch('input');
+
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('검색 결과가 없습니다');
+    expect(elements['arc-grid-hometax'].innerHTML).not.toContain('H30');
+  });
+
   it('falls back to the default "derived/" base path when KRDSBasePath exists but buildSitePath is not a function', async () => {
     const { context, elements } = buildContext();
     context.window.KRDSBasePath = { version: 1 };
