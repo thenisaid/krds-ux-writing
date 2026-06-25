@@ -420,6 +420,46 @@ describe('guide intro slides', () => {
     expect(history.replaceState).not.toHaveBeenCalled();
   });
 
+  it('moves to the previous slide when the user swipes right (positive dx > 50)', async () => {
+    const { context, container, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    container.dispatch('pointerdown', { clientX: 300 });
+    container.dispatch('pointerup', { clientX: 200 });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(history.replaceState).toHaveBeenCalledWith(null, '', '#slide-2');
+    history.replaceState.mockClear();
+
+    container.dispatch('pointerdown', { clientX: 200 });
+    container.dispatch('pointerup', { clientX: 400 });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(history.replaceState).toHaveBeenCalledWith(null, '', '#slide-1');
+  });
+
+  it('navigates to the dot-clicked slide index via the dot click handler', async () => {
+    const { context, container, history } = buildContext();
+    const dotsEl = context.document.getElementById('dots');
+
+    vm.runInNewContext(SOURCE, context);
+
+    dotsEl.children[1].dispatch('click');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(history.replaceState).toHaveBeenCalledWith(null, '', '#slide-2');
+    expect(container.style.transform).toBe('translateX(-100%)');
+  });
+
+  it('does not navigate when hashchange fires with a hash that does not match the slide pattern', () => {
+    const { context, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    context.location.hash = '#section-title';
+    context.window.dispatch('hashchange');
+
+    expect(history.replaceState).not.toHaveBeenCalled();
+  });
+
   it('sets the progress bar to 100% when there is only one slide (total=1 ternary branch)', () => {
     const progressBar = createElement({ id: 'pbar', style: {} });
 
