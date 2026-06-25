@@ -190,6 +190,16 @@ describe('dictionary filter initialization', () => {
     expect(rows[1].style.display).toBe('');
   });
 
+  it('falls back to "all" for currentCat when the active filter button has no data-cat attribute', () => {
+    const { context, rows } = buildContext();
+    const { context: ctx2, filterBtns: fb2, rows: r2 } = buildContext();
+    fb2[0].dataset.cat = '';
+    vm.runInNewContext(SOURCE, ctx2);
+
+    expect(r2[0].style.display).toBe('');
+    expect(r2[1].style.display).toBe('');
+  });
+
   it('clears the search query and hides the clear button when searchClear is clicked', () => {
     const { context, elements, rows } = buildContext({ searchValue: '귀하' });
     vm.runInNewContext(SOURCE, context);
