@@ -2789,4 +2789,65 @@ describe('generator/app.js', () => {
 
     expect(() => vm.runInNewContext(SOURCE, context)).not.toThrow();
   });
+
+  it('falls back to window.KRDSLint when the KRDSLint global has a non-function lint property', async () => {
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: ' + JSON.stringify({ type: 'chunk', text: '# 가이드라인 내용' }) + '\n'),
+            encoder.encode('data: ' + JSON.stringify({ type: 'done' }) + '\n'),
+          ];
+          let i = 0;
+          return { async read() { if (i < chunks.length) return { done: false, value: chunks[i++] }; return { done: true, value: undefined }; } };
+        },
+      },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    context.KRDSLint = { lint: 'not-a-function' };
+    const lintMock = vi.fn(() => ({ score: 100, summary: { total: 0, errors: 0, warnings: 0, infos: 0 }, issues: [] }));
+    context.window.KRDSLint = { lint: lintMock };
+
+    vm.runInNewContext(SOURCE, context);
+    elements['generator-form'].dispatch('submit');
+    await new Promise((r) => setTimeout(r, 0));
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(lintMock).toHaveBeenCalled();
+  });
+
+  it('shows the quality unavailable message when the streamed content produces an empty reviewText', async () => {
+    const encoder = new TextEncoder();
+    const allFilteredContent = '샘플 텍스트 1: 원문 내용\n🚫 금지 표현\n- 현재: 이 표현';
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: ' + JSON.stringify({ type: 'chunk', text: allFilteredContent }) + '\n'),
+            encoder.encode('data: ' + JSON.stringify({ type: 'done' }) + '\n'),
+          ];
+          let i = 0;
+          return { async read() { if (i < chunks.length) return { done: false, value: chunks[i++] }; return { done: true, value: undefined }; } };
+        },
+      },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    context.KRDSLint = {
+      lint: vi.fn(() => ({ score: 100, summary: { total: 0, errors: 0, warnings: 0, infos: 0 }, issues: [] })),
+    };
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((r) => setTimeout(r, 0));
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(elements['quality-gates'].innerHTML).toContain('자동 검수 엔진을 불러오지 못했습니다');
+  });
 });
