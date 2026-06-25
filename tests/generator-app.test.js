@@ -2462,6 +2462,29 @@ describe('generator/app.js', () => {
     expect(elements['output-content'].innerHTML).toContain('결과 텍스트');
   });
 
+  it('silently discards a fetch response that resolves after the user cancels (isActiveRun guard after await fetch)', async () => {
+    // startGeneration suspends at `await fetch(...)`, returning control to test code.
+    // cancel-btn.click() increments activeRunToken synchronously before the microtask
+    // continuation runs, so !isActiveRun(runToken) at line 924 of app.js fires → early return.
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: { getReader() { return { async read() { return { done: true }; } }; } },
+    }));
+
+    const { context, elements, screens } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    // Click cancel synchronously — before the fetch microtask continuation resumes.
+    elements['cancel-btn'].dispatch('click');
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(elements['generating-error'].classList.contains('visible')).toBe(false);
+    expect(screens[0].classList.contains('active')).toBe(true);
+  });
+
   it('silently ignores an AbortError thrown by fetch when the user cancels the request', async () => {
     const abortError = new Error('aborted');
     abortError.name = 'AbortError';
