@@ -503,6 +503,39 @@ describe('demo slides help overlay', () => {
     expect(container.style.transform || '').toBe('');
   });
 
+  it('does not navigate when hashchange fires with a hash that does not match the slide pattern', () => {
+    const windowListeners = new Map();
+    const { context, history } = buildContext();
+    context.window.addEventListener = (type, handler) => {
+      const arr = windowListeners.get(type) || [];
+      arr.push(handler);
+      windowListeners.set(type, arr);
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    context.location.hash = '#section-title';
+    const handlers = windowListeners.get('hashchange') || [];
+    handlers.forEach((h) => h());
+
+    expect(history.replaceState).not.toHaveBeenCalled();
+  });
+
+  it('does not navigate past the last slide when ArrowRight is pressed on the last slide with no build items', async () => {
+    const { context, document, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    document.dispatch('keydown', { key: 'End', preventDefault: vi.fn() });
+    await Promise.resolve();
+    await Promise.resolve();
+    history.replaceState.mockClear();
+
+    document.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() });
+    await Promise.resolve();
+
+    expect(history.replaceState).not.toHaveBeenCalled();
+  });
+
   it('falls back to slides[current] when lastHelpFocus has no focus method (restoreTarget fallback path)', () => {
     const { context, document, helpOverlay, slides } = buildContext();
     vm.runInNewContext(SOURCE, context);
