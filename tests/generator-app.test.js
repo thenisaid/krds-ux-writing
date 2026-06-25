@@ -3171,6 +3171,31 @@ describe('generator/app.js', () => {
     expect(html).toContain('상황·행동이 부족한 오류 패턴이');
   });
 
+  it('shows a "HWP 변환에 실패했습니다" error when the hwp format menu item is clicked', () => {
+    const { context, elements } = buildGeneratorContext();
+    vm.runInNewContext(SOURCE, context);
+
+    const [, hwpItem] = elements['dl-menu'].querySelectorAll('.dl-menu-item');
+    elements['dl-chevron'].dispatch('click');
+    elements['dl-menu'].dispatch('click', { target: hwpItem });
+
+    expect(elements['download-error'].classList.contains('visible')).toBe(true);
+    expect(elements['download-error'].textContent).toContain('HWP 변환에 실패했습니다');
+  });
+
+  it('fills sample fields with TYPE_SAMPLES for the matching agencyType when mode is derivative-guide and all samples are empty', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['sample-1'].value = '';
+    elements['sample-2'].value = '';
+    elements['sample-3'].value = '';
+    elements['generator-mode'].value = 'derivative-guide';
+
+    vm.runInNewContext(SOURCE, context);
+
+    // getModeSamples('derivative-guide', '지방자치단체') → TYPE_SAMPLES['지방자치단체']
+    expect(elements['sample-1'].value).toContain('귀하의 주민등록');
+  });
+
   it('processes a done event from the end-of-stream buffer when it arrives without a trailing newline', async () => {
     const encoder = new TextEncoder();
     const fetchImpl = vi.fn(async () => ({
