@@ -2440,4 +2440,34 @@ describe('server.js configuration', () => {
     });
     expect(responseState.statusCode).toBe(503);
   });
+
+  it('coerces a non-string agencyName to an empty string and rejects it via the length check (typeof ternary false branch)', async () => {
+    const responseState = await runServerRequest({
+      headers: { 'x-forwarded-for': '203.0.113.72' },
+      body: {
+        agencyName: 42,
+        agencyType: '지방자치단체',
+        samples: ['샘플 문구'],
+      },
+    });
+    expect(responseState.statusCode).toBe(400);
+    expect(JSON.parse(responseState.body).error).toContain('기관명은');
+  });
+
+  it('falls back to application/octet-stream Content-Type when serving a static file with an unrecognised extension', async () => {
+    const fs = requireModule('node:fs');
+    const readFileSpy = vi.spyOn(fs, 'readFile').mockImplementation((_filePath, cb) => {
+      cb(null, Buffer.from('binary data'));
+    });
+    try {
+      const responseState = await runServerRequest({
+        method: 'GET',
+        url: '/corpus/test-file.bin',
+      });
+      expect(responseState.statusCode).toBe(200);
+      expect(responseState.headers['content-type']).toBe('application/octet-stream');
+    } finally {
+      readFileSpy.mockRestore();
+    }
+  });
 });

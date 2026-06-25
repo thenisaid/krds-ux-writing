@@ -3231,4 +3231,26 @@ describe('generator/app.js', () => {
     expect(elements['output-title'].textContent).toBe('테스트 기관 UX Writing 가이드라인');
     expect(elements['output-content'].innerHTML).toContain('버퍼 끝 처리 테스트');
   });
+
+  it('keeps the format dropdown open when a document click fires on an element inside the dl-btn-group (!findClosest false branch)', () => {
+    const { context, elements } = buildGeneratorContext();
+    const docListeners = new Map();
+    context.document.addEventListener = (type, handler) => {
+      const arr = docListeners.get(type) || [];
+      arr.push(handler);
+      docListeners.set(type, arr);
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['dl-chevron'].dispatch('click');
+    expect(elements['dl-menu'].classList.contains('open')).toBe(true);
+
+    const insideTarget = createElement({ inDownloadGroup: true, downloadGroup: {} });
+    const clickHandlers = docListeners.get('click') || [];
+    clickHandlers.forEach((h) => h({ target: insideTarget }));
+
+    expect(elements['dl-menu'].classList.contains('open')).toBe(true);
+    expect(elements['dl-chevron'].getAttribute('aria-expanded')).toBe('true');
+  });
 });
