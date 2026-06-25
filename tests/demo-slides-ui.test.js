@@ -435,4 +435,60 @@ describe('demo slides help overlay', () => {
     expect(container.style.transform || '').toBe('');
     expect(history.replaceState).not.toHaveBeenCalled();
   });
+
+  it('does not throw when demo-slides DOM elements are missing (early-return guard)', () => {
+    const context = {
+      document: {
+        querySelector() { return null; },
+        querySelectorAll() { return []; },
+        getElementById() { return null; },
+        activeElement: null,
+        addEventListener() {},
+      },
+      window: { innerWidth: 1024, innerHeight: 576, addEventListener() {} },
+      history: { replaceState: vi.fn() },
+      location: { hash: '' },
+      requestAnimationFrame(fn) { fn(); return 1; },
+      setTimeout(fn) { fn(); return 1; },
+      clearTimeout() {},
+      Promise,
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    expect(() => vm.runInNewContext(SOURCE, context)).not.toThrow();
+  });
+
+  it('reveals the next build item instead of advancing the slide when next() is called on a slide with hidden builds', async () => {
+    const buildItem = createElement({ classes: ['build-item'], dataset: { build: '0' } });
+    const { context, document, history } = buildContext({
+      slides: [
+        { dataset: { slide: '0' }, buildItems: [buildItem] },
+        { dataset: { slide: '1' }, buildItems: [] },
+      ],
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    document.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(buildItem.classList.contains('shown')).toBe(true);
+    expect(history.replaceState).not.toHaveBeenCalled();
+  });
+
+  it('does not call preventDefault or change state when Escape is pressed while the help overlay is closed', () => {
+    const { context, document, helpOverlay } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    expect(helpOverlay.classList.contains('visible')).toBe(false);
+
+    const preventDefault = vi.fn();
+    document.dispatch('keydown', { key: 'Escape', preventDefault });
+
+    expect(helpOverlay.classList.contains('visible')).toBe(false);
+    expect(preventDefault).not.toHaveBeenCalled();
+  });
 });
