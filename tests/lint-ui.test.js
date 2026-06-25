@@ -1539,6 +1539,28 @@ describe('lint-ui stale result handling', () => {
     expect((elements.historyList.innerHTML.match(/<button/g) || []).length).toBe(1);
   });
 
+  it('filters out non-object primitives from history array (typeof entry !== object branch)', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      42,
+      '문자열 항목',
+      true,
+      {
+        date: '2026. 1. 1.',
+        score: 85,
+        text: '유효한 항목입니다.',
+        fullText: '유효한 항목입니다.',
+        issueCount: 1,
+      },
+    ]));
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.historyCard.style.display).toBe('block');
+    expect(elements.historyList.innerHTML).toContain('유효한 항목입니다.');
+    expect((elements.historyList.innerHTML.match(/<button/g) || []).length).toBe(1);
+  });
+
   it('renders history score badge in danger color when the score is below 50', () => {
     const { context, elements } = buildContext();
     context.localStorage.setItem('krds-lint-history', JSON.stringify([
