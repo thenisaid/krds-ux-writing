@@ -248,6 +248,32 @@ describe('prompt library filters', () => {
     expect(copyBtn.classList.contains('copied')).toBe(false);
   });
 
+  it('falls back to execCommand when clipboard rejects but execCommand succeeds', async () => {
+    const { context, document, copyBtn } = buildContext({
+      clipboard: {
+        writeText: vi.fn(() => Promise.reject(new Error('denied'))),
+      },
+      execCommandResult: true,
+    });
+    runPageScripts(context);
+
+    document.dispatch('click', { target: copyBtn });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(copyBtn.textContent).toBe('복사됨!');
+    expect(copyBtn.classList.contains('copied')).toBe(true);
+  });
+
+  it('does nothing when the copy target element is not in the DOM', () => {
+    const { context, document, copyBtn } = buildContext();
+    copyBtn.dataset.target = 'nonexistent-prompt';
+    runPageScripts(context);
+
+    expect(() => document.dispatch('click', { target: copyBtn })).not.toThrow();
+    expect(copyBtn.textContent).toBe('복사');
+  });
+
   it('keeps the latest copy feedback visible when the prompt is copied repeatedly', async () => {
     const { context, document, copyBtn, timers } = buildContext({ manualTimers: true });
     runPageScripts(context);

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
@@ -9,6 +9,7 @@ const {
   extractSnippets,
   replaceSyncBlock,
   syncPromptFiles,
+  main,
 } = require('../scripts/sync-prompts.js');
 
 const ROOT = process.cwd();
@@ -162,5 +163,19 @@ describe('scripts/sync-prompts.js', () => {
     const updateLog = logs.find((l) => l.includes('snippet'));
     expect(updateLog).toContain('(1 snippet)');
     expect(updateLog).not.toContain('snippets');
+  });
+
+  it('returns 0 and logs a not-found message when prompt-library.html does not exist', () => {
+    const logs = [];
+    vi.spyOn(fs, 'existsSync').mockReturnValueOnce(false);
+    const spy = vi.spyOn(console, 'log').mockImplementation((msg) => logs.push(msg));
+    try {
+      const result = main();
+      expect(result).toBe(0);
+      expect(logs.some((l) => l.includes('not found'))).toBe(true);
+    } finally {
+      vi.restoreAllMocks();
+      spy.mockRestore();
+    }
   });
 });

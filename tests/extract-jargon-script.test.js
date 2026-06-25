@@ -698,4 +698,63 @@ describe('scripts/extract-jargon.js', () => {
     expect(writes.length).toBeGreaterThan(0);
     expect(writes.some((w) => w.contents.includes('귀하'))).toBe(true);
   });
+
+  it('writes only the JSON file when json changes but the browser bundle is already current', () => {
+    const md = '### 2.1 행정어·전문용어 대체어 사전\n#### 카테고리 1. 행정 관습어\n| 쓰지 마세요 | 대신 쓰세요 |\n|---|---|\n| 귀하 | 고객님 |\n### 2.1 부록\n';
+    const date = '2099-12-31';
+    const entries = parse(md);
+    const output = buildOutput({ entries, existingOutput: null, date });
+    const currentBrowserBundle = buildBrowserBundle(output);
+
+    const writes = [];
+    const stderrLines = [];
+
+    const result = syncJargonDictionary({
+      md,
+      dryRun: false,
+      date,
+      existingOutput: null,
+      existingBrowserBundle: currentBrowserBundle,
+      writeFile(filePath, contents) { writes.push({ filePath, contents }); },
+      stdout: { write() {} },
+      stderr: { write(s) { stderrLines.push(s); } },
+    });
+
+    expect(result.changed).toBe(true);
+    expect(writes).toHaveLength(1);
+    expect(writes[0].contents).toContain('귀하');
+    const stderr = stderrLines.join('');
+    expect(stderr).toContain('JSON 저장 위치');
+    expect(stderr).not.toContain('브라우저 번들 저장 위치');
+  });
+
+  it('writes only the browser bundle when the bundle changes but the JSON is already current', () => {
+    const md = '### 2.1 행정어·전문용어 대체어 사전\n#### 카테고리 1. 행정 관습어\n| 쓰지 마세요 | 대신 쓰세요 |\n|---|---|\n| 귀하 | 고객님 |\n### 2.1 부록\n';
+    const date = '2099-12-31';
+    const entries = parse(md);
+    const output = buildOutput({ entries, existingOutput: null, date });
+    const currentJson = JSON.stringify(output, null, 2);
+    const currentOutput = JSON.parse(currentJson);
+
+    const writes = [];
+    const stderrLines = [];
+
+    const result = syncJargonDictionary({
+      md,
+      dryRun: false,
+      date,
+      existingOutput: currentOutput,
+      existingBrowserBundle: 'outdated-bundle',
+      writeFile(filePath, contents) { writes.push({ filePath, contents }); },
+      stdout: { write() {} },
+      stderr: { write(s) { stderrLines.push(s); } },
+    });
+
+    expect(result.changed).toBe(true);
+    expect(writes).toHaveLength(1);
+    expect(writes[0].contents).toContain('KRDS_JARGON_DICT');
+    const stderr = stderrLines.join('');
+    expect(stderr).toContain('브라우저 번들 저장 위치');
+    expect(stderr).not.toContain('JSON 저장 위치');
+  });
 });
