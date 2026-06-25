@@ -392,4 +392,26 @@ describe('krds extension popup', () => {
     expect(chips[0].classList.contains('active')).toBe(false);
     expect(chrome.tabs.create).not.toHaveBeenCalled();
   });
+
+  it('opens the root guide URL when the full guide button is clicked', () => {
+    const { context, chrome, elements } = buildPopupContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.fullGuideBtn.dispatch('click', { preventDefault: () => {} });
+
+    expect(chrome.tabs.create).toHaveBeenCalledWith({
+      url: 'https://thenisaid.github.io/krds-ux-writing/',
+    });
+  });
+
+  it('opens the root guide URL when the open-full button is clicked', () => {
+    const { context, chrome, elements } = buildPopupContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.openFullBtn.dispatch('click');
+
+    expect(chrome.tabs.create).toHaveBeenCalledWith({
+      url: 'https://thenisaid.github.io/krds-ux-writing/',
+    });
+  });
 });
