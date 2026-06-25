@@ -1224,6 +1224,123 @@ describe('before-after page interactions', () => {
     expect(seminarCounter.textContent).toBe('1 / 2');
   });
 
+  it('triggers linting when Meta+Enter (Cmd+Enter on macOS) is pressed in the lint textarea', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.lintInput.value = '귀하의 신청이 완료되었습니다.';
+    const preventDefault = vi.fn();
+    elements.lintInput.dispatch('keydown', { key: 'Enter', metaKey: true, preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(elements.lintResults.classList.contains('visible')).toBe(true);
+    expect(elements.lintResults.innerHTML).toContain('71');
+  });
+
+  it('applies the "ok" score class when the lint score is between 50 and 79', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 65,
+        summary: { errors: 0, warnings: 1, infos: 0 },
+        issues: [{ severity: 'warning', category: '행정어', match: '처리', message: '설명', suggestion: '대안' }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.lintInput.value = '처리가 완료되었습니다.';
+    elements.lintRunBtn.dispatch('click');
+
+    expect(elements.lintResults.innerHTML).toContain('lint-score-num ok');
+    expect(elements.lintResults.innerHTML).toContain('>65<');
+  });
+
+  it('applies the "good" score class when the lint score is 80 or above but issues remain', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 85,
+        summary: { errors: 0, warnings: 1, infos: 0 },
+        issues: [{ severity: 'warning', category: '어려운표현', match: '시행', message: '설명', suggestion: '실시 → 시행' }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.lintInput.value = '시행이 완료되었습니다.';
+    elements.lintRunBtn.dispatch('click');
+
+    expect(elements.lintResults.innerHTML).toContain('lint-score-num good');
+    expect(elements.lintResults.innerHTML).toContain('>85<');
+  });
+
+  it('navigates to the previous tab when ArrowLeft is pressed on the active tab', () => {
+    const panelA = createElement({ id: 'panel-a', classes: ['tab-panel'], queryMap: { 'mark.diff': [] } });
+    const panelB = createElement({ id: 'panel-b', classes: ['tab-panel', 'active'], queryMap: { 'mark.diff': [] } });
+    const tabA = createElement({
+      id: 'tab-a',
+      classes: ['tab-btn'],
+      attributes: { 'aria-controls': 'panel-a', 'aria-selected': 'false' },
+    });
+    const tabB = createElement({
+      id: 'tab-b',
+      classes: ['tab-btn', 'active'],
+      attributes: { 'aria-controls': 'panel-b', 'aria-selected': 'true' },
+    });
+    const elements = {
+      themeToggle: createElement({ id: 'themeToggle' }),
+      themeIcon: createElement({ id: 'themeIcon' }),
+      'tab-a': tabA,
+      'tab-b': tabB,
+      'panel-a': panelA,
+      'panel-b': panelB,
+      seminarOverlay: createElement({ id: 'seminarOverlay', queryMap: { 'mark.diff': [] } }),
+      seminarSlide: createElement({ id: 'seminarSlide', queryMap: { 'mark.diff': [] } }),
+    };
+    const document = createDocument(elements, {
+      '.tab-btn': [tabA, tabB],
+      '.tab-panel': [panelA, panelB],
+      '.pair': [],
+    });
+    const context = {
+      document,
+      window: {},
+      localStorage: { setItem() {} },
+      setTimeout(fn) { fn(); return 1; },
+      clearTimeout() {},
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    const preventDefault = vi.fn();
+    tabB.dispatch('keydown', { key: 'ArrowLeft', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(tabA.focus).toHaveBeenCalled();
+    expect(tabA.getAttribute('aria-selected')).toBe('true');
+    expect(tabB.getAttribute('aria-selected')).toBe('false');
+    expect(panelA.classList.contains('active')).toBe(true);
+    expect(panelB.classList.contains('active')).toBe(false);
+  });
+
+  it('clears the lint input and hides result cards when lintClearBtn is clicked after running lint', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.lintInput.value = '귀하의 신청이 완료되었습니다.';
+    elements.lintRunBtn.dispatch('click');
+    expect(elements.lintResults.classList.contains('visible')).toBe(true);
+    expect(elements.lintResults.innerHTML).toContain('71');
+
+    elements.lintClearBtn.dispatch('click');
+
+    expect(elements.lintInput.value).toBe('');
+    expect(elements.lintInput.focus).toHaveBeenCalled();
+    expect(elements.lintResults.classList.contains('visible')).toBe(false);
+    expect(elements.lintResults.innerHTML).toBe('');
+  });
+
   it('does not call setTimeout for the initial mark animation when panel-a is absent from the DOM', () => {
     const setTimeoutSpy = vi.fn();
     const tabA = createElement({
