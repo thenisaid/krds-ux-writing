@@ -781,6 +781,52 @@ describe('shared nav tree relationships', () => {
     expect(localSubLink.classList.contains('active')).toBe(true);
     expect(localSubLink.getAttribute('aria-current')).toBe('location');
   });
+
+  it('does not set aria-expanded or aria-controls on the toggle when an item has no .lnb-tog child', () => {
+    const link = createElement({ classes: ['lnb-item-a'] });
+    const subLink = createElement({ classes: ['lnb-sub-a'] });
+    const sub = createElement({ classes: ['lnb-sub'], queryMap: { '.lnb-sub-a': [subLink] } });
+    const item = createElement({
+      attributes: { 'aria-expanded': 'false', 'data-path': '/principles/foundation/' },
+      classes: ['lnb-item'],
+      queryMap: {
+        '.lnb-sub': sub,
+        '.lnb-item-a': link,
+        '.lnb-item-a, .lnb-sub-a': [link, subLink],
+      },
+    });
+    const tree = createElement({
+      classes: ['lnb-tree'],
+      queryMap: {
+        '.lnb-item': [item],
+        '.lnb-item-a, .lnb-tog, .lnb-sub-a': [link, subLink],
+        '.lnb-sub-a': [subLink],
+      },
+    });
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: null,
+      querySelector(selector) { return selector === '.lnb-tree' ? tree : null; },
+      querySelectorAll() { return []; },
+      getElementById() { return null; },
+      addEventListener() {},
+    };
+    const context = {
+      window: { innerWidth: 1280, location: { pathname: '/krds-ux-writing/' } },
+      location: { pathname: '/krds-ux-writing/', hash: '' },
+      document,
+      localStorage: { getItem() { return null; }, setItem() {} },
+      sessionStorage: { getItem() { return null; }, setItem() {} },
+      IntersectionObserver: function () { return { observe() {}, unobserve() {}, disconnect() {} }; },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    expect(() => vm.runInNewContext(SOURCE, context)).not.toThrow();
+    expect(item.getAttribute('aria-expanded')).toBe('false');
+    expect(sub.getAttribute('aria-controls')).toBe(null);
+  });
 });
 
 describe('shared nav tree accordion toggle', () => {
@@ -1124,6 +1170,49 @@ describe('shared nav tree keyboard navigation', () => {
     expect(() => makeContext({
       sessionStorageValue: 'this-is-not-valid-json',
     })).not.toThrow();
+  });
+
+  it('excludes .lnb-sub-a links whose closest .lnb-sub has the hidden attribute from ArrowDown navigation', () => {
+    const link = createElement({ classes: ['lnb-item-a'] });
+    const hiddenSub = createElement({ attributes: { hidden: '' } });
+    const hiddenSubLink = createElement({ classes: ['lnb-sub-a'] });
+    hiddenSubLink.closestMap = { '.lnb-sub': hiddenSub };
+    hiddenSubLink.focus = vi.fn();
+
+    const tree = createElement({
+      classes: ['lnb-tree'],
+      queryMap: {
+        '.lnb-item': [],
+        '.lnb-item-a, .lnb-tog, .lnb-sub-a': [link, hiddenSubLink],
+        '.lnb-sub-a': [hiddenSubLink],
+      },
+    });
+
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: link,
+      querySelector(selector) { return selector === '.lnb-tree' ? tree : null; },
+      querySelectorAll() { return []; },
+      getElementById() { return null; },
+      addEventListener() {},
+    };
+
+    const context = {
+      window: { innerWidth: 1280, location: { pathname: '/krds-ux-writing/' } },
+      location: { pathname: '/krds-ux-writing/', hash: '' },
+      document,
+      localStorage: { getItem() { return null; }, setItem() {} },
+      sessionStorage: { getItem() { return null; }, setItem() {} },
+      IntersectionObserver: function () { return { observe() {}, unobserve() {}, disconnect() {} }; },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    tree.dispatch('keydown', { key: 'ArrowDown', preventDefault: vi.fn() });
+    expect(hiddenSubLink.focus).not.toHaveBeenCalled();
   });
 });
 
