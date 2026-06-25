@@ -217,4 +217,31 @@ describe('dictionary filter initialization', () => {
     expect(rows[1].style.display).toBe('');
     expect(elements.searchInput.focus).toHaveBeenCalled();
   });
+
+  it('shows the empty state and hides the table when no rows match the search query (visible === 0 branch)', () => {
+    const { context, elements, table } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.searchInput.value = '없는검색어';
+    elements.searchInput.dispatch('input');
+
+    expect(elements.resultCount.innerHTML).toContain('<strong>0</strong>');
+    expect(elements.emptyState.style.display).toBe('block');
+    expect(table.style.display).toBe('none');
+    expect(elements.searchClear.style.display).toBe('block');
+  });
+
+  it('hides the clear button via the input handler when the query is erased (currentQuery empty branch in input listener)', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.searchInput.value = '귀하';
+    elements.searchInput.dispatch('input');
+    expect(elements.searchClear.style.display).toBe('block');
+
+    elements.searchInput.value = '';
+    elements.searchInput.dispatch('input');
+    expect(elements.searchClear.style.display).toBe('none');
+    expect(elements.resultCount.innerHTML).toContain('<strong>2</strong>');
+  });
 });
