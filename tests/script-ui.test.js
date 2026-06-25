@@ -1243,6 +1243,62 @@ describe('script.js live index interactions', () => {
     expect(window.scrollTo).not.toHaveBeenCalled();
   });
 
+  it('closes the mobile menu and focuses the anchor target when a same-page menu item is clicked and the target exists', () => {
+    const { context, document, elements } = createEnvironment();
+    const sectionTarget = createElement(document, { rect: { top: 300 } });
+    const menuItem = createElement(document, {
+      classes: ['mobile-menu-item'],
+      attributes: { href: '#target-section' },
+      closestSelectors: ['.mobile-menu-item, .mobile-menu-link'],
+    });
+    const mobileMenu = createElement(document, {
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [menuItem] },
+    });
+    const mobileMenuBtn = createElement(document, {
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    elements['target-section'] = sectionTarget;
+    elements.mobileMenu = mobileMenu;
+    elements.mobileMenuBtn = mobileMenuBtn;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    mobileMenuBtn.dispatch('click');
+    expect(mobileMenu.classList.contains('open')).toBe(true);
+
+    const preventDefault = vi.fn();
+    mobileMenu.dispatch('click', { target: menuItem, preventDefault });
+
+    expect(mobileMenu.classList.contains('open')).toBe(false);
+    expect(preventDefault).toHaveBeenCalled();
+    expect(sectionTarget.focus).toHaveBeenCalled();
+    expect(mobileMenuBtn.focus).not.toHaveBeenCalled();
+  });
+
+  it('does not set tabindex on a skip-nav anchor target that already has a tabindex attribute', () => {
+    const { context, document, elements, anchorLinks } = createEnvironment();
+    const target = createElement(document, {
+      attributes: { tabindex: '0' },
+      rect: { top: 100 },
+    });
+    const link = createElement(document, {
+      classes: ['skip-nav'],
+      attributes: { href: '#pre-tabbed-target' },
+    });
+    elements['pre-tabbed-target'] = target;
+    anchorLinks.push(link);
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    link.dispatch('click', { preventDefault: vi.fn() });
+
+    expect(target.getAttribute('tabindex')).toBe('0');
+    expect(target.focus).toHaveBeenCalled();
+  });
+
   it('does not restore focus to the button when closeMobileMenu is called with restoreFocus false and no trap was installed', () => {
     const { context, document, window, elements } = createEnvironment();
     const mobileMenu = createElement(document, {
