@@ -2272,6 +2272,32 @@ describe('server.js configuration', () => {
     expect(loadFreshServerModule().getAnthropicApiKey()).toBe('local-llm');
   });
 
+  it('rejects a local server request when all sample elements are non-string values', async () => {
+    const responseState = await runServerRequest({
+      headers: { 'x-forwarded-for': '203.0.113.57' },
+      body: {
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        samples: [123, null, true],
+      },
+    });
+    expect(responseState.statusCode).toBe(400);
+    expect(JSON.parse(responseState.body).error).toBe('유효한 샘플 텍스트를 1개 이상 입력해 주세요.');
+  });
+
+  it('rejects a local server request when all sample strings contain only whitespace', async () => {
+    const responseState = await runServerRequest({
+      headers: { 'x-forwarded-for': '203.0.113.58' },
+      body: {
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        samples: ['   ', '\t'],
+      },
+    });
+    expect(responseState.statusCode).toBe(400);
+    expect(JSON.parse(responseState.body).error).toBe('유효한 샘플 텍스트를 1개 이상 입력해 주세요.');
+  });
+
   it('returns 429 when the rate-limit map is full with non-expired entries and a new IP tries to connect', async () => {
     const freshServerModule = loadFreshServerModule();
     const freshServer = freshServerModule.server;
