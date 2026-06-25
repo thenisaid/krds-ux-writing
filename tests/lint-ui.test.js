@@ -2380,4 +2380,60 @@ describe('lint-ui uncovered branch coverage', () => {
     expect(elements.improvedText.textContent).not.toContain('제출');
   });
 
+  it('silently skips an admin-jargon issue when the text at the reported column does not match the match field (text-mismatch guard)', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1,
+          col: 1,
+          severity: 'error',
+          category: '행정어',
+          message: '행정어: "귀하"',
+          match: '귀하',
+          suggestion: '→ 고객님',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    // Input does not contain '귀하' at col 1 — text mismatch → issue is skipped
+    elements.inputText.value = '다른 텍스트입니다.';
+    elements.lintBtn.dispatch('click');
+
+    // Card is shown (set to 'block' before the loop) but text is left unmodified
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).toBe('다른 텍스트입니다.');
+    expect(elements.improvedText.textContent).not.toContain('고객님');
+  });
+
+  it('leaves particle unchanged when the replacement ends with a non-Korean character (non-Korean fallback in correctParticle)', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1,
+          col: 1,
+          severity: 'error',
+          category: '행정어',
+          message: '행정어: "귀하"',
+          match: '귀하',
+          suggestion: '→ User',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    // replacement 'User' ends with 'r' (non-Korean) → particle '가' stays as-is
+    elements.inputText.value = '귀하가 제출해 주세요.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).toBe('User가 제출해 주세요.');
+  });
+
 });
