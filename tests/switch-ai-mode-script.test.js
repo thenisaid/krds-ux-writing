@@ -96,6 +96,40 @@ describe('scripts/switch-ai-mode.sh', () => {
     expect(envContents).not.toContain('ANTHROPIC_API_KEY=local-llm');
   });
 
+  it('does not overwrite the backup when switching to local mode while already on local URL', () => {
+    const initialEnv = [
+      'ANTHROPIC_BASE_URL=http://localhost:8200/krds',
+      'ANTHROPIC_API_KEY=local-llm',
+      '',
+    ].join('\n');
+    const { scriptPath, envPath } = createFixture(initialEnv);
+
+    const result = runScript(scriptPath, 'local');
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('Switched KRDS to LOCAL LLM');
+    expect(fs.existsSync(`${envPath}.cloud-backup`)).toBe(false);
+  });
+
+  it('keeps a non-local ANTHROPIC_API_KEY when restoring cloud defaults without a backup file', () => {
+    const initialEnv = [
+      'ANTHROPIC_BASE_URL=http://localhost:8200/krds',
+      'ANTHROPIC_API_KEY=real-cloud-key',
+      'OTHER_SETTING=keep-me',
+      '',
+    ].join('\n');
+    const { scriptPath, envPath } = createFixture(initialEnv);
+
+    const result = runScript(scriptPath, 'cloud');
+    const envContents = fs.readFileSync(envPath, 'utf8');
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('Restored the default Anthropic base URL only.');
+    expect(envContents).toContain('ANTHROPIC_BASE_URL=https://api.anthropic.com/v1');
+    expect(envContents).toContain('ANTHROPIC_API_KEY=real-cloud-key');
+    expect(envContents).toContain('OTHER_SETTING=keep-me');
+  });
+
   it('returns a usage error for unsupported modes', () => {
     const { scriptPath } = createFixture('');
 
