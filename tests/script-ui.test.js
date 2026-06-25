@@ -1435,4 +1435,24 @@ describe('script.js live index interactions', () => {
     expect(preventDefault).not.toHaveBeenCalled();
     expect(window.scrollTo).not.toHaveBeenCalled();
   });
+
+  it('returns early from the anchor click handler when the link has only the mobile-menu-item class (not mobile-menu-link)', () => {
+    const { context, document, elements, anchorLinks } = createEnvironment();
+    const target = createElement(document, { rect: { top: 200 } });
+    const link = createElement(document, {
+      classes: ['mobile-menu-item'],
+      attributes: { href: '/krds-ux-writing/#section' },
+    });
+    elements.section = target;
+    anchorLinks.push(link);
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    const preventDefault = vi.fn();
+    link.dispatch('click', { preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(target.focus).not.toHaveBeenCalled();
+  });
 });
