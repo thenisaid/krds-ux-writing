@@ -335,4 +335,74 @@ describe('guide intro slides', () => {
 
     expect(history.replaceState).toHaveBeenCalledWith(null, '', '#slide-2');
   });
+
+  it('does not throw when guide-intro DOM elements are missing (early-return guard)', () => {
+    const context = {
+      document: {
+        getElementById() { return null; },
+        querySelectorAll() { return []; },
+      },
+      window: { innerWidth: 1024, innerHeight: 576, addEventListener() {} },
+      history: { replaceState: vi.fn() },
+      location: { hash: '' },
+      requestAnimationFrame(fn) { fn(); return 1; },
+      setTimeout(fn) { fn(); return 1; },
+      clearTimeout() {},
+      Promise,
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    expect(() => vm.runInNewContext(SOURCE, context)).not.toThrow();
+  });
+
+  it('reveals the next build item instead of advancing the slide when next() is called on a slide with hidden builds', async () => {
+    const buildItem = createElement({ classes: ['b'], dataset: { build: '0' } });
+    const { context, document, history } = buildContext({
+      slides: [
+        { dataset: { slide: '0' }, buildItems: [] },
+        { dataset: { slide: '1' }, buildItems: [buildItem] },
+        { dataset: { slide: '2' }, buildItems: [] },
+      ],
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    document.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(history.replaceState).toHaveBeenLastCalledWith(null, '', '#slide-2');
+    expect(buildItem.classList.contains('shown')).toBe(false);
+
+    history.replaceState.mockClear();
+
+    document.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(buildItem.classList.contains('shown')).toBe(true);
+    expect(history.replaceState).not.toHaveBeenCalled();
+  });
+
+  it('moves to the previous slide when ArrowLeft is pressed', async () => {
+    const { context, document, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    document.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    history.replaceState.mockClear();
+
+    document.dispatch('keydown', { key: 'ArrowLeft', preventDefault: vi.fn() });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(history.replaceState).toHaveBeenCalledWith(null, '', '#slide-1');
+  });
+
+  it('does not navigate backward when ArrowLeft is pressed on the first slide', () => {
+    const { context, document, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    document.dispatch('keydown', { key: 'ArrowLeft', preventDefault: vi.fn() });
+
+    expect(history.replaceState).not.toHaveBeenCalled();
+  });
 });
