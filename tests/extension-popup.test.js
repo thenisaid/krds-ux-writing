@@ -502,6 +502,46 @@ describe('krds extension popup', () => {
     expect(elements.tipsView.style.display).toBe('block');
   });
 
+  it('does not move focus when ArrowDown is pressed on the last result item', () => {
+    const { context, elements } = buildPopupContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.searchInput.value = '버튼';
+    elements.searchInput.dispatch('input');
+
+    const allResults = elements.resultsList.querySelectorAll('.result-item');
+    expect(allResults.length).toBeGreaterThan(0);
+    const lastResult = allResults[allResults.length - 1];
+    const focusBefore = lastResult.focus.mock.calls.length;
+
+    const preventDefault = vi.fn();
+    lastResult.dispatch('keydown', { key: 'ArrowDown', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(lastResult.focus.mock.calls.length).toBe(focusBefore);
+  });
+
+  it('moves focus to the previous result when ArrowUp is pressed on a non-first result', () => {
+    const { context, elements } = buildPopupContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.searchInput.value = 'a';
+    elements.searchInput.dispatch('input');
+
+    const allResults = elements.resultsList.querySelectorAll('.result-item');
+    expect(allResults.length).toBeGreaterThan(1);
+    const [first, second] = allResults;
+
+    const focusBeforeDispatch = elements.searchInput.focus.mock.calls.length;
+
+    const preventDefault = vi.fn();
+    second.dispatch('keydown', { key: 'ArrowUp', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(first.focus).toHaveBeenCalled();
+    expect(elements.searchInput.focus.mock.calls.length).toBe(focusBeforeDispatch);
+  });
+
   it('shows the empty-state placeholder when the search query matches no entries', () => {
     const { context, elements } = buildPopupContext();
     vm.runInNewContext(SOURCE, context);
