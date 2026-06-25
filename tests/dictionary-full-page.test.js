@@ -268,4 +268,34 @@ describe('dictionary full page script', () => {
     expect(elements.resultCount.innerHTML).toContain('<strong>0</strong>');
     expect(elements.dictBody.innerHTML).toBe('');
   });
+
+  it('does not throw and skips all setup when required DOM elements are missing', () => {
+    const context = {
+      document: {
+        documentElement: { setAttribute() {} },
+        getElementById() { return null; },
+        querySelector() { return null; },
+        querySelectorAll() { return []; },
+      },
+      window: { KRDS_JARGON_DICT: null, matchMedia() { return { matches: false, addEventListener() {} }; } },
+      KRDS_JARGON_DICT: null,
+      localStorage: { getItem() { return null; } },
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    expect(() => vm.runInNewContext(SCRIPT_SOURCE, context)).not.toThrow();
+  });
+
+  it('silently skips the badge update for a filter button whose querySelector returns no .count child', () => {
+    const { context, elements, filterBtns } = buildContext();
+    filterBtns[1].querySelector = () => null;
+
+    vm.runInNewContext(SCRIPT_SOURCE, context);
+
+    expect(filterBtns[0].querySelector('.count').textContent).toBe('5');
+    expect(elements.dictBody.innerHTML).toContain('귀하');
+  });
 });
