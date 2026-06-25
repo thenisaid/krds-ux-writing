@@ -664,6 +664,31 @@ describe('placeholderPattern branches via synthetic dictionary', () => {
     expect(result.issues.find(i => i.match === '귀하')).toBeUndefined();
     expect(result.issues.find(i => i.match === '잘못')).toBeDefined();
   });
+
+  it('strips tildes from the banned text before matching (normalizePlaceholderTildes branch)', () => {
+    // banned has a literal tilde → normalizePlaceholderTildes removes it → entry becomes '기간정보'
+    const lint = makeCustomLint([
+      { banned: '기간~정보', alt: '기간 정보', cat: '행정 관습어' },
+    ]);
+    const result = lint.lint('기간정보를 확인하세요.');
+    const issue = result.issues.find(i => i.type === 'admin-jargon');
+    expect(issue).toBeDefined();
+    expect(issue.match).toBe('기간정보');
+  });
+
+  it('skips a bannedRegex match whose range is already occupied by a longer entry (overlaps true branch — regex path)', () => {
+    // Entry A (longer): banned='금액: [금액]' → bannedRegex matches '금액: 50,000원' → occupies range [0..10]
+    // Entry B (shorter): banned='[금액]'     → bannedRegex matches '50,000원' at index 4 → overlaps → skipped
+    const lint = makeCustomLint([
+      { banned: '금액: [금액]', alt: '납부할 금액을 명시하세요', cat: '행정 관습어' },
+      { banned: '[금액]',      alt: '금액을 명시하세요',       cat: '행정 관습어' },
+    ]);
+    const result = lint.lint('금액: 50,000원');
+    const jargonIssues = result.issues.filter(i => i.type === 'admin-jargon');
+    // The longer entry occupies the range; the shorter inner match should be suppressed.
+    expect(jargonIssues).toHaveLength(1);
+    expect(jargonIssues[0].match).toMatch(/금액/);
+  });
 });
 
 describe('UMD Node.js branch — jargon-dictionary.json load failure falls back to inline list', () => {
