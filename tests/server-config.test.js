@@ -2334,4 +2334,36 @@ describe('server.js configuration', () => {
       vi.restoreAllMocks();
     }
   });
+
+  it('accepts an explicitly null optional field in readOptionalStringField and treats it as absent (null branch)', async () => {
+    process.env.ANTHROPIC_API_KEY = '';
+    const responseState = await runServerRequest({
+      headers: { 'x-forwarded-for': '203.0.113.70' },
+      body: {
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        samples: ['샘플 문구'],
+        screenType: null,
+        toneTarget: null,
+        taskBrief: null,
+      },
+    });
+    expect(responseState.statusCode).toBe(503);
+  });
+
+  it('accepts an explicitly empty-string optional field in readOptionalStringField and treats it as absent (empty-string branch)', async () => {
+    process.env.ANTHROPIC_API_KEY = '';
+    const responseState = await runServerRequest({
+      headers: { 'x-forwarded-for': '203.0.113.71' },
+      body: {
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        samples: ['샘플 문구'],
+        screenType: '',
+        toneTarget: '',
+        taskBrief: '',
+      },
+    });
+    expect(responseState.statusCode).toBe(503);
+  });
 });

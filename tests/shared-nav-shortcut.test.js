@@ -263,6 +263,34 @@ describe('shared nav Ctrl+K behavior', () => {
     expect(focus).not.toHaveBeenCalled();
   });
 
+  it('returns root path when the bare deployment prefix is the entire pathname (normalizeComparablePath empty-value branch)', () => {
+    const principlesLink = createNavLink('principles');
+    const dictionaryLink = createNavLink('dictionary');
+
+    makeContext({
+      pathname: '/krds-ux-writing',
+      withBasePath: false,
+      navLinks: [principlesLink, dictionaryLink],
+    });
+
+    expect(principlesLink.classList.contains('active')).toBe(false);
+    expect(dictionaryLink.classList.contains('active')).toBe(false);
+  });
+
+  it('strips index.html suffix and returns root when the result is empty (normalizeComparablePath value-or-slash branch)', () => {
+    const principlesLink = createNavLink('principles');
+    const dictionaryLink = createNavLink('dictionary');
+
+    makeContext({
+      pathname: '/krds-ux-writing/index.html',
+      withBasePath: false,
+      navLinks: [principlesLink, dictionaryLink],
+    });
+
+    expect(principlesLink.classList.contains('active')).toBe(false);
+    expect(dictionaryLink.classList.contains('active')).toBe(false);
+  });
+
   it('treats a TEXTAREA target as a text-entry field and does not hijack Ctrl+K', () => {
     const focus = vi.fn();
     const preventDefault = vi.fn();
