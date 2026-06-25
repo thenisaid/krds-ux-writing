@@ -1286,6 +1286,44 @@ describe('server.js configuration', () => {
     }
   });
 
+  it('silently skips unknown Claude SSE event types (e.g. message_start) and still fires done on message_stop', async () => {
+    const originalRequest = https.request;
+    try {
+      const chunks = [];
+      await new Promise((resolve) => {
+        https.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            res.headers = { 'content-type': 'text/event-stream' };
+            callback(res);
+            res.emit('data', Buffer.from(
+              'data: {"type":"message_start","message":{"id":"msg_01","role":"assistant"}}\n' +
+              'data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}}\n' +
+              'data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"결과"}}\n' +
+              'data: {"type":"content_block_stop","index":0}\n' +
+              'data: {"type":"message_stop"}\n\n',
+            ));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callFreshClaudeStream(
+          { model: 'claude-sonnet-4-6' },
+          (text) => { chunks.push(text); },
+          () => { expect(chunks).toEqual(['결과']); resolve(); },
+          (msg) => { throw new Error('unexpected error: ' + msg); },
+        );
+      });
+    } finally {
+      https.request = originalRequest;
+    }
+  });
+
   it('handles the OPTIONS preflight on the local server with a 204 and no body', async () => {
     const responseState = await runServerRequest({
       method: 'OPTIONS',
