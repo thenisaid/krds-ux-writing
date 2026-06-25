@@ -657,6 +657,45 @@ describe('shared nav tree relationships', () => {
     expect(localSubLink.getAttribute('aria-current')).toBe(null);
   });
 
+  it('skips hash activation entirely when location.hash is set but there are no lnb-sub-a links in the tree', () => {
+    const link = createElement({ classes: ['lnb-item-a'] });
+    const tree = createElement({
+      classes: ['lnb-tree'],
+      queryMap: {
+        '.lnb-item': [],
+        '.lnb-item-a, .lnb-tog, .lnb-sub-a': [link],
+        '.lnb-sub-a': [],
+      },
+    });
+
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: null,
+      querySelector(selector) {
+        if (selector === '.lnb-tree') return tree;
+        return null;
+      },
+      querySelectorAll() { return []; },
+      getElementById() { return null; },
+      addEventListener() {},
+    };
+
+    const context = {
+      window: { innerWidth: 1280, location: { pathname: '/krds-ux-writing/principles/core-info/' } },
+      location: { pathname: '/krds-ux-writing/principles/core-info/', hash: '#overview' },
+      document,
+      localStorage: { getItem() { return null; }, setItem() {} },
+      sessionStorage: { getItem() { return null; }, setItem() {} },
+      IntersectionObserver: function () { return { observe() {}, unobserve() {}, disconnect() {} }; },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    expect(() => vm.runInNewContext(SOURCE, context)).not.toThrow();
+    expect(link.classList.contains('active')).toBe(false);
+  });
+
   it('uses location.search as a fallback when window.location.search is not a string', () => {
     const toggle = createElement({
       attributes: { 'aria-label': '1장 펼치기/접기' },
@@ -788,6 +827,68 @@ describe('shared nav tree accordion toggle', () => {
       sessionStorageValue: JSON.stringify(['/principles/foundation/']),
     });
     expect(item.getAttribute('aria-expanded')).toBe('true');
+  });
+
+  it('does not call expand again when an item is already aria-expanded=true during sessionStorage restore', () => {
+    const toggle = createElement({ attributes: { 'aria-label': '1장 펼치기/접기' }, classes: ['lnb-tog'] });
+    const link = createElement({ classes: ['lnb-item-a'] });
+    const subLink = createElement({ classes: ['lnb-sub-a'] });
+    const sub = createElement({ classes: ['lnb-sub'], queryMap: { '.lnb-sub-a': [subLink] } });
+    const item = createElement({
+      attributes: { 'aria-expanded': 'true', 'data-path': '/principles/foundation/' },
+      classes: ['lnb-item'],
+      queryMap: {
+        '.lnb-tog': toggle,
+        '.lnb-sub': sub,
+        '.lnb-item-a': link,
+        '.lnb-item-a, .lnb-sub-a': [link, subLink],
+      },
+    });
+    const tree = createElement({
+      classes: ['lnb-tree'],
+      queryMap: {
+        '.lnb-item': [item],
+        '.lnb-item-a, .lnb-tog, .lnb-sub-a': [link, toggle, subLink],
+        '.lnb-sub-a': [subLink],
+      },
+    });
+
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: null,
+      querySelector(selector) {
+        if (selector === '.lnb-tree') return tree;
+        return null;
+      },
+      querySelectorAll() { return []; },
+      getElementById(id) {
+        if (id === sub.id) return sub;
+        return null;
+      },
+      addEventListener() {},
+    };
+
+    const context = {
+      window: { innerWidth: 1280, location: { pathname: '/krds-ux-writing/' } },
+      location: { pathname: '/krds-ux-writing/', hash: '' },
+      document,
+      localStorage: { getItem() { return null; }, setItem() {} },
+      sessionStorage: {
+        getItem() { return JSON.stringify(['/principles/foundation/']); },
+        setItem() {},
+      },
+      IntersectionObserver: function () { return { observe() {}, unobserve() {}, disconnect() {} }; },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    // Item was already expanded before restore — the guard (aria-expanded !== 'true') prevents double-expand
+    expect(item.getAttribute('aria-expanded')).toBe('true');
+    // toggle should not have been fired (no classList changes beyond initial state)
+    expect(sub.classList.contains('open')).toBe(false);
   });
 
   it('calls handleMobileSidebarLinkClick when an LNB link is clicked on a narrow viewport', () => {
