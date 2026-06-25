@@ -199,4 +199,22 @@ describe('bin/krds-lint CLI', () => {
     expect(result.status).toBe(1);
     expect(result.stderr).toContain('오류');
   });
+
+  it('skips node_modules and .git subdirectories when scanning recursively', () => {
+    const dir = makeTempDir();
+    const nodeModulesDir = path.join(dir, 'node_modules');
+    const gitDir = path.join(dir, '.git');
+    fs.mkdirSync(nodeModulesDir);
+    fs.mkdirSync(gitDir);
+    fs.writeFileSync(path.join(nodeModulesDir, 'lib.txt'), '귀하의 신청이 접수되었습니다.\n', 'utf8');
+    fs.writeFileSync(path.join(gitDir, 'config.txt'), '귀하의 신청이 접수되었습니다.\n', 'utf8');
+    fs.writeFileSync(path.join(dir, 'clean.txt'), '신청이 접수되었습니다.\n', 'utf8');
+
+    const result = runCli([dir]);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('검사 파일: 1개');
+    expect(result.stdout).not.toContain('node_modules');
+    expect(result.stdout).not.toContain('.git');
+  });
 });
