@@ -815,6 +815,28 @@ describe('lint-ui stale result handling', () => {
     expect(elements.toast.textContent).toBe('✅ 링크가 클립보드에 복사되었습니다');
   });
 
+  it('builds share URL via URL constructor when available, stripping existing search and hash', async () => {
+    const { context, elements } = buildContext();
+    context.URL = URL;
+    context.window.location.href = 'https://example.com/lint.html?existing=1#section';
+    context.navigator.clipboard = {
+      writeText: vi.fn(() => Promise.resolve()),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+    elements.shareLinkBtn.dispatch('click');
+
+    await Promise.resolve();
+
+    const expectedUrl = new URL('https://example.com/lint.html');
+    expectedUrl.searchParams.set('t', '귀하의 신청이 접수되었습니다.');
+    expect(context.navigator.clipboard.writeText).toHaveBeenCalledWith(expectedUrl.toString());
+    expect(elements.toast.textContent).toBe('✅ 링크가 클립보드에 복사되었습니다');
+  });
+
   it('keeps the latest successful toast when an older async copy action fails later', async () => {
     let settleFirst;
     let callCount = 0;
