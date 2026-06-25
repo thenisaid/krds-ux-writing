@@ -675,4 +675,145 @@ describe('index-v2 theme toggle', () => {
     expect(preventDefault).not.toHaveBeenCalled();
     expect(mobileMenu.classList.contains('open')).toBe(true);
   });
+
+  it('opens and closes a FAQ accordion item on repeated question-button clicks', () => {
+    const btn = createElement({ attributes: { 'aria-expanded': 'false' } });
+    const answer = createElement({ attributes: { 'aria-hidden': 'true' } });
+    const faqItem = createElement({
+      queryMap: {
+        '.faq-question': btn,
+        '.faq-answer': answer,
+      },
+    });
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      getElementById() { return null; },
+      querySelectorAll(selector) {
+        if (selector === '.faq-item') return [faqItem];
+        return [];
+      },
+      addEventListener() {},
+    };
+    const context = {
+      document,
+      window: { location: { pathname: '/index-v2.html' } },
+      localStorage: { setItem() {} },
+      Array, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    btn.dispatch('click');
+    expect(faqItem.classList.contains('open')).toBe(true);
+    expect(btn.getAttribute('aria-expanded')).toBe('true');
+    expect(answer.getAttribute('aria-hidden')).toBe('false');
+
+    btn.dispatch('click');
+    expect(faqItem.classList.contains('open')).toBe(false);
+    expect(btn.getAttribute('aria-expanded')).toBe('false');
+    expect(answer.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('closes the mobile menu when a menu-link inside it is clicked and does not restore button focus for normal links', () => {
+    const firstLink = createElement();
+    const link = createElement();
+    link.closest = function (sel) { return sel === '.mobile-menu-link' ? link : null; };
+    const mobileMenu = createElement({
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: {
+        '.mobile-menu-link': firstLink,
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])': [],
+      },
+    });
+    const mobileMenuBtn = createElement({
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      getElementById(id) {
+        if (id === 'mobileMenuBtn') return mobileMenuBtn;
+        if (id === 'mobileMenu') return mobileMenu;
+        return null;
+      },
+      querySelectorAll() { return []; },
+      addEventListener() {},
+    };
+    const context = {
+      document,
+      window: { location: { pathname: '/index-v2.html' } },
+      localStorage: { setItem() {} },
+      Array, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    mobileMenuBtn.dispatch('click');
+    expect(mobileMenu.classList.contains('open')).toBe(true);
+
+    mobileMenu.dispatch('click', { target: link });
+
+    expect(mobileMenu.classList.contains('open')).toBe(false);
+    expect(mobileMenuBtn.focus).not.toHaveBeenCalled();
+  });
+
+  it('marks the active nav link by prefix match when the current path is a sub-page of the link href', () => {
+    const principlesLink = createElement({
+      attributes: { href: '/krds-ux-writing/principles/' },
+    });
+    const dictionaryLink = createElement({
+      attributes: { href: '/krds-ux-writing/dictionary/' },
+    });
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      getElementById() { return null; },
+      querySelectorAll(selector) {
+        if (selector === '.faq-item') return [];
+        if (selector === '.gnb-link') return [principlesLink, dictionaryLink];
+        return [];
+      },
+      addEventListener() {},
+    };
+    const context = {
+      document,
+      window: { location: { pathname: '/krds-ux-writing/principles/components/' } },
+      localStorage: { setItem() {} },
+      console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(principlesLink.classList.contains('active')).toBe(true);
+    expect(dictionaryLink.classList.contains('active')).toBe(false);
+  });
+
+  it('strips index.html from the pathname when matching nav links', () => {
+    const principlesLink = createElement({
+      attributes: { href: '/krds-ux-writing/principles/' },
+    });
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      getElementById() { return null; },
+      querySelectorAll(selector) {
+        if (selector === '.faq-item') return [];
+        if (selector === '.gnb-link') return [principlesLink];
+        return [];
+      },
+      addEventListener() {},
+    };
+    const context = {
+      document,
+      window: { location: { pathname: '/krds-ux-writing/principles/index.html' } },
+      localStorage: { setItem() {} },
+      console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(principlesLink.classList.contains('active')).toBe(true);
+  });
 });
