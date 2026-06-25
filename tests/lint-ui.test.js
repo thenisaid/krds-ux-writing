@@ -2279,4 +2279,105 @@ describe('lint-ui uncovered branch coverage', () => {
     expect(text).toContain('품질 점수: 100/100');
   });
 
+  it('skips null items in the issues array inside buildCliFallback and renders the valid issue', async () => {
+    const lintResult = {
+      score: 70,
+      summary: { errors: 1, warnings: 0, infos: 0 },
+      issues: [{ line: 1, col: 1, severity: 'error', category: '행정어', message: '어려운 표현', match: '귀하', suggestion: '→ 고객님', type: 'admin-jargon' }],
+    };
+    const { context, elements } = buildContext({ lintResult });
+    context.KRDSLint.formatCLI = undefined;
+    context.navigator.clipboard = { writeText: vi.fn(() => Promise.resolve()) };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 서류를 제출해 주세요.';
+    elements.lintBtn.dispatch('click');
+
+    // Inject null into issues on the same object that lastResult now references
+    lintResult.issues.unshift(null);
+
+    elements.copyBtn.dispatch('click');
+    await Promise.resolve();
+
+    const text = context.navigator.clipboard.writeText.mock.calls[0][0];
+    expect(text).toContain('귀하');
+    expect(text).toContain('행정어');
+  });
+
+  it('treats non-array result.issues as empty in buildCliFallback and outputs "이슈 없음"', async () => {
+    const lintResult = {
+      score: 100,
+      summary: { errors: 0, warnings: 0, infos: 0 },
+      issues: [],
+    };
+    const { context, elements } = buildContext({ lintResult });
+    context.KRDSLint.formatCLI = undefined;
+    context.navigator.clipboard = { writeText: vi.fn(() => Promise.resolve()) };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '깨끗한 문장입니다.';
+    elements.lintBtn.dispatch('click');
+
+    // Replace the issues array with a non-array on the same object that lastResult now references
+    lintResult.issues = 'not-an-array';
+
+    elements.copyBtn.dispatch('click');
+    await Promise.resolve();
+
+    const text = context.navigator.clipboard.writeText.mock.calls[0][0];
+    expect(text).toContain('이슈 없음');
+  });
+
+  it('silently skips an admin-jargon issue whose replacement is empty after stripping the arrow prefix (!replacement guard in renderImproved)', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1,
+          col: 1,
+          severity: 'error',
+          category: '행정어',
+          message: '행정어',
+          match: '귀하',
+          suggestion: '→ ',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 서류';
+    elements.lintBtn.dispatch('click');
+
+    // suggestion '→ ' produces empty replacement → !replacement guard fires → issue skipped
+    // card is still shown (set to 'block' before the forEach), but no replacement applied
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).toBe('귀하의 서류');
+  });
+
+  it('replaces both admin-jargon terms when two issues share the same line number', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 50,
+        summary: { errors: 2, warnings: 0, infos: 0 },
+        issues: [
+          { line: 1, col: 1, severity: 'error', category: '행정어', message: '행정어1', match: '귀하', suggestion: '→ 고객님', type: 'admin-jargon' },
+          { line: 1, col: 8, severity: 'error', category: '행정어', message: '행정어2', match: '제출', suggestion: '→ 내기', type: 'admin-jargon' },
+        ],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 서류 제출 안내';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedText.textContent).toContain('고객님');
+    expect(elements.improvedText.textContent).toContain('내기');
+    expect(elements.improvedText.textContent).not.toContain('귀하');
+    expect(elements.improvedText.textContent).not.toContain('제출');
+  });
+
 });
