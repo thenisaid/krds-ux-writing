@@ -1682,6 +1682,37 @@ describe('generate-shared.js — buildUserMessage and readOptionalStringField', 
     const result = readOptionalStringField({ screenType: '' }, 'screenType', 40);
     expect(result).toEqual({ ok: true, value: '' });
   });
+
+  it('readOptionalStringField returns ok:false when the field is not a string', () => {
+    const result = readOptionalStringField({ screenType: 42 }, 'screenType', 40);
+    expect(result).toEqual({ ok: false, error: 'screenType 값이 올바르지 않습니다.' });
+  });
+
+  it('readOptionalStringField returns ok:false when the field exceeds maxLength', () => {
+    const result = readOptionalStringField({ screenType: 'a'.repeat(41) }, 'screenType', 40);
+    expect(result).toEqual({ ok: false, error: 'screenType 값이 너무 깁니다.' });
+  });
+
+  it('readOptionalStringField returns ok:true and trimmed value when the field is valid', () => {
+    const result = readOptionalStringField({ screenType: '  오류 화면  ' }, 'screenType', 40);
+    expect(result).toEqual({ ok: true, value: '오류 화면' });
+  });
+
+  it('buildUserMessage includes optional screenType, toneTarget, and taskBrief when present', () => {
+    const result = buildUserMessage({
+      mode: 'tone-adjust',
+      agencyName: '서울시',
+      agencyType: '지방자치단체',
+      screenType: '오류 화면',
+      toneTarget: '친근한 말투',
+      taskBrief: '간결하게',
+      samples: ['오류가 발생했습니다'],
+    });
+    expect(result).toContain('화면 맥락: 오류 화면');
+    expect(result).toContain('목표 톤: 친근한 말투');
+    expect(result).toContain('추가 요청: 간결하게');
+    expect(result).toContain('톤 조정');
+  });
 });
 
 describe('anthropic-edge.js — buildApiEndpoint and getAnthropicApiKey', () => {
