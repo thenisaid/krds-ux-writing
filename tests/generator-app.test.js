@@ -3170,4 +3170,40 @@ describe('generator/app.js', () => {
     expect(html).toContain('심리적 안전망');
     expect(html).toContain('상황·행동이 부족한 오류 패턴이');
   });
+
+  it('processes a done event from the end-of-stream buffer when it arrives without a trailing newline', async () => {
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            // chunk event WITH newline → processed in the while-loop for-block
+            encoder.encode('data: {"type":"chunk","text":"# 버퍼 끝 처리 테스트"}\n'),
+            // done event WITHOUT newline → stays in buffer, processed after the while loop
+            encoder.encode('data: {"type":"done"}'),
+          ];
+          let i = 0;
+          return {
+            async read() {
+              if (i < chunks.length) return { done: false, value: chunks[i++] };
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    const { context, elements, screens } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(screens[2].classList.contains('active')).toBe(true);
+    expect(elements['output-title'].textContent).toBe('테스트 기관 UX Writing 가이드라인');
+    expect(elements['output-content'].innerHTML).toContain('버퍼 끝 처리 테스트');
+  });
 });
