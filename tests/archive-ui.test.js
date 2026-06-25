@@ -899,4 +899,91 @@ describe('archive page — additional branch coverage', () => {
 
     expect(elements['arc-count-badge-hometax'].textContent).toBe(2);
   });
+
+  it('omits the countEl textContent reset when countEl is null and renderGrid receives empty issues', async () => {
+    const { context, elements } = buildContext();
+    delete elements['arc-result-hometax'];
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    elements['arc-search-hometax'].value = '일치하지않는검색어ZZZ';
+    elements['arc-search-hometax'].dispatch('input');
+
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('검색 결과가 없습니다.');
+  });
+
+  it('applies both the active filter and the search query simultaneously when both are non-default', async () => {
+    const { context, elements, filterBtns } = buildContext({
+      markdown: [
+        '## Cycle 1',
+        '### H1 — 무번역 이슈 ★ [A]',
+        '**원문**: 타겟단어 원문',
+        '**문제**: 설명',
+        '**권장 개선안**: 개선',
+        '',
+        '### H2 — 정보핵심화 이슈 ★★ [B]',
+        '**원문**: 타겟단어 다른 원문',
+        '**문제**: 설명',
+        '**권장 개선안**: 개선',
+        '',
+        '### H3 — 무번역 다른 이슈 ★ [A]',
+        '**원문**: 관련없는 텍스트',
+        '**문제**: 설명',
+        '**권장 개선안**: 개선',
+      ].join('\n'),
+    });
+    const hometaxAll = filterBtns[1];
+    const hometaxA = createElement({
+      dataset: { agency: 'hometax', principle: 'A' },
+      classes: ['arc-filter'],
+      attributes: { 'aria-pressed': 'false' },
+    });
+    const originalQSA = context.document.querySelectorAll.bind(context.document);
+    context.document.querySelectorAll = function (selector) {
+      if (selector === '[data-agency="hometax"]') return [hometaxAll, hometaxA];
+      return originalQSA(selector);
+    };
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    hometaxA.dispatch('click');
+    elements['arc-search-hometax'].value = '타겟단어';
+    elements['arc-search-hometax'].dispatch('input');
+
+    const html = elements['arc-grid-hometax'].innerHTML;
+    expect(html).toContain('H1');
+    expect(html).not.toContain('H2');
+    expect(html).not.toContain('H3');
+  });
+
+  it('falls back to the default "derived/" base path when KRDSBasePath exists but buildSitePath is not a function', async () => {
+    const { context, elements } = buildContext();
+    context.window.KRDSBasePath = { version: 1 };
+    context.fetch = vi.fn(async (url) => {
+      if (!String(url).startsWith('derived/')) {
+        throw new Error('unexpected url: ' + url);
+      }
+      return {
+        ok: true,
+        async text() {
+          return [
+            '## Cycle 1',
+            '### H1 — 기본 이슈 ★ [A]',
+            '**원문**: 텍스트',
+            '**문제**: 설명',
+            '**권장 개선안**: 개선',
+          ].join('\n');
+        },
+      };
+    });
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    expect(context.fetch).toHaveBeenCalledTimes(1);
+    expect(String(context.fetch.mock.calls[0][0])).toMatch(/^derived\//);
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('H1');
+  });
 });
