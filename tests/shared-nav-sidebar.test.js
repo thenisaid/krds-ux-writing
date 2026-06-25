@@ -671,6 +671,51 @@ describe('shared nav sidebar toggle', () => {
     expect(sidebarTarget.getAttribute('tabindex')).toBe('-1');
     expect(context.window.scrollTo).toHaveBeenCalled();
   });
+
+  it('does not crash when openSidebar is called but the sidebar element is absent from the DOM', () => {
+    const hamburger = createElement({
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: null,
+      querySelectorAll() { return []; },
+      querySelector(selector) {
+        if (selector === '.sidebar') return null;
+        if (selector === '.sidebar-backdrop') return null;
+        if (selector === '.lnb-tree') return null;
+        return null;
+      },
+      getElementById(id) {
+        if (id === 'gnbHamburger') return hamburger;
+        return null;
+      },
+      addEventListener() {},
+    };
+    const context = {
+      window: {
+        innerWidth: 480,
+        location: { pathname: '/krds-ux-writing/principles/', search: '' },
+        scrollTo: vi.fn(),
+        addEventListener() {},
+      },
+      location: { pathname: '/krds-ux-writing/principles/', search: '', hash: '' },
+      document,
+      localStorage: { getItem() { return null; }, setItem() {} },
+      sessionStorage: { getItem() { return null; }, setItem() {} },
+      IntersectionObserver: function () {
+        return { observe() {}, unobserve() {}, disconnect() {} };
+      },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(() => hamburger.dispatch('click')).not.toThrow();
+    expect(hamburger.getAttribute('aria-expanded')).toBe('false');
+  });
 });
 
 describe('shared nav sidebar scroll-tracking IntersectionObserver', () => {
