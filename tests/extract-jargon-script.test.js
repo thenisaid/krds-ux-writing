@@ -816,6 +816,22 @@ describe('extract-jargon.js — uncovered branch paths', () => {
     expect(result[0].alt).toBe('길고상세한대체어입니다');
   });
 
+  it('isMoreDescriptiveEntry returns false via branch 2 when alt lengths are equal but candidate context is shorter (branch 2 false path)', () => {
+    // Entry 1 (becomes current): alt='AB' (len 2), context='긴맥락' (len 3)
+    // Entry 2 (becomes candidate): alt='XY' (len 2), context='X' (len 1)
+    // candidateAltLength === currentAltLength → skip branch 1
+    // candidateContextLength (1) < currentContextLength (3) → branch 2 fires, returns false
+    // Current entry (entry 1) is kept
+    const entries = [
+      { banned: '공고문', alt: 'AB', cat: '행정 관습어', context: '긴맥락' },
+      { banned: '공고문', alt: 'XY', cat: '행정 관습어', context: 'X' },
+    ];
+    const result = mergeEntries(entries);
+    expect(result).toHaveLength(1);
+    expect(result[0].alt).toBe('AB');
+    expect(result[0].context).toBe('긴맥락');
+  });
+
   it('readExistingOutput returns null when the file contains invalid JSON (catch branch)', () => {
     const tmpFile = path.join(os.tmpdir(), 'krds-test-corrupt-' + Date.now() + '.json');
     fs.writeFileSync(tmpFile, '{ not valid json }', 'utf8');
