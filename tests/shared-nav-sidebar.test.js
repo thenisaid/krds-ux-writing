@@ -716,6 +716,23 @@ describe('shared nav sidebar toggle', () => {
     expect(() => hamburger.dispatch('click')).not.toThrow();
     expect(hamburger.getAttribute('aria-expanded')).toBe('false');
   });
+
+  it('does not close the sidebar when a sidebar link is clicked at desktop width (innerWidth > 900)', () => {
+    const currentPath = '/krds-ux-writing/principles/foundation/';
+    const { context, sidebar, hamburger, sidebarLink } = makeContext({
+      currentPath,
+      treeLinkHref: `${currentPath}#section-a`,
+      treeItemPath: '/principles/foundation/',
+    });
+
+    hamburger.dispatch('click');
+    expect(sidebar.classList.contains('open')).toBe(true);
+
+    context.window.innerWidth = 1200;
+    sidebarLink.dispatch('click', { preventDefault: vi.fn() });
+
+    expect(sidebar.classList.contains('open')).toBe(true);
+  });
 });
 
 describe('shared nav sidebar scroll-tracking IntersectionObserver', () => {
