@@ -568,6 +568,64 @@ describe('index-v2 theme toggle', () => {
     expect(caseStudiesLink.classList.contains('active')).toBe(false);
   });
 
+  it('wraps focus from the first to the last menu link when Shift+Tab is pressed on the first link', () => {
+    const firstLink = createElement();
+    const lastLink = createElement();
+    const mobileMenu = createElement({
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: {
+        '.mobile-menu-link': firstLink,
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])': [firstLink, lastLink],
+      },
+    });
+    const mobileMenuBtn = createElement({
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    const listeners = new Map();
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: null,
+      getElementById(id) {
+        if (id === 'mobileMenuBtn') return mobileMenuBtn;
+        if (id === 'mobileMenu') return mobileMenu;
+        return null;
+      },
+      querySelectorAll() { return []; },
+      addEventListener(type, handler) {
+        const arr = listeners.get(type) || [];
+        arr.push(handler);
+        listeners.set(type, arr);
+      },
+      dispatch(type, event = {}) {
+        const handlers = listeners.get(type) || [];
+        handlers.forEach((h) => h({ preventDefault() {}, stopPropagation() {}, ...event }));
+      },
+    };
+    firstLink.focus = vi.fn(() => { document.activeElement = firstLink; });
+    lastLink.focus = vi.fn(() => { document.activeElement = lastLink; });
+    mobileMenuBtn.focus = vi.fn();
+
+    const context = {
+      document,
+      window: { location: { pathname: '/index-v2.html' } },
+      localStorage: { setItem() {} },
+      Array, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    mobileMenuBtn.dispatch('click');
+    document.activeElement = firstLink;
+
+    const preventDefault = vi.fn();
+    mobileMenu.dispatch('keydown', { key: 'Tab', shiftKey: true, preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(lastLink.focus).toHaveBeenCalled();
+  });
+
   it('does not install a trap handler when the mobile menu has no focusable elements', () => {
     const mobileMenu = createElement({
       attributes: { 'aria-hidden': 'true' },
