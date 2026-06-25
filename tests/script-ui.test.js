@@ -1299,6 +1299,78 @@ describe('script.js live index interactions', () => {
     expect(target.focus).toHaveBeenCalled();
   });
 
+  it('does not throw and still clears the input when clearButton is clicked and input.focus is not a function', () => {
+    const { context, document, elements, querySelectorAllMap } = createEnvironment();
+    const searchInput = createElement(document, { attributes: { type: 'search' } });
+    const clearButton = createElement(document, { hidden: true, attributes: { hidden: '' } });
+    const status = createElement(document);
+    const emptyState = createElement(document, { hidden: true, attributes: { hidden: '' } });
+
+    const card = createElement(document, {
+      attributes: { 'data-filter-group': 'learn', 'data-filter-keywords': '원칙' },
+    });
+    const chips = [
+      createElement(document, { textContent: '전체', attributes: { 'data-section-filter': 'all', 'aria-pressed': 'true' } }),
+    ];
+
+    elements.sectionSearchInput = searchInput;
+    elements.sectionSearchClear = clearButton;
+    elements.sectionFilterStatus = status;
+    elements.sectionEditorialEmpty = emptyState;
+    querySelectorAllMap['.editorial-item[data-filter-keywords]'] = [card];
+    querySelectorAllMap['.section-filter-chip'] = chips;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    // Remove focus so typeof input.focus !== 'function' → false branch of the guard
+    searchInput.focus = undefined;
+
+    searchInput.value = '원칙';
+    searchInput.dispatch('input');
+    expect(clearButton.hidden).toBe(false);
+
+    expect(() => clearButton.dispatch('click')).not.toThrow();
+    expect(searchInput.value).toBe('');
+    expect(clearButton.hidden).toBe(true);
+  });
+
+  it('does not throw and still resets filters when resetButton is clicked and input.focus is not a function', () => {
+    const { context, document, elements, querySelectorAllMap } = createEnvironment();
+    const searchInput = createElement(document, { attributes: { type: 'search' } });
+    const clearButton = createElement(document, { hidden: true, attributes: { hidden: '' } });
+    const resetButton = createElement(document);
+    const status = createElement(document);
+    const emptyState = createElement(document, { hidden: true, attributes: { hidden: '' } });
+
+    const card = createElement(document, {
+      attributes: { 'data-filter-group': 'learn', 'data-filter-keywords': '원칙' },
+    });
+    const chips = [
+      createElement(document, { textContent: '전체', attributes: { 'data-section-filter': 'all', 'aria-pressed': 'true' } }),
+    ];
+
+    elements.sectionSearchInput = searchInput;
+    elements.sectionSearchClear = clearButton;
+    elements.sectionFilterReset = resetButton;
+    elements.sectionFilterStatus = status;
+    elements.sectionEditorialEmpty = emptyState;
+    querySelectorAllMap['.editorial-item[data-filter-keywords]'] = [card];
+    querySelectorAllMap['.section-filter-chip'] = chips;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    // Remove focus so typeof input.focus !== 'function' → false branch of the guard
+    searchInput.focus = undefined;
+
+    searchInput.value = '원칙';
+    searchInput.dispatch('input');
+
+    expect(() => resetButton.dispatch('click')).not.toThrow();
+    expect(searchInput.value).toBe('');
+  });
+
   it('does not restore focus to the button when closeMobileMenu is called with restoreFocus false and no trap was installed', () => {
     const { context, document, window, elements } = createEnvironment();
     const mobileMenu = createElement(document, {
