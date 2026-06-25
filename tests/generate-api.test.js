@@ -1408,6 +1408,28 @@ describe('generator API handlers', () => {
     expect(await response.json()).toEqual({ error: '기관명은 1~50자 사이여야 합니다.' });
   });
 
+  it('passes derivative-guide mode with max_tokens 2800 through to the Anthropic request in the Cloudflare handler', async () => {
+    const fetchMock = mockAnthropicFetch();
+    global.fetch = fetchMock;
+
+    const response = await onRequestPost({
+      request: buildRequest({
+        mode: 'derivative-guide',
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        screenType: '서비스 예약',
+        samples: ['전시 예약이 완료되었습니다.'],
+      }),
+      env: { ANTHROPIC_API_KEY: 'test-key' },
+    });
+
+    expect(response.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const requestBody = JSON.parse(fetchMock.mock.calls[0][1].body);
+    expect(requestBody.max_tokens).toBe(2800);
+    expect(requestBody.messages[0].content).toContain('[작업 모드] Layer 3 파생 가이드 초안');
+  });
+
   it('silently skips SSE data lines with invalid JSON in the Cloudflare handler', async () => {
     global.fetch = vi.fn(async () => new Response(
       'data: not-valid-json\n' +
