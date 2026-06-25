@@ -261,6 +261,18 @@ describe('lint-ui stale result handling', () => {
     expect(elements.issuesTitle.textContent).toBe('이슈 목록');
   });
 
+  it('returns early from invalidateAnalysis without resetting the UI when no lint result exists yet', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '아직 검사하지 않은 문장입니다.';
+    elements.inputText.dispatch('input');
+
+    expect(elements.shareLinkBtn.disabled).toBe(true);
+    expect(elements.shareLinkBtn.title).toBe('먼저 검사를 실행해 주세요');
+    expect(elements.scoreSection.innerHTML).toBe('');
+  });
+
   it('clears stale lint results and shows an error toast when the lint engine throws', () => {
     const { context, elements } = buildContext();
     vm.runInNewContext(SOURCE, context);
