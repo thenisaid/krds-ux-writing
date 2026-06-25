@@ -325,6 +325,17 @@ describe('lint-ui stale result handling', () => {
     expect(elements.themeToggle.getAttribute('aria-label')).toBe('라이트모드 전환');
   });
 
+  it('applies dark theme when no saved theme exists but system prefers dark mode', () => {
+    const { context, elements } = buildContext();
+    // No 'krds-theme' in localStorage (buildContext starts with empty storage)
+    context.window.matchMedia = () => ({ matches: true });
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(context.document.documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(elements.themeToggle.textContent).toBe('☀️');
+  });
+
   it('hides the CLI recommendation banner after the source text changes', () => {
     const { context, elements } = buildContext({
       lintResult: {
@@ -1847,5 +1858,50 @@ describe('lint-ui uncovered branch coverage', () => {
     elements.shareLinkBtn.dispatch('click');
 
     expect(elements.toast.textContent).toBe('⚠️ 500자 이하 텍스트만 링크로 공유할 수 있습니다');
+  });
+
+  it('hides the CLI banner after lint when the score is good and text is short (renderCliBanner else branch)', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 80,
+        summary: { errors: 0, warnings: 1, infos: 0 },
+        issues: [{
+          line: 1, col: 1, severity: 'warning', category: '문체',
+          message: '경고 메시지', match: '이루어지다', suggestion: '→ 이루다', type: 'passive-voice',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '결과가 이루어지다.';
+    elements.lintBtn.dispatch('click');
+
+    // score=80 >= 60 and text length ≤ 300 → renderCliBanner sets display to 'none'
+    expect(elements.cliBanner.style.display).toBe('none');
+  });
+
+  it('shows ❌ 복사 실패 on the copy button when execCommand returns false and clipboard is unavailable', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1, col: 1, severity: 'error', category: '행정 관습어',
+          message: '행정어: "귀하"', match: '귀하', suggestion: '→ 고객님', type: 'admin-jargon',
+        }],
+      },
+    });
+    // No clipboard API → hasAsyncClipboard() returns false → legacyCopy()
+    context.navigator = {};
+    context.document.execCommand = vi.fn(() => false);
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+    elements.copyBtn.dispatch('click');
+
+    expect(context.document.execCommand).toHaveBeenCalledWith('copy');
+    expect(elements.copyBtn.textContent).toBe('❌ 복사 실패');
   });
 });

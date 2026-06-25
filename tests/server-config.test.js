@@ -2231,4 +2231,41 @@ describe('server.js configuration', () => {
     });
     expect(responseState.statusCode).toBe(503);
   });
+
+  it('returns 429 when the rate-limit map is full with non-expired entries and a new IP tries to connect', async () => {
+    const freshServerModule = loadFreshServerModule();
+    const freshServer = freshServerModule.server;
+    const pinnedNow = Date.now();
+
+    vi.spyOn(Date, 'now').mockReturnValue(pinnedNow);
+    try {
+      // Fill the map with 1000 unique non-expired IPs (count=1 each, all valid)
+      for (let i = 0; i < 1000; i += 1) {
+        await runServerRequest({
+          serverInstance: freshServer,
+          headers: {
+            'content-type': 'application/json',
+            origin: 'http://localhost:3000',
+            'cf-connecting-ip': buildUniqueTestIp(i + 50000),
+          },
+          body: { agencyName: '', agencyType: '', samples: [] },
+        });
+      }
+
+      // A new IP with no entry: map is full with non-expired entries → eviction removes nothing → return false → 429
+      const response = await runServerRequest({
+        serverInstance: freshServer,
+        headers: {
+          'content-type': 'application/json',
+          origin: 'http://localhost:3000',
+          'cf-connecting-ip': buildUniqueTestIp(60000),
+        },
+        body: { agencyName: '', agencyType: '', samples: [] },
+      });
+
+      expect(response.statusCode).toBe(429);
+    } finally {
+      vi.restoreAllMocks();
+    }
+  });
 });
