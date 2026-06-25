@@ -3027,4 +3027,68 @@ describe('generator/app.js', () => {
       }, 0);
     });
   });
+
+  it('includes toneTarget in the request body when the tone-target element has a non-empty value', async () => {
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [encoder.encode('data: {"type":"done"}\n')];
+          let i = 0;
+          return { async read() { if (i < chunks.length) return { done: false, value: chunks[i++] }; return { done: true, value: undefined }; } };
+        },
+      },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['tone-target'].value = 'formal';
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const requestBody = JSON.parse(fetchImpl.mock.calls[0][1].body);
+    expect(requestBody.toneTarget).toBe('formal');
+  });
+
+  it('succeeds silently when downloadHtml runs with a working URL.createObjectURL (success path)', () => {
+    const { context, elements } = buildGeneratorContext();
+    const revokeObjectURL = vi.fn();
+    context.URL = {
+      createObjectURL: vi.fn(() => 'blob:mockurl'),
+      revokeObjectURL,
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['fallback-btn'].dispatch('click');
+    expect(() => elements['download-btn'].dispatch('click')).not.toThrow();
+
+    expect(context.URL.createObjectURL).toHaveBeenCalled();
+    expect(elements['download-error'].classList.contains('visible')).toBe(false);
+  });
+
+  it('calls downloadHtml when the dl-menu is clicked with the html format item (fmt === "html" branch)', () => {
+    const htmlItem = createElement({ dataset: { format: 'html' }, classes: ['dl-menu-item'] });
+    const { context, elements } = buildGeneratorContext({ menuItems: [htmlItem] });
+    const revokeObjectURL = vi.fn();
+    context.URL = {
+      createObjectURL: vi.fn(() => 'blob:mockurl'),
+      revokeObjectURL,
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['fallback-btn'].dispatch('click');
+    elements['dl-chevron'].dispatch('click');
+    expect(elements['dl-menu'].classList.contains('open')).toBe(true);
+
+    elements['dl-menu'].dispatch('click', { target: htmlItem });
+
+    expect(elements['dl-menu'].classList.contains('open')).toBe(false);
+    expect(context.URL.createObjectURL).toHaveBeenCalled();
+    expect(elements['download-error'].classList.contains('visible')).toBe(false);
+  });
 });
