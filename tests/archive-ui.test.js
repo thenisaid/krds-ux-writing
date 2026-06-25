@@ -538,4 +538,65 @@ describe('archive page — additional branch coverage', () => {
     expect(html).toContain('★★★');
     expect(html).toContain('[]');
   });
+
+  it('omits the Cycle label when the issue has no cycle header (cycle 0)', async () => {
+    const { context, elements } = buildContext({
+      markdown: [
+        '### H10 — 사이클 없는 이슈 ★ [A]',
+        '**원문**: 원문 텍스트',
+        '**문제**: 설명',
+        '**권장 개선안**: 개선',
+      ].join('\n'),
+    });
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    const html = elements['arc-grid-hometax'].innerHTML;
+    expect(html).toContain('H10');
+    expect(html).not.toContain('arc-card-cycle');
+    expect(html).not.toContain('Cycle ');
+  });
+
+  it('omits the original row when the issue block has no original field', async () => {
+    const { context, elements } = buildContext({
+      markdown: [
+        '## Cycle 1',
+        '### H20 — 원문 없는 이슈 ★ [B]',
+        '**문제**: 설명만 있습니다',
+        '**권장 개선안**: 개선안',
+      ].join('\n'),
+    });
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    const html = elements['arc-grid-hometax'].innerHTML;
+    expect(html).toContain('H20');
+    expect(html).not.toContain('arc-card-label">원문');
+  });
+
+  it('falls back to sev-2 class for an unrecognized severity string', async () => {
+    const { context, elements } = buildContext({
+      markdown: [
+        '## Cycle 1',
+        '### H30 — 미분류 심각도 이슈',
+        '',
+        '| 항목 | 내용 |',
+        '|------|------|',
+        '| **원칙** | A |',
+        '| **심각도** | 높음 |',
+        '',
+        '**문제**: 설명',
+        '**권장 개선안**: 개선',
+      ].join('\n'),
+    });
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    const html = elements['arc-grid-hometax'].innerHTML;
+    expect(html).toContain('H30');
+    expect(html).toContain('class="arc-card-sev sev-2"');
+  });
 });
