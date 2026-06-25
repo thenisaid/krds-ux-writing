@@ -2387,6 +2387,44 @@ describe('server.js configuration', () => {
     expect(responseState.statusCode).toBe(503);
   });
 
+  it('silently skips a malformed-JSON ndjson line in the Ollama data handler and continues to the next valid line', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      await new Promise((resolve) => {
+        const chunks = [];
+        http.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            callback(res);
+            // First line: malformed JSON with newline → JSON.parse throws → catch { continue; }
+            // Second line: valid done event → finishDone
+            res.emit('data', Buffer.from(
+              '{not valid json}\n' +
+              '{"model":"test","done":true}\n',
+            ));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callOllama(
+          'http://localhost:11434', 'system', 'user', 2200,
+          (text) => { chunks.push(text); },
+          () => { expect(chunks).toEqual([]); resolve(); },
+          (message) => { throw new Error('unexpected error: ' + message); },
+        );
+      });
+    } finally {
+      http.request = originalRequest;
+    }
+  });
+
   it('accepts an explicitly empty-string optional field in readOptionalStringField and treats it as absent (empty-string branch)', async () => {
     process.env.ANTHROPIC_API_KEY = '';
     const responseState = await runServerRequest({
