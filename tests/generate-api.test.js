@@ -1599,6 +1599,29 @@ describe('generator API handlers', () => {
     expect(body).toContain('"type":"done"');
   });
 
+  it('fires closeReader and returns in the Cloudflare handler when message_stop arrives in the final buffer flush without a trailing newline', async () => {
+    global.fetch = vi.fn(async () => new Response(
+      'data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"내용"}}\n' +
+      'data: {"type":"message_stop"}',
+      { status: 200, headers: { 'Content-Type': 'text/event-stream' } },
+    ));
+
+    const response = await onRequestPost({
+      request: buildRequest({
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        samples: ['샘플 문구'],
+      }),
+      env: { ANTHROPIC_API_KEY: 'test-key' },
+    });
+    const body = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(body).toContain('"type":"chunk"');
+    expect(body).toContain('"type":"done"');
+    expect(body).not.toContain('"type":"error"');
+  });
+
   it('rejects an array JSON body in deployed handlers', async () => {
     const vercelResponse = await vercelHandler(buildRawJsonRequest('[1,2,3]'));
     const cloudflareResponse = await onRequestPost({
