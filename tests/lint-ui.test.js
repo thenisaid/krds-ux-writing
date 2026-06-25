@@ -2189,4 +2189,29 @@ describe('lint-ui uncovered branch coverage', () => {
     expect(elements.historyCard.style.display).toBe('none');
   });
 
+  it('silently skips an admin-jargon issue when the column start exceeds the line length (start > lineText.length branch)', () => {
+    // col=100 → start=99, lineText '귀하의 서류' has length 6 → 99 > 6 → early return
+    // The improved text must remain unchanged because the issue can't be applied.
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1,
+          col: 100,
+          severity: 'error',
+          category: '행정어',
+          message: '"귀하"',
+          match: '귀하',
+          suggestion: '→ 당신',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+    elements.inputText.value = '귀하의 서류';
+    elements.lintBtn.dispatch('click');
+    expect(elements.improvedText.textContent).toBe('귀하의 서류');
+  });
+
 });
