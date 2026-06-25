@@ -201,6 +201,26 @@ describe('prompt library filters', () => {
     expect(countEl.textContent).toBe('1');
   });
 
+  it('restores all cards when the "all" chip is clicked after a specific filter was applied', () => {
+    const { context, allChip, generalChip, generalCard, safetyCard, countEl } = buildContext();
+    runPageScripts(context);
+
+    // First apply a specific filter
+    generalChip.dispatch('click');
+    expect(safetyCard.style.display).toBe('none');
+
+    // Click 'all' chip: filter === 'all' short-circuit → show = true for every card
+    allChip.dispatch('click');
+
+    expect(allChip.classList.contains('active')).toBe(true);
+    expect(generalChip.classList.contains('active')).toBe(false);
+    expect(allChip.getAttribute('aria-pressed')).toBe('true');
+    expect(generalChip.getAttribute('aria-pressed')).toBe('false');
+    expect(generalCard.style.display).toBe('');
+    expect(safetyCard.style.display).toBe('');
+    expect(countEl.textContent).toBe('2');
+  });
+
   it('keeps filtering working when the count element is missing', () => {
     const { context, generalChip, generalCard, safetyCard } = buildContext({ withCount: false });
     runPageScripts(context);
