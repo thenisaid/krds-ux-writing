@@ -1971,6 +1971,29 @@ describe('checkRateLimit — rate-limit map full with non-expired entries', () =
     }
   });
 
+  it('coerces a non-string agencyName to an empty string and rejects it with a 400 in the Vercel handler (typeof ternary false branch)', async () => {
+    const response = await vercelHandler(buildRequest({
+      agencyName: 42,
+      agencyType: '지방자치단체',
+      samples: ['샘플 문구'],
+    }));
+    expect(response.status).toBe(400);
+    expect((await response.json()).error).toContain('기관명은');
+  });
+
+  it('coerces a non-string agencyName to an empty string and rejects it with a 400 in the Cloudflare handler (typeof ternary false branch)', async () => {
+    const response = await onRequestPost({
+      request: buildRequest({
+        agencyName: 42,
+        agencyType: '지방자치단체',
+        samples: ['샘플 문구'],
+      }),
+      env: { ANTHROPIC_API_KEY: 'test-key' },
+    });
+    expect(response.status).toBe(400);
+    expect((await response.json()).error).toContain('기관명은');
+  });
+
   it('returns 429 for a new Cloudflare IP when the in-memory map is full of non-expired entries', async () => {
     const { onRequestPost: freshOnRequestPost } = await importFreshModule('functions/api/generate.js');
     const pinnedNow = Date.now();
