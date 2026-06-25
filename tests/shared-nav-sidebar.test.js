@@ -857,4 +857,45 @@ describe('shared nav sidebar scroll-tracking IntersectionObserver', () => {
 
     expect(observedTargets).toHaveLength(0);
   });
+
+  it('does not crash when window.addEventListener is not a function and skips the resize handler', () => {
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: null,
+      querySelectorAll() { return []; },
+      querySelector() { return null; },
+      getElementById() { return null; },
+      addEventListener() {},
+    };
+    const context = {
+      window: {
+        innerWidth: 480,
+        location: { pathname: '/krds-ux-writing/principles/', search: '' },
+        scrollY: 0,
+        scrollTo: vi.fn(),
+        // no addEventListener — omitted intentionally to test the type-check guard
+      },
+      location: { pathname: '/krds-ux-writing/principles/', search: '', hash: '' },
+      document,
+      localStorage: { getItem() { return null; }, setItem() {} },
+      sessionStorage: { getItem() { return null; }, setItem() {} },
+      IntersectionObserver: function () { return { observe() {}, unobserve() {}, disconnect() {} }; },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    expect(() => vm.runInNewContext(SOURCE, context)).not.toThrow();
+  });
+
+  it('does not throw in handleMobileSidebarLinkClick when the link has no getAttribute method', () => {
+    const { context, hamburger } = makeContext();
+    hamburger.dispatch('click');
+
+    const noAttrLink = { classList: { contains() { return false; } } };
+    expect(() => context.window.KRDSSharedNav.handleMobileSidebarLinkClick(
+      noAttrLink,
+      { preventDefault() {} },
+    )).not.toThrow();
+  });
 });
