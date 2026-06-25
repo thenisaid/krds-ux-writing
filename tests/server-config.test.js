@@ -2245,6 +2245,12 @@ describe('server.js configuration', () => {
     expect(responseState.statusCode).toBe(503);
   });
 
+  it('returns local-llm key when ANTHROPIC_BASE_URL uses an IPv6 loopback address with bracket notation', () => {
+    process.env.ANTHROPIC_BASE_URL = 'http://[::1]:8200/krds';
+    process.env.ANTHROPIC_API_KEY = '';
+    expect(loadFreshServerModule().getAnthropicApiKey()).toBe('local-llm');
+  });
+
   it('returns 429 when the rate-limit map is full with non-expired entries and a new IP tries to connect', async () => {
     const freshServerModule = loadFreshServerModule();
     const freshServer = freshServerModule.server;
