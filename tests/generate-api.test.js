@@ -1728,6 +1728,10 @@ describe('anthropic-edge.js — buildApiEndpoint and getAnthropicApiKey', () => 
     expect(getAnthropicApiKey('http://[::1]:11434/v1', '')).toBe('local-llm');
   });
 
+  it('getAnthropicApiKey returns local-llm for localhost hostname', () => {
+    expect(getAnthropicApiKey('http://localhost:11434/v1', '')).toBe('local-llm');
+  });
+
   it('getAnthropicApiKey returns empty string for non-loopback hostnames when no API key is set', () => {
     expect(getAnthropicApiKey('https://api.anthropic.com/v1', '')).toBe('');
   });
