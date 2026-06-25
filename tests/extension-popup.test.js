@@ -588,4 +588,21 @@ describe('krds extension popup', () => {
     expect(tagEl.innerHTML).not.toContain('<mark>');
     expect(tagEl.innerHTML).toContain('버튼');
   });
+
+  it('opens the root guide URL when a chip data-section is not in SECTION_ROUTES (route=undefined fallback)', () => {
+    const { context, chrome, elements } = buildPopupContext();
+    // Create a chip whose section is not a key in SECTION_ROUTES
+    const unknownChip = createElement({ className: 'chip', dataset: { section: 'nonexistent-section' } });
+    elements.categoryChips.appendChild(unknownChip);
+
+    vm.runInNewContext(SOURCE, context);
+
+    // sectionId='nonexistent-section' → SECTION_ROUTES['nonexistent-section'] = undefined
+    // route is undefined (falsy) → url = GUIDE_URL (root)
+    elements.categoryChips.dispatch('click', { target: unknownChip });
+
+    expect(chrome.tabs.create).toHaveBeenCalledWith({
+      url: 'https://thenisaid.github.io/krds-ux-writing/',
+    });
+  });
 });
