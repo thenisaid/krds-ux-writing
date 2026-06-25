@@ -2874,6 +2874,70 @@ describe('generator/app.js', () => {
     expect(elements['quality-gates'].innerHTML).toContain('자동 검수 엔진을 불러오지 못했습니다');
   });
 
+  it('skips focus without crashing when the output-title element has no focus method when the delayed focus timer fires', () => {
+    const { context, elements, timers } = buildGeneratorContext({ manualTimers: true });
+    delete elements['output-title'].focus; // typeof undefined !== 'function'
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['fallback-btn'].dispatch('click');
+    // screen-output gains 'active' via showScreen → getElementById works correctly
+
+    const focusTimer = [...timers.entries()].find(([, t]) => t.delay === 50);
+    expect(focusTimer).toBeDefined();
+    expect(() => focusTimer[1].fn()).not.toThrow();
+    // focus was not called (no .focus method) — but the timer should not crash
+  });
+
+  it('does not crash when quality stat elements (score/errors/warnings/infos) are absent from the DOM during renderQualityReview', () => {
+    const { context, elements } = buildGeneratorContext();
+    delete elements['quality-score'];
+    delete elements['quality-errors'];
+    delete elements['quality-warnings'];
+    delete elements['quality-infos'];
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 85,
+        summary: { total: 1, errors: 1, warnings: 0, infos: 0 },
+        issues: [{ type: 'admin-jargon', category: '행정어', message: '귀하', suggestion: '고객님' }],
+      })),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(() => elements['fallback-btn'].dispatch('click')).not.toThrow();
+    // Quality gates are still rendered even without the optional stat elements
+    expect(elements['quality-gates'].innerHTML).toContain('quality-gate--');
+    expect(elements['quality-issues-list'].innerHTML).toContain('행정어');
+  });
+
+  it('does not show an error when showGeneratingError is called with a stale runToken (cancel during response.json parsing)', async () => {
+    let resolveJson;
+    const jsonPromise = new Promise((resolve) => { resolveJson = resolve; });
+    const fetchImpl = vi.fn(async () => ({
+      ok: false,
+      status: 503,
+      json: () => jsonPromise,
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    // Let fetch resolve so startGeneration enters the !response.ok branch and hits await response.json()
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // Cancel while response.json() is still pending → increments activeRunToken
+    elements['cancel-btn'].dispatch('click');
+
+    // Now resolve the json() → continuation calls showGeneratingError(msg, staleToken)
+    resolveJson({ error: 'deferred error' });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // The stale-token guard (typeof runToken === 'number' && !isActiveRun(runToken)) fires → early return
+    expect(elements['generating-error'].classList.contains('visible')).toBe(false);
+  });
+
   it('passes both cells to the lint engine when a 2-column table row has a non-source-marker first cell (neither if nor else-if fires)', () => {
     let lintInput = null;
     const { context } = buildGeneratorContext();
