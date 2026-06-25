@@ -644,6 +644,26 @@ describe('placeholderPattern branches via synthetic dictionary', () => {
     const issues = result.issues.filter(i => i.match === '귀하' && i.type === 'admin-jargon');
     expect(issues.length).toBe(1);
   });
+
+  it('silently drops entries whose alt phrase is empty', () => {
+    const lint = makeCustomLint([
+      { banned: '귀하', alt: '', cat: '행정 관습어' },
+      { banned: '잘못', alt: '오류', cat: '행정 관습어' },
+    ]);
+    const result = lint.lint('귀하 잘못');
+    expect(result.issues.find(i => i.match === '귀하')).toBeUndefined();
+    expect(result.issues.find(i => i.match === '잘못')).toBeDefined();
+  });
+
+  it('silently drops entries whose cat field is missing or empty', () => {
+    const lint = makeCustomLint([
+      { banned: '귀하', alt: '고객님', cat: '' },
+      { banned: '잘못', alt: '오류', cat: '행정 관습어' },
+    ]);
+    const result = lint.lint('귀하 잘못');
+    expect(result.issues.find(i => i.match === '귀하')).toBeUndefined();
+    expect(result.issues.find(i => i.match === '잘못')).toBeDefined();
+  });
 });
 
 describe('UMD Node.js branch — jargon-dictionary.json load failure falls back to inline list', () => {
