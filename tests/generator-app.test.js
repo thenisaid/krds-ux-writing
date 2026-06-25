@@ -1055,6 +1055,24 @@ describe('generator/app.js', () => {
     expect(elements['fallback-area'].style.display).toBe('block');
   });
 
+  it('shows the server error body message when a non-400/non-429 response includes an error field', async () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: false,
+      status: 503,
+      async json() { return { error: 'AI 서비스 일시 점검 중입니다.' }; },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(elements['generating-error'].classList.contains('visible')).toBe(true);
+    expect(elements['generating-error'].textContent).toContain('AI 서비스 일시 점검 중입니다.');
+    expect(elements['fallback-area'].style.display).toBe('block');
+  });
+
   it('shows the fallback input-check message when a 400 response body cannot be parsed as JSON', async () => {
     const fetchImpl = vi.fn(async () => ({
       ok: false,
