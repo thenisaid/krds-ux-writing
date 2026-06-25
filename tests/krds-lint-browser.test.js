@@ -136,3 +136,31 @@ describe('browser jargon dictionary integration', () => {
     });
   });
 });
+
+describe('krds-lint.js — INLINE_JARGON dedup filter (false branch)', () => {
+  it('suppresses the INLINE_JARGON entry when the dict already contains the same banned phrase', () => {
+    // "죄송합니다" is an INLINE_JARGON entry (cat: '에러 메시지').
+    // By injecting it in the custom dict with a different alt/cat, we force the
+    // filter branch `!jargonDict.entries.some(d => d && d.banned === e.banned)` to
+    // return false → the INLINE version is excluded from the merged list.
+    // The result: only one issue, using the custom dict's suggestion (not the inline one).
+    const context = {
+      KRDS_JARGON_DICT: {
+        entries: [
+          { banned: '죄송합니다', alt: '커스텀 대안', cat: '커스텀 범주' },
+        ],
+      },
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(LINT_SOURCE, context);
+
+    const result = context.KRDSLint.lint('죄송합니다. 오류가 발생했습니다.');
+    const issues = result.issues.filter((i) => i.match === '죄송합니다');
+
+    expect(issues).toHaveLength(1);
+    expect(issues[0].suggestion).toContain('커스텀 대안');
+    expect(issues[0].category).toBe('커스텀 범주');
+  });
+});
