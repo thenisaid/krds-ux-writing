@@ -2850,4 +2850,49 @@ describe('generator/app.js', () => {
 
     expect(elements['quality-gates'].innerHTML).toContain('자동 검수 엔진을 불러오지 못했습니다');
   });
+
+  it('passes both cells to the lint engine when a 2-column table row has a non-source-marker first cell (neither if nor else-if fires)', () => {
+    let lintInput = null;
+    const { context } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn((text) => {
+        lintInput = text;
+        return { score: 100, summary: { total: 0, errors: 0, warnings: 0, infos: 0 }, issues: [] };
+      }),
+    };
+
+    // 2-column table: first cell '권장 표현' does not match source-marker pattern,
+    // cells.length (2) < 3 → neither if nor else-if fires → all cells kept and joined
+    const markdown = '| 권장 표현 | 비고 |\n|---|---|\n| 처리됩니다 | 이용 안내 |';
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: ' + JSON.stringify({ type: 'chunk', text: markdown }) + '\n'),
+            encoder.encode('data: ' + JSON.stringify({ type: 'done' }) + '\n'),
+          ];
+          let i = 0;
+          return { async read() { if (i < chunks.length) return { done: false, value: chunks[i++] }; return { done: true, value: undefined }; } };
+        },
+      },
+    }));
+
+    const { context: ctx2 } = buildGeneratorContext({ fetchImpl });
+    ctx2.KRDSLint = context.KRDSLint;
+    vm.runInNewContext(SOURCE, ctx2);
+    ctx2.document.getElementById('generator-form').dispatch('submit');
+
+    return new Promise((resolve) => {
+      setTimeout(async () => {
+        await new Promise((r) => setTimeout(r, 0));
+        expect(ctx2.KRDSLint.lint).toHaveBeenCalled();
+        expect(lintInput).toContain('처리됩니다');
+        expect(lintInput).toContain('이용 안내');
+        resolve();
+      }, 0);
+    });
+  });
 });
