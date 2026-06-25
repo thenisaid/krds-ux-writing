@@ -790,6 +790,52 @@ describe('index-v2 theme toggle', () => {
     expect(dictionaryLink.classList.contains('active')).toBe(false);
   });
 
+  it('restores button focus when a mobile-menu-link with target="_blank" is clicked (closeMobileMenu true branch)', () => {
+    const firstLink = createElement();
+    const blankLink = createElement({ attributes: { target: '_blank' } });
+    blankLink.closest = function (sel) { return sel === '.mobile-menu-link' ? blankLink : null; };
+    const mobileMenu = createElement({
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: {
+        '.mobile-menu-link': firstLink,
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])': [],
+      },
+    });
+    const mobileMenuBtn = createElement({
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      getElementById(id) {
+        if (id === 'mobileMenuBtn') return mobileMenuBtn;
+        if (id === 'mobileMenu') return mobileMenu;
+        return null;
+      },
+      querySelectorAll() { return []; },
+      addEventListener() {},
+    };
+    const context = {
+      document,
+      window: { location: { pathname: '/index-v2.html' } },
+      localStorage: { setItem() {} },
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    mobileMenuBtn.dispatch('click');
+    expect(mobileMenu.classList.contains('open')).toBe(true);
+
+    mobileMenu.dispatch('click', { target: blankLink });
+
+    expect(mobileMenu.classList.contains('open')).toBe(false);
+    expect(mobileMenuBtn.focus).toHaveBeenCalled();
+  });
+
   it('strips index.html from the pathname when matching nav links', () => {
     const principlesLink = createElement({
       attributes: { href: '/krds-ux-writing/principles/' },
