@@ -843,4 +843,60 @@ describe('archive page — additional branch coverage', () => {
     expect(html).toContain('H55');
     expect(html).not.toContain('arc-card-rec');
   });
+
+  it('filters to only principle-A issues when a filter button with principle="A" is clicked after data loads', async () => {
+    const { context, elements, filterBtns } = buildContext({
+      markdown: [
+        '## Cycle 1',
+        '### H1 — 무번역 이슈 ★ [A]',
+        '**원문**: 텍스트A',
+        '**문제**: 설명',
+        '**권장 개선안**: 개선',
+        '',
+        '### H2 — 정보핵심화 이슈 ★★ [B]',
+        '**원문**: 텍스트B',
+        '**문제**: 설명',
+        '**권장 개선안**: 개선',
+      ].join('\n'),
+    });
+    const hometaxAll = filterBtns[1];
+    const hometaxA = createElement({
+      dataset: { agency: 'hometax', principle: 'A' },
+      classes: ['arc-filter'],
+      attributes: { 'aria-pressed': 'false' },
+    });
+    const originalQSA = context.document.querySelectorAll.bind(context.document);
+    context.document.querySelectorAll = function (selector) {
+      if (selector === '[data-agency="hometax"]') return [hometaxAll, hometaxA];
+      return originalQSA(selector);
+    };
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    hometaxA.dispatch('click');
+
+    const html = elements['arc-grid-hometax'].innerHTML;
+    expect(html).toContain('H1');
+    expect(html).not.toContain('H2');
+  });
+
+  it('does not throw when localStorage.setItem raises a quota error during theme save', () => {
+    const { context, elements } = buildContext();
+    context.localStorage = { setItem() { throw new Error('QuotaExceededError'); } };
+    vm.runInNewContext(SOURCE, context);
+
+    expect(() => elements.themeToggle.dispatch('click')).not.toThrow();
+    expect(context.document.documentElement.getAttribute('data-theme')).toBe('dark');
+  });
+
+  it('does not throw and still updates the count badge when the grid element is absent on a successful fetch', async () => {
+    const { context, elements } = buildContext();
+    delete elements['arc-grid-hometax'];
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    expect(elements['arc-count-badge-hometax'].textContent).toBe(2);
+  });
 });
