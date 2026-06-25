@@ -1904,4 +1904,5 @@ describe('lint-ui uncovered branch coverage', () => {
     expect(context.document.execCommand).toHaveBeenCalledWith('copy');
     expect(elements.copyBtn.textContent).toBe('❌ 복사 실패');
   });
+
 });

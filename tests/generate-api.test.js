@@ -1697,6 +1697,11 @@ describe('generate-shared.js — buildUserMessage and readOptionalStringField', 
     expect(result).toContain('샘플을 분석해 기관 전체 UX Writing 기준을 작성하세요.');
   });
 
+  it('readOptionalStringField returns ok:true and empty value when the key is absent from the body', () => {
+    const result = readOptionalStringField({}, 'screenType', 40);
+    expect(result).toEqual({ ok: true, value: '' });
+  });
+
   it('readOptionalStringField returns ok:true and empty value when the field is explicitly null', () => {
     const result = readOptionalStringField({ screenType: null }, 'screenType', 40);
     expect(result).toEqual({ ok: true, value: '' });
