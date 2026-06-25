@@ -2938,6 +2938,51 @@ describe('generator/app.js', () => {
     expect(elements['generating-error'].classList.contains('visible')).toBe(false);
   });
 
+  it('silently skips an all-whitespace pipe line without adding empty text to the lint input (!cells.length early return)', () => {
+    let lintInput = null;
+    const { context } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn((text) => {
+        lintInput = text;
+        return { score: 100, summary: { total: 0, errors: 0, warnings: 0, infos: 0 }, issues: [] };
+      }),
+    };
+
+    // "| |" splits into ['', ' ', ''] → trimmed ['','',''] → filter(Boolean) → [] → !cells.length → early return
+    // Followed by real content "처리됩니다" to confirm the empty row was silently skipped.
+    const markdown = '| |\n처리됩니다';
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: ' + JSON.stringify({ type: 'chunk', text: markdown }) + '\n'),
+            encoder.encode('data: ' + JSON.stringify({ type: 'done' }) + '\n'),
+          ];
+          let i = 0;
+          return { async read() { if (i < chunks.length) return { done: false, value: chunks[i++] }; return { done: true, value: undefined }; } };
+        },
+      },
+    }));
+
+    const { context: ctx2 } = buildGeneratorContext({ fetchImpl });
+    ctx2.KRDSLint = context.KRDSLint;
+    vm.runInNewContext(SOURCE, ctx2);
+    ctx2.document.getElementById('generator-form').dispatch('submit');
+
+    return new Promise((resolve) => {
+      setTimeout(async () => {
+        await new Promise((r) => setTimeout(r, 0));
+        // The all-whitespace pipe line "| |" contributes nothing to lint input
+        expect(ctx2.KRDSLint.lint).toHaveBeenCalled();
+        expect(lintInput).toContain('처리됩니다');
+        resolve();
+      }, 0);
+    });
+  });
+
   it('passes both cells to the lint engine when a 2-column table row has a non-source-marker first cell (neither if nor else-if fires)', () => {
     let lintInput = null;
     const { context } = buildGeneratorContext();
