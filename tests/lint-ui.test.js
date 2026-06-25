@@ -2533,4 +2533,22 @@ describe('lint-ui uncovered branch coverage', () => {
     expect(elements.historyList.innerHTML).toContain('…');
   });
 
+  it('hides the history card when historyList.innerHTML setter throws inside renderHistory', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem(
+      'krds-lint-history',
+      JSON.stringify([{ date: '2026-01-01', score: 82, text: '귀하', fullText: '귀하의 서류', issueCount: 1 }]),
+    );
+
+    Object.defineProperty(elements.historyList, 'innerHTML', {
+      get() { return ''; },
+      set() { throw new Error('innerHTML write blocked'); },
+      configurable: true,
+    });
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.historyCard.style.display).toBe('none');
+  });
+
 });
