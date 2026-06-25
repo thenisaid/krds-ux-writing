@@ -378,4 +378,34 @@ describe('shared prompt copy behavior', () => {
 
     expect(button.textContent).toBe('복사 실패');
   });
+
+  it('exits immediately without registering handlers when document is null', () => {
+    const context = {
+      document: null,
+      navigator: {},
+      clearTimeout() {},
+      setTimeout(fn) { fn(); return 1; },
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    // Should not throw — the early-return guard fires before any addEventListener call
+    expect(() => vm.runInNewContext(SOURCE, context)).not.toThrow();
+  });
+
+  it('exits immediately without registering handlers when document.addEventListener is not a function', () => {
+    const context = {
+      document: { addEventListener: null },
+      navigator: {},
+      clearTimeout() {},
+      setTimeout(fn) { fn(); return 1; },
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    // typeof document.addEventListener !== 'function' → early return
+    expect(() => vm.runInNewContext(SOURCE, context)).not.toThrow();
+  });
 });
