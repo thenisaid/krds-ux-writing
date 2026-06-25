@@ -660,6 +660,19 @@ describe('server.js configuration', () => {
     }
   });
 
+  it('fires the error callback immediately when callClaudeStream is called directly without an API key', () => {
+    const mod = loadFreshServerModule();
+    process.env.ANTHROPIC_API_KEY = '';
+    let errorMessage;
+    mod.callClaudeStream(
+      { model: 'claude-sonnet-4-6' },
+      () => {},
+      () => {},
+      (msg) => { errorMessage = msg; },
+    );
+    expect(errorMessage).toContain('AI 서비스 구성이 완료되지 않았습니다');
+  });
+
   it('flushes a final buffered Claude chunk without a trailing newline in the local server path', async () => {
     const originalRequest = https.request;
     try {
