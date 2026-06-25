@@ -178,4 +178,33 @@ describe('dictionary filter initialization', () => {
     expect(filterBtns[1].classList.contains('active')).toBe(true);
     expect(filterBtns[1].getAttribute('aria-pressed')).toBe('true');
   });
+
+  it('falls back to filterBtns[0] as active when no button has the active class on init', () => {
+    const { context, filterBtns, rows } = buildContext();
+    filterBtns[0].classList.remove('active');
+    vm.runInNewContext(SOURCE, context);
+
+    expect(filterBtns[0].classList.contains('active')).toBe(true);
+    expect(filterBtns[0].getAttribute('aria-pressed')).toBe('true');
+    expect(rows[0].style.display).toBe('');
+    expect(rows[1].style.display).toBe('');
+  });
+
+  it('clears the search query and hides the clear button when searchClear is clicked', () => {
+    const { context, elements, rows } = buildContext({ searchValue: '귀하' });
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.searchClear.style.display).toBe('block');
+    expect(rows[1].style.display).toBe('none');
+
+    elements.searchInput.value = '';
+    elements.searchClear.dispatch('click');
+
+    expect(elements.searchInput.value).toBe('');
+    expect(elements.searchClear.style.display).toBe('none');
+    expect(elements.emptyState.style.display).toBe('none');
+    expect(rows[0].style.display).toBe('');
+    expect(rows[1].style.display).toBe('');
+    expect(elements.searchInput.focus).toHaveBeenCalled();
+  });
 });
