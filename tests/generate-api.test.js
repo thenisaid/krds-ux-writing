@@ -1795,3 +1795,77 @@ describe('anthropic-edge.js — buildApiEndpoint and getAnthropicApiKey', () => 
     expect(getAnthropicApiKey('not-a-valid-url', '')).toBe('');
   });
 });
+
+describe('checkRateLimit — rate-limit map full with non-expired entries', () => {
+  it('returns 429 for a new Vercel IP when the in-memory map is full of non-expired entries', async () => {
+    const { default: freshVercelHandler } = await importFreshModule('api/generate.js');
+    const pinnedNow = Date.now();
+    vi.spyOn(Date, 'now').mockReturnValue(pinnedNow);
+    try {
+      for (let i = 0; i < 1000; i++) {
+        const req = new Request('http://localhost/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Origin: ALLOWED_ORIGIN,
+            'CF-Connecting-IP': buildUniqueTestIp(i + 70000),
+          },
+          body: JSON.stringify({ agencyName: '', agencyType: '', samples: [] }),
+        });
+        await freshVercelHandler(req);
+      }
+
+      const newIpReq = new Request('http://localhost/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: ALLOWED_ORIGIN,
+          'CF-Connecting-IP': buildUniqueTestIp(80000),
+        },
+        body: JSON.stringify({ agencyName: '', agencyType: '', samples: [] }),
+      });
+      const response = await freshVercelHandler(newIpReq);
+      expect(response.status).toBe(429);
+    } finally {
+      vi.restoreAllMocks();
+    }
+  });
+
+  it('returns 429 for a new Cloudflare IP when the in-memory map is full of non-expired entries', async () => {
+    const { onRequestPost: freshOnRequestPost } = await importFreshModule('functions/api/generate.js');
+    const pinnedNow = Date.now();
+    vi.spyOn(Date, 'now').mockReturnValue(pinnedNow);
+    try {
+      for (let i = 0; i < 1000; i++) {
+        await freshOnRequestPost({
+          request: new Request('http://localhost/api/generate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Origin: ALLOWED_ORIGIN,
+              'CF-Connecting-IP': buildUniqueTestIp(i + 81000),
+            },
+            body: JSON.stringify({ agencyName: '', agencyType: '', samples: [] }),
+          }),
+          env: { ANTHROPIC_API_KEY: 'test-key' },
+        });
+      }
+
+      const response = await freshOnRequestPost({
+        request: new Request('http://localhost/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Origin: ALLOWED_ORIGIN,
+            'CF-Connecting-IP': buildUniqueTestIp(91000),
+          },
+          body: JSON.stringify({ agencyName: '', agencyType: '', samples: [] }),
+        }),
+        env: { ANTHROPIC_API_KEY: 'test-key' },
+      });
+      expect(response.status).toBe(429);
+    } finally {
+      vi.restoreAllMocks();
+    }
+  });
+});
