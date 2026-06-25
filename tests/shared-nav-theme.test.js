@@ -314,4 +314,40 @@ describe('shared nav theme behavior', () => {
     expect(documentElement.getAttribute('data-theme')).toBe('dark');
     expect(setItem).toHaveBeenCalledWith('krds-theme', 'dark');
   });
+
+  it('does not throw when the media query object has neither addEventListener nor addListener', () => {
+    const bareMediaQuery = { matches: false };
+    const context = {
+      window: {
+        location: { pathname: '/krds-ux-writing/case-studies/' },
+        matchMedia: () => bareMediaQuery,
+      },
+      document: {
+        documentElement: {
+          setAttribute() {},
+          getAttribute() { return 'light'; },
+        },
+        body: { style: {} },
+        activeElement: null,
+        querySelectorAll() { return []; },
+        querySelector() { return null; },
+        getElementById() { return null; },
+        addEventListener() {},
+      },
+      localStorage: {
+        getItem: vi.fn(() => null),
+        setItem: vi.fn(),
+      },
+      IntersectionObserver: function () {
+        return { observe() {}, unobserve() {}, disconnect() {} };
+      },
+      Array,
+      JSON,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    expect(() => vm.runInNewContext(SOURCE, context)).not.toThrow();
+  });
 });
