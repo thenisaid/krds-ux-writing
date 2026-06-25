@@ -2047,6 +2047,27 @@ describe('lint-ui uncovered branch coverage', () => {
     expect(elements.improvedText.textContent).toBe('국민과 함께하겠습니다.');
   });
 
+  it('applies score-good class and 좋음 label when the lint score is 80 or above, and shows the empty-success state when there are no issues', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 95,
+        summary: { errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '깨끗한 문장입니다.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.scoreSection.innerHTML).toContain('score-good');
+    expect(elements.scoreSection.innerHTML).toContain('좋음');
+    expect(elements.highlightCard.style.display).toBe('none');
+    expect(elements.issuesList.innerHTML).toContain('이슈가 없습니다!');
+    expect(elements.issuesTitle.textContent).toBe('이슈 없음');
+    expect(elements.cliBanner.style.display).toBe('none');
+  });
+
   it('converts particle "과" to "와" when the replacement word ends without a batchim consonant (isKorean no-batchim path)', () => {
     const { context, elements } = buildContext({
       lintResult: {
