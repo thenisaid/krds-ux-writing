@@ -2436,4 +2436,101 @@ describe('lint-ui uncovered branch coverage', () => {
     expect(elements.improvedText.textContent).toBe('User가 제출해 주세요.');
   });
 
+  it('toggles the theme from light to dark and updates the toggle button label when themeToggle is clicked', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    // Default initial theme is light (no saved theme, matchMedia returns false)
+    expect(context.document.documentElement.getAttribute('data-theme')).toBe('light');
+
+    elements.themeToggle.dispatch('click');
+
+    expect(context.document.documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(elements.themeToggle.textContent).toBe('☀️');
+    expect(elements.themeToggle.getAttribute('aria-label')).toBe('라이트모드 전환');
+    expect(context.localStorage.getItem('krds-theme')).toBe('dark');
+  });
+
+  it('toggles the theme from dark back to light when themeToggle is clicked a second time', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-theme', 'dark');
+    vm.runInNewContext(SOURCE, context);
+
+    expect(context.document.documentElement.getAttribute('data-theme')).toBe('dark');
+
+    elements.themeToggle.dispatch('click');
+
+    expect(context.document.documentElement.getAttribute('data-theme')).toBe('light');
+    expect(elements.themeToggle.textContent).toBe('🌙');
+    expect(elements.themeToggle.getAttribute('aria-label')).toBe('다크모드 전환');
+    expect(context.localStorage.getItem('krds-theme')).toBe('light');
+  });
+
+  it('loads the sample text and updates charCount when sampleBtn is clicked', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.inputText.value).toBe('');
+    elements.sampleBtn.dispatch('click');
+
+    expect(elements.inputText.value).toContain('귀하');
+    expect(Number(elements.charCount.textContent)).toBeGreaterThan(0);
+    expect(Number(elements.charCount.textContent)).toBe(elements.inputText.value.length);
+  });
+
+  it('clears the input, resets charCount and hides all result cards when clearBtn is clicked after linting', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.scoreSection.innerHTML).toContain('82');
+    expect(elements.highlightCard.style.display).toBe('block');
+
+    elements.clearBtn.dispatch('click');
+
+    expect(elements.inputText.value).toBe('');
+    expect(elements.charCount.textContent).toBe('0');
+    expect(elements.highlightCard.style.display).toBe('none');
+    expect(elements.issuesCard.style.display).toBe('none');
+    expect(elements.improvedCard.style.display).toBe('none');
+    expect(elements.scoreSection.innerHTML).toContain('텍스트를 입력하고 검사해 주세요');
+    // shareLinkBtn shows pre-lint message (not dirty message) because analysisDirty=false after clear
+    expect(elements.shareLinkBtn.disabled).toBe(true);
+    expect(elements.shareLinkBtn.title).toBe('먼저 검사를 실행해 주세요');
+  });
+
+  it('toggles the opt-chip state when the Enter key is pressed on it', () => {
+    const { context } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    const [adminChip] = context.document.querySelectorAll('.opt-chip');
+    const preventDefault = vi.fn();
+    adminChip.dispatch('keydown', { key: 'Enter', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(adminChip.getAttribute('aria-checked')).toBe('false');
+  });
+
+  it('uses fullText.slice(0, 80) as preview when entry.text is an empty string (falsy text branch)', () => {
+    const { context, elements } = buildContext();
+    const fullText = '이것은 풀 텍스트입니다. '.repeat(10); // > 80 chars
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      {
+        date: '2026. 1. 1.',
+        score: 80,
+        text: '', // empty string → typeof === 'string' but falsy → falls to fullText.slice(0, 80)
+        fullText,
+        issueCount: 1,
+      },
+    ]));
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.historyCard.style.display).toBe('block');
+    expect(elements.historyList.innerHTML).toContain(fullText.slice(0, 80));
+    expect(elements.historyList.innerHTML).toContain('…');
+  });
+
 });
