@@ -187,4 +187,16 @@ describe('bin/krds-lint CLI', () => {
     expect(result.stdout).toContain('검사 파일: 1개');
     expect(result.stdout).not.toContain('image.png');
   });
+
+  it('exits 1 with an error when a directory contains only binary files and no text files', () => {
+    const dir = makeTempDir();
+    const nullBytes = Buffer.alloc(16, 0);
+    fs.writeFileSync(path.join(dir, 'a.bin'), nullBytes);
+    fs.writeFileSync(path.join(dir, 'b.png'), nullBytes);
+
+    const result = runCli([dir]);
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('오류');
+  });
 });
