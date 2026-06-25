@@ -291,4 +291,93 @@ describe('demo slides help overlay', () => {
     expect(preventDefault).toHaveBeenCalled();
     expect(container.listenerCount('transitionend')).toBe(0);
   });
+
+  it('advances to the next slide when the user swipes left (negative dx)', async () => {
+    const { context, container, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    container.dispatch('pointerdown', { clientX: 300 });
+    container.dispatch('pointerup', { clientX: 200 });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(history.replaceState).toHaveBeenCalledWith(null, '', '#slide-2');
+  });
+
+  it('moves to the previous slide when the user swipes right (positive dx)', async () => {
+    const { context, document, container, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    document.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    history.replaceState.mockClear();
+
+    container.dispatch('pointerdown', { clientX: 200 });
+    container.dispatch('pointerup', { clientX: 350 });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(history.replaceState).toHaveBeenCalledWith(null, '', '#slide-1');
+  });
+
+  it('ignores a swipe that is 50 px or less (below the movement threshold)', async () => {
+    const { context, container, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    container.dispatch('pointerdown', { clientX: 200 });
+    container.dispatch('pointerup', { clientX: 150 });
+    await Promise.resolve();
+
+    expect(history.replaceState).not.toHaveBeenCalled();
+  });
+
+  it('jumps to the correct slide when the hash changes to #slide-N', async () => {
+    const windowListeners = new Map();
+    const { context, history } = buildContext();
+    context.window.addEventListener = (type, handler) => {
+      const arr = windowListeners.get(type) || [];
+      arr.push(handler);
+      windowListeners.set(type, arr);
+    };
+    context.location = { hash: '' };
+    vm.runInNewContext(SOURCE, context);
+
+    context.location.hash = '#slide-2';
+    const handlers = windowListeners.get('hashchange') || [];
+    handlers.forEach((h) => h());
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(history.replaceState).toHaveBeenCalledWith(null, '', '#slide-2');
+  });
+
+  it('closes the help overlay when "?" is pressed a second time', () => {
+    const { context, document, helpOverlay, slides } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    document.activeElement = slides[0];
+    document.dispatch('keydown', { key: '?', preventDefault: vi.fn() });
+    expect(helpOverlay.classList.contains('visible')).toBe(true);
+
+    helpOverlay.classList.add('visible');
+    document.dispatch('keydown', { key: '?', preventDefault: vi.fn() });
+
+    expect(helpOverlay.classList.contains('visible')).toBe(false);
+  });
+
+  it('falls back to the current slide for focus when lastHelpFocus is null on close', () => {
+    const { context, document, helpOverlay, slides } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    document.activeElement = null;
+    document.dispatch('keydown', { key: '?', preventDefault: vi.fn() });
+    expect(helpOverlay.classList.contains('visible')).toBe(true);
+
+    document.dispatch('keydown', { key: 'Escape', preventDefault: vi.fn() });
+
+    expect(helpOverlay.classList.contains('visible')).toBe(false);
+    expect(slides[0].focus).toHaveBeenCalled();
+  });
 });
