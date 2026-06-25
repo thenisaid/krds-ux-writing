@@ -556,4 +556,43 @@ describe('index inline derived-guide tabs', () => {
     expect(() => orphanTab.dispatch('click')).not.toThrow();
     expect(orphanTab.getAttribute('aria-selected')).toBe('true');
   });
+
+  it('marks a hash nav link active when the href contains a query string before the hash (splitPathAndSearch query branch)', () => {
+    const hashWithQueryLink = createElement({
+      classes: ['gnb-nav-link'],
+      attributes: { href: '/krds-ux-writing/?tab=2#case-studies' },
+    });
+    const plainLink = createElement({
+      classes: ['gnb-nav-link'],
+      attributes: { href: '/krds-ux-writing/principles/' },
+    });
+
+    const document = {
+      querySelectorAll(selector) {
+        if (selector === '.faq-item') return [];
+        if (selector === '.gnb-nav-link') return [hashWithQueryLink, plainLink];
+        if (selector === '.dg-panel') return [];
+        return [];
+      },
+      querySelector() { return null; },
+      getElementById() { return null; },
+    };
+
+    const context = {
+      document,
+      window: {
+        location: {
+          pathname: '/krds-ux-writing/',
+          search: '?tab=2',
+          hash: '#case-studies',
+        },
+      },
+      Array, console, globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(SOURCE, context);
+
+    expect(hashWithQueryLink.classList.contains('active')).toBe(true);
+    expect(plainLink.classList.contains('active')).toBe(false);
+  });
 });
