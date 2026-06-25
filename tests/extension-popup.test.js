@@ -555,4 +555,37 @@ describe('krds extension popup', () => {
     expect(emptyState.querySelector('.empty-icon').textContent).toBe('🔍');
     expect(emptyState.querySelector('.empty-text').textContent).toContain('에 대한 결과가 없습니다.');
   });
+
+  it('does not move focus when ArrowDown is pressed in the search input and the results list has no items', () => {
+    const { context, elements } = buildPopupContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.searchInput.value = 'zzzzzzz';
+    elements.searchInput.dispatch('input');
+    expect(elements.resultsList.querySelector('.result-item')).toBeNull();
+
+    const focusBefore = elements.searchInput.focus.mock.calls.length;
+    const preventDefault = vi.fn();
+    elements.searchInput.dispatch('keydown', { key: 'ArrowDown', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(elements.searchInput.focus.mock.calls.length).toBe(focusBefore);
+  });
+
+  it('renders a result without mark tags when the keyword matches but the query is absent from tag and preview', () => {
+    const { context, elements } = buildPopupContext();
+    vm.runInNewContext(SOURCE, context);
+
+    // '결제하기' is a keyword for the button entry but appears in neither tag ("버튼 & CTA")
+    // nor preview ("동사형 레이블 원칙…") — exercises the highlight while-loop skip path
+    elements.searchInput.value = '결제하기';
+    elements.searchInput.dispatch('input');
+
+    const firstResult = elements.resultsList.querySelector('.result-item');
+    expect(firstResult).not.toBeNull();
+
+    const tagEl = firstResult.querySelector('.result-tag');
+    expect(tagEl.innerHTML).not.toContain('<mark>');
+    expect(tagEl.innerHTML).toContain('버튼');
+  });
 });
