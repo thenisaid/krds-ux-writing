@@ -1534,6 +1534,40 @@ describe('lint-ui stale result handling', () => {
     expect(elements.historyList.innerHTML).not.toContain('var(--color-success-50)');
     expect(elements.historyList.innerHTML).not.toContain('var(--color-warning-50)');
   });
+
+  it('treats stored non-array JSON as an empty history and hides the card', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-lint-history', JSON.stringify({ not: 'an array' }));
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.historyCard.style.display).toBe('none');
+  });
+
+  it('filters out history entries that have neither fullText nor text fields', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      {
+        date: '2026. 1. 1.',
+        score: 70,
+        // both fullText and text are absent — fullText normalises to '' → filtered out
+        issueCount: 0,
+      },
+      {
+        date: '2026. 1. 2.',
+        score: 85,
+        text: '정상 항목입니다.',
+        fullText: '정상 항목입니다.',
+        issueCount: 0,
+      },
+    ]));
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.historyCard.style.display).toBe('block');
+    expect((elements.historyList.innerHTML.match(/<button/g) || []).length).toBe(1);
+    expect(elements.historyList.innerHTML).toContain('정상 항목입니다.');
+  });
 });
 
 describe('pickPrimarySuggestion — bracket nesting prevents slash split', () => {
