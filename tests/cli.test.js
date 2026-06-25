@@ -152,6 +152,13 @@ describe('bin/krds-lint CLI', () => {
     expect(result.stdout).toContain('품질 점수: 100/100');
   });
 
+  it('exits 1 and writes to stderr when stdin text is blank', () => {
+    const result = runCli([], '   \n  ');
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('오류');
+  });
+
   it('skips binary files when scanning a directory', () => {
     const dir = makeTempDir();
     const binaryPath = path.join(dir, 'image.png');
