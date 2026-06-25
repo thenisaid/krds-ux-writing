@@ -2214,4 +2214,29 @@ describe('lint-ui uncovered branch coverage', () => {
     expect(elements.improvedText.textContent).toBe('귀하의 서류');
   });
 
+  it('formats "이슈 없음" via buildCliFallback when formatCLI is absent and the result has no issues', async () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 100,
+        summary: { errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      },
+    });
+    context.KRDSLint.formatCLI = undefined;
+    context.navigator.clipboard = {
+      writeText: vi.fn(() => Promise.resolve()),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '깨끗한 문장입니다.';
+    elements.lintBtn.dispatch('click');
+    elements.copyBtn.dispatch('click');
+    await Promise.resolve();
+
+    const text = context.navigator.clipboard.writeText.mock.calls[0][0];
+    expect(text).toContain('이슈 없음');
+    expect(text).toContain('품질 점수: 100/100');
+  });
+
 });
