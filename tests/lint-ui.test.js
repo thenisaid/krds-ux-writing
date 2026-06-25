@@ -1561,6 +1561,24 @@ describe('lint-ui stale result handling', () => {
     expect((elements.historyList.innerHTML.match(/<button/g) || []).length).toBe(1);
   });
 
+  it('uses empty string for date when entry.date is not a string (numeric date value)', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      {
+        date: 20260101,
+        score: 77,
+        text: '날짜 없는 항목.',
+        fullText: '날짜 없는 항목.',
+        issueCount: 2,
+      },
+    ]));
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements.historyCard.style.display).toBe('block');
+    expect(elements.historyList.innerHTML).toContain('날짜 없는 항목.');
+  });
+
   it('renders history score badge in danger color when the score is below 50', () => {
     const { context, elements } = buildContext();
     context.localStorage.setItem('krds-lint-history', JSON.stringify([
