@@ -567,4 +567,54 @@ describe('index-v2 theme toggle', () => {
     expect(dictionaryLink.classList.contains('active')).toBe(false);
     expect(caseStudiesLink.classList.contains('active')).toBe(false);
   });
+
+  it('does not install a trap handler when the mobile menu has no focusable elements', () => {
+    const mobileMenu = createElement({
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: {
+        '.mobile-menu-link': null,
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])': [],
+      },
+    });
+    const mobileMenuBtn = createElement({
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    const documentElement = {
+      setAttribute() {},
+      getAttribute() { return 'light'; },
+    };
+    const document = {
+      documentElement,
+      body: { style: {} },
+      activeElement: null,
+      getElementById(id) {
+        if (id === 'themeToggle') return null;
+        if (id === 'themeIcon') return null;
+        if (id === 'mobileMenuBtn') return mobileMenuBtn;
+        if (id === 'mobileMenu') return mobileMenu;
+        return null;
+      },
+      querySelectorAll() { return []; },
+      addEventListener() {},
+    };
+
+    const context = {
+      document,
+      window: { location: { pathname: '/index-v2.html' } },
+      localStorage: { setItem() {} },
+      Array, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    mobileMenuBtn.dispatch('click');
+    expect(mobileMenu.classList.contains('open')).toBe(true);
+
+    const preventDefault = vi.fn();
+    mobileMenu.dispatch('keydown', { key: 'Tab', preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(mobileMenu.classList.contains('open')).toBe(true);
+  });
 });
