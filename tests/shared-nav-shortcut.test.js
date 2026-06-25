@@ -372,4 +372,24 @@ describe('shared nav Ctrl+K behavior', () => {
     expect(focus).toHaveBeenCalled();
     expect(select).toHaveBeenCalled();
   });
+
+  it('treats a target with no tagName but isContentEditable true as a text-entry field and skips Ctrl+K', () => {
+    const focus = vi.fn();
+    const select = vi.fn();
+    const preventDefault = vi.fn();
+    const searchInput = { focus, select };
+    const noTagNameEditable = { isContentEditable: true };
+
+    const ctx = makeContext({
+      pathname: '/krds-ux-writing/dictionary/',
+      searchInput,
+    });
+
+    ctx.dispatchKeydown({
+      ctrlKey: true, metaKey: false, key: 'k', preventDefault, target: noTagNameEditable,
+    });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(focus).not.toHaveBeenCalled();
+  });
 });
