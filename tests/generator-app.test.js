@@ -2732,4 +2732,37 @@ describe('generator/app.js', () => {
     expect(() => elements['fallback-btn'].dispatch('click')).not.toThrow();
     expect(elements['quality-issues-list'].innerHTML).toContain('행정어');
   });
+
+  it('hides the tone-target-group when the mode has showToneTarget false (guide-draft init)', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['generator-mode'].value = 'guide-draft';
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements['tone-target-group'].style.display).toBe('none');
+  });
+
+  it('shows the tone-target-group when the mode is tone-adjust (showToneTarget true)', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['generator-mode'].value = 'tone-adjust';
+    elements['sample-1'].value = '';
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(elements['tone-target-group'].style.display).toBe('');
+  });
+
+  it('hides the tone-target-group again when switching away from tone-adjust to guide-draft', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['generator-mode'].value = 'tone-adjust';
+    elements['sample-1'].value = '';
+
+    vm.runInNewContext(SOURCE, context);
+    expect(elements['tone-target-group'].style.display).toBe('');
+
+    elements['generator-mode'].value = 'guide-draft';
+    elements['generator-mode'].dispatch('change');
+
+    expect(elements['tone-target-group'].style.display).toBe('none');
+  });
 });
