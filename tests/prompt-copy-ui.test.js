@@ -347,4 +347,35 @@ describe('shared prompt copy behavior', () => {
     expect(button.textContent).toBe('복사됨!');
     expect(clearedTimers.length).toBeGreaterThan(0);
   });
+
+  it('shows "복사 실패" when document.body has removeChild but not appendChild (second guard fails)', async () => {
+    const { context, document, button } = createEnvironment({
+      clipboardImpl: vi.fn(() => Promise.reject(new Error('denied'))),
+      execCommandResult: false,
+      manualTimers: true,
+    });
+    context.document.body = { removeChild() {} };
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('click', { target: button });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(button.textContent).toBe('복사 실패');
+  });
+
+  it('shows "복사 실패" when document.execCommand throws an exception inside fallbackCopy', async () => {
+    const { context, document, button } = createEnvironment({
+      clipboardImpl: vi.fn(() => Promise.reject(new Error('denied'))),
+      manualTimers: true,
+    });
+    context.document.execCommand = () => { throw new Error('copy not allowed'); };
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('click', { target: button });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(button.textContent).toBe('복사 실패');
+  });
 });

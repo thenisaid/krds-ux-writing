@@ -501,4 +501,18 @@ describe('krds extension popup', () => {
     expect(elements.resultsView.style.display).toBe('none');
     expect(elements.tipsView.style.display).toBe('block');
   });
+
+  it('shows the empty-state placeholder when the search query matches no entries', () => {
+    const { context, elements } = buildPopupContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.searchInput.value = 'zzzzzzz';
+    elements.searchInput.dispatch('input');
+
+    expect(elements.resultsView.style.display).toBe('block');
+    const emptyState = elements.resultsList.querySelector('.empty-state');
+    expect(emptyState).not.toBeNull();
+    expect(emptyState.querySelector('.empty-icon').textContent).toBe('🔍');
+    expect(emptyState.querySelector('.empty-text').textContent).toContain('에 대한 결과가 없습니다.');
+  });
 });
