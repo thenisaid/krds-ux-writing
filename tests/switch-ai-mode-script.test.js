@@ -138,4 +138,15 @@ describe('scripts/switch-ai-mode.sh', () => {
     expect(result.status).toBe(1);
     expect(result.stdout).toContain('Usage:');
   });
+
+  it('appends missing keys to an empty .env file when switching to local mode (upsert END branch)', () => {
+    const { scriptPath, envPath } = createFixture('');
+
+    const result = runScript(scriptPath, 'local');
+    const envContents = fs.readFileSync(envPath, 'utf8');
+
+    expect(result.status).toBe(0);
+    expect(envContents).toContain('ANTHROPIC_BASE_URL=http://localhost:8200/krds');
+    expect(envContents).toContain('ANTHROPIC_API_KEY=local-llm');
+  });
 });
