@@ -752,6 +752,78 @@ describe('before-after page interactions', () => {
     expect(seminarCounter.textContent).toBe('1 / 2');
   });
 
+  it('does not advance past the last slide when ArrowDown is pressed at the final slide', () => {
+    const makePair = (ctx, principle) => ({
+      getAttribute(name) {
+        if (name === 'data-context') return ctx;
+        if (name === 'data-principle') return principle;
+        return null;
+      },
+      querySelector(selector) {
+        if (selector === '.ba-card.before .ba-text') return { innerHTML: '<p>before</p>' };
+        if (selector === '.ba-card.after .ba-text') return { innerHTML: '<p>after</p>' };
+        return null;
+      },
+    });
+
+    const seminarOverlay = createElement({
+      id: 'seminarOverlay',
+      queryMap: {
+        'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])': [],
+        'mark.diff': [],
+      },
+    });
+    const seminarCounter = createElement({ id: 'seminarCounter' });
+    const seminarPrev = createElement({ id: 'seminarPrev' });
+    const seminarNext = createElement({ id: 'seminarNext' });
+    const elements = {
+      themeToggle: createElement({ id: 'themeToggle' }),
+      themeIcon: createElement({ id: 'themeIcon' }),
+      seminarOverlay,
+      seminarSlide: createElement({ id: 'seminarSlide', queryMap: { 'mark.diff': [] } }),
+      seminarPrinciple: createElement({ id: 'seminarPrinciple' }),
+      seminarCounter,
+      seminarPrev,
+      seminarNext,
+      seminarBtn: createElement({ id: 'seminarBtn' }),
+      seminarClose: createElement({ id: 'seminarClose' }),
+      'panel-a': createElement({ id: 'panel-a', classes: ['tab-panel', 'active'], queryMap: { 'mark.diff': [] } }),
+    };
+    const document = createDocument(elements, {
+      '.tab-btn': [],
+      '.tab-panel': [],
+      '.pair': [makePair('A', 'A'), makePair('B', 'B')],
+    });
+    const context = {
+      document,
+      window: {},
+      localStorage: { setItem() {} },
+      setTimeout(fn) { fn(); return 1; },
+      clearTimeout() {},
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.seminarBtn.dispatch('click');
+    expect(seminarCounter.textContent).toBe('1 / 2');
+
+    document.dispatch('keydown', { key: 'ArrowDown', preventDefault: vi.fn() });
+    expect(seminarCounter.textContent).toBe('2 / 2');
+
+    document.dispatch('keydown', { key: 'ArrowDown', preventDefault: vi.fn() });
+    expect(seminarCounter.textContent).toBe('2 / 2');
+
+    document.dispatch('keydown', { key: 'ArrowUp', preventDefault: vi.fn() });
+    expect(seminarCounter.textContent).toBe('1 / 2');
+
+    document.dispatch('keydown', { key: 'ArrowUp', preventDefault: vi.fn() });
+    expect(seminarCounter.textContent).toBe('1 / 2');
+  });
+
   it('does not call setTimeout for the initial mark animation when panel-a is absent from the DOM', () => {
     const setTimeoutSpy = vi.fn();
     const tabA = createElement({
