@@ -958,6 +958,29 @@ describe('archive page — additional branch coverage', () => {
     expect(html).not.toContain('H3');
   });
 
+  it('returns empty recommendation when the B/A table data row has only a single cell (cells.length < 2 branch)', async () => {
+    const { context, elements } = buildContext({
+      markdown: [
+        '## Cycle 1',
+        '### H55 — 단일 셀 비교 테이블 이슈 ★ [A]',
+        '',
+        '| **원칙** | A |',
+        '| **심각도** | ★ |',
+        '',
+        '| B (현재) | A (개선) |',
+        '|----------|----------|',
+        '|단일셀|',
+      ].join('\n'),
+    });
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    const html = elements['arc-grid-hometax'].innerHTML;
+    expect(html).toContain('H55');
+    expect(html).not.toContain('arc-card-rec');
+  });
+
   it('falls back to the default "derived/" base path when KRDSBasePath exists but buildSitePath is not a function', async () => {
     const { context, elements } = buildContext();
     context.window.KRDSBasePath = { version: 1 };
