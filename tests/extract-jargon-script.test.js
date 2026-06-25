@@ -610,6 +610,16 @@ describe('scripts/extract-jargon.js', () => {
   });
 
   describe('mergeEntries — isMoreDescriptiveEntry branch coverage', () => {
+    it('keeps the entry with the longer alt when alt lengths differ (branch 1)', () => {
+      const entries = [
+        { banned: '공고문', alt: 'AB', cat: '행정 관습어' },
+        { banned: '공고문', alt: 'LONGER_ALT', cat: '행정 관습어' },
+      ];
+      const result = mergeEntries(entries);
+      expect(result).toHaveLength(1);
+      expect(result[0].alt).toBe('LONGER_ALT');
+    });
+
     it('keeps the entry with the longer context when both have the same alt length (branch 2)', () => {
       const entries = [
         { banned: '공고문', alt: 'AB', cat: '행정 관습어', context: 'X' },
@@ -628,6 +638,22 @@ describe('scripts/extract-jargon.js', () => {
       const result = mergeEntries(entries);
       expect(result).toHaveLength(1);
       expect(result[0].alt).toBe('AB');
+    });
+
+    it('skips exact duplicate entries (seenExactEntries guard)', () => {
+      const entry = { banned: '민원인', alt: '시민', cat: '행정 관습어', context: '공통' };
+      const result = mergeEntries([entry, entry]);
+      expect(result).toHaveLength(1);
+    });
+
+    it('skips entries with an empty banned field (bannedKey guard)', () => {
+      const entries = [
+        { banned: '', alt: '대체어', cat: '행정 관습어' },
+        { banned: '공고문', alt: '안내문', cat: '행정 관습어' },
+      ];
+      const result = mergeEntries(entries);
+      expect(result).toHaveLength(1);
+      expect(result[0].banned).toBe('공고문');
     });
   });
 
