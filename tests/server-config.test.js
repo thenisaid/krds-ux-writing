@@ -1736,6 +1736,42 @@ describe('server.js configuration', () => {
     }
   });
 
+  it('reports the no-content Ollama error when the end-of-stream buffer holds malformed JSON without a trailing newline', async () => {
+    const { callOllamaStream: callOllama } = loadFreshServerModule();
+    const http = requireModule('node:http');
+    const originalRequest = http.request;
+    try {
+      await new Promise((resolve) => {
+        http.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            callback(res);
+            // No trailing newline → stays in buffer until 'end'; no prior content (sawContent=false)
+            res.emit('data', Buffer.from('{malformed'));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callOllama(
+          'http://localhost:11434', 'system', 'user', 2200,
+          () => { throw new Error('unexpected chunk'); },
+          () => { throw new Error('unexpected done'); },
+          (message) => {
+            expect(message).toContain('로컬 AI 서비스 연결에 실패했습니다');
+            resolve();
+          },
+        );
+      });
+    } finally {
+      http.request = originalRequest;
+    }
+  });
+
   it('fires an error when the Ollama response socket emits an error after the connection is established', async () => {
     const { callOllamaStream: callOllama } = loadFreshServerModule();
     const http = requireModule('node:http');

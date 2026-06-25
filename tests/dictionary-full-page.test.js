@@ -332,4 +332,17 @@ describe('dictionary full page script', () => {
 
     expect(elements.dictBody.innerHTML).toContain('공통');
   });
+
+  it('does not throw when optional stat elements (total, category, generated) are absent from the DOM', () => {
+    const { context } = buildContext();
+    const origGetById = context.document.getElementById.bind(context.document);
+    context.document.getElementById = (id) => {
+      if (id === 'fullGlossaryTotal' || id === 'fullGlossaryCategoryCount' || id === 'fullGlossaryGenerated') {
+        return null;
+      }
+      return origGetById(id);
+    };
+
+    expect(() => vm.runInNewContext(SCRIPT_SOURCE, context)).not.toThrow();
+  });
 });
