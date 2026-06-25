@@ -605,4 +605,33 @@ describe('krds extension popup', () => {
       url: 'https://thenisaid.github.io/krds-ux-writing/',
     });
   });
+
+  it('ignores a click on a non-chip child element (closest returns null) without opening a tab', () => {
+    const { context, chrome, elements } = buildPopupContext();
+    vm.runInNewContext(SOURCE, context);
+
+    // An element with a closest() method but not a .chip — closest() returns null
+    const nonChip = createElement({ className: 'result-icon' }); // no 'chip' class
+    elements.categoryChips.appendChild(nonChip);
+
+    expect(() => {
+      elements.categoryChips.dispatch('click', { target: nonChip });
+    }).not.toThrow();
+    expect(chrome.tabs.create).not.toHaveBeenCalled();
+  });
+
+  it('does not call blur() when the Escape key is pressed but the search was already empty', () => {
+    const { context, elements } = buildPopupContext();
+    vm.runInNewContext(SOURCE, context);
+
+    // No prior search — Escape should still call blur on searchInput
+    elements.searchInput.value = '';
+    const initialBlurCount = elements.searchInput.blur.mock.calls.length;
+    elements.searchInput.dispatch('keydown', { key: 'Escape' });
+
+    expect(elements.searchInput.blur.mock.calls.length).toBe(initialBlurCount + 1);
+    expect(elements.searchInput.value).toBe('');
+    expect(elements.resultsView.style.display).toBe('none');
+    expect(elements.tipsView.style.display).toBe('block');
+  });
 });
