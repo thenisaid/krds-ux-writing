@@ -557,6 +557,100 @@ describe('index inline derived-guide tabs', () => {
     expect(orphanTab.getAttribute('aria-selected')).toBe('true');
   });
 
+  it('treats pathname "/index.html" as root "/" (normalizePathname return-value || "/" fallback)', () => {
+    const rootLink = createElement({
+      classes: ['gnb-nav-link'],
+      attributes: { href: '/' },
+    });
+    const principlesLink = createElement({
+      classes: ['gnb-nav-link'],
+      attributes: { href: '/principles/' },
+    });
+
+    const document = {
+      querySelectorAll(selector) {
+        if (selector === '.faq-item') return [];
+        if (selector === '.gnb-nav-link') return [rootLink, principlesLink];
+        if (selector === '.dg-panel') return [];
+        return [];
+      },
+      querySelector() { return null; },
+      getElementById() { return null; },
+    };
+
+    const context = {
+      document,
+      window: { location: { pathname: '/index.html', hash: '' } },
+      Array, console, globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(SOURCE, context);
+
+    expect(rootLink.classList.contains('active')).toBe(true);
+    expect(principlesLink.classList.contains('active')).toBe(false);
+  });
+
+  it('treats pathname "//" as root "/" (normalizePathname internal || "/" fallback from trailing slash strip)', () => {
+    const rootLink = createElement({
+      classes: ['gnb-nav-link'],
+      attributes: { href: '/' },
+    });
+
+    const document = {
+      querySelectorAll(selector) {
+        if (selector === '.faq-item') return [];
+        if (selector === '.gnb-nav-link') return [rootLink];
+        if (selector === '.dg-panel') return [];
+        return [];
+      },
+      querySelector() { return null; },
+      getElementById() { return null; },
+    };
+
+    const context = {
+      document,
+      window: { location: { pathname: '//', hash: '' } },
+      Array, console, globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(SOURCE, context);
+
+    expect(rootLink.classList.contains('active')).toBe(true);
+  });
+
+  it('marks a nav link active via startsWith prefix match when viewing a sub-page of that section', () => {
+    const principlesLink = createElement({
+      classes: ['gnb-nav-link'],
+      attributes: { href: '/krds-ux-writing/principles/' },
+    });
+    const caseStudiesLink = createElement({
+      classes: ['gnb-nav-link'],
+      attributes: { href: '/krds-ux-writing/case-studies/' },
+    });
+
+    const document = {
+      querySelectorAll(selector) {
+        if (selector === '.faq-item') return [];
+        if (selector === '.gnb-nav-link') return [principlesLink, caseStudiesLink];
+        if (selector === '.dg-panel') return [];
+        return [];
+      },
+      querySelector() { return null; },
+      getElementById() { return null; },
+    };
+
+    const context = {
+      document,
+      window: { location: { pathname: '/krds-ux-writing/principles/foundation/', hash: '' } },
+      Array, console, globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(SOURCE, context);
+
+    expect(principlesLink.classList.contains('active')).toBe(true);
+    expect(caseStudiesLink.classList.contains('active')).toBe(false);
+  });
+
   it('marks a hash nav link active when the href contains a query string before the hash (splitPathAndSearch query branch)', () => {
     const hashWithQueryLink = createElement({
       classes: ['gnb-nav-link'],
