@@ -698,6 +698,23 @@ describe('placeholderPattern branches via synthetic dictionary', () => {
     expect(jargonIssues).toHaveLength(1);
     expect(jargonIssues[0].match).toMatch(/금액/);
   });
+
+  it('increments re.lastIndex to prevent infinite loop when bannedRegex produces a zero-length match (line 380 guard)', () => {
+    const lint = makeCustomLint([
+      { banned: '[이름] 처리', alt: '이름을 명시하세요', cat: '행정 관습어' },
+    ]);
+    // ADMIN_JARGON entries are shared by reference with ADMIN_JARGON_MATCH_ORDER
+    // (the latter is a shallow .slice().sort() copy), so mutating an entry object here
+    // is visible inside lint() at runtime.
+    const entry = lint.ADMIN_JARGON.find(e => e.bannedRegex);
+    entry.bannedRegex = /a*/g;  // matches zero-length at every position
+
+    // Without the re.lastIndex += 1 guard, /a*/g on text that contains no 'a'
+    // would match '' at position 0, leave lastIndex at 0, and loop forever.
+    const result = lint.lint('없는검색어');
+    expect(result).toBeDefined();
+    expect(result.issues).toBeDefined();
+  });
 });
 
 describe('UMD Node.js branch — jargon-dictionary.json load failure falls back to inline list', () => {
