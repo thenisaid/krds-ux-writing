@@ -2068,6 +2068,32 @@ describe('lint-ui uncovered branch coverage', () => {
     expect(elements.cliBanner.style.display).toBe('none');
   });
 
+  it('falls back to using the raw severity string as the label when the severity value is not in the known map', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 60,
+        summary: { errors: 0, warnings: 0, infos: 1 },
+        issues: [{
+          line: 1,
+          col: 1,
+          severity: 'critical',
+          category: '심각',
+          message: '"귀하" 사용',
+          match: '귀하',
+          suggestion: '→ 당신',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    // 'critical' not in { error, warning, info } map → falls through to || issue.severity
+    expect(elements.issuesList.innerHTML).toContain('critical');
+  });
+
   it('converts particle "과" to "와" when the replacement word ends without a batchim consonant (isKorean no-batchim path)', () => {
     const { context, elements } = buildContext({
       lintResult: {

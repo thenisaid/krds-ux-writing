@@ -405,4 +405,64 @@ describe('guide intro slides', () => {
 
     expect(history.replaceState).not.toHaveBeenCalled();
   });
+
+  it('skips the keyboard handler when the event target is a contenteditable div (isInteractiveTarget isContentEditable branch)', () => {
+    const { context, document, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    // tagName is 'DIV' — not in the hardcoded tag list — but isContentEditable is true
+    document.dispatch('keydown', {
+      key: 'ArrowRight',
+      preventDefault: vi.fn(),
+      target: { tagName: 'DIV', isContentEditable: true },
+    });
+
+    expect(history.replaceState).not.toHaveBeenCalled();
+  });
+
+  it('sets the progress bar to 100% when there is only one slide (total=1 ternary branch)', () => {
+    const progressBar = createElement({ id: 'pbar', style: {} });
+
+    const document = {
+      activeElement: null,
+      querySelectorAll(selector) {
+        if (selector === '.slide') return [createElement({ classes: ['slide'], buildItems: [] })];
+        return [];
+      },
+      getElementById(id) {
+        if (id === 'sc') return createElement({ id: 'sc', style: {} });
+        if (id === 'stage') return createElement({ id: 'stage', style: {} });
+        if (id === 'pbar') return progressBar;
+        if (id === 'snum') return createElement({ id: 'snum' });
+        if (id === 'dots') return createElement({ id: 'dots' });
+        return null;
+      },
+      addEventListener() {},
+      createElement() { return createElement(); },
+    };
+
+    const context = {
+      document,
+      window: {
+        innerWidth: 1024,
+        innerHeight: 576,
+        addEventListener() {},
+      },
+      history: { replaceState: vi.fn() },
+      location: { hash: '' },
+      requestAnimationFrame(fn) { fn(); return 1; },
+      setTimeout(fn) { fn(); return 1; },
+      clearTimeout() {},
+      Promise,
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    // With one slide, pct = total > 1 ? ... : 100 → 100%
+    expect(progressBar.style.width).toBe('100%');
+  });
 });

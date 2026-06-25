@@ -165,6 +165,29 @@ describe('scripts/sync-prompts.js', () => {
     expect(updateLog).not.toContain('snippets');
   });
 
+  it('uses plural "snippets" in the log when more than one snippet is written', () => {
+    const { id, file } = PRINCIPLES[0];
+    const logs = [];
+    const fakeTarget = `<div><!-- sync:${id}:start -->\n      <!-- auto-updated: 2000-01-01 -->\n      <article>OLD1</article>\n      <!-- sync:${id}:end --></div>`;
+    const fakeLibrary = `<article data-principle="${id}">NEW1</article><article data-principle="${id}">NEW2</article>`;
+
+    const updated = syncPromptFiles({
+      libraryHtml: fakeLibrary,
+      principles: [{ id, file }],
+      rootDir: ROOT,
+      date: '2099-12-31',
+      readFile() { return fakeTarget; },
+      writeFile() {},
+      log(msg) { logs.push(msg); },
+      warn() {},
+    });
+
+    expect(updated).toBe(1);
+    const updateLog = logs.find((l) => l.includes('snippet'));
+    expect(updateLog).toContain('snippets');
+    expect(updateLog).toContain('2 snippets');
+  });
+
   it('returns 0 and logs a not-found message when prompt-library.html does not exist', () => {
     const logs = [];
     vi.spyOn(fs, 'existsSync').mockReturnValueOnce(false);
