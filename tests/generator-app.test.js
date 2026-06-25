@@ -1116,6 +1116,22 @@ describe('generator/app.js', () => {
     expect(elements['agency-name'].classList.contains('has-error')).toBe(false);
   });
 
+  it('does not crash when the error-message element is absent from the DOM during field validation', async () => {
+    const fetchImpl = vi.fn();
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    // Remove error message elements so setFieldError's !msg guard fires
+    delete elements['agency-name-error'];
+    delete elements['sample-1-error'];
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['agency-name'].value = '';
+    expect(() => elements['generator-form'].dispatch('submit')).not.toThrow();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
   it('calls focus on the first invalid field when document.querySelector returns a has-error element', async () => {
     const fetchImpl = vi.fn();
     const { context, elements } = buildGeneratorContext({ fetchImpl });
@@ -2658,5 +2674,62 @@ describe('generator/app.js', () => {
 
     // getModeSamples falls back to TYPE_SAMPLES['기타공공기관'] for unrecognised modes
     expect(elements['sample-1'].value).toContain('신청이 접수되었습니다');
+  });
+
+  it('does not crash in renderQualityReview when quality-empty element is absent and lint engine is unavailable', () => {
+    const { context, elements } = buildGeneratorContext();
+    delete elements['quality-empty'];
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(() => elements['fallback-btn'].dispatch('click')).not.toThrow();
+    expect(elements['quality-gates'].innerHTML).toContain('자동 검수 엔진을 불러오지 못했습니다');
+  });
+
+  it('does not crash in renderQualityReview when quality-empty element is absent and lint engine throws', () => {
+    const { context, elements } = buildGeneratorContext();
+    delete elements['quality-empty'];
+    context.KRDSLint = {
+      lint: vi.fn(() => { throw new Error('lint fail'); }),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(() => elements['fallback-btn'].dispatch('click')).not.toThrow();
+    expect(elements['quality-gates'].innerHTML).toContain('자동 검수 계산 중 오류가 발생했습니다');
+  });
+
+  it('does not crash in renderQualityReview when quality-empty is absent and there are no issues (topIssues empty path)', () => {
+    const { context, elements } = buildGeneratorContext();
+    delete elements['quality-empty'];
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 100,
+        summary: { total: 0, errors: 0, warnings: 0, infos: 0 },
+        issues: [],
+      })),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(() => elements['fallback-btn'].dispatch('click')).not.toThrow();
+    expect(elements['quality-gates'].innerHTML).toContain('quality-gate--pass');
+  });
+
+  it('does not crash in renderQualityReview when quality-empty is absent and there are issues (qualityEmptyEl.hidden = true path)', () => {
+    const { context, elements } = buildGeneratorContext();
+    delete elements['quality-empty'];
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 80,
+        summary: { total: 1, errors: 1, warnings: 0, infos: 0 },
+        issues: [{ type: 'admin-jargon', category: '행정어', message: '귀하', suggestion: '고객님' }],
+      })),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(() => elements['fallback-btn'].dispatch('click')).not.toThrow();
+    expect(elements['quality-issues-list'].innerHTML).toContain('행정어');
   });
 });
