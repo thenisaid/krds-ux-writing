@@ -414,4 +414,91 @@ describe('krds extension popup', () => {
       url: 'https://thenisaid.github.io/krds-ux-writing/',
     });
   });
+
+  it('opens a search result when the Enter key is pressed on it', () => {
+    const { context, chrome, elements } = buildPopupContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.searchInput.value = '버튼';
+    elements.searchInput.dispatch('input');
+
+    const firstResult = elements.resultsList.querySelector('.result-item');
+    expect(firstResult).not.toBeNull();
+
+    const preventDefault = vi.fn();
+    firstResult.dispatch('keydown', { key: 'Enter', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(chrome.tabs.create).toHaveBeenCalledWith({
+      url: 'https://thenisaid.github.io/krds-ux-writing/principles/components/#button',
+    });
+  });
+
+  it('moves focus to the first result when ArrowDown is pressed in the search input with results', () => {
+    const { context, elements } = buildPopupContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.searchInput.value = '버튼';
+    elements.searchInput.dispatch('input');
+
+    const firstResult = elements.resultsList.querySelector('.result-item');
+    expect(firstResult).not.toBeNull();
+
+    const preventDefault = vi.fn();
+    elements.searchInput.dispatch('keydown', { key: 'ArrowDown', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(firstResult.focus).toHaveBeenCalled();
+  });
+
+  it('moves focus to the next result item when ArrowDown is pressed on a result', () => {
+    const { context, elements } = buildPopupContext();
+    vm.runInNewContext(SOURCE, context);
+
+    // 'a' matches 'button' (CTA) and 'accessibility' (aria) → 2+ results
+    elements.searchInput.value = 'a';
+    elements.searchInput.dispatch('input');
+
+    const allResults = elements.resultsList.querySelectorAll('.result-item');
+    expect(allResults.length).toBeGreaterThan(1);
+
+    const [first, second] = allResults;
+    const preventDefault = vi.fn();
+    first.dispatch('keydown', { key: 'ArrowDown', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(second.focus).toHaveBeenCalled();
+  });
+
+  it('returns focus to the search input when ArrowUp is pressed on the first result', () => {
+    const { context, elements } = buildPopupContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.searchInput.value = '버튼';
+    elements.searchInput.dispatch('input');
+
+    const firstResult = elements.resultsList.querySelector('.result-item');
+    expect(firstResult).not.toBeNull();
+
+    const preventDefault = vi.fn();
+    firstResult.dispatch('keydown', { key: 'ArrowUp', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(elements.searchInput.focus).toHaveBeenCalled();
+  });
+
+  it('clears the search input and hides results when Escape is pressed', () => {
+    const { context, elements } = buildPopupContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.searchInput.value = '버튼';
+    elements.searchInput.dispatch('input');
+    expect(elements.resultsView.style.display).toBe('block');
+
+    elements.searchInput.dispatch('keydown', { key: 'Escape' });
+
+    expect(elements.searchInput.value).toBe('');
+    expect(elements.resultsView.style.display).toBe('none');
+    expect(elements.tipsView.style.display).toBe('block');
+  });
 });
