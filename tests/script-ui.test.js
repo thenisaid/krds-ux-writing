@@ -1226,4 +1226,45 @@ describe('script.js live index interactions', () => {
 
     expect(mobileMenu.classList.contains('open')).toBe(false);
   });
+
+  it('does not scroll when a same-page anchor link target id is absent from the DOM', () => {
+    const { context, document, window, anchorLinks } = createEnvironment();
+    const link = createElement(document, {
+      attributes: { href: '#nonexistent-anchor-target' },
+    });
+    anchorLinks.push(link);
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    const preventDefault = vi.fn();
+    link.dispatch('click', { preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(window.scrollTo).not.toHaveBeenCalled();
+  });
+
+  it('does not restore focus to the button when closeMobileMenu is called with restoreFocus false and no trap was installed', () => {
+    const { context, document, window, elements } = createEnvironment();
+    const mobileMenu = createElement(document, {
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [] },
+    });
+    const mobileMenuBtn = createElement(document, {
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    elements.mobileMenu = mobileMenu;
+    elements.mobileMenuBtn = mobileMenuBtn;
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    mobileMenuBtn.dispatch('click');
+    expect(mobileMenu.classList.contains('open')).toBe(true);
+
+    window.innerWidth = 1200;
+    window.dispatch('resize');
+
+    expect(mobileMenu.classList.contains('open')).toBe(false);
+    expect(mobileMenuBtn.getAttribute('aria-expanded')).toBe('false');
+    expect(mobileMenuBtn.focus).not.toHaveBeenCalled();
+  });
 });
