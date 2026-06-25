@@ -3091,4 +3091,65 @@ describe('generator/app.js', () => {
     expect(context.URL.createObjectURL).toHaveBeenCalled();
     expect(elements['download-error'].classList.contains('visible')).toBe(false);
   });
+
+  it('slices the first column of a 3-column table row when the first cell is not a source marker (else-if cells.length >= 3 branch in extractReviewText)', async () => {
+    let lintInput = null;
+    const markdown = '| ZHEADER | ZDESCRIPTION | ZEXAMPLE |\n|---|---|---|\n| ZROW1 | ZCELL2 | ZCELL3 |';
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: ' + JSON.stringify({ type: 'chunk', text: markdown }) + '\n'),
+            encoder.encode('data: {"type":"done"}\n'),
+          ];
+          let i = 0;
+          return { async read() { if (i < chunks.length) return { done: false, value: chunks[i++] }; return { done: true, value: undefined }; } };
+        },
+      },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    context.KRDSLint = {
+      lint: vi.fn((text) => {
+        lintInput = text;
+        return { score: 100, summary: { total: 0, errors: 0, warnings: 0, infos: 0 }, issues: [] };
+      }),
+    };
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(context.KRDSLint.lint).toHaveBeenCalled();
+    // The else-if (cells.length >= 3) branch fires for both rows: first column is sliced
+    expect(lintInput).not.toContain('ZHEADER');
+    expect(lintInput).not.toContain('ZROW1');
+    expect(lintInput).toContain('ZDESCRIPTION');
+    expect(lintInput).toContain('ZCELL2');
+  });
+
+  it('renders 심리적 안전망 as 보완 필요 when a standalone-error-retry issue is detected (safetyCount > 0 branch)', () => {
+    const { context, elements } = buildGeneratorContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 70,
+        summary: { total: 1, errors: 1, warnings: 0, infos: 0 },
+        issues: [
+          { type: 'standalone-error-retry', category: '심리적 안전망', message: '재시도형 오류', suggestion: '→ 상황을 설명하세요' },
+        ],
+      })),
+    };
+    vm.runInNewContext(SOURCE, context);
+
+    elements['fallback-btn'].dispatch('click');
+
+    const html = elements['quality-gates'].innerHTML;
+    expect(html).toContain('quality-gate--fail');
+    expect(html).toContain('심리적 안전망');
+    expect(html).toContain('상황·행동이 부족한 오류 패턴이');
+  });
 });
