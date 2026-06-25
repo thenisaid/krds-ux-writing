@@ -720,4 +720,57 @@ describe('archive page — additional branch coverage', () => {
     expect(String(context.fetch.mock.calls[0][0])).toContain('/custom/derived/hometax-guide.md');
     expect(elements['arc-grid-hometax'].innerHTML).toContain('H1');
   });
+
+  it('deduplicates repeated principle codes in issue headings', async () => {
+    const { context, elements } = buildContext({
+      markdown: [
+        '## Cycle 1',
+        '### H1 — 중복 원칙 이슈 ★ [A/A/B]',
+        '**원문**: 텍스트',
+        '**문제**: 설명',
+        '**권장 개선안**: 개선',
+      ].join('\n'),
+    });
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    const html = elements['arc-grid-hometax'].innerHTML;
+    expect(html).toContain('[A/B]');
+    expect(html).not.toContain('[A/A/B]');
+  });
+
+  it('activates the first tab by default when no tab has aria-selected="true"', async () => {
+    const { context, tabs, elements } = buildContext();
+    tabs.forEach((tab) => tab.setAttribute('aria-selected', 'false'));
+    elements['arc-search-hometax'].value = '';
+
+    context.fetch = vi.fn(async () => ({ ok: true, async text() { return ''; } }));
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    expect(tabs[0].getAttribute('aria-selected')).toBe('true');
+    expect(tabs[1].getAttribute('aria-selected')).toBe('false');
+  });
+
+  it('does not throw when the count badge element is absent from the DOM on load', async () => {
+    const { context, elements } = buildContext();
+    delete elements['arc-count-badge-hometax'];
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('H1');
+  });
+
+  it('silently skips the error message when the grid is absent and the fetch fails', async () => {
+    const { context, elements } = buildContext();
+    context.fetch = vi.fn(async () => ({ ok: false, status: 503 }));
+    delete elements['arc-grid-hometax'];
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    expect(elements['arc-grid-jeongbu24'].innerHTML).toBe('');
+  });
 });
