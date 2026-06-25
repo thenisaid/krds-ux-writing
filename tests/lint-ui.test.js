@@ -2115,4 +2115,30 @@ describe('lint-ui uncovered branch coverage', () => {
     expect(elements.improvedText.textContent).toBe('허가와 함께하겠습니다.');
   });
 
+  it('renders history entry with empty date string when entry.date is null (date fallback branch)', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      { date: null, score: 75, text: '날짜 없는 이력 항목입니다.', fullText: '날짜 없는 이력 항목입니다.', issueCount: 2 },
+    ]));
+
+    vm.runInNewContext(SOURCE, context);
+
+    // entry.date is null → typeof null !== 'string' → date: ''
+    // renderHistory escapes '' and renders ' · 이슈 2개' (no date prefix)
+    expect(elements.historyCard.style.display).toBe('block');
+    expect(elements.historyList.innerHTML).toContain(' · 이슈 2개');
+    expect(elements.historyList.innerHTML).not.toContain('null');
+  });
+
+  it('returns empty array when JSON.parse throws during readHistory (catch-return-empty branch)', () => {
+    const { context, elements } = buildContext();
+    // Corrupt the history key so JSON.parse throws
+    context.localStorage.setItem('krds-lint-history', '{invalid json{{');
+
+    vm.runInNewContext(SOURCE, context);
+
+    // readHistory() catch block returns [] → renderHistory hides the card
+    expect(elements.historyCard.style.display).toBe('none');
+  });
+
 });
