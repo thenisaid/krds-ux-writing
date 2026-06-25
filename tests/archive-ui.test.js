@@ -630,4 +630,46 @@ describe('archive page — additional branch coverage', () => {
 
     expect(elements['arc-grid-hometax'].innerHTML).toContain('H1');
   });
+
+  it('clears the archive search and reapplies filters when Escape is pressed', async () => {
+    const { context, elements } = buildContext();
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    elements['arc-search-hometax'].value = '찾을단어';
+    elements['arc-search-hometax'].dispatch('input');
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('H1');
+    expect(elements['arc-grid-hometax'].innerHTML).not.toContain('H2');
+
+    elements['arc-search-hometax'].dispatch('keydown', { key: 'Escape' });
+
+    expect(elements['arc-search-hometax'].value).toBe('');
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('H1');
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('H2');
+  });
+
+  it('defaults filter to "all" when no filter button has the active class on init', async () => {
+    const { context, elements, filterBtns } = buildContext();
+    filterBtns.forEach((btn) => btn.classList.remove('active'));
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('H1');
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('H2');
+  });
+
+  it('moves focus to the previous tab when ArrowLeft is pressed on the first tab (wraps to last)', () => {
+    const { context, tabs } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    const preventDefault = vi.fn();
+    tabs[0].dispatch('keydown', { key: 'ArrowLeft', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(tabs[1].focus).toHaveBeenCalled();
+    expect(tabs[1].getAttribute('aria-selected')).toBe('true');
+    expect(tabs[0].getAttribute('aria-selected')).toBe('false');
+  });
 });
