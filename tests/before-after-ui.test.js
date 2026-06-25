@@ -610,6 +610,112 @@ describe('before-after page interactions', () => {
     expect(seminarClose.focus).not.toHaveBeenCalled();
   });
 
+  it('wraps Tab forward to the first element when the active element is not in the focusable list', () => {
+    const seminarClose = createElement({ id: 'seminarClose' });
+    const seminarPrev = createElement({ id: 'seminarPrev' });
+    const seminarNext = createElement({ id: 'seminarNext' });
+    const seminarOverlay = createElement({
+      id: 'seminarOverlay',
+      classes: ['active'],
+      queryMap: {
+        'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])': [
+          seminarClose,
+          seminarPrev,
+          seminarNext,
+        ],
+        'mark.diff': [],
+      },
+    });
+    const outsideEl = createElement({ id: 'outsideEl' });
+    const elements = {
+      themeToggle: createElement({ id: 'themeToggle' }),
+      themeIcon: createElement({ id: 'themeIcon' }),
+      seminarOverlay,
+      seminarSlide: createElement({ id: 'seminarSlide', queryMap: { 'mark.diff': [] } }),
+      seminarPrinciple: createElement({ id: 'seminarPrinciple' }),
+      seminarCounter: createElement({ id: 'seminarCounter' }),
+      seminarPrev,
+      seminarNext,
+      seminarBtn: createElement({ id: 'seminarBtn' }),
+      seminarClose,
+    };
+    const document = createDocument(elements, { '.tab-btn': [], '.tab-panel': [], '.pair': [] });
+    const context = {
+      document,
+      window: {},
+      localStorage: { setItem() {} },
+      setTimeout(fn) { fn(); return 1; },
+      clearTimeout() {},
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    document.activeElement = outsideEl;
+    const preventDefault = vi.fn();
+    document.dispatch('keydown', { key: 'Tab', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(seminarClose.focus).toHaveBeenCalled();
+    expect(seminarNext.focus).not.toHaveBeenCalled();
+  });
+
+  it('wraps Shift+Tab backward to the last element when the active element is not in the focusable list', () => {
+    const seminarClose = createElement({ id: 'seminarClose' });
+    const seminarPrev = createElement({ id: 'seminarPrev' });
+    const seminarNext = createElement({ id: 'seminarNext' });
+    const seminarOverlay = createElement({
+      id: 'seminarOverlay',
+      classes: ['active'],
+      queryMap: {
+        'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])': [
+          seminarClose,
+          seminarPrev,
+          seminarNext,
+        ],
+        'mark.diff': [],
+      },
+    });
+    const outsideEl = createElement({ id: 'outsideEl' });
+    const elements = {
+      themeToggle: createElement({ id: 'themeToggle' }),
+      themeIcon: createElement({ id: 'themeIcon' }),
+      seminarOverlay,
+      seminarSlide: createElement({ id: 'seminarSlide', queryMap: { 'mark.diff': [] } }),
+      seminarPrinciple: createElement({ id: 'seminarPrinciple' }),
+      seminarCounter: createElement({ id: 'seminarCounter' }),
+      seminarPrev,
+      seminarNext,
+      seminarBtn: createElement({ id: 'seminarBtn' }),
+      seminarClose,
+    };
+    const document = createDocument(elements, { '.tab-btn': [], '.tab-panel': [], '.pair': [] });
+    const context = {
+      document,
+      window: {},
+      localStorage: { setItem() {} },
+      setTimeout(fn) { fn(); return 1; },
+      clearTimeout() {},
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    document.activeElement = outsideEl;
+    const preventDefault = vi.fn();
+    document.dispatch('keydown', { key: 'Tab', shiftKey: true, preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(seminarNext.focus).toHaveBeenCalled();
+    expect(seminarClose.focus).not.toHaveBeenCalled();
+  });
+
   it('falls back to the raw principle code when the slide principle is not in PRINCIPLE_NAMES', () => {
     const baTextBefore = createElement({ id: 'ba-text-before' });
     baTextBefore.innerHTML = '이전 텍스트';
