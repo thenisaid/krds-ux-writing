@@ -1287,3 +1287,19 @@ describe('shared nav LNB footer link active state', () => {
     expect(footerLink.classList.contains('active')).toBe(false);
   });
 });
+
+describe('shared nav tree normalizeHashComparablePath edge branches', () => {
+  it('returns root path and expands no item when the bare deployment prefix is the entire pathname (empty-value branch)', () => {
+    const { item, link } = makeContext({ currentPath: '/krds-ux-writing' });
+
+    expect(item.getAttribute('aria-expanded')).toBe('false');
+    expect(link.classList.contains('active')).toBe(false);
+  });
+
+  it('strips index.html and returns root when the result is empty, expanding no item (value-or-slash branch)', () => {
+    const { item, link } = makeContext({ currentPath: '/krds-ux-writing/index.html' });
+
+    expect(item.getAttribute('aria-expanded')).toBe('false');
+    expect(link.classList.contains('active')).toBe(false);
+  });
+});
