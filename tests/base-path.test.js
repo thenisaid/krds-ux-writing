@@ -296,4 +296,25 @@ describe('shared/base-path.js', () => {
     expect(basePath.siteRootPath).toBe('');
     expect(basePath.buildSitePath('/principles/')).toBe('/principles/');
   });
+
+  it('returns "/" for buildSitePath("/") when siteRootPath is empty (falsy branch of root guard)', () => {
+    // scriptPath '/shared/base-path.js' → markerIndex 0 → siteRootPath ''
+    const basePath = runBasePath();
+
+    expect(basePath.siteRootPath).toBe('');
+    // value === '/' → (siteRootPath ? siteRootPath + '/' : '/') + suffix
+    // siteRootPath is '' (falsy) → '/' + '' → '/'
+    expect(basePath.buildSitePath('/')).toBe('/');
+    expect(basePath.buildSitePath('/#hero')).toBe('/#hero');
+    expect(basePath.buildSitePath('/?tab=overview')).toBe('/?tab=overview');
+  });
+
+  it('returns "/" for buildSitePath("") when siteRootPath is empty (ensureLeadingSlash falsy path)', () => {
+    // empty string → ensureLeadingSlash('') → !value → returns '/'
+    // then value === '/' → same root branch as above
+    const basePath = runBasePath();
+
+    expect(basePath.siteRootPath).toBe('');
+    expect(basePath.buildSitePath('')).toBe('/');
+  });
 });
