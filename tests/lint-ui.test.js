@@ -1973,4 +1973,66 @@ describe('lint-ui uncovered branch coverage', () => {
     expect(elements.toast.textContent).toBe('✅ 링크가 클립보드에 복사되었습니다');
   });
 
+  it('applies score-warning class and 개선 필요 label when the lint score is between 50 and 79', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 65,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1, col: 1, severity: 'error', category: '행정어',
+          message: '"귀하"는 어려운 표현입니다.', match: '귀하', suggestion: '→ 당신', type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.scoreSection.innerHTML).toContain('score-warning');
+    expect(elements.scoreSection.innerHTML).toContain('개선 필요');
+  });
+
+  it('converts particle "와" to "과" when the replacement word ends with a batchim consonant (hasBatchim path)', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 70,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1, col: 1, severity: 'error', category: '행정어',
+          message: '"귀하"는 어려운 표현입니다.', match: '귀하', suggestion: '→ 국민', type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    // '국민' ends with '민' (jongseong=4, ㄴ batchim) → hasBatchim=true
+    // particle '와' maps to '과' in the hasBatchim lookup table
+    elements.inputText.value = '귀하와 함께하겠습니다.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedText.textContent).toBe('국민과 함께하겠습니다.');
+  });
+
+  it('converts particle "과" to "와" when the replacement word ends without a batchim consonant (isKorean no-batchim path)', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 70,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1, col: 1, severity: 'error', category: '행정어',
+          message: '"귀하"는 어려운 표현입니다.', match: '귀하', suggestion: '→ 허가', type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    // '허가' ends with '가' (jongseong=0, no batchim) → isKorean=true, hasBatchim=false
+    // particle '과' maps to '와' in the no-batchim lookup table
+    elements.inputText.value = '귀하과 함께하겠습니다.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedText.textContent).toBe('허가와 함께하겠습니다.');
+  });
+
 });
