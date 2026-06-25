@@ -899,3 +899,52 @@ describe('shared nav sidebar scroll-tracking IntersectionObserver', () => {
     )).not.toThrow();
   });
 });
+
+describe('shared nav Ctrl+K search shortcut', () => {
+  it('clicks gnbSearch and calls preventDefault when Ctrl+K is pressed and gnbSearch is present', () => {
+    const { document } = makeContext();
+    const searchBtn = { click: vi.fn() };
+    const origGetById = document.getElementById.bind(document);
+    document.getElementById = (id) => id === 'gnbSearch' ? searchBtn : origGetById(id);
+    const preventDefault = vi.fn();
+    document.dispatch('keydown', { key: 'k', ctrlKey: true, target: {}, preventDefault });
+    expect(searchBtn.click).toHaveBeenCalled();
+    expect(preventDefault).toHaveBeenCalled();
+  });
+
+  it('focuses and selects pageSearchInput when Ctrl+K is pressed without gnbSearch', () => {
+    const { document } = makeContext();
+    const searchInput = { focus: vi.fn(), select: vi.fn() };
+    const origGetById = document.getElementById.bind(document);
+    document.getElementById = (id) => id === 'searchInput' ? searchInput : origGetById(id);
+    const preventDefault = vi.fn();
+    document.dispatch('keydown', { key: 'k', ctrlKey: true, target: {}, preventDefault });
+    expect(searchInput.focus).toHaveBeenCalled();
+    expect(searchInput.select).toHaveBeenCalled();
+    expect(preventDefault).toHaveBeenCalled();
+  });
+
+  it('navigates to site root when Ctrl+K is pressed on a principles page with no search elements', () => {
+    const { document, context } = makeContext();
+    const preventDefault = vi.fn();
+    document.dispatch('keydown', { key: 'k', ctrlKey: true, target: {}, preventDefault });
+    expect(context.window.location.href).toBe('/krds-ux-writing/');
+    expect(preventDefault).toHaveBeenCalled();
+  });
+
+  it('returns early without acting when Ctrl+K target has tagName INPUT (isTextEntryTarget)', () => {
+    const { document, context } = makeContext();
+    const preventDefault = vi.fn();
+    document.dispatch('keydown', { key: 'k', ctrlKey: true, target: { tagName: 'INPUT' }, preventDefault });
+    expect(context.window.location.href).toBeUndefined();
+    expect(preventDefault).not.toHaveBeenCalled();
+  });
+
+  it('returns early without acting when Ctrl+K target has no tagName but isContentEditable is true', () => {
+    const { document, context } = makeContext();
+    const preventDefault = vi.fn();
+    document.dispatch('keydown', { key: 'k', ctrlKey: true, target: { isContentEditable: true }, preventDefault });
+    expect(context.window.location.href).toBeUndefined();
+    expect(preventDefault).not.toHaveBeenCalled();
+  });
+});
