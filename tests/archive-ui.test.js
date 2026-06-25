@@ -599,4 +599,35 @@ describe('archive page — additional branch coverage', () => {
     expect(html).toContain('H30');
     expect(html).toContain('class="arc-card-sev sev-2"');
   });
+
+  it('uses the "수정 제안" field as the recommendation fallback when "권장 개선안" is absent', async () => {
+    const { context, elements } = buildContext({
+      markdown: [
+        '## Cycle 1',
+        '### H50 — 수정 제안 필드 이슈 ★ [A]',
+        '',
+        '**원문**: 현재 텍스트',
+        '**문제**: 문제 설명',
+        '**수정 제안**: 수정 제안 내용',
+      ].join('\n'),
+    });
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    const html = elements['arc-grid-hometax'].innerHTML;
+    expect(html).toContain('H50');
+    expect(html).toContain('수정 제안 내용');
+  });
+
+  it('renders no countEl text when renderGrid receives a null count element', async () => {
+    const { context, elements } = buildContext();
+    delete elements['arc-result-hometax'];
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+
+    await expect(Promise.resolve().then(() => Promise.resolve()).then(() => Promise.resolve()).then(() => Promise.resolve())).resolves.toBeUndefined();
+
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('H1');
+  });
 });

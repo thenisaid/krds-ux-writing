@@ -104,6 +104,13 @@ describe('bin/krds-lint CLI', () => {
     expect(result.stdout).toContain('--json');
   });
 
+  it('prints help text and exits 0 when the short -h flag is passed', () => {
+    const result = runCli(['-h']);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('krds-lint — KRDS UX Writing 린터');
+  });
+
   it('lints a single file in text mode and exits 1 when errors are found', () => {
     const dir = makeTempDir();
     const filePath = path.join(dir, 'one.txt');
