@@ -345,4 +345,29 @@ describe('dictionary full page script', () => {
 
     expect(() => vm.runInNewContext(SCRIPT_SOURCE, context)).not.toThrow();
   });
+
+  it('hides the search clear button when the input event fires with an empty value (currentQuery empty branch)', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SCRIPT_SOURCE, context);
+
+    elements.searchInput.value = '검색어';
+    elements.searchInput.dispatch('input');
+    expect(elements.searchClear.style.display).toBe('block');
+
+    elements.searchInput.value = '';
+    elements.searchInput.dispatch('input');
+    expect(elements.searchClear.style.display).toBe('none');
+    expect(elements.resultCount.innerHTML).toContain('<strong>5</strong>');
+  });
+
+  it('falls back to currentCat="all" when a filter button click event fires on a button with no dataset.cat (|| "all" branch)', () => {
+    const { context, elements, filterBtns } = buildContext();
+    filterBtns[1].dataset.cat = '';
+    vm.runInNewContext(SCRIPT_SOURCE, context);
+
+    filterBtns[1].dispatch('click');
+
+    expect(elements.resultCount.innerHTML).toContain('<strong>5</strong>');
+    expect(elements.dictBody.innerHTML).toContain('귀하');
+  });
 });
