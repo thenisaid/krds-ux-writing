@@ -1509,4 +1509,52 @@ describe('script.js live index interactions', () => {
     expect(searchInput.value).toBe('');
     expect(item.hidden).toBe(false);
   });
+
+  it('treats bare /index.html pathname as the site root when resolving same-page anchors (normalizePathname empty-after-strip branch)', () => {
+    // normalizePathname('/index.html') → length>1, no trailing slash → replace '/index.html' → '' → return '' || '/' → '/'
+    // Both target and current normalize to '/', so the anchor is treated as same-page.
+    const { context, document, window, elements, anchorLinks } = createEnvironment();
+    const hero = createElement(document, { rect: { top: 300 } });
+    const link = createElement(document, {
+      attributes: { href: '/index.html#hero' },
+    });
+    elements.hero = hero;
+    anchorLinks.push(link);
+    window.location.href = 'https://example.com/index.html';
+    window.location.pathname = '/index.html';
+    window.scrollY = 0;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    const preventDefault = vi.fn();
+    link.dispatch('click', { preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(window.scrollTo).toHaveBeenCalledWith({ top: 214, behavior: 'smooth' });
+  });
+
+  it('treats a double-slash pathname as the root when resolving same-page anchors (normalizePathname all-slashes-stripped branch)', () => {
+    // normalizePathname('//') → length>1, replace trailing slashes: '' → '' || '/' → '/'
+    // Both target and current pathname '//' normalize to '/', same page is detected.
+    const { context, document, window, elements, anchorLinks } = createEnvironment();
+    const section = createElement(document, { rect: { top: 200 } });
+    const link = createElement(document, {
+      attributes: { href: 'https://example.com//#section' },
+    });
+    elements.section = section;
+    anchorLinks.push(link);
+    window.location.href = 'https://example.com//';
+    window.location.pathname = '//';
+    window.scrollY = 0;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    const preventDefault = vi.fn();
+    link.dispatch('click', { preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(window.scrollTo).toHaveBeenCalledWith({ top: 114, behavior: 'smooth' });
+  });
 });
