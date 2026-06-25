@@ -1006,6 +1006,26 @@ describe('lint-ui stale result handling', () => {
     expect(elements.charCount.textContent).toBe(storedText.length);
   });
 
+  it('does nothing when a history button is clicked with an out-of-range idx (if(item) false branch)', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      {
+        date: '2026. 6. 9.',
+        score: 75,
+        text: '귀하의 신청이 접수되었습니다.',
+        fullText: '귀하의 신청이 접수되었습니다.',
+        issueCount: 1,
+      },
+    ]));
+
+    vm.runInNewContext(SOURCE, context);
+
+    const outOfRangeBtn = createElement({ dataset: { idx: '99' } });
+    elements.historyList.dispatch('click', { target: outOfRangeBtn });
+
+    expect(elements.inputText.value).toBe('');
+  });
+
   it('escapes HTML special characters in the unmatched tail when rendering the highlight view', () => {
     const { context, elements } = buildContext();
     const text = '이루어지다 <script>alert(1)</script>';
