@@ -296,6 +296,38 @@ function makeHashContext(options = {}) {
 }
 
 describe('shared nav tree relationships', () => {
+  it('does not throw and skips all LNB setup when the .lnb-tree element is absent from the DOM', () => {
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      activeElement: null,
+      querySelector(selector) {
+        if (selector === '.lnb-tree') return null;
+        return null;
+      },
+      querySelectorAll() { return []; },
+      getElementById() { return null; },
+      addEventListener() {},
+    };
+    const context = {
+      window: {
+        innerWidth: 1280,
+        location: { pathname: '/krds-ux-writing/principles/foundation/' },
+      },
+      location: { pathname: '/krds-ux-writing/principles/foundation/', hash: '' },
+      document,
+      localStorage: { getItem() { return null; }, setItem() {} },
+      sessionStorage: { getItem() { return null; }, setItem() {} },
+      IntersectionObserver: function () {
+        return { observe() {}, unobserve() {}, disconnect() {} };
+      },
+      Array, JSON, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    expect(() => vm.runInNewContext(SOURCE, context)).not.toThrow();
+  });
+
   it('assigns aria-controls from each tree toggle to its submenu', () => {
     const { toggle, sub } = makeContext();
 
