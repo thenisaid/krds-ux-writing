@@ -862,4 +862,88 @@ describe('index-v2 theme toggle', () => {
 
     expect(principlesLink.classList.contains('active')).toBe(true);
   });
+
+  it('does not call focus on the first mobile-menu-link when it has no focus method (typeof focus !== function branch)', () => {
+    const firstLinkNoFocus = {
+      focus: 'not-a-function',
+      classList: createClassList(),
+      setAttribute() {},
+      getAttribute() { return null; },
+      closest(sel) { return sel === '.mobile-menu-link' ? null : null; },
+      addEventListener() {},
+      removeEventListener() {},
+      querySelectorAll() { return []; },
+    };
+    const mobileMenu = createElement({
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: {
+        '.mobile-menu-link': firstLinkNoFocus,
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])': [],
+      },
+    });
+    const mobileMenuBtn = createElement({
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: { style: {} },
+      getElementById(id) {
+        if (id === 'mobileMenuBtn') return mobileMenuBtn;
+        if (id === 'mobileMenu') return mobileMenu;
+        return null;
+      },
+      querySelectorAll() { return []; },
+      addEventListener() {},
+    };
+    const context = {
+      document,
+      window: { location: { pathname: '/index-v2.html' } },
+      localStorage: { setItem() {} },
+      Array, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(() => mobileMenuBtn.dispatch('click')).not.toThrow();
+    expect(mobileMenu.classList.contains('open')).toBe(true);
+  });
+
+  it('does not throw when document.body is null while opening the mobile menu (syncMobileMenuState null body guard)', () => {
+    const firstLink = createElement();
+    const mobileMenu = createElement({
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: {
+        '.mobile-menu-link': firstLink,
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])': [],
+      },
+    });
+    const mobileMenuBtn = createElement({
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    const document = {
+      documentElement: { setAttribute() {}, getAttribute() { return 'light'; } },
+      body: null,
+      getElementById(id) {
+        if (id === 'mobileMenuBtn') return mobileMenuBtn;
+        if (id === 'mobileMenu') return mobileMenu;
+        return null;
+      },
+      querySelectorAll() { return []; },
+      addEventListener() {},
+    };
+    const context = {
+      document,
+      window: { location: { pathname: '/index-v2.html' } },
+      localStorage: { setItem() {} },
+      Array, console, globalThis: null,
+    };
+    context.globalThis = context;
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(() => mobileMenuBtn.dispatch('click')).not.toThrow();
+    expect(mobileMenu.classList.contains('open')).toBe(true);
+    expect(mobileMenuBtn.getAttribute('aria-expanded')).toBe('true');
+  });
 });
