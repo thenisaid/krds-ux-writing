@@ -391,4 +391,169 @@ describe('index inline derived-guide tabs', () => {
     expect(caseStudiesLink.classList.contains('active')).toBe(true);
     expect(caseStudiesLink.getAttribute('href')).toBe('/preview/KRDS/#case-studies');
   });
+
+  it('marks a path-only nav link active when the pathname matches without a hash', () => {
+    const principlesLink = createElement({
+      classes: ['gnb-nav-link'],
+      attributes: { href: '/krds-ux-writing/principles/' },
+    });
+    const caseStudiesLink = createElement({
+      classes: ['gnb-nav-link'],
+      attributes: { href: '/krds-ux-writing/#case-studies' },
+    });
+
+    const document = {
+      querySelectorAll(selector) {
+        if (selector === '.faq-item') return [];
+        if (selector === '.gnb-nav-link') return [principlesLink, caseStudiesLink];
+        if (selector === '.dg-panel') return [];
+        return [];
+      },
+      querySelector() { return null; },
+      getElementById() { return null; },
+    };
+
+    const context = {
+      document,
+      window: { location: { pathname: '/krds-ux-writing/principles/', hash: '' } },
+      Array, console, globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(SOURCE, context);
+
+    expect(principlesLink.classList.contains('active')).toBe(true);
+    expect(caseStudiesLink.classList.contains('active')).toBe(false);
+  });
+
+  it('toggles the FAQ item open class and aria attributes when the question button is clicked', () => {
+    const faqQuestion = createElement({ attributes: { 'aria-expanded': 'false' } });
+    const faqAnswer = createElement({ attributes: { 'aria-hidden': 'true' } });
+    const faqItem = {
+      classList: createClassList([]),
+      querySelector(selector) {
+        if (selector === '.faq-question') return faqQuestion;
+        if (selector === '.faq-answer') return faqAnswer;
+        return null;
+      },
+    };
+
+    const document = {
+      querySelectorAll(selector) {
+        if (selector === '.faq-item') return [faqItem];
+        if (selector === '.gnb-nav-link') return [];
+        if (selector === '.dg-panel') return [];
+        return [];
+      },
+      querySelector() { return null; },
+      getElementById() { return null; },
+    };
+
+    const context = {
+      document,
+      window: { location: { pathname: '/krds-ux-writing/', hash: '' } },
+      Array, console, globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(SOURCE, context);
+
+    faqQuestion.dispatch('click');
+
+    expect(faqItem.classList.contains('open')).toBe(true);
+    expect(faqQuestion.getAttribute('aria-expanded')).toBe('true');
+    expect(faqAnswer.getAttribute('aria-hidden')).toBe('false');
+
+    faqQuestion.dispatch('click');
+
+    expect(faqItem.classList.contains('open')).toBe(false);
+    expect(faqQuestion.getAttribute('aria-expanded')).toBe('false');
+    expect(faqAnswer.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('navigates backward through tabs when ArrowLeft is pressed', () => {
+    const firstTab = createElement({
+      attributes: { 'aria-controls': 'dg-panel-jeongbu24', 'aria-selected': 'false', href: '/krds-ux-writing/' },
+    });
+    const secondTab = createElement({
+      attributes: { 'aria-controls': 'dg-panel-hometax', 'aria-selected': 'true', href: '/krds-ux-writing/' },
+    });
+    const firstPanel = createElement({ hidden: true });
+    const secondPanel = createElement({ hidden: false });
+    const tabList = {
+      querySelectorAll(selector) {
+        return selector === '.dg-tab' ? [firstTab, secondTab] : [];
+      },
+    };
+
+    const document = {
+      querySelectorAll(selector) {
+        if (selector === '.faq-item') return [];
+        if (selector === '.gnb-nav-link') return [];
+        if (selector === '.dg-panel') return [firstPanel, secondPanel];
+        return [];
+      },
+      querySelector(selector) {
+        if (selector === '.dg-tabs') return tabList;
+        return null;
+      },
+      getElementById(id) {
+        if (id === 'dg-panel-jeongbu24') return firstPanel;
+        if (id === 'dg-panel-hometax') return secondPanel;
+        return null;
+      },
+    };
+
+    const context = {
+      document,
+      window: { location: { pathname: '/krds-ux-writing/' } },
+      Array, console, globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(SOURCE, context);
+
+    const preventDefault = vi.fn();
+    secondTab.dispatch('keydown', { key: 'ArrowLeft', preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(firstTab.focus).toHaveBeenCalled();
+    expect(firstTab.getAttribute('aria-selected')).toBe('true');
+    expect(secondTab.getAttribute('aria-selected')).toBe('false');
+    expect(firstPanel.hidden).toBe(false);
+    expect(secondPanel.hidden).toBe(true);
+  });
+
+  it('does not crash when a tab click targets a panel id that is absent from the DOM', () => {
+    const orphanTab = createElement({
+      attributes: { 'aria-controls': 'nonexistent-panel', 'aria-selected': 'false', href: '/krds-ux-writing/' },
+    });
+    const tabList = {
+      querySelectorAll(selector) {
+        return selector === '.dg-tab' ? [orphanTab] : [];
+      },
+    };
+
+    const document = {
+      querySelectorAll(selector) {
+        if (selector === '.faq-item') return [];
+        if (selector === '.gnb-nav-link') return [];
+        if (selector === '.dg-panel') return [];
+        return [];
+      },
+      querySelector(selector) {
+        if (selector === '.dg-tabs') return tabList;
+        return null;
+      },
+      getElementById() { return null; },
+    };
+
+    const context = {
+      document,
+      window: { location: { pathname: '/krds-ux-writing/' } },
+      Array, console, globalThis: null,
+    };
+    context.globalThis = context;
+    vm.runInNewContext(SOURCE, context);
+
+    expect(() => orphanTab.dispatch('click')).not.toThrow();
+    expect(orphanTab.getAttribute('aria-selected')).toBe('true');
+  });
 });
