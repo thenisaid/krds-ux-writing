@@ -2611,4 +2611,52 @@ describe('generator/app.js', () => {
     expect(html).not.toContain('quality-gate--warn');
     expect(html).not.toContain('quality-gate--fail');
   });
+
+  it('parses SSE lines where data: has no trailing space (data:{...} without a space)', async () => {
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data:{"type":"chunk","text":"# 공백 없음"}\n'),
+            encoder.encode('data:{"type":"done"}\n'),
+          ];
+          let index = 0;
+          return {
+            async read() {
+              if (index < chunks.length) return { done: false, value: chunks[index++] };
+              return { done: true, value: undefined };
+            },
+          };
+        },
+      },
+    }));
+
+    const { context, elements, screens } = buildGeneratorContext({ fetchImpl });
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(screens[2].classList.contains('active')).toBe(true);
+    expect(elements['output-content'].innerHTML).toContain('# 공백 없음');
+  });
+
+  it('fills samples with 기타공공기관 defaults when mode is an unrecognized value and samples are empty', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['sample-1'].value = '';
+    elements['sample-2'].value = '';
+    elements['sample-3'].value = '';
+    elements['generator-mode'].value = 'unknown-mode';
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-mode'].dispatch('change');
+
+    // getModeSamples falls back to TYPE_SAMPLES['기타공공기관'] for unrecognised modes
+    expect(elements['sample-1'].value).toContain('신청이 접수되었습니다');
+  });
 });
