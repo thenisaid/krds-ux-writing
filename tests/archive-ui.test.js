@@ -782,4 +782,22 @@ describe('archive page — additional branch coverage', () => {
 
     expect(elements['arc-grid-hometax'].innerHTML).toContain('H1');
   });
+
+  it('omits the problem and recommendation rows when the issue block provides neither field', async () => {
+    const { context, elements } = buildContext({
+      markdown: [
+        '## Cycle 1',
+        '### H77 — 필드 없는 이슈 ★ [A]',
+        '**원문**: 원문 텍스트만',
+      ].join('\n'),
+    });
+    elements['arc-search-hometax'].value = '';
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    const html = elements['arc-grid-hometax'].innerHTML;
+    expect(html).toContain('H77');
+    expect(html).not.toContain('arc-card-label">문제');
+    expect(html).not.toContain('arc-card-rec');
+  });
 });
