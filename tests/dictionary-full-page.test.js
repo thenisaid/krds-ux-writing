@@ -299,6 +299,16 @@ describe('dictionary full page script', () => {
     expect(elements.dictBody.innerHTML).toContain('귀하');
   });
 
+  it('skips the badge update for a filter button that has no querySelector method at all', () => {
+    const { context, elements, filterBtns } = buildContext();
+    delete filterBtns[1].querySelector;
+
+    vm.runInNewContext(SCRIPT_SOURCE, context);
+
+    expect(filterBtns[0].querySelector('.count').textContent).toBe('5');
+    expect(elements.dictBody.innerHTML).toContain('귀하');
+  });
+
   it('reads KRDS_JARGON_DICT from globalThis when window.KRDS_JARGON_DICT is absent', () => {
     const { context, elements } = buildContext();
     context.window.KRDS_JARGON_DICT = null;
