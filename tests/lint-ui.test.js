@@ -1782,6 +1782,54 @@ describe('correctParticleForReplacement — vowel-form correction', () => {
     expect(elements.improvedCard.style.display).toBe('block');
     expect(elements.improvedText.textContent).toBe('User가 신청하세요.');
   });
+
+  it('returns "이" unchanged via the || particle fallback when hasBatchim is true and particle is already a batchim form', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1, col: 1, severity: 'error', category: '행정 관습어',
+          message: '행정어/금지어: "귀하"', match: '귀하',
+          suggestion: '→ 시민', type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    // replacement '시민' ends with '민' (jongseong=4, ㄴ batchim) → hasBatchim=true
+    // particle '이' is not in the hasBatchim lookup table {가:이, 를:을, 는:은, 와:과}
+    // → lookup returns undefined → || particle fallback → '이' passed through unchanged
+    elements.inputText.value = '귀하이 신청하세요.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).toBe('시민이 신청하세요.');
+  });
+
+  it('returns "가" unchanged via the || particle fallback when isKorean and no batchim but particle is already vowel form', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1, col: 1, severity: 'error', category: '행정 관습어',
+          message: '행정어/금지어: "귀하"', match: '귀하',
+          suggestion: '→ 시민 여러', type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    // replacement '시민 여러' ends with '러' (no batchim, jongseong=0) → isKorean=true, hasBatchim=false
+    // particle '가' is not in the no-batchim lookup {이:가, 을:를, 은:는, 과:와}
+    // → lookup returns undefined → || particle fallback → '가' passed through unchanged
+    elements.inputText.value = '귀하가 신청하세요.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).toBe('시민 여러가 신청하세요.');
+  });
 });
 
 describe('lint-ui CLI banner close and copy buttons', () => {
