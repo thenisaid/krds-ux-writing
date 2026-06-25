@@ -1147,4 +1147,83 @@ describe('script.js live index interactions', () => {
     expect(caseStudies.getAttribute('tabindex')).toBe('-1');
     expect(window.scrollTo).toHaveBeenCalledWith({ top: 480, behavior: 'auto' });
   });
+
+  it('clears the search input and reapplies filters when Escape is pressed while the input has a value', () => {
+    const { context, document, elements, querySelectorAllMap } = createEnvironment();
+    const searchInput = createElement(document, { attributes: { type: 'search' } });
+    searchInput.value = '';
+    const status = createElement(document);
+    const item = createElement(document, {
+      attributes: { 'data-filter-keywords': '원칙 파운데이션' },
+    });
+
+    elements.sectionSearchInput = searchInput;
+    elements.sectionFilterStatus = status;
+    querySelectorAllMap['.editorial-item[data-filter-keywords]'] = [item];
+    querySelectorAllMap['.section-filter-chip'] = [];
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    searchInput.value = '원칙';
+    searchInput.dispatch('input');
+    expect(item.hidden).toBe(false);
+
+    searchInput.value = '없는검색어';
+    searchInput.dispatch('input');
+    expect(item.hidden).toBe(true);
+
+    searchInput.dispatch('keydown', { key: 'Escape' });
+
+    expect(searchInput.value).toBe('');
+    expect(item.hidden).toBe(false);
+  });
+
+  it('returns early from the anchor click handler when the link has the mobile-menu-link class', () => {
+    const { context, document, elements, anchorLinks } = createEnvironment();
+    const target = createElement(document, { rect: { top: 200 } });
+    const link = createElement(document, {
+      classes: ['mobile-menu-link'],
+      attributes: { href: '/krds-ux-writing/#section' },
+    });
+    elements.section = target;
+    anchorLinks.push(link);
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    const preventDefault = vi.fn();
+    link.dispatch('click', { preventDefault });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(target.focus).not.toHaveBeenCalled();
+  });
+
+  it('calls closeMobileMenu when the mobile menu item href resolves to an id not found in the DOM', () => {
+    const { context, document, elements } = createEnvironment();
+    const menuItem = createElement(document, {
+      classes: ['mobile-menu-item'],
+      attributes: { href: '/krds-ux-writing/#ghost-section' },
+      closestSelectors: ['.mobile-menu-item, .mobile-menu-link'],
+    });
+    const mobileMenu = createElement(document, {
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [menuItem] },
+    });
+    const mobileMenuBtn = createElement(document, {
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    elements.mobileMenu = mobileMenu;
+    elements.mobileMenuBtn = mobileMenuBtn;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    mobileMenuBtn.dispatch('click');
+    expect(mobileMenu.classList.contains('open')).toBe(true);
+
+    mobileMenu.dispatch('click', { target: menuItem, preventDefault: vi.fn() });
+
+    expect(mobileMenu.classList.contains('open')).toBe(false);
+  });
 });
