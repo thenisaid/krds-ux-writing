@@ -491,4 +491,31 @@ describe('demo slides help overlay', () => {
     expect(helpOverlay.classList.contains('visible')).toBe(false);
     expect(preventDefault).not.toHaveBeenCalled();
   });
+
+  it('does nothing when goTo is called for the current slide without showAll (index===current, showAll falsy branch)', () => {
+    const { context, document, container, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    // Pressing Home on slide 0 calls goTo(0) — index===current===0, showAll=undefined → early return
+    document.dispatch('keydown', { key: 'Home', preventDefault: vi.fn() });
+
+    expect(history.replaceState).not.toHaveBeenCalled();
+    expect(container.style.transform || '').toBe('');
+  });
+
+  it('falls back to slides[current] when lastHelpFocus has no focus method (restoreTarget fallback path)', () => {
+    const { context, document, helpOverlay, slides } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    // Open the help overlay so lastHelpFocus is captured from document.activeElement
+    document.activeElement = { tagName: 'DIV' }; // no .focus method → typeof focus !== 'function'
+    document.dispatch('keydown', { key: '?', preventDefault: vi.fn() });
+    expect(helpOverlay.classList.contains('visible')).toBe(true);
+
+    // Close: lastHelpFocus.focus is not a function → restoreTarget = slides[current] = slides[0]
+    document.dispatch('keydown', { key: 'Escape', preventDefault: vi.fn() });
+
+    expect(helpOverlay.classList.contains('visible')).toBe(false);
+    expect(slides[0].focus).toHaveBeenCalled();
+  });
 });
