@@ -1172,6 +1172,23 @@ describe('shared nav tree keyboard navigation', () => {
     })).not.toThrow();
   });
 
+  it('does not crash when ArrowLeft on a sub-link whose parent item has no .lnb-item-a (!parentLink null guard)', () => {
+    const { tree, document, item, subLink } = makeContext();
+    subLink.closestMap = { '.lnb-item': item };
+    item.queryMap = { '.lnb-item-a': null };
+    document.activeElement = subLink;
+    expect(() => tree.dispatch('keydown', { key: 'ArrowLeft', preventDefault: vi.fn() })).not.toThrow();
+  });
+
+  it('does not crash when ArrowLeft on an expanded chapter whose item has no .lnb-tog (!tog2 null guard)', () => {
+    const { tree, document, item, link } = makeContext();
+    link.closestMap = { '.lnb-item': item };
+    item.queryMap = { '.lnb-tog': null };
+    expect(item.getAttribute('aria-expanded')).toBe('true');
+    document.activeElement = link;
+    expect(() => tree.dispatch('keydown', { key: 'ArrowLeft', preventDefault: vi.fn() })).not.toThrow();
+  });
+
   it('excludes .lnb-sub-a links whose closest .lnb-sub has the hidden attribute from ArrowDown navigation', () => {
     const link = createElement({ classes: ['lnb-item-a'] });
     const hiddenSub = createElement({ attributes: { hidden: '' } });
