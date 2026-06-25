@@ -460,6 +460,69 @@ describe('guide intro slides', () => {
     expect(history.replaceState).not.toHaveBeenCalled();
   });
 
+  it('advances the slide when ArrowDown is pressed (same keydown branch as ArrowRight)', async () => {
+    const { context, document, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    const preventDefault = vi.fn();
+    document.dispatch('keydown', { key: 'ArrowDown', preventDefault });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(history.replaceState).toHaveBeenCalledWith(null, '', '#slide-2');
+  });
+
+  it('moves to the previous slide when ArrowUp is pressed (same keydown branch as ArrowLeft)', async () => {
+    const { context, document, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    document.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    history.replaceState.mockClear();
+
+    const preventDefault = vi.fn();
+    document.dispatch('keydown', { key: 'ArrowUp', preventDefault });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(history.replaceState).toHaveBeenCalledWith(null, '', '#slide-1');
+  });
+
+  it('ignores a second next() call when an animation is already in progress (anim guard)', async () => {
+    // Use 3 slides so we can call next() twice without hitting the last-slide boundary.
+    // Defer rAF so goTo(1) suspends with anim=true when the second keydown fires.
+    const { context, document, history } = buildContext({
+      slides: [
+        { dataset: { slide: '0' }, buildItems: [] },
+        { dataset: { slide: '1' }, buildItems: [] },
+        { dataset: { slide: '2' }, buildItems: [] },
+      ],
+    });
+    const rafQueue = [];
+    context.requestAnimationFrame = (fn) => { rafQueue.push(fn); return rafQueue.length; };
+    vm.runInNewContext(SOURCE, context);
+
+    // Drain the init rAF (startup updateUI) so the IIFE completes its setup
+    const initFns = [...rafQueue];
+    rafQueue.length = 0;
+    initFns.forEach((fn) => fn());
+
+    // First ArrowRight: goTo(1) starts, anim=true, suspends waiting for rAF
+    document.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() });
+    // Second ArrowRight while anim=true: next() hits `if(anim)return` and is ignored
+    document.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() });
+
+    // Release the deferred rAF so goTo(1) can continue to history.replaceState
+    const pending = [...rafQueue];
+    rafQueue.length = 0;
+    pending.forEach((fn) => fn());
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // Exactly one slide advance; the second keydown was blocked by the anim guard
+    expect(history.replaceState).toHaveBeenCalledTimes(1);
+    expect(history.replaceState).toHaveBeenCalledWith(null, '', '#slide-2');
+  });
+
   it('sets the progress bar to 100% when there is only one slide (total=1 ternary branch)', () => {
     const progressBar = createElement({ id: 'pbar', style: {} });
 
