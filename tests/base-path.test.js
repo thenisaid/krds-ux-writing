@@ -317,4 +317,20 @@ describe('shared/base-path.js', () => {
     expect(basePath.siteRootPath).toBe('');
     expect(basePath.buildSitePath('')).toBe('/');
   });
+
+  it('silently skips href nodes whose path does not start with the deployment prefix', () => {
+    const externalNode = makeNode({ href: 'https://external.example.com/page' });
+    const relativeNode = makeNode({ href: '/other/path' });
+    const validNode = makeNode({ href: '/krds-ux-writing/principles/' });
+
+    runBasePath({
+      pathname: '/preview/KRDS/index.html',
+      scriptPath: '/preview/KRDS/shared/base-path.js',
+      hrefNodes: [externalNode, relativeNode, validNode],
+    });
+
+    expect(externalNode.getAttribute('href')).toBe('https://external.example.com/page');
+    expect(relativeNode.getAttribute('href')).toBe('/other/path');
+    expect(validNode.getAttribute('href')).toBe('/preview/KRDS/principles/');
+  });
 });
