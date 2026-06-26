@@ -1795,6 +1795,48 @@ describe('generate-shared.js — buildUserMessage and readOptionalStringField', 
     expect(result).toContain('추가 요청: 간결하게');
     expect(result).toContain('톤 조정');
   });
+
+  it('buildUserMessage uses the message-pack label and instruction when mode is message-pack', () => {
+    const result = buildUserMessage({
+      mode: 'message-pack',
+      agencyName: '행정안전부',
+      agencyType: '중앙행정기관',
+      screenType: '',
+      toneTarget: '',
+      taskBrief: '',
+      samples: ['오류가 발생했습니다.'],
+    });
+    expect(result).toContain('[작업 모드] 상태 메시지 개선');
+    expect(result).toContain('오류·완료·빈 상태·로딩·탐색 메시지를 묶음으로 제안하고');
+  });
+
+  it('buildUserMessage uses the rewrite label and instruction when mode is rewrite', () => {
+    const result = buildUserMessage({
+      mode: 'rewrite',
+      agencyName: '서울시',
+      agencyType: '지방자치단체',
+      screenType: '',
+      toneTarget: '',
+      taskBrief: '',
+      samples: ['귀하의 신청서를 제출하시기 바랍니다.'],
+    });
+    expect(result).toContain('[작업 모드] 문장 재작성');
+    expect(result).toContain('샘플 문장을 KRDS 기준으로 다시 쓰고');
+  });
+
+  it('buildUserMessage uses the guide-draft label and instruction when mode is guide-draft', () => {
+    const result = buildUserMessage({
+      mode: 'guide-draft',
+      agencyName: '국민건강보험공단',
+      agencyType: '공공기관',
+      screenType: '',
+      toneTarget: '',
+      taskBrief: '',
+      samples: ['상기 사항을 확인하시기 바랍니다.'],
+    });
+    expect(result).toContain('[작업 모드] 기관 가이드 초안');
+    expect(result).toContain('샘플을 분석해 기관 전체 UX Writing 기준과 즉시 적용 체크리스트를 작성하세요.');
+  });
 });
 
 describe('anthropic-edge.js — buildApiEndpoint and getAnthropicApiKey', () => {
