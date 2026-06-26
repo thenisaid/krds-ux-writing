@@ -370,4 +370,15 @@ describe('dictionary full page script', () => {
     expect(elements.resultCount.innerHTML).toContain('<strong>5</strong>');
     expect(elements.dictBody.innerHTML).toContain('귀하');
   });
+
+  it('renders no rows when rawData is non-null but rawData.entries is not an array (!Array.isArray branch in buildEntries)', () => {
+    const { context, elements } = buildContext({ dictData: null });
+    // rawData truthy but entries is absent → !Array.isArray(rawData.entries) is true → return []
+    context.window.KRDS_JARGON_DICT = { generated: '2026-01-01' };
+    context.KRDS_JARGON_DICT = null;
+    vm.runInNewContext(SCRIPT_SOURCE, context);
+
+    expect(elements.resultCount.innerHTML).toContain('<strong>0</strong>');
+    expect(elements.dictBody.innerHTML).toBe('');
+  });
 });
