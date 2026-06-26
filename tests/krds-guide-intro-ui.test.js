@@ -406,6 +406,35 @@ describe('guide intro slides', () => {
     expect(history.replaceState).not.toHaveBeenCalled();
   });
 
+  it('does not advance when ArrowRight is pressed on the last slide with no build items (cur >= total-1 branch in next())', async () => {
+    const { context, document, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    document.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(history.replaceState).toHaveBeenCalledWith(null, '', '#slide-2');
+    history.replaceState.mockClear();
+
+    document.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(history.replaceState).not.toHaveBeenCalled();
+  });
+
+  it('skips the keyboard handler when the event target is an INPUT element (isInteractiveTarget A/INPUT/SELECT/TEXTAREA/SUMMARY tag branch)', () => {
+    const { context, document, history } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    document.dispatch('keydown', {
+      key: 'ArrowRight',
+      preventDefault: vi.fn(),
+      target: { tagName: 'INPUT', isContentEditable: false },
+    });
+
+    expect(history.replaceState).not.toHaveBeenCalled();
+  });
+
   it('skips the keyboard handler when the event target is a contenteditable div (isInteractiveTarget isContentEditable branch)', () => {
     const { context, document, history } = buildContext();
     vm.runInNewContext(SOURCE, context);
