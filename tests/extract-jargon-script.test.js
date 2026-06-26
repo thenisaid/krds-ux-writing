@@ -763,6 +763,34 @@ describe('scripts/extract-jargon.js', () => {
 });
 
 describe('extract-jargon.js — uncovered branch paths', () => {
+  it('parse skips a table header row that uses "금지어" as the column name (second isHeaderRow variant)', () => {
+    const md = [
+      '### 2.1 행정어·전문용어 대체어 사전',
+      '#### 카테고리 1. 행정 관습어',
+      '| 금지어 | 대신 쓰세요 |',
+      '|---|---|',
+      '| 귀하 | 고객님 |',
+      '### 2.1 부록',
+    ].join('\n');
+    const entries = parse(md);
+    expect(entries.map((e) => e.banned)).not.toContain('금지어');
+    expect(entries.some((e) => e.banned === '귀하')).toBe(true);
+  });
+
+  it('parse skips a table header row that uses "쓰지마세요" (no space) as the column name (third isHeaderRow variant)', () => {
+    const md = [
+      '### 2.1 행정어·전문용어 대체어 사전',
+      '#### 카테고리 1. 행정 관습어',
+      '| 쓰지마세요 | 대신 쓰세요 |',
+      '|---|---|',
+      '| 귀하 | 고객님 |',
+      '### 2.1 부록',
+    ].join('\n');
+    const entries = parse(md);
+    expect(entries.map((e) => e.banned)).not.toContain('쓰지마세요');
+    expect(entries.some((e) => e.banned === '귀하')).toBe(true);
+  });
+
   it('detectCat falls back to header.trim() when the category does not match any CAT_MAP key', () => {
     const md = [
       '### 2.1 행정어·전문용어 대체어 사전',
