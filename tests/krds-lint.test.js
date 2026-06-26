@@ -715,6 +715,24 @@ describe('placeholderPattern branches via synthetic dictionary', () => {
     expect(result).toBeDefined();
     expect(result.issues).toBeDefined();
   });
+
+  it('falls back to the inline jargon list when jargonDict is truthy but has no entries property (jargonDict && !jargonDict.entries false branch)', () => {
+    // Provides a truthy jargonDict object with no .entries → condition (jargonDict && jargonDict.entries) is false
+    // → buildJargonEntries falls through to the inline ADMIN_JARGON list which includes INLINE_JARGON entries
+    const root = { KRDS_JARGON_DICT: {} };
+    vm.runInNewContext(LINT_SOURCE, root);
+    const lint = root.KRDSLint;
+    const result = lint.lint('잘못 입력하셨습니다.');
+    expect(result.issues.some((i) => i.match === '잘못 입력하셨습니다')).toBe(true);
+  });
+
+  it('falls back to the inline jargon list when jargonDict.entries is explicitly null (entries falsy branch)', () => {
+    const root = { KRDS_JARGON_DICT: { entries: null } };
+    vm.runInNewContext(LINT_SOURCE, root);
+    const lint = root.KRDSLint;
+    const result = lint.lint('죄송합니다');
+    expect(result.issues.some((i) => i.match === '죄송합니다')).toBe(true);
+  });
 });
 
 describe('formatCLI', () => {
