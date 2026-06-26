@@ -791,6 +791,21 @@ describe('extract-jargon.js — uncovered branch paths', () => {
     expect(entries.some((e) => e.banned === '귀하')).toBe(true);
   });
 
+  it('parse skips a table row with fewer than 2 pipe-delimited cells (cells.length < 2 branch)', () => {
+    const md = [
+      '### 2.1 행정어·전문용어 대체어 사전',
+      '#### 카테고리 1. 행정 관습어',
+      '| 쓰지 마세요 | 대신 쓰세요 |',
+      '|---|---|',
+      '| 귀하 |',
+      '| 민원인 | 신청인 |',
+      '### 2.1 부록',
+    ].join('\n');
+    const entries = parse(md);
+    expect(entries.map((e) => e.banned)).not.toContain('귀하');
+    expect(entries.some((e) => e.banned === '민원인')).toBe(true);
+  });
+
   it('detectCat falls back to header.trim() when the category does not match any CAT_MAP key', () => {
     const md = [
       '### 2.1 행정어·전문용어 대체어 사전',

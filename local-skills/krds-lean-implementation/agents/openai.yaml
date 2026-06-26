@@ -1,0 +1,4 @@
+interface:
+  display_name: "KRDS Lean Implementation"
+  short_description: "Keep KRDS changes minimal, native, and safe"
+  default_prompt: "Use $krds-lean-implementation to solve this KRDS task with the smallest safe change and no unnecessary dependencies."
