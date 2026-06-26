@@ -1744,6 +1744,34 @@ describe('pickPrimarySuggestion — bracket nesting prevents slash split', () =>
     // slash is inside {} → no split
     expect(elements.improvedText.textContent).toBe('시스템 {또는 / 서비스}가 필요합니다.');
   });
+
+  it('splits on a top-level comma when there is no bracket nesting, returning only the text before the comma (ch === "," depth===0 branch)', () => {
+    const { context, elements } = buildContext({
+      lintResult: {
+        score: 61,
+        summary: { errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          line: 1,
+          col: 1,
+          severity: 'error',
+          category: '행정어',
+          message: '행정어: "귀하"',
+          match: '귀하',
+          suggestion: '→ 고객, 시민',
+          type: 'admin-jargon',
+        }],
+      },
+    });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하가 신청하세요.';
+    elements.lintBtn.dispatch('click');
+
+    // pickPrimarySuggestion splits on the top-level comma → returns '고객'
+    // '고객' ends with '객' (batchim ㄱ) → hasBatchim=true → '가' becomes '이'
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).toBe('고객이 신청하세요.');
+  });
 });
 
 describe('correctParticleForReplacement — vowel-form correction', () => {
@@ -2569,6 +2597,21 @@ describe('lint-ui uncovered branch coverage', () => {
     vm.runInNewContext(SOURCE, context);
 
     expect(elements.historyCard.style.display).toBe('none');
+  });
+
+  it('shows a failure toast when document.execCommand is not a function inside copyFallback (typeof check false branch)', () => {
+    const { context, elements } = buildContext();
+    // Default context has no navigator.clipboard → hasAsyncClipboard() = false
+    // Default context has no document.execCommand → typeof check is false → ok = false → copyFallback returns false
+
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하의 신청이 접수되었습니다.';
+    elements.lintBtn.dispatch('click');
+
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(() => elements.copyImprovedBtn.dispatch('click')).not.toThrow();
+    expect(elements.toast.textContent).toBe('❌ 개선문 복사에 실패했습니다');
   });
 
 });
