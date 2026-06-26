@@ -749,9 +749,6 @@
 
   /* ── 독립 실행형 HTML 빌드 ── */
   function normalizeOutputMeta(meta) {
-    if (typeof meta === 'string') {
-      return { agencyName: meta, mode: currentMode || 'guide-draft' };
-    }
     return {
       agencyName: meta && meta.agencyName ? meta.agencyName : (currentAgency || '기관'),
       mode: meta && meta.mode ? meta.mode : (currentMode || 'guide-draft')
