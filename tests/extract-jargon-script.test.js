@@ -13,6 +13,7 @@ const {
   mergeEntries,
   syncJargonDictionary,
   readExistingOutput,
+  readExistingText,
 } = require('../scripts/extract-jargon.js');
 
 const ROOT = process.cwd();
@@ -838,6 +839,23 @@ describe('extract-jargon.js — uncovered branch paths', () => {
     try {
       const result = readExistingOutput(tmpFile);
       expect(result).toBeNull();
+    } finally {
+      fs.unlinkSync(tmpFile);
+    }
+  });
+
+  it('readExistingText returns null when the file does not exist (!fs.existsSync branch)', () => {
+    const nonExistentPath = path.join(os.tmpdir(), 'krds-test-nonexistent-' + Date.now() + '.txt');
+    const result = readExistingText(nonExistentPath);
+    expect(result).toBeNull();
+  });
+
+  it('readExistingText returns the file contents when the file exists', () => {
+    const tmpFile = path.join(os.tmpdir(), 'krds-test-text-' + Date.now() + '.txt');
+    fs.writeFileSync(tmpFile, 'hello world', 'utf8');
+    try {
+      const result = readExistingText(tmpFile);
+      expect(result).toBe('hello world');
     } finally {
       fs.unlinkSync(tmpFile);
     }
