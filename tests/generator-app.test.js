@@ -3232,6 +3232,46 @@ describe('generator/app.js', () => {
     expect(elements['output-content'].innerHTML).toContain('버퍼 끝 처리 테스트');
   });
 
+  it('skips a residual backtick-triple line from an unclosed code fence in extractReviewText (line 523 guard)', async () => {
+    // An unclosed fence (no closing ```) is NOT matched by the regex and stays in the text.
+    // The /^```/ guard at line 523 catches that stray line and excludes it from review text.
+    const markdown = '일반 문장입니다.\n```언어\n언닫힌 코드 블록\n';
+    let lintInput = null;
+    const encoder = new TextEncoder();
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: {
+        getReader() {
+          const chunks = [
+            encoder.encode('data: ' + JSON.stringify({ type: 'chunk', text: markdown }) + '\n'),
+            encoder.encode('data: {"type":"done"}\n'),
+          ];
+          let i = 0;
+          return { async read() { if (i < chunks.length) return { done: false, value: chunks[i++] }; return { done: true, value: undefined }; } };
+        },
+      },
+    }));
+
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    context.KRDSLint = {
+      lint: vi.fn((text) => {
+        lintInput = text;
+        return { score: 100, summary: { total: 0, errors: 0, warnings: 0, infos: 0 }, issues: [] };
+      }),
+    };
+    vm.runInNewContext(SOURCE, context);
+
+    elements['generator-form'].dispatch('submit');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(context.KRDSLint.lint).toHaveBeenCalled();
+    // The fence marker line is excluded; content after an unclosed fence is included as-is
+    expect(lintInput).toContain('일반 문장입니다');
+    expect(lintInput).not.toContain('```언어');
+  });
+
   it('keeps the format dropdown open when a document click fires on an element inside the dl-btn-group (!findClosest false branch)', () => {
     const { context, elements } = buildGeneratorContext();
     const docListeners = new Map();
