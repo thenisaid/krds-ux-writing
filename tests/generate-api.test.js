@@ -2036,6 +2036,23 @@ describe('checkRateLimit — rate-limit map full with non-expired entries', () =
     expect((await response.json()).error).toContain('기관명은');
   });
 
+  it('rejects truly malformed JSON in the Vercel handler (body parse catch branch)', async () => {
+    const response = await vercelHandler(buildRawJsonRequest('{invalid json}'));
+    expect(response.status).toBe(400);
+    expect(response.headers.get('access-control-allow-origin')).toBe(ALLOWED_ORIGIN);
+    expect(await response.json()).toEqual({ error: '요청 형식이 올바르지 않습니다.' });
+  });
+
+  it('rejects truly malformed JSON in the Cloudflare handler (body parse catch branch)', async () => {
+    const response = await onRequestPost({
+      request: buildRawJsonRequest('{invalid json}'),
+      env: {},
+    });
+    expect(response.status).toBe(400);
+    expect(response.headers.get('access-control-allow-origin')).toBe(ALLOWED_ORIGIN);
+    expect(await response.json()).toEqual({ error: '요청 형식이 올바르지 않습니다.' });
+  });
+
   it('returns 429 for a new Cloudflare IP when the in-memory map is full of non-expired entries', async () => {
     const { onRequestPost: freshOnRequestPost } = await importFreshModule('functions/api/generate.js');
     const pinnedNow = Date.now();
