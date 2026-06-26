@@ -2603,6 +2603,30 @@ describe('generator/app.js', () => {
     );
   });
 
+  it('defaults to guide-draft mode when the generator-mode element has an empty value (modeEl.value falsy branch)', () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: { getReader() { return { async read() { return { done: true }; } }; } },
+    }));
+    const { context, elements } = buildGeneratorContext({ fetchImpl });
+    elements['generator-mode'].value = '';
+
+    elements['agency-name'].value = '기관';
+    elements['agency-type'].value = '지방자치단체';
+    elements['sample-1'].value = '문장 하나';
+
+    vm.runInNewContext(SOURCE, context);
+    elements['generator-form'].dispatch('submit');
+
+    expect(fetchImpl).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        body: expect.stringContaining('"mode":"guide-draft"'),
+      }),
+    );
+  });
+
   it('does not crash in applyModeUi when the tone-target-group element is absent from the DOM', () => {
     const { context, elements } = buildGeneratorContext();
     // Remove the optional element — the if (toneTargetGroup) guard should prevent any error
