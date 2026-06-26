@@ -717,6 +717,32 @@ describe('placeholderPattern branches via synthetic dictionary', () => {
   });
 });
 
+describe('formatCLI', () => {
+  it('uses the bullet fallback icon when issue.severity is an unrecognised value (|| "•" branch)', () => {
+    const result = KRDSLint.lint('귀하');
+    const issue = result.issues[0];
+    const patched = { ...result, issues: [{ ...issue, severity: 'custom' }] };
+    const output = KRDSLint.formatCLI(patched);
+    expect(output).toContain('•');
+    expect(output).not.toContain('❌');
+    expect(output).not.toContain('⚠️');
+    expect(output).not.toContain('ℹ️');
+  });
+});
+
+describe('lint() option branches', () => {
+  it('skips pattern-rule checks when checkPatterns is false', () => {
+    const textWithPattern = '빠르게 간편하게 처리하실 수 있습니다';
+    const withPatterns = KRDSLint.lint(textWithPattern, { checkPatterns: true });
+    const withoutPatterns = KRDSLint.lint(textWithPattern, { checkPatterns: false });
+    const patternTypes = KRDSLint.PATTERN_RULES.map((r) => r.id);
+    const hasPatternIssue = withPatterns.issues.some((i) => patternTypes.includes(i.type));
+    expect(hasPatternIssue).toBe(true);
+    const noPatternIssue = withoutPatterns.issues.every((i) => !patternTypes.includes(i.type));
+    expect(noPatternIssue).toBe(true);
+  });
+});
+
 describe('UMD Node.js branch — jargon-dictionary.json load failure falls back to inline list', () => {
   const LINT_SOURCE = fs.readFileSync(
     fileURLToPath(new URL('../krds-lint.js', import.meta.url)),
