@@ -2090,4 +2090,84 @@ describe('checkRateLimit — rate-limit map full with non-expired entries', () =
       vi.restoreAllMocks();
     }
   });
+
+  it('resets an existing IP window after it expires and allows new requests in the Vercel handler (entry exists, window expired, map not full branch)', async () => {
+    const { default: freshVercelHandler } = await importFreshModule('api/generate.js');
+    const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+    const realNow = Date.now();
+    const pastTime = realNow - RATE_LIMIT_WINDOW_MS - 1000;
+    const futureTime = realNow + 1000;
+    const nowSpy = vi.spyOn(Date, 'now').mockReturnValue(pastTime);
+    const sameIp = buildUniqueTestIp(92000);
+    try {
+      const first = await freshVercelHandler(new Request('http://localhost/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: ALLOWED_ORIGIN,
+          'CF-Connecting-IP': sameIp,
+        },
+        body: JSON.stringify({ agencyName: '', agencyType: '', samples: [] }),
+      }));
+      expect(first.status).toBe(400);
+
+      nowSpy.mockReturnValue(futureTime);
+
+      const after = await freshVercelHandler(new Request('http://localhost/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Origin: ALLOWED_ORIGIN,
+          'CF-Connecting-IP': sameIp,
+        },
+        body: JSON.stringify({ agencyName: '', agencyType: '', samples: [] }),
+      }));
+      expect(after.status).toBe(400); // Window reset → allowed → validation → 400
+    } finally {
+      vi.restoreAllMocks();
+    }
+  });
+
+  it('resets an existing IP window after it expires and allows new requests in the Cloudflare handler (entry exists, window expired, map not full branch)', async () => {
+    const { onRequestPost: freshOnRequestPost } = await importFreshModule('functions/api/generate.js');
+    const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+    const realNow = Date.now();
+    const pastTime = realNow - RATE_LIMIT_WINDOW_MS - 1000;
+    const futureTime = realNow + 1000;
+    const nowSpy = vi.spyOn(Date, 'now').mockReturnValue(pastTime);
+    const sameIp = buildUniqueTestIp(93000);
+    try {
+      const first = await freshOnRequestPost({
+        request: new Request('http://localhost/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Origin: ALLOWED_ORIGIN,
+            'CF-Connecting-IP': sameIp,
+          },
+          body: JSON.stringify({ agencyName: '', agencyType: '', samples: [] }),
+        }),
+        env: { ANTHROPIC_API_KEY: 'test-key' },
+      });
+      expect(first.status).toBe(400);
+
+      nowSpy.mockReturnValue(futureTime);
+
+      const after = await freshOnRequestPost({
+        request: new Request('http://localhost/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Origin: ALLOWED_ORIGIN,
+            'CF-Connecting-IP': sameIp,
+          },
+          body: JSON.stringify({ agencyName: '', agencyType: '', samples: [] }),
+        }),
+        env: { ANTHROPIC_API_KEY: 'test-key' },
+      });
+      expect(after.status).toBe(400); // Window reset → allowed → validation → 400
+    } finally {
+      vi.restoreAllMocks();
+    }
+  });
 });
