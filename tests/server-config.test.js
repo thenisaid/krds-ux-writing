@@ -2425,6 +2425,59 @@ describe('server.js configuration', () => {
     }
   });
 
+  it('returns 429 for the same IP once it exhausts the 5-request rate-limit quota within one window (entry.count >= RATE_LIMIT_MAX branch)', async () => {
+    const freshServer = loadFreshServerModule().server;
+    const sameIp = '203.0.113.80';
+
+    for (let i = 0; i < 5; i += 1) {
+      const r = await runServerRequest({
+        serverInstance: freshServer,
+        headers: { 'content-type': 'application/json', 'cf-connecting-ip': sameIp },
+        body: { agencyName: '', agencyType: '', samples: [] },
+      });
+      expect(r.statusCode).toBe(400);
+    }
+
+    const over = await runServerRequest({
+      serverInstance: freshServer,
+      headers: { 'content-type': 'application/json', 'cf-connecting-ip': sameIp },
+      body: { agencyName: '', agencyType: '', samples: [] },
+    });
+    expect(over.statusCode).toBe(429);
+    expect(JSON.parse(over.body)).toEqual({ error: '요청 한도를 초과했습니다. 1시간 후 다시 시도해 주세요.' });
+  });
+
+  it('resets an existing IP window after it expires and allows new requests (entry exists, window expired, map not full branch)', async () => {
+    const freshServer = loadFreshServerModule().server;
+    const sameIp = '203.0.113.81';
+    const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+    const realNow = Date.now();
+    const pastTime = realNow - RATE_LIMIT_WINDOW_MS - 1000;
+    const futureTime = realNow + 1000;
+
+    const nowSpy = vi.spyOn(Date, 'now').mockReturnValue(pastTime);
+    try {
+      const first = await runServerRequest({
+        serverInstance: freshServer,
+        headers: { 'content-type': 'application/json', 'cf-connecting-ip': sameIp },
+        body: { agencyName: '', agencyType: '', samples: [] },
+      });
+      expect(first.statusCode).toBe(400);
+
+      nowSpy.mockReturnValue(futureTime);
+
+      const after = await runServerRequest({
+        serverInstance: freshServer,
+        headers: { 'content-type': 'application/json', 'cf-connecting-ip': sameIp },
+        body: { agencyName: '', agencyType: '', samples: [] },
+      });
+      // Window expired → entry reset → rate limit allowed again → reaches validation → 400
+      expect(after.statusCode).toBe(400);
+    } finally {
+      vi.restoreAllMocks();
+    }
+  });
+
   it('accepts an explicitly empty-string optional field in readOptionalStringField and treats it as absent (empty-string branch)', async () => {
     process.env.ANTHROPIC_API_KEY = '';
     const responseState = await runServerRequest({
