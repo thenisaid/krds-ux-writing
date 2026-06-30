@@ -2614,4 +2614,39 @@ describe('lint-ui uncovered branch coverage', () => {
     expect(elements.toast.textContent).toBe('❌ 개선문 복사에 실패했습니다');
   });
 
+  it('skips a stale toast when a newer toast action supersedes the pending clipboard callback (typeof actionId === "number" && !isLatestToastAction early return)', async () => {
+    let resolveClipboard;
+    const { context, elements } = buildContext({ manualTimers: true });
+    context.navigator.clipboard = {
+      writeText: vi.fn(() => new Promise((resolve) => {
+        resolveClipboard = () => resolve();
+      })),
+    };
+
+    vm.runInNewContext(SOURCE, context);
+
+    // Lint to produce a lastResult with an admin-jargon issue so improvedCard is shown
+    elements.inputText.value = '귀하의 서류를 확인해 주세요.';
+    elements.lintBtn.dispatch('click');
+    expect(elements.improvedCard.style.display).toBe('block');
+    expect(elements.improvedText.textContent).not.toBe('');
+
+    // Click copyImprovedBtn → copyWithToast reserves actionId=1, clipboard pending
+    elements.copyImprovedBtn.dispatch('click');
+    expect(context.navigator.clipboard.writeText).toHaveBeenCalledOnce();
+
+    // Trigger a direct toast without explicit actionId (via shareLinkBtn with empty text)
+    // → reserveToastAction() increments toastActionId to 2
+    elements.inputText.value = '';
+    elements.shareLinkBtn.dispatch('click');
+    expect(elements.toast.textContent).toBe('⚠️ 500자 이하 텍스트만 링크로 공유할 수 있습니다');
+
+    // Resolve the pending clipboard → showToast('✅ 개선문이 복사되었습니다', 1)
+    // actionId=1 is stale (toastActionId=2) → early return, toast NOT updated
+    resolveClipboard();
+    await Promise.resolve();
+
+    expect(elements.toast.textContent).toBe('⚠️ 500자 이하 텍스트만 링크로 공유할 수 있습니다');
+  });
+
 });
