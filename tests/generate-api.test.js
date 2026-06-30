@@ -1724,6 +1724,31 @@ describe('generator API handlers', () => {
     expect(body).toContain('"type":"error"');
     expect(body).toContain('AI 처리 중 오류');
   });
+
+  it('silently skips a content_block_delta event whose delta.type is not text_delta (e.g. input_json_delta) in the Cloudflare handler', async () => {
+    global.fetch = vi.fn(async () => new Response(
+      'data: {"type":"content_block_delta","delta":{"type":"input_json_delta","partial_json":"{}"}}\n' +
+      'data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"실제 텍스트"}}\n' +
+      'data: {"type":"message_stop"}\n\n',
+      { status: 200, headers: { 'Content-Type': 'text/event-stream' } },
+    ));
+
+    const response = await onRequestPost({
+      request: buildRequest({
+        agencyName: '테스트 기관',
+        agencyType: '지방자치단체',
+        samples: ['샘플 문구'],
+      }),
+      env: { ANTHROPIC_API_KEY: 'test-key' },
+    });
+    const body = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(body).toContain('"type":"chunk"');
+    expect(body).toContain('실제 텍스트');
+    expect(body).not.toContain('input_json_delta');
+    expect(body).toContain('"type":"done"');
+  });
 });
 
 describe('generate-shared.js — buildUserMessage and readOptionalStringField', () => {
