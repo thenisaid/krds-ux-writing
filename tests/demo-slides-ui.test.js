@@ -292,6 +292,34 @@ describe('demo slides help overlay', () => {
     expect(container.listenerCount('transitionend')).toBe(0);
   });
 
+  it('silently skips a transitionend event whose target is a child element (e.target !== el early-return in waitForTransition)', async () => {
+    let deferredFinish = null;
+    const { context, document, container, slides, history } = buildContext();
+    context.setTimeout = (fn) => { deferredFinish = fn; return 1; };
+    vm.runInNewContext(SOURCE, context);
+
+    document.dispatch('keydown', { key: 'ArrowRight', preventDefault: vi.fn() });
+    await Promise.resolve();
+
+    // Listener is attached, timeout is deferred
+    expect(container.listenerCount('transitionend')).toBe(1);
+
+    // Fire transitionend from a child element — should be ignored (target !== container)
+    const childEl = {};
+    container.dispatch('transitionend', { target: childEl });
+    expect(container.listenerCount('transitionend')).toBe(1); // listener NOT removed
+
+    // Complete the transition via the timeout fallback
+    expect(deferredFinish).not.toBeNull();
+    deferredFinish();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(container.listenerCount('transitionend')).toBe(0);
+    expect(history.replaceState).toHaveBeenCalledWith(null, '', '#slide-2');
+    expect(slides[1].focus).toHaveBeenCalled();
+  });
+
   it('advances to the next slide when the user swipes left (negative dx)', async () => {
     const { context, container, history } = buildContext();
     vm.runInNewContext(SOURCE, context);
