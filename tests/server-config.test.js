@@ -2523,4 +2523,41 @@ describe('server.js configuration', () => {
       readFileSpy.mockRestore();
     }
   });
+
+  it('silently skips a content_block_delta event whose delta.type is not text_delta (e.g. input_json_delta during tool use)', async () => {
+    // processClaudeLine: evt.type==='content_block_delta' && evt.delta?.type==='text_delta' — false branch
+    // when delta.type is something other than 'text_delta' the event is skipped (return false)
+    const originalRequest = https.request;
+    try {
+      const chunks = [];
+      await new Promise((resolve) => {
+        https.request = function (_options, callback) {
+          const req = new EventEmitter();
+          req.write = function () {};
+          req.setTimeout = function () {};
+          req.end = function () {
+            const res = new EventEmitter();
+            res.statusCode = 200;
+            callback(res);
+            res.emit('data', Buffer.from(
+              'data: {"type":"content_block_delta","delta":{"type":"input_json_delta","partial_json":"{}"}}\n' +
+              'data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"실제 텍스트"}}\n' +
+              'data: {"type":"message_stop"}\n\n',
+            ));
+            res.emit('end');
+          };
+          return req;
+        };
+
+        callFreshClaudeStream(
+          { model: 'claude-sonnet-4-6' },
+          (text) => { chunks.push(text); },
+          () => { expect(chunks).toEqual(['실제 텍스트']); resolve(); },
+          (msg) => { throw new Error('unexpected error: ' + msg); },
+        );
+      });
+    } finally {
+      https.request = originalRequest;
+    }
+  });
 });
