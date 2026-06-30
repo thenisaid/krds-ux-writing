@@ -381,4 +381,27 @@ describe('dictionary full page script', () => {
     expect(elements.resultCount.innerHTML).toContain('<strong>0</strong>');
     expect(elements.dictBody.innerHTML).toBe('');
   });
+
+  it('escapes < > " \' & in entry fields before injecting into innerHTML (escapeHtml full-branch coverage)', () => {
+    const { context, elements } = buildContext({
+      dictData: {
+        generated: '2026-01-01',
+        entries: [
+          {
+            banned: '<script>alert("xss")',
+            alt: "it's > fine & safe",
+            cat: '행정 관습어',
+            context: 'a"b\'c',
+          },
+        ],
+      },
+    });
+    vm.runInNewContext(SCRIPT_SOURCE, context);
+
+    const html = elements.dictBody.innerHTML;
+    expect(html).toContain('&lt;script&gt;alert(&quot;xss&quot;)');
+    expect(html).toContain('it&#39;s &gt; fine &amp; safe');
+    expect(html).toContain('a&quot;b&#39;c');
+    expect(html).not.toContain('<script>');
+  });
 });
