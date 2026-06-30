@@ -1592,4 +1592,67 @@ describe('script.js live index interactions', () => {
     // status.textContent remains unset (no "N개 섹션" message rendered)
     expect(status.textContent).toBe('');
   });
+
+  it('closes the mobile menu when a cross-page menu item is clicked (samePageTargetId falsy → closeMobileMenu() direct call)', () => {
+    // A mobile-menu-item with a cross-page href has no hash → resolveSamePageAnchorId returns ''
+    // → if (samePageTargetId) is false → falls through to closeMobileMenu() at the bottom
+    const { context, document, elements } = createEnvironment();
+    const crossPageItem = createElement(document, {
+      classes: ['mobile-menu-item'],
+      attributes: { href: '/other-page' }, // no hash → samePageTargetId === ''
+      closestSelectors: ['.mobile-menu-item, .mobile-menu-link'],
+    });
+    const mobileMenu = createElement(document, {
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [crossPageItem] },
+    });
+    const mobileMenuBtn = createElement(document, {
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    elements.mobileMenu = mobileMenu;
+    elements.mobileMenuBtn = mobileMenuBtn;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    mobileMenuBtn.dispatch('click');
+    expect(mobileMenu.classList.contains('open')).toBe(true);
+
+    mobileMenu.dispatch('click', { target: crossPageItem });
+
+    // closeMobileMenu() (with restoreFocus defaulting to true) should close the menu
+    // and restore focus to mobileMenuBtn
+    expect(mobileMenu.classList.contains('open')).toBe(false);
+    expect(mobileMenu.getAttribute('aria-hidden')).toBe('true');
+    expect(mobileMenuBtn.getAttribute('aria-expanded')).toBe('false');
+    expect(mobileMenuBtn.focus).toHaveBeenCalled();
+  });
+
+  it('does not close the mobile menu on a resize event when the viewport is still narrow (window.innerWidth ≤ 900 false branch)', () => {
+    // The resize handler only calls closeMobileMenu(false) when innerWidth > 900.
+    // When the viewport stays ≤ 900 the menu should remain open.
+    const { context, document, window, elements } = createEnvironment();
+    const firstLink = createElement(document);
+    const mobileMenu = createElement(document, {
+      attributes: { 'aria-hidden': 'true' },
+      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [firstLink] },
+    });
+    const mobileMenuBtn = createElement(document, {
+      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
+    });
+    elements.mobileMenu = mobileMenu;
+    elements.mobileMenuBtn = mobileMenuBtn;
+
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+
+    mobileMenuBtn.dispatch('click');
+    expect(mobileMenu.classList.contains('open')).toBe(true);
+
+    // Simulate a resize while the viewport is still in mobile range (≤ 900)
+    window.innerWidth = 600;
+    window.dispatch('resize');
+
+    expect(mobileMenu.classList.contains('open')).toBe(true);
+  });
 });
