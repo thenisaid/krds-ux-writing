@@ -244,4 +244,15 @@ describe('dictionary filter initialization', () => {
     expect(elements.searchClear.style.display).toBe('none');
     expect(elements.resultCount.innerHTML).toContain('<strong>2</strong>');
   });
+
+  it('falls back to "all" for currentCat when a filter button with no data-cat is clicked (click handler fallback)', () => {
+    const { context, rows, filterBtns } = buildContext();
+    delete filterBtns[1].dataset.cat;
+    vm.runInNewContext(SOURCE, context);
+
+    filterBtns[1].dispatch('click');
+
+    expect(rows[0].style.display).toBe('');
+    expect(rows[1].style.display).toBe('');
+  });
 });

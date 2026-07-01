@@ -2649,4 +2649,33 @@ describe('lint-ui uncovered branch coverage', () => {
     expect(elements.toast.textContent).toBe('⚠️ 500자 이하 텍스트만 링크로 공유할 수 있습니다');
   });
 
+  it('escapes & in issue message when rendering highlight mark title attribute', () => {
+    const { context, elements } = buildContext();
+    context.KRDSLint = {
+      lint: vi.fn(() => ({
+        score: 70,
+        summary: { total: 1, errors: 1, warnings: 0, infos: 0 },
+        issues: [{
+          type: 'admin-jargon',
+          category: '행정관습어',
+          severity: 'error',
+          line: 1,
+          col: 1,
+          match: '시행',
+          message: '"시행" & "실시" — 쉬운 말로 대체하세요.',
+          suggestion: '실시',
+        }],
+      })),
+    };
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '시행합니다';
+    elements.lintBtn.dispatch('click');
+
+    const html = elements.highlightedText.innerHTML;
+    expect(html).toContain('title=');
+    expect(html).toContain('&amp;');
+    expect(html).not.toContain('" & "');
+  });
+
 });
