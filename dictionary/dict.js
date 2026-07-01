@@ -53,7 +53,7 @@
   filterBtns.forEach(function (btn) {
     btn.addEventListener('click', function () {
       syncActiveFilter(btn);
-      currentCat = btn.dataset.cat;
+      currentCat = btn.dataset.cat || 'all';
       applyFilters();
     });
   });

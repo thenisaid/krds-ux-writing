@@ -103,6 +103,7 @@ async function checkRateLimitKV(ip) {
   try {
     const incrRes = await fetch(`${kvUrl}/incr/${key}`, { method: 'POST', headers });
     const { result: count } = await incrRes.json();
+    if (typeof count !== 'number') return checkRateLimit(ip);
     if (count === 1) {
       // 첫 요청 — 윈도우 만료 설정
       await fetch(`${kvUrl}/expire/${key}/${windowSec}`, { method: 'POST', headers });

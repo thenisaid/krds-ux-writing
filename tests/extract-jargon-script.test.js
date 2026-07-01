@@ -903,4 +903,38 @@ describe('extract-jargon.js — uncovered branch paths', () => {
       fs.unlinkSync(tmpFile);
     }
   });
+
+  it('readExistingOutput returns null when the file does not exist (!fs.existsSync branch)', () => {
+    const nonExistentPath = path.join(os.tmpdir(), 'krds-test-nonexistent-' + Date.now() + '.json');
+    const result = readExistingOutput(nonExistentPath);
+    expect(result).toBeNull();
+  });
+
+  it('detectCat maps "외래어" category headers to "전문 용어" via the CAT_MAP alias', () => {
+    const md = [
+      '### 2.1 행정어·전문용어 대체어 사전',
+      '#### 카테고리 5. 외래어 및 영문 용어',
+      '| 쓰지 마세요 | 대신 쓰세요 |',
+      '|---|---|',
+      '| 로그인 | 접속 |',
+      '### 2.1 부록',
+    ].join('\n');
+    const entries = parse(md);
+    expect(entries).toHaveLength(1);
+    expect(entries[0].cat).toBe('전문 용어');
+  });
+
+  it('detectCat maps "명사 체인" category headers to "과도한 수식" via the CAT_MAP alias', () => {
+    const md = [
+      '### 2.1 행정어·전문용어 대체어 사전',
+      '#### 카테고리 6. 명사 체인 남용',
+      '| 쓰지 마세요 | 대신 쓰세요 |',
+      '|---|---|',
+      '| 주민등록증발급신청서 | 주민등록증 발급 신청서 |',
+      '### 2.1 부록',
+    ].join('\n');
+    const entries = parse(md);
+    expect(entries).toHaveLength(1);
+    expect(entries[0].cat).toBe('과도한 수식');
+  });
 });

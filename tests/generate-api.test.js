@@ -1121,6 +1121,31 @@ describe('generator API handlers', () => {
     expect(response.status).toBe(200);
   });
 
+  it('falls back to in-memory rate limiting when the KV incr response has no numeric result field on Vercel', async () => {
+    const kvUrl = 'https://kv.example.com';
+    process.env.KV_REST_API_URL = kvUrl;
+    process.env.KV_REST_API_TOKEN = 'kv-token';
+
+    global.fetch = vi.fn(async (url) => {
+      if (String(url).includes('/incr/')) {
+        return new Response(JSON.stringify({ result: null }), { status: 200 });
+      }
+      return new Response('data: {"type":"message_stop"}\n\n', {
+        status: 200,
+        headers: { 'Content-Type': 'text/event-stream' },
+      });
+    });
+
+    const response = await vercelHandler(buildRequest({
+      agencyName: '테스트 기관',
+      agencyType: '지방자치단체',
+      mode: 'rewrite',
+      samples: ['문장 하나'],
+    }));
+
+    expect(response.status).toBe(200);
+  });
+
   it('does not call the KV expire endpoint on subsequent requests within the same rate-limit window', async () => {
     const kvUrl = 'https://kv.example.com';
     process.env.KV_REST_API_URL = kvUrl;
