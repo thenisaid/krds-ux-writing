@@ -134,12 +134,11 @@ function getClientIp(req) {
   const realIp = getRequestHeader(req, 'x-real-ip');
   if (realIp) return realIp;
 
+  // x-forwarded-for: 프록시가 실제 IP를 마지막에 append하므로 마지막 값이 신뢰 가능
   const forwarded = getRequestHeader(req, 'x-forwarded-for');
   if (forwarded) {
-    const clientIp = forwarded
-      .split(',')
-      .map(part => part.trim())
-      .find(Boolean);
+    const parts = forwarded.split(',').map(part => part.trim()).filter(Boolean);
+    const clientIp = parts[parts.length - 1];
     if (clientIp) return clientIp;
   }
 

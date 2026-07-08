@@ -553,10 +553,12 @@ describe('generator API handlers', () => {
     expect(fetchMock.mock.calls[0][0]).toBe('https://proxy.internal/custom/v1/messages');
   });
 
-  it('rate-limits Vercel requests by the first forwarded client IP, not the last proxy hop', async () => {
+  it('rate-limits Vercel requests by the last forwarded IP (proxy-appended real IP)', async () => {
     const fetchMock = mockAnthropicFetch();
     global.fetch = fetchMock;
 
+    // 마지막 XFF 값(프록시가 append한 실제 IP)이 동일 → 동일 IP로 레이트리밋 적용
+    // 첫 번째 값은 클라이언트가 변경 가능한 spoofed IP (무시)
     for (let i = 0; i < 5; i += 1) {
       const response = await vercelHandler(buildRequest(
         {
@@ -566,7 +568,7 @@ describe('generator API handlers', () => {
         },
         ALLOWED_ORIGIN,
         {
-          'X-Forwarded-For': `198.51.100.77, 10.0.0.${i + 1}`,
+          'X-Forwarded-For': `10.0.0.${i + 1}, 198.51.100.77`,
         },
       ));
 
@@ -581,7 +583,7 @@ describe('generator API handlers', () => {
       },
       ALLOWED_ORIGIN,
       {
-        'X-Forwarded-For': '198.51.100.77, 10.0.0.99',
+        'X-Forwarded-For': '10.0.0.99, 198.51.100.77',
       },
     ));
 

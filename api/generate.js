@@ -47,15 +47,13 @@ function getClientIp(request) {
   const cfIp = request.headers.get('cf-connecting-ip');
   if (cfIp) return cfIp.trim();
   // x-real-ip: Vercel이 설정하는 실제 클라이언트 IP (스푸핑 불가)
-  // x-forwarded-for: "client, proxy1, proxy2" 순서이므로 첫 값을 사용
+  // x-forwarded-for: Vercel이 실제 IP를 마지막에 append하므로 마지막 값이 신뢰 가능
   const realIp = request.headers.get('x-real-ip')?.trim();
   if (realIp) return realIp;
   const forwarded = request.headers.get('x-forwarded-for');
   if (forwarded) {
-    const clientIp = forwarded
-      .split(',')
-      .map((part) => part.trim())
-      .find(Boolean);
+    const parts = forwarded.split(',').map((part) => part.trim()).filter(Boolean);
+    const clientIp = parts[parts.length - 1];
     if (clientIp) return clientIp;
   }
   return 'unknown';
