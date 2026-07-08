@@ -3318,3 +3318,74 @@ describe('generator/app.js', () => {
     expect(elements['dl-chevron'].getAttribute('aria-expanded')).toBe('true');
   });
 });
+
+describe('generator URL param prefill (applyUrlParams)', () => {
+  function buildPrefillContext(search) {
+    const { context, elements } = buildGeneratorContext();
+    elements['generator-mode'].value = 'guide-draft';
+    elements['agency-name'].value = '';
+    elements['agency-type'].value = '';
+    elements['screen-type'].value = '';
+    context.location = { search };
+    context.URLSearchParams = URLSearchParams;
+    return { context, elements };
+  }
+
+  it('sets modeEl to message-pack when ?template=error-message is in the URL', () => {
+    const { context, elements } = buildPrefillContext('?template=error-message');
+    vm.runInNewContext(SOURCE, context);
+    expect(elements['generator-mode'].value).toBe('message-pack');
+  });
+
+  it('sets modeEl to rewrite when ?template=rewrite is in the URL', () => {
+    const { context, elements } = buildPrefillContext('?template=rewrite');
+    vm.runInNewContext(SOURCE, context);
+    expect(elements['generator-mode'].value).toBe('rewrite');
+  });
+
+  it('sets modeEl directly when ?mode=tone-adjust is in the URL', () => {
+    const { context, elements } = buildPrefillContext('?mode=tone-adjust');
+    vm.runInNewContext(SOURCE, context);
+    expect(elements['generator-mode'].value).toBe('tone-adjust');
+  });
+
+  it('prefills agency-name when ?agency= param is present', () => {
+    const { context, elements } = buildPrefillContext('?agency=서울특별시');
+    vm.runInNewContext(SOURCE, context);
+    expect(elements['agency-name'].value).toBe('서울특별시');
+  });
+
+  it('prefills agency-type when ?agency-type= param is present', () => {
+    const { context, elements } = buildPrefillContext('?agency-type=광역지방자치단체');
+    vm.runInNewContext(SOURCE, context);
+    expect(elements['agency-type'].value).toBe('광역지방자치단체');
+  });
+
+  it('prefills screen-type when ?screen-type= param is present', () => {
+    const { context, elements } = buildPrefillContext('?screen-type=오류 화면');
+    vm.runInNewContext(SOURCE, context);
+    expect(elements['screen-type'].value).toBe('오류 화면');
+  });
+
+  it('does not change modeEl when an unknown template name is given', () => {
+    const { context, elements } = buildPrefillContext('?template=unknown-template');
+    vm.runInNewContext(SOURCE, context);
+    expect(elements['generator-mode'].value).toBe('guide-draft');
+  });
+
+  it('does nothing when location.search is empty', () => {
+    const { context, elements } = buildPrefillContext('');
+    vm.runInNewContext(SOURCE, context);
+    expect(elements['generator-mode'].value).toBe('guide-draft');
+    expect(elements['agency-name'].value).toBe('');
+  });
+
+  it('does nothing and does not throw when location is undefined', () => {
+    const { context, elements } = buildGeneratorContext();
+    elements['generator-mode'].value = 'guide-draft';
+    context.URLSearchParams = URLSearchParams;
+    // location is not set in context
+    expect(() => vm.runInNewContext(SOURCE, context)).not.toThrow();
+    expect(elements['generator-mode'].value).toBe('guide-draft');
+  });
+});

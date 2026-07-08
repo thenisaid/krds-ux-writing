@@ -1058,3 +1058,109 @@ describe('archive page — additional branch coverage', () => {
     expect(elements['arc-grid-hometax'].innerHTML).toContain('H1');
   });
 });
+
+describe('archive AI configurator filter', () => {
+  async function buildAiContext(markdown) {
+    const { context, elements, filterBtns } = buildContext({ markdown });
+
+    const hometaxAll = filterBtns[1];
+    const hometaxAi = createElement({
+      dataset: { agency: 'hometax', principle: 'ai' },
+      classes: ['arc-filter'],
+      attributes: { 'aria-pressed': 'false' },
+    });
+
+    const originalQSA = context.document.querySelectorAll.bind(context.document);
+    context.document.querySelectorAll = function (selector) {
+      if (selector === '[data-agency="hometax"]') return [hometaxAll, hometaxAi];
+      return originalQSA(selector);
+    };
+    elements['arc-search-hometax'].value = '';
+
+    vm.runInNewContext(SOURCE, context);
+    await flushAsyncWork();
+
+    return { context, elements, hometaxAi };
+  }
+
+  it('filters to only AI-configurator-relevant issues when the ai filter button is clicked', async () => {
+    const md = [
+      '## Cycle 1',
+      '### H1 — 오류 안내 문구 ★ [B]',
+      '**원문**: 오류가 발생하였습니다. 다시 시도해 주세요.',
+      '**문제**: 행정어 사용',
+      '**권장 개선안**: 오류가 났습니다. 다시 시도해 주세요.',
+      '',
+      '### H2 — 일반 레이아웃 이슈 ★ [A]',
+      '**원문**: 법정대리인 동의서',
+      '**문제**: 행정어',
+      '**권장 개선안**: 보호자 동의서',
+    ].join('\n');
+
+    const { elements, hometaxAi } = await buildAiContext(md);
+    hometaxAi.dispatch('click');
+
+    const html = elements['arc-grid-hometax'].innerHTML;
+    expect(html).toContain('H1'); // 오류 → aiConfigurator: true
+    expect(html).not.toContain('H2'); // 일반 텍스트 → aiConfigurator: false
+  });
+
+  it('shows issues with 완료 keywords as AI-configurator-relevant', async () => {
+    const md = [
+      '## Cycle 1',
+      '### H1 — 신청 완료 안내 ★ [B]',
+      '**원문**: 신청이 완료되었습니다.',
+      '**문제**: 설명',
+      '**권장 개선안**: 신청했습니다.',
+      '',
+      '### H2 — 버튼 너비 이슈 ★ [A]',
+      '**원문**: 다음 단계로 진행하기',
+      '**문제**: 설명',
+      '**권장 개선안**: 다음',
+    ].join('\n');
+
+    const { elements, hometaxAi } = await buildAiContext(md);
+    hometaxAi.dispatch('click');
+
+    const html = elements['arc-grid-hometax'].innerHTML;
+    expect(html).toContain('H1'); // 완료 → aiConfigurator: true
+    expect(html).not.toContain('H2');
+  });
+
+  it('shows issues with 할 수 없 constraint language as AI-configurator-relevant', async () => {
+    const md = [
+      '## Cycle 1',
+      '### H1 — 접근 제한 안내 ★ [C]',
+      '**원문**: 이 기능은 이용할 수 없습니다.',
+      '**문제**: 시스템 제약 언어',
+      '**권장 개선안**: 이 기능은 준비 중입니다.',
+      '',
+      '### H2 — 색상 대비 이슈 ★ [A]',
+      '**원문**: 신청하기',
+      '**문제**: 색상 설명',
+      '**권장 개선안**: 신청하기 (버튼)',
+    ].join('\n');
+
+    const { elements, hometaxAi } = await buildAiContext(md);
+    hometaxAi.dispatch('click');
+
+    const html = elements['arc-grid-hometax'].innerHTML;
+    expect(html).toContain('H1'); // 할 수 없 → aiConfigurator: true
+    expect(html).not.toContain('H2');
+  });
+
+  it('shows empty-results message when no issues match the ai filter', async () => {
+    const md = [
+      '## Cycle 1',
+      '### H1 — 여백 이슈 ★ [A]',
+      '**원문**: 간격 설명',
+      '**문제**: 시각 디자인',
+      '**권장 개선안**: 간격 수정',
+    ].join('\n');
+
+    const { elements, hometaxAi } = await buildAiContext(md);
+    hometaxAi.dispatch('click');
+
+    expect(elements['arc-grid-hometax'].innerHTML).toContain('검색 결과가 없습니다');
+  });
+});

@@ -1379,3 +1379,163 @@ describe('before-after page interactions', () => {
     expect(setTimeoutSpy).not.toHaveBeenCalled();
   });
 });
+
+describe('before-after hash routing', () => {
+  function buildHashContext({ hash = '', pairs = [] } = {}) {
+    const panelA = createElement({ id: 'panel-a', classes: ['tab-panel', 'active'], queryMap: { 'mark.diff': [] } });
+    const panelB = createElement({ id: 'panel-b', classes: ['tab-panel'], queryMap: { 'mark.diff': [] } });
+    const tabA = createElement({
+      id: 'tab-a',
+      classes: ['tab-btn', 'active'],
+      attributes: { 'aria-controls': 'panel-a', 'aria-selected': 'true' },
+    });
+    const tabB = createElement({
+      id: 'tab-b',
+      classes: ['tab-btn'],
+      attributes: { 'aria-controls': 'panel-b', 'aria-selected': 'false' },
+    });
+
+    const elementMap = {
+      themeToggle: createElement({ id: 'themeToggle' }),
+      themeIcon: createElement({ id: 'themeIcon' }),
+      'tab-a': tabA,
+      'tab-b': tabB,
+      'panel-a': panelA,
+      'panel-b': panelB,
+      lintInput: createElement({ id: 'lintInput' }),
+      lintRunBtn: createElement({ id: 'lintRunBtn' }),
+      lintClearBtn: createElement({ id: 'lintClearBtn' }),
+      lintResults: createElement({ id: 'lintResults' }),
+      seminarBtn: createElement({ id: 'seminarBtn' }),
+      seminarOverlay: createElement({ id: 'seminarOverlay', queryMap: { 'mark.diff': [] } }),
+      seminarSlide: createElement({ id: 'seminarSlide', queryMap: { 'mark.diff': [] } }),
+      seminarPrinciple: createElement({ id: 'seminarPrinciple' }),
+      seminarCounter: createElement({ id: 'seminarCounter' }),
+      seminarPrev: createElement({ id: 'seminarPrev' }),
+      seminarNext: createElement({ id: 'seminarNext' }),
+      seminarClose: createElement({ id: 'seminarClose' }),
+    };
+    pairs.forEach((p) => { elementMap[p.id] = p.el; });
+
+    const windowListeners = new Map();
+    const document = createDocument(elementMap, {
+      '.tab-btn': [tabA, tabB],
+      '.tab-panel': [panelA, panelB],
+      '.pair': pairs.map((p) => p.el),
+      '.pair-link-btn': pairs.flatMap((p) => p.copyBtns || []),
+    });
+    document.querySelector = function (selector) {
+      const m = selector.match(/\.tab-btn\[aria-controls="([^"]+)"\]/);
+      if (m) {
+        const id = m[1];
+        if (id === 'panel-a') return tabA;
+        if (id === 'panel-b') return tabB;
+      }
+      return null;
+    };
+
+    const context = {
+      document,
+      window: {
+        addEventListener(type, handler) {
+          const arr = windowListeners.get(type) || [];
+          arr.push(handler);
+          windowListeners.set(type, arr);
+        },
+      },
+      location: { hash, origin: 'https://example.com', pathname: '/before-after.html' },
+      navigator: {},
+      localStorage: { setItem() {} },
+      KRDSLint: { lint: vi.fn(() => ({ score: 80, summary: { errors: 0, warnings: 0, infos: 0 }, issues: [] })) },
+      setTimeout(fn) { fn(); return 1; },
+      clearTimeout() {},
+      Array,
+      console,
+      globalThis: null,
+    };
+    context.globalThis = context;
+
+    return { context, tabA, tabB, panelA, panelB, windowListeners };
+  }
+
+  function makePair(id, principle) {
+    const el = createElement({
+      id,
+      classes: ['pair'],
+      attributes: { 'data-principle': principle },
+    });
+    el.scrollIntoView = vi.fn();
+    el.offsetWidth = 0;
+    return { id, el };
+  }
+
+  it('activates Tab B when location.hash is #b-2 on load', () => {
+    const b2 = makePair('b-2', 'B');
+    const { context, tabB } = buildHashContext({ hash: '#b-2', pairs: [b2] });
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(tabB.getAttribute('aria-selected')).toBe('true');
+  });
+
+  it('does nothing when location.hash points to a non-existent id', () => {
+    const { context, tabA, tabB } = buildHashContext({ hash: '#x-99', pairs: [] });
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(tabA.getAttribute('aria-selected')).toBe('true');
+    expect(tabB.getAttribute('aria-selected')).toBe('false');
+  });
+
+  it('registers a hashchange listener on window when window.addEventListener is available', () => {
+    const { context, windowListeners } = buildHashContext({ hash: '', pairs: [] });
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(windowListeners.has('hashchange')).toBe(true);
+  });
+
+  it('does not register hashchange when window.addEventListener is not a function', () => {
+    const b2 = makePair('b-2', 'B');
+    const { context } = buildHashContext({ hash: '', pairs: [b2] });
+    context.window = {};
+
+    expect(() => vm.runInNewContext(SOURCE, context)).not.toThrow();
+  });
+
+  it('activates the correct tab when hashchange fires with a valid pair hash', () => {
+    const b2 = makePair('b-2', 'B');
+    const { context, tabB, windowListeners } = buildHashContext({ hash: '', pairs: [b2] });
+
+    vm.runInNewContext(SOURCE, context);
+
+    context.location.hash = '#b-2';
+    const handlers = windowListeners.get('hashchange') || [];
+    handlers.forEach((h) => h());
+
+    expect(tabB.getAttribute('aria-selected')).toBe('true');
+  });
+
+  it('calls scrollIntoView on the target pair when navigating via hash', () => {
+    const b2 = makePair('b-2', 'B');
+    const { context } = buildHashContext({ hash: '#b-2', pairs: [b2] });
+
+    vm.runInNewContext(SOURCE, context);
+
+    expect(b2.el.scrollIntoView).toHaveBeenCalled();
+  });
+
+  it('registers click handlers on .pair-link-btn elements', () => {
+    const copyBtn = createElement({ dataset: { pair: 'a-1' } });
+    const a1 = { id: 'a-1', el: createElement({ id: 'a-1', classes: ['pair'], attributes: { 'data-principle': 'A' } }), copyBtns: [copyBtn] };
+    a1.el.scrollIntoView = vi.fn();
+    a1.el.offsetWidth = 0;
+    const { context } = buildHashContext({ hash: '', pairs: [a1] });
+    context.navigator = { clipboard: { writeText: vi.fn().mockResolvedValue(undefined) } };
+
+    vm.runInNewContext(SOURCE, context);
+
+    // Dispatching click should not throw
+    expect(() => copyBtn.dispatch('click')).not.toThrow();
+  });
+});
