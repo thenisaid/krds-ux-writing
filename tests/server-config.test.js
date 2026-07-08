@@ -208,12 +208,13 @@ describe('server.js configuration', () => {
       socket: { remoteAddress: '127.0.0.1' },
     })).toBe('198.51.100.8');
 
+    // 마지막 XFF 값(프록시가 append한 실제 IP) 사용
     expect(getClientIp({
       headers: {
         'x-forwarded-for': ['198.51.100.9, 203.0.113.5'],
       },
       socket: { remoteAddress: '127.0.0.1' },
-    })).toBe('198.51.100.9');
+    })).toBe('203.0.113.5');
 
     expect(getClientIp({
       headers: {},

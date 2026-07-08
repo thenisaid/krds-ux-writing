@@ -188,12 +188,17 @@ jobs:
       - name: PR 코멘트 게시
         if: github.event_name == 'pull_request' && always()
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        env:
+          LINT_TOTAL_ERRORS: ${{ steps.lint.outputs.total_errors }}
+          LINT_TOTAL_WARNINGS: ${{ steps.lint.outputs.total_warnings }}
+          LINT_FILE_COUNT: ${{ steps.changed-files.outputs.file_count }}
+          LINT_REPORT: ${{ steps.lint.outputs.report }}
         with:
           script: |
-            const totalErrors = parseInt('${{ steps.lint.outputs.total_errors }}' || '0');
-            const totalWarnings = parseInt('${{ steps.lint.outputs.total_warnings }}' || '0');
-            const fileCount = parseInt('${{ steps.changed-files.outputs.file_count }}' || '0');
-            const report = `${{ steps.lint.outputs.report }}`;
+            const totalErrors = parseInt(process.env.LINT_TOTAL_ERRORS || '0');
+            const totalWarnings = parseInt(process.env.LINT_TOTAL_WARNINGS || '0');
+            const fileCount = parseInt(process.env.LINT_FILE_COUNT || '0');
+            const report = process.env.LINT_REPORT || '';
 
             const statusIcon = totalErrors > 0 ? '❌' : totalWarnings > 0 ? '⚠️' : '✅';
             const statusText = totalErrors > 0
