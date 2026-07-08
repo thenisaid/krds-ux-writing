@@ -1195,6 +1195,36 @@
     showScreen('screen-input');
   });
 
+  /* ── URL 파라미터 프리필 ── */
+  (function applyUrlParams() {
+    if (typeof location === 'undefined' || !location.search) return;
+    var params;
+    try { params = new URLSearchParams(location.search); } catch (e) { return; }
+
+    var TEMPLATE_MODE_MAP = {
+      'error-message':    'message-pack',
+      'message-pack':     'message-pack',
+      'rewrite':          'rewrite',
+      'tone-adjust':      'tone-adjust',
+      'guide-draft':      'guide-draft',
+      'derivative-guide': 'derivative-guide'
+    };
+
+    var mode = params.get('mode') || TEMPLATE_MODE_MAP[params.get('template')] || null;
+    if (mode && MODE_CONFIG[mode] && modeEl) {
+      modeEl.value = mode;
+    }
+
+    var agency = params.get('agency');
+    if (agency && agencyNameEl) agencyNameEl.value = agency;
+
+    var agencyType = params.get('agency-type');
+    if (agencyType && agencyTypeEl) agencyTypeEl.value = agencyType;
+
+    var screenType = params.get('screen-type');
+    if (screenType && screenTypeEl) screenTypeEl.value = screenType;
+  }());
+
   applyModeUi(getCurrentMode(), false);
 
 })();
