@@ -229,8 +229,28 @@ body{
 .pair{
   display:grid;grid-template-columns:1fr 1fr;gap:16px;
   align-items:start;
+  position:relative;
 }
 @media(max-width:768px){.pair{grid-template-columns:1fr}}
+.pair-link-btn{
+  position:absolute;top:0;right:0;
+  width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border-mid);border-radius:6px;
+  background:var(--bg);color:var(--text-mid);
+  cursor:pointer;opacity:0;
+  transition:opacity .15s,background .15s,color .15s;
+  font-size:13px;
+}
+.pair:hover .pair-link-btn{opacity:1}
+.pair-link-btn:hover{background:var(--bg-subtle);color:var(--text)}
+.pair-link-btn:focus-visible{opacity:1;outline:2px solid var(--accent);outline-offset:2px}
+.pair--highlighted{
+  outline:2px solid var(--color-primary-50);
+  border-radius:12px;
+  animation:pair-flash .7s ease 2;
+}
+@keyframes pair-flash{0%,100%{background:transparent}50%{background:rgba(37,110,244,.07)}}
 
 .pair-context{
   grid-column:1/-1;
@@ -463,6 +483,16 @@ footer{
 @media(prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+@media print{
+  .gnb,.tabs-bar,.seminar-btn,.interactive-section,.pair-link-btn,footer{display:none!important}
+  .tab-panel{display:block!important}
+  .page-hero{padding:20px 0 8px}
+  .panel-intro{margin-bottom:24px}
+  .pair{page-break-inside:avoid}
+  .ba-card{box-shadow:none;border:1px solid #cdd1d5}
+  body{background:#fff}
+  @page{margin:2cm}
+}
 </style>
 </head>
 <body>
@@ -479,7 +509,8 @@ footer{
     <a href="/krds-ux-writing/principles/" class="gnb-nav-link">원칙</a>
     <a href="/krds-ux-writing/dictionary/" class="gnb-nav-link">사전</a>
     <a href="/krds-ux-writing/#case-studies" class="gnb-nav-link">사례</a>
-    <a href="before-after.html" class="gnb-nav-link active" aria-current="page">Before/After</a>
+    <a href="/krds-ux-writing/prompt-library.html" class="gnb-nav-link">프롬프트</a>
+    <a href="/krds-ux-writing/before-after.html" class="gnb-nav-link active" aria-current="page">Before/After</a>
   </nav>
   <div class="gnb-actions">
     <span class="gnb-badge">v2.0</span>
@@ -544,8 +575,9 @@ footer{
 
     <div class="pair-grid">
       <!-- Pair A-1 -->
-      <div class="pair" data-context="신청 완료 알림" data-principle="A">
+      <div class="pair" id="a-1" data-context="신청 완료 알림" data-principle="A">
         <h3 class="pair-context">신청 완료 알림</h3>
+        <button class="pair-link-btn" aria-label="이 사례 링크 복사" type="button" data-pair="a-1"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.5 9.5a3 3 0 0 0 4.243 0l2-2a3 3 0 0 0-4.243-4.243L7.25 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 6.5a3 3 0 0 0-4.243 0l-2 2a3 3 0 0 0 4.243 4.243L8.75 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
         <div class="ba-card before">
           <span class="ba-label before">✗ Before</span>
           <p class="ba-text">귀하의 신청이 접수되었습니다. 결과는 익일까지 안내해 드리겠습니다.</p>
@@ -557,8 +589,9 @@ footer{
       </div>
 
       <!-- Pair A-2 -->
-      <div class="pair" data-context="방문 안내" data-principle="A">
+      <div class="pair" id="a-2" data-context="방문 안내" data-principle="A">
         <h3 class="pair-context">방문 안내</h3>
+        <button class="pair-link-btn" aria-label="이 사례 링크 복사" type="button" data-pair="a-2"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.5 9.5a3 3 0 0 0 4.243 0l2-2a3 3 0 0 0-4.243-4.243L7.25 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 6.5a3 3 0 0 0-4.243 0l-2 2a3 3 0 0 0 4.243 4.243L8.75 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
         <div class="ba-card before">
           <span class="ba-label before">✗ Before</span>
           <p class="ba-text">교부 신청서를 지참하여 직접 내방하여 주시기 바랍니다.</p>
@@ -570,8 +603,9 @@ footer{
       </div>
 
       <!-- Pair A-3 -->
-      <div class="pair" data-context="법정대리인 동의" data-principle="A">
+      <div class="pair" id="a-3" data-context="법정대리인 동의" data-principle="A">
         <h3 class="pair-context">보호자 동의 안내</h3>
+        <button class="pair-link-btn" aria-label="이 사례 링크 복사" type="button" data-pair="a-3"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.5 9.5a3 3 0 0 0 4.243 0l2-2a3 3 0 0 0-4.243-4.243L7.25 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 6.5a3 3 0 0 0-4.243 0l-2 2a3 3 0 0 0 4.243 4.243L8.75 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
         <div class="ba-card before">
           <span class="ba-label before">✗ Before</span>
           <p class="ba-text">법정대리인의 인감 날인이 필요합니다.</p>
@@ -583,8 +617,9 @@ footer{
       </div>
 
       <!-- Pair A-4 -->
-      <div class="pair" data-context="처리 결과 안내" data-principle="A">
+      <div class="pair" id="a-4" data-context="처리 결과 안내" data-principle="A">
         <h3 class="pair-context">처리 결과 안내</h3>
+        <button class="pair-link-btn" aria-label="이 사례 링크 복사" type="button" data-pair="a-4"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.5 9.5a3 3 0 0 0 4.243 0l2-2a3 3 0 0 0-4.243-4.243L7.25 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 6.5a3 3 0 0 0-4.243 0l-2 2a3 3 0 0 0 4.243 4.243L8.75 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
         <div class="ba-card before">
           <span class="ba-label before">✗ Before</span>
           <p class="ba-text">피부양자 등재 신청이 접수되었습니다. 상기 사항을 확인하여 주시기 바랍니다.</p>
@@ -612,8 +647,9 @@ footer{
 
     <div class="pair-grid">
       <!-- Pair B-1 -->
-      <div class="pair" data-context="오류 안내 문구" data-principle="B">
+      <div class="pair" id="b-1" data-context="오류 안내 문구" data-principle="B">
         <h3 class="pair-context">오류 안내 문구</h3>
+        <button class="pair-link-btn" aria-label="이 사례 링크 복사" type="button" data-pair="b-1"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.5 9.5a3 3 0 0 0 4.243 0l2-2a3 3 0 0 0-4.243-4.243L7.25 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 6.5a3 3 0 0 0-4.243 0l-2 2a3 3 0 0 0 4.243 4.243L8.75 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
         <div class="ba-card before">
           <span class="ba-label before">✗ Before</span>
           <p class="ba-text">서비스 이용 중 불편함이 있으시거나 오류가 발생하였을 경우, 저희 고객센터(1234-5678)로 연락 주시면 신속하게 처리해 드리도록 하겠습니다.</p>
@@ -625,8 +661,9 @@ footer{
       </div>
 
       <!-- Pair B-2 -->
-      <div class="pair" data-context="파일 업로드 안내" data-principle="B">
+      <div class="pair" id="b-2" data-context="파일 업로드 안내" data-principle="B">
         <h3 class="pair-context">파일 업로드 안내</h3>
+        <button class="pair-link-btn" aria-label="이 사례 링크 복사" type="button" data-pair="b-2"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.5 9.5a3 3 0 0 0 4.243 0l2-2a3 3 0 0 0-4.243-4.243L7.25 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 6.5a3 3 0 0 0-4.243 0l-2 2a3 3 0 0 0 4.243 4.243L8.75 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
         <div class="ba-card before">
           <span class="ba-label before">✗ Before</span>
           <p class="ba-text">첨부파일은 PDF, JPG, PNG 형식의 파일만 업로드 가능하며, 파일의 크기는 최대 10MB까지만 가능합니다. 그 외의 파일 형식이나 10MB를 초과하는 파일은 업로드가 되지 않습니다.</p>
@@ -638,8 +675,9 @@ footer{
       </div>
 
       <!-- Pair B-3 -->
-      <div class="pair" data-context="버튼 레이블" data-principle="B">
+      <div class="pair" id="b-3" data-context="버튼 레이블" data-principle="B">
         <h3 class="pair-context">버튼 레이블</h3>
+        <button class="pair-link-btn" aria-label="이 사례 링크 복사" type="button" data-pair="b-3"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.5 9.5a3 3 0 0 0 4.243 0l2-2a3 3 0 0 0-4.243-4.243L7.25 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 6.5a3 3 0 0 0-4.243 0l-2 2a3 3 0 0 0 4.243 4.243L8.75 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
         <div class="ba-card before">
           <span class="ba-label before">✗ Before</span>
           <p class="ba-text">클릭하시면 신청이 완료되고 신청 내역 확인 페이지로 이동하게 됩니다</p>
@@ -651,8 +689,9 @@ footer{
       </div>
 
       <!-- Pair B-4 -->
-      <div class="pair" data-context="공지 제목" data-principle="B">
+      <div class="pair" id="b-4" data-context="공지 제목" data-principle="B">
         <h3 class="pair-context">공지 제목</h3>
+        <button class="pair-link-btn" aria-label="이 사례 링크 복사" type="button" data-pair="b-4"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.5 9.5a3 3 0 0 0 4.243 0l2-2a3 3 0 0 0-4.243-4.243L7.25 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 6.5a3 3 0 0 0-4.243 0l-2 2a3 3 0 0 0 4.243 4.243L8.75 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
         <div class="ba-card before">
           <span class="ba-label before">✗ Before</span>
           <p class="ba-text">2026년도 제1차 국민 참여 정책 제안 공모전 시행 계획 공고에 대한 안내</p>
@@ -680,8 +719,9 @@ footer{
 
     <div class="pair-grid">
       <!-- Pair C-1 -->
-      <div class="pair" data-context="로그인 오류" data-principle="C">
+      <div class="pair" id="c-1" data-context="로그인 오류" data-principle="C">
         <h3 class="pair-context">로그인 오류 메시지</h3>
+        <button class="pair-link-btn" aria-label="이 사례 링크 복사" type="button" data-pair="c-1"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.5 9.5a3 3 0 0 0 4.243 0l2-2a3 3 0 0 0-4.243-4.243L7.25 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 6.5a3 3 0 0 0-4.243 0l-2 2a3 3 0 0 0 4.243 4.243L8.75 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
         <div class="ba-card before">
           <span class="ba-label before">✗ Before</span>
           <p class="ba-text">비밀번호가 틀렸습니다. 다시 입력하세요.</p>
@@ -693,8 +733,9 @@ footer{
       </div>
 
       <!-- Pair C-2 -->
-      <div class="pair" data-context="입력 오류" data-principle="C">
+      <div class="pair" id="c-2" data-context="입력 오류" data-principle="C">
         <h3 class="pair-context">입력 오류 메시지</h3>
+        <button class="pair-link-btn" aria-label="이 사례 링크 복사" type="button" data-pair="c-2"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.5 9.5a3 3 0 0 0 4.243 0l2-2a3 3 0 0 0-4.243-4.243L7.25 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 6.5a3 3 0 0 0-4.243 0l-2 2a3 3 0 0 0 4.243 4.243L8.75 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
         <div class="ba-card before">
           <span class="ba-label before">✗ Before</span>
           <p class="ba-text">잘못 입력하셨습니다. 올바른 정보를 입력해 주세요.</p>
@@ -706,8 +747,9 @@ footer{
       </div>
 
       <!-- Pair C-3 -->
-      <div class="pair" data-context="파일 오류" data-principle="C">
+      <div class="pair" id="c-3" data-context="파일 오류" data-principle="C">
         <h3 class="pair-context">파일 업로드 오류</h3>
+        <button class="pair-link-btn" aria-label="이 사례 링크 복사" type="button" data-pair="c-3"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.5 9.5a3 3 0 0 0 4.243 0l2-2a3 3 0 0 0-4.243-4.243L7.25 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 6.5a3 3 0 0 0-4.243 0l-2 2a3 3 0 0 0 4.243 4.243L8.75 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
         <div class="ba-card before">
           <span class="ba-label before">✗ Before</span>
           <p class="ba-text">파일 업로드에 실패했습니다. 오류 코드: ERR_403</p>
@@ -719,8 +761,9 @@ footer{
       </div>
 
       <!-- Pair C-4 -->
-      <div class="pair" data-context="마감 안내" data-principle="C">
+      <div class="pair" id="c-4" data-context="마감 안내" data-principle="C">
         <h3 class="pair-context">마감 안내 문구</h3>
+        <button class="pair-link-btn" aria-label="이 사례 링크 복사" type="button" data-pair="c-4"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.5 9.5a3 3 0 0 0 4.243 0l2-2a3 3 0 0 0-4.243-4.243L7.25 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 6.5a3 3 0 0 0-4.243 0l-2 2a3 3 0 0 0 4.243 4.243L8.75 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
         <div class="ba-card before">
           <span class="ba-label before">✗ Before</span>
           <p class="ba-text">기한 내 미신청 시 불이익이 발생할 수 있습니다.</p>
@@ -1113,6 +1156,64 @@ footer{
     return String(str)
       .replace(/&/g,'&amp;').replace(/</g,'&lt;')
       .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── Hash routing ── */
+  function activatePairByHash(hash) {
+    if (!hash || hash.length < 2) return;
+    var id = hash.slice(1);
+    var pair = document.getElementById(id);
+    if (!pair) return;
+    var principle = pair.getAttribute('data-principle');
+    if (principle) {
+      var tabBtn = document.querySelector('.tab-btn[aria-controls="panel-' + principle.toLowerCase() + '"]');
+      if (tabBtn) activateTab(tabBtn);
+    }
+    setTimeout(function () {
+      pair.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      pair.classList.remove('pair--highlighted');
+      void pair.offsetWidth;
+      pair.classList.add('pair--highlighted');
+      setTimeout(function () { pair.classList.remove('pair--highlighted'); }, 2000);
+    }, 150);
+  }
+
+  if (typeof location !== 'undefined' && location.hash) activatePairByHash(location.hash);
+  if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+    window.addEventListener('hashchange', function () {
+      if (typeof location !== 'undefined') activatePairByHash(location.hash);
+    });
+  }
+
+  /* ── Copy link buttons ── */
+  var LINK_ICON = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6.5 9.5a3 3 0 0 0 4.243 0l2-2a3 3 0 0 0-4.243-4.243L7.25 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 6.5a3 3 0 0 0-4.243 0l-2 2a3 3 0 0 0 4.243 4.243L8.75 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  document.querySelectorAll('.pair-link-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var id = btn.getAttribute('data-pair');
+      var loc = (typeof location !== 'undefined') ? location : { origin: '', pathname: '' };
+      var url = loc.origin + loc.pathname + '#' + id;
+      function showCheck() {
+        btn.textContent = '✓';
+        setTimeout(function () { btn.innerHTML = LINK_ICON; }, 2000);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(showCheck, function () {
+          fallbackCopy(url, showCheck);
+        });
+      } else {
+        fallbackCopy(url, showCheck);
+      }
+    });
+  });
+
+  function fallbackCopy(text, cb) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); cb(); } catch (e) {}
+    document.body.removeChild(ta);
   }
 
 })();
