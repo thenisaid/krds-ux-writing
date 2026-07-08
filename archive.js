@@ -134,19 +134,35 @@
           fenced.recommendation ||
           parseComparisonRecommendation(block);
 
+        var issTitle = rawTitle.replace(/^"|"$/g, '').trim();
         issues.push({
           id: id,
-          title: rawTitle.replace(/^"|"$/g, '').trim(),
+          title: issTitle,
           severity: severity,
           principle: principle,
           cycle: cycle,
           original: original,
           problem: problem,
           recommendation: recommendation,
+          /* AI 설정자 관련 태그 — 기준:
+             A: 오류 메시지 패턴  B: 완료 안내 패턴
+             C: 시스템 제약 언어  D: KRDS 원칙 코드 인용 */
+          aiConfigurator: isAiConfiguratorIssue(issTitle, original, problem, recommendation),
         });
       }
     }
     return issues;
+  }
+
+  var AI_CONFIG_PATTERNS = [
+    /오류|에러|error|실패|실행\s*실패|인증|접근\s*거부|불일치|잘못된/i,
+    /완료|성공|접수|제출|처리\s*완료|발급|등록\s*완료|확인\s*완료/i,
+    /할\s*수\s*없|불가|제한|허용\s*되지|만료|초과|금지|차단/i,
+    /원칙\s*[ABC]|무번역|정보핵심화|심리적\s*안전망/i,
+  ];
+  function isAiConfiguratorIssue(title, original, problem, recommendation) {
+    var text = [title, original, problem, recommendation].join(' ');
+    return AI_CONFIG_PATTERNS.some(function (re) { return re.test(text); });
   }
 
   /* ── 카드 렌더 ── */
@@ -197,7 +213,9 @@
     var q = searches[agency].toLowerCase();
     var f = filters[agency];
     var result = state.all;
-    if (f !== 'all') {
+    if (f === 'ai') {
+      result = result.filter(function(iss){ return iss.aiConfigurator; });
+    } else if (f !== 'all') {
       result = result.filter(function(iss){ return iss.principle.includes(f); });
     }
     if (q) {

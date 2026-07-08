@@ -252,6 +252,8 @@ a:hover { text-decoration: underline; }
   background: var(--accent); border-color: var(--accent);
   color: #fff;
 }
+.arc-filter--ai { border-style: dashed; }
+.arc-filter--ai.active { border-style: solid; }
 .arc-result-count { margin-left: auto; font-size: 13px; color: var(--text-muted); white-space: nowrap; }
 
 /* ── 이슈 그리드 ── */
@@ -500,6 +502,7 @@ a:hover { text-decoration: underline; }
         <button class="arc-filter" data-agency="jeongbu24" data-principle="A" aria-pressed="false">A 무번역</button>
         <button class="arc-filter" data-agency="jeongbu24" data-principle="B" aria-pressed="false">B 정보핵심화</button>
         <button class="arc-filter" data-agency="jeongbu24" data-principle="C" aria-pressed="false">C 심리적안전망</button>
+        <button class="arc-filter arc-filter--ai" data-agency="jeongbu24" data-principle="ai" aria-pressed="false">🤖 AI 설정자</button>
       </div>
       <span class="arc-result-count" id="arc-result-jeongbu24"></span>
     </div>
@@ -521,6 +524,7 @@ a:hover { text-decoration: underline; }
         <button class="arc-filter" data-agency="hometax" data-principle="A" aria-pressed="false">A 무번역</button>
         <button class="arc-filter" data-agency="hometax" data-principle="B" aria-pressed="false">B 정보핵심화</button>
         <button class="arc-filter" data-agency="hometax" data-principle="C" aria-pressed="false">C 심리적안전망</button>
+        <button class="arc-filter arc-filter--ai" data-agency="hometax" data-principle="ai" aria-pressed="false">🤖 AI 설정자</button>
       </div>
       <span class="arc-result-count" id="arc-result-hometax"></span>
     </div>
@@ -542,6 +546,7 @@ a:hover { text-decoration: underline; }
         <button class="arc-filter" data-agency="efamily" data-principle="A" aria-pressed="false">A 무번역</button>
         <button class="arc-filter" data-agency="efamily" data-principle="B" aria-pressed="false">B 정보핵심화</button>
         <button class="arc-filter" data-agency="efamily" data-principle="C" aria-pressed="false">C 심리적안전망</button>
+        <button class="arc-filter arc-filter--ai" data-agency="efamily" data-principle="ai" aria-pressed="false">🤖 AI 설정자</button>
       </div>
       <span class="arc-result-count" id="arc-result-efamily"></span>
     </div>
