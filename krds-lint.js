@@ -329,16 +329,62 @@
       alt: '"UI를 만드는 기본 재료입니다" 등 동사 구조 사용',
     },
 
-    // 번역투: ~에 대한/에 대하여 명사 수식
+    // 번역투: ~에 대한/에 대하여 명사 수식 (일본어·영어 번역 잔재)
     {
       id: 'translation-artifact',
       name: '번역투 표현',
       severity: 'warning',
-      // "~에 대한 안내", "~에 대하여 설명" 등 일본어·영어 번역 잔재
-      // 단, "FAQ에 대한 답변", "이 기능에 대한 설명" 처럼 콘텐츠 레이블은 허용 — 주의어절 2개 이하
+      // "~에 대한 안내", "~에 대하여 설명" 등
+      // 단, FAQ·영문 단어 바로 뒤 레이블성 표현은 면제
       pattern: /[가-힣A-Za-z0-9]{2,}에\s*대한\s*[가-힣]{2,}|[가-힣A-Za-z0-9]{2,}에\s*대하여/g,
       message: (match) => `번역투 "${match}" — 동사 구조로 바꾸세요.`,
       alt: '"~을 안내합니다", "~를 설명합니다" 등 직접 서술 구조',
+    },
+
+    // 일본어 관청 번역투: ~를 실시하다/도모하다/에 즈음하여
+    {
+      id: 'japanese-translation',
+      name: '일본어 번역투',
+      severity: 'warning',
+      pattern: /을\s*실시하|를\s*실시하|을\s*도모하|를\s*도모하|에\s*즈음하여|을\s*강구하|에\s*임하여|에\s*관한\s*건/g,
+      message: (match) => `일본어 번역투 "${match}" — 직접 서술형으로 바꾸세요.`,
+      alt: '"~합니다", "~를 추진합니다" 등 자연스러운 한국어 표현',
+    },
+
+    // 명사화 남용: -화/-성/-적 과도한 추상화 (GOV.UK·국어원 공통 지적)
+    {
+      id: 'over-nominalization',
+      name: '명사화 남용',
+      severity: 'info',
+      // "-화를", "-성을", "-적인" 이 명사 뒤에 오는 패턴
+      pattern: /[가-힣]{2,}화를\s|[가-힣]{2,}화가\s|[가-힣]{2,}화에\s|[가-힣]{2,}성을\s확보|[가-힣]{2,}성이\s요구|[가-힣]{2,}적인\s[가-힣]/g,
+      message: (match) => `명사화 남용 "${match}" — 동사 구조로 풀어쓰세요.`,
+      alt: '"~을 확보합니다", "~이 필요합니다" 등 동사형 표현',
+    },
+
+    // 에러 메시지: 행동 지침 누락 (GOV.UK·NARA 3단 구조 기준)
+    // 에러성 키워드로 끝나는 문장 → 같은 줄에 행동 지침("하세요" 등)이 없을 때
+    {
+      id: 'error-no-action',
+      name: '에러 메시지: 행동 지침 누락',
+      severity: 'error',
+      // 에러 키워드 + "습니다/됩니다" + 마침표 → 같은 줄 120자 내에 행동 지침 없으면 감지
+      // 같은 줄에 "하세요/해 주세요/바랍니다" 등이 있으면 면제 (부정 전방탐색)
+      pattern: /(?:오류|실패|불가능|처리할 수 없|등록할 수 없|확인할 수 없|만료|초과)[^.。\n]*?(?:습니다|됩니다|입니다)[.。](?!(?:[^.。\n]{0,120})(?:하세요|해 주세요|해주세요|바랍니다|하시기 바랍니다|눌러|선택하|입력하))/g,
+      message: () => '에러 메시지에 행동 지침("~하세요")이 없습니다. 상황+원인+행동 3단 구조로 완성하세요.',
+      alt: '"파일 크기가 초과되었습니다. 5MB 이하로 줄여 다시 업로드해 주세요."',
+    },
+
+    // 문장 길이: 60자 초과 단일 문장 (국어원 구어적 문서 60자, 공문서 70자 기준)
+    // ※ PATTERN_RULES는 줄 단위 적용 — 마침표 없이 이어지는 긴 구문을 감지
+    {
+      id: 'long-sentence',
+      name: '과도하게 긴 문장',
+      severity: 'info',
+      // 마침표 없이 60자 이상 이어지는 한글+공백 연속 구문
+      pattern: /[가-힣][가-힣\s,·]{58,}[가-힣]/g,
+      message: (match) => `긴 문장 (${match.length}자) — 국어원 권고 60~70자 이내로 분리하세요.`,
+      alt: '한 문장에 하나의 정보만 담고, 긴 문장은 두 문장으로 분리하세요.',
     },
   ];
 
@@ -353,7 +399,9 @@
    * @returns {LintResult}
    */
   function lint(text, options) {
-    options = Object.assign({ checkAdminJargon: true, checkPatterns: true }, options || {});
+    options = Object.assign({ checkAdminJargon: true, checkPatterns: true, minSeverity: 'info' }, options || {});
+    const SEV_ORDER = { error: 0, warning: 1, info: 2 };
+    const minSevOrd = SEV_ORDER[options.minSeverity] != null ? SEV_ORDER[options.minSeverity] : 2;
     text = text == null ? '' : String(text);
 
     const issues = [];
@@ -455,21 +503,26 @@
       return true;
     });
 
-    // 3-4. 정렬 (줄 → 열 순)
-    deduped.sort(function (a, b) {
+    // 3-4. minSeverity 필터 (Vale 스타일 옵션)
+    const filtered = minSevOrd < 2
+      ? deduped.filter(function (i) { return (SEV_ORDER[i.severity] || 0) <= minSevOrd; })
+      : deduped;
+
+    // 3-5. 정렬 (줄 → 열 순)
+    filtered.sort(function (a, b) {
       return a.line !== b.line ? a.line - b.line : a.col - b.col;
     });
 
-    // 3-5. 요약 생성
+    // 3-6. 요약 생성
     const summary = {
-      total: deduped.length,
-      errors: deduped.filter(function (i) { return i.severity === 'error'; }).length,
-      warnings: deduped.filter(function (i) { return i.severity === 'warning'; }).length,
-      infos: deduped.filter(function (i) { return i.severity === 'info'; }).length,
+      total: filtered.length,
+      errors: filtered.filter(function (i) { return i.severity === 'error'; }).length,
+      warnings: filtered.filter(function (i) { return i.severity === 'warning'; }).length,
+      infos: filtered.filter(function (i) { return i.severity === 'info'; }).length,
     };
 
     return {
-      issues: deduped,
+      issues: filtered,
       summary: summary,
       score: computeScore(text, summary),
     };
