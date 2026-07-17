@@ -346,7 +346,7 @@ img { max-width: 100%; height: auto; }
   font-size: 14px;
   font-weight: 600;
   line-height: 1;
-  padding: 12px 24px;
+  padding: 13px 24px; min-height: 44px;
   border-radius: var(--radius-pill);
   cursor: pointer;
   border: none;
@@ -359,6 +359,8 @@ img { max-width: 100%; height: auto; }
   color: #fff;
 }
 .btn-primary:hover { background: var(--accent-dark); color: #fff; text-decoration: none; }
+.btn-primary:active { transform: translateY(1px); opacity: .92; }
+.btn-secondary:active { transform: translateY(1px); opacity: .85; }
 
 .btn-outline {
   background: transparent;
@@ -1027,7 +1029,7 @@ img { max-width: 100%; height: auto; }
   margin-top: 40px;
   flex-wrap: wrap;
 }
-.arc-entry-icon { font-size: 2rem; flex-shrink: 0; }
+.arc-entry-icon { font-size: 2rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--accent); }
 .arc-entry-body { flex: 1; min-width: 200px; }
 .arc-entry-label { font-size: .82rem; font-weight: 700; color: var(--color-primary-50, #256ef4); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
 .arc-entry-desc { font-size: .9rem; color: var(--color-text-muted, #6a737d); margin-bottom: 10px; line-height: 1.5; }
@@ -1389,6 +1391,15 @@ footer {
   .gnb, .mobile-menu { display: none; }
   .hero, .section-nav, .entry-points, .quotes, .faq { break-inside: avoid; }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 </style>
 </head>
 
@@ -1407,6 +1418,8 @@ footer {
     <a href="/krds-ux-writing/#case-studies" class="gnb-nav-link" data-section="case-studies">사례</a>
     <a href="/krds-ux-writing/prompt-library.html" class="gnb-nav-link" data-section="prompt-library">프롬프트</a>
     <a href="/krds-ux-writing/before-after.html" class="gnb-nav-link" data-section="before-after">Before/After</a>
+    <a href="/krds-ux-writing/lint.html" class="gnb-nav-link" data-section="lint">린터</a>
+    <a href="/krds-ux-writing/generator/" class="gnb-nav-link" data-section="generator">생성기</a>
   </nav>
   <div class="gnb-actions">
     <span class="gnb-badge">v2.0</span>
@@ -1887,7 +1900,7 @@ footer {
 
       <!-- 이슈 아카이브 진입 카드 -->
       <div class="arc-entry-card">
-        <div class="arc-entry-icon" aria-hidden="true">📋</div>
+        <div class="arc-entry-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 14h6M9 10h6"/></svg></div>
         <div class="arc-entry-body">
           <div class="arc-entry-label">이슈 아카이브</div>
           <div class="arc-entry-desc">정부24 · 홈택스 · 전자가족관계등록시스템 3개 기관 deep archive 기준점입니다. 새 실화면이 보이면 여기서 비슷한 실패를 먼저 찾고, 기존 CASE 묶음과 같은 화면 단계인지 확인한 뒤 같은 화면 단계의 원문 3개+CTA 1개를 다시 적어 관찰 사이트·KRDS 컴포넌트·다음 사례 승격 후보와 KRDS 연결 포인트를 필터링할 수 있습니다. 세 대표 사이트에서 반복되면 Layer 2 공통 원칙 후보로, 기관 고유 제도면 Layer 3 기관 특화 규칙으로 넘깁니다.</div>
@@ -1901,7 +1914,7 @@ footer {
       </div>
 
       <div class="arc-entry-card">
-        <div class="arc-entry-icon" aria-hidden="true">🗂️</div>
+        <div class="arc-entry-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
         <div class="arc-entry-body">
           <div class="arc-entry-label">코퍼스 공개 현황</div>
           <div class="arc-entry-desc">대표 코퍼스 8종, 보조 표본 1종, 간접 반영 2종, 확장 인벤토리 58개 서비스까지 현재 수집 범위를 별도 허브로 공개했습니다. 전체 사전 274개 공개본, raw markdown·JSON, 기관별 deep guide 원문도 여기서 바로 확인할 수 있습니다.</div>

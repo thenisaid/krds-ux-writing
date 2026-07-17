@@ -95,15 +95,25 @@ a:hover { text-decoration: underline; }
 .gnb-nav-link:hover { color: var(--text); background: rgba(0,0,0,.06); text-decoration: none; }
 [data-theme="dark"] .gnb-nav-link:hover { background: rgba(255,255,255,.08); }
 .gnb-nav-link.active { color: var(--accent); font-weight: 600; }
+/* 전역 focus-visible — WCAG 2.1 2.4.7 */
+*:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+/* 버튼 active 피드백 */
+.arc-tab:active { transform: translateY(1px); }
+.arc-filter:active { transform: scale(.97); }
 .gnb-theme-btn {
   width: 44px; height: 44px; border-radius: 8px;
   border: 1px solid var(--border); background: transparent;
-  cursor: pointer; font-size: 16px;
+  cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   color: var(--text-muted); margin-left: 4px;
   flex-shrink: 0;
 }
 .gnb-theme-btn:hover { background: var(--bg-subtle); }
+/* SVG 테마 아이콘 — CSS 기반 전환 */
+.theme-icon-sun { display: none; }
+.theme-icon-moon { display: block; }
+[data-theme="dark"] .theme-icon-sun { display: block; }
+[data-theme="dark"] .theme-icon-moon { display: none; }
 
 /* ── 헤더 ── */
 .arc-header {
@@ -375,7 +385,7 @@ a:hover { text-decoration: underline; }
     scrollbar-width: none;
   }
   .gnb-nav::-webkit-scrollbar { display: none; }
-  .gnb-nav-link { flex-shrink: 0; }
+  .gnb-nav-link { flex-shrink: 0; min-height: 44px; display: flex; align-items: center; }
   .gnb-theme-btn { margin-left: auto; }
 }
 
@@ -425,9 +435,21 @@ a:hover { text-decoration: underline; }
     <nav class="gnb-nav" aria-label="주요 메뉴">
       <a href="/krds-ux-writing/" class="gnb-nav-link">홈</a>
       <a href="/krds-ux-writing/principles/" class="gnb-nav-link">원칙</a>
-      <a href="/krds-ux-writing/#case-studies" class="gnb-nav-link active">사례</a>
+      <a href="/krds-ux-writing/dictionary/" class="gnb-nav-link">사전</a>
+      <a href="/krds-ux-writing/archive.html" class="gnb-nav-link active" aria-current="page">사례</a>
+      <a href="/krds-ux-writing/before-after.html" class="gnb-nav-link">Before/After</a>
+      <a href="/krds-ux-writing/lint.html" class="gnb-nav-link">린터</a>
+      <a href="/krds-ux-writing/generator/" class="gnb-nav-link">생성기</a>
     </nav>
-    <button class="gnb-theme-btn" id="themeToggle" aria-label="다크/라이트 모드 전환">☀</button>
+    <button class="gnb-theme-btn" id="themeToggle" aria-label="다크모드 전환">
+      <svg class="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+      <svg class="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="5"/>
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+    </button>
   </div>
 </header>
 
@@ -502,7 +524,7 @@ a:hover { text-decoration: underline; }
         <button class="arc-filter" data-agency="jeongbu24" data-principle="A" aria-pressed="false">A 무번역</button>
         <button class="arc-filter" data-agency="jeongbu24" data-principle="B" aria-pressed="false">B 정보핵심화</button>
         <button class="arc-filter" data-agency="jeongbu24" data-principle="C" aria-pressed="false">C 심리적안전망</button>
-        <button class="arc-filter arc-filter--ai" data-agency="jeongbu24" data-principle="ai" aria-pressed="false">🤖 AI 설정자</button>
+        <button class="arc-filter arc-filter--ai" data-agency="jeongbu24" data-principle="ai" aria-pressed="false">AI 설정자</button>
       </div>
       <span class="arc-result-count" id="arc-result-jeongbu24"></span>
     </div>
@@ -524,7 +546,7 @@ a:hover { text-decoration: underline; }
         <button class="arc-filter" data-agency="hometax" data-principle="A" aria-pressed="false">A 무번역</button>
         <button class="arc-filter" data-agency="hometax" data-principle="B" aria-pressed="false">B 정보핵심화</button>
         <button class="arc-filter" data-agency="hometax" data-principle="C" aria-pressed="false">C 심리적안전망</button>
-        <button class="arc-filter arc-filter--ai" data-agency="hometax" data-principle="ai" aria-pressed="false">🤖 AI 설정자</button>
+        <button class="arc-filter arc-filter--ai" data-agency="hometax" data-principle="ai" aria-pressed="false">AI 설정자</button>
       </div>
       <span class="arc-result-count" id="arc-result-hometax"></span>
     </div>
@@ -546,7 +568,7 @@ a:hover { text-decoration: underline; }
         <button class="arc-filter" data-agency="efamily" data-principle="A" aria-pressed="false">A 무번역</button>
         <button class="arc-filter" data-agency="efamily" data-principle="B" aria-pressed="false">B 정보핵심화</button>
         <button class="arc-filter" data-agency="efamily" data-principle="C" aria-pressed="false">C 심리적안전망</button>
-        <button class="arc-filter arc-filter--ai" data-agency="efamily" data-principle="ai" aria-pressed="false">🤖 AI 설정자</button>
+        <button class="arc-filter arc-filter--ai" data-agency="efamily" data-principle="ai" aria-pressed="false">AI 설정자</button>
       </div>
       <span class="arc-result-count" id="arc-result-efamily"></span>
     </div>

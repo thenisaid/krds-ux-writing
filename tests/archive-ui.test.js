@@ -186,13 +186,14 @@ describe('archive page initialization', () => {
     context.document.documentElement.setAttribute('data-theme', 'dark');
     vm.runInNewContext(SOURCE, context);
 
-    expect(elements.themeToggle.textContent).toBe('☾');
+    // 아이콘 전환은 CSS 기반 — textContent는 빈 문자열(SVG 노드 텍스트 없음)
+    expect(elements.themeToggle.textContent).toBe('');
     expect(elements.themeToggle.getAttribute('aria-label')).toBe('라이트모드 전환');
 
     elements.themeToggle.dispatch('click');
 
     expect(context.document.documentElement.getAttribute('data-theme')).toBe('light');
-    expect(elements.themeToggle.textContent).toBe('☀');
+    expect(elements.themeToggle.textContent).toBe('');
     expect(elements.themeToggle.getAttribute('aria-label')).toBe('다크모드 전환');
   });
 

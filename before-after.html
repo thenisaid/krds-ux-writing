@@ -196,9 +196,10 @@ body{
   content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;
   background:var(--accent);transform:scaleX(0);transition:transform .2s;
 }
-.tab-btn.active{color:var(--accent)}
+.tab-btn.active{color:var(--accent);font-weight:700}
 .tab-btn.active::after{transform:scaleX(1)}
-.tab-btn:hover:not(.active){color:var(--text)}
+.tab-btn:hover:not(.active){color:var(--text);background:rgba(0,0,0,.04);border-radius:6px}
+.tab-btn:active{transform:scale(.97);opacity:.85}
 
 .tab-principle-chip{
   display:inline-flex;align-items:center;gap:4px;
@@ -210,8 +211,9 @@ body{
 .chip-c{background:#fff7ed;color:#9a3412}
 
 /* ─── Tab Panels ─── */
-.tab-panel{display:none;padding:48px 0}
+.tab-panel{display:none;padding:48px 0;animation:tabFadeIn .2s ease}
 .tab-panel.active{display:block}
+@keyframes tabFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .panel-intro{
   margin-bottom:40px;padding:24px 28px;
   border-radius:var(--radius-md);background:var(--bg-subtle);
@@ -511,6 +513,8 @@ footer{
     <a href="/krds-ux-writing/#case-studies" class="gnb-nav-link">사례</a>
     <a href="/krds-ux-writing/prompt-library.html" class="gnb-nav-link">프롬프트</a>
     <a href="/krds-ux-writing/before-after.html" class="gnb-nav-link active" aria-current="page">Before/After</a>
+    <a href="/krds-ux-writing/lint.html" class="gnb-nav-link">린터</a>
+    <a href="/krds-ux-writing/generator/" class="gnb-nav-link">생성기</a>
   </nav>
   <div class="gnb-actions">
     <span class="gnb-badge">v2.0</span>
@@ -1097,7 +1101,7 @@ footer{
     var scoreClass = score >= 80 ? 'good' : score >= 50 ? 'ok' : 'bad';
     var issueHtml = '';
     if (result.issues.length === 0) {
-      issueHtml = '<div class="lint-empty">✅ 원칙 위반이 없습니다. 잘 작성된 텍스트입니다!</div>';
+      issueHtml = '<div class="lint-empty">원칙 위반이 없습니다. 잘 작성된 텍스트입니다!</div>';
     } else {
       issueHtml = '<div class="lint-issue-list">';
       result.issues.forEach(function (issue) {
