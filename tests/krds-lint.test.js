@@ -906,3 +906,28 @@ describe('RSI Iter5 — error-no-action 키워드 확장', () => {
     expect(r.issues.some(i => i.type === 'error-no-action')).toBe(false);
   });
 });
+
+// ─── RSI Iter 6: 영문 단독 레이블 규칙 ─────────────────────────────────────
+
+describe('RSI Iter6 — 영문 단독 레이블 (english-only-label)', () => {
+  it('"COMING SOON"을 감지한다', () => {
+    const r = KRDSLint.lint('COMING SOON 서비스입니다.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(true);
+  });
+  it('4자 이상 대문자 연속을 감지한다', () => {
+    const r = KRDSLint.lint('이 기능은 HOTTEST 메뉴입니다.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(true);
+  });
+  it('ERROR는 english-only-label에서 제외된다 (error-code-standalone이 처리)', () => {
+    const r = KRDSLint.lint('ERROR 404 오류가 발생했습니다.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+  });
+  it('UX, HTML, FAQ 등 허용 약어는 통과한다', () => {
+    const r = KRDSLint.lint('UX Writing과 HTML 파일을 활용한 FAQ입니다.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+  });
+  it('한국어만 있는 문장은 통과한다', () => {
+    const r = KRDSLint.lint('서비스 이용 방법을 안내합니다.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+  });
+});
