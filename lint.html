@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){try{var t=localStorage.getItem('krds-theme');var prefersDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.setAttribute('data-theme',t||(prefersDark?'dark':'light'));}catch(e){}})();</script>
 <title>KRDS UX 라이팅 린터</title>
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'none'; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; font-src https://cdn.jsdelivr.net; script-src https://cdn.jsdelivr.net 'self'; connect-src 'self'; img-src 'self' data:;" />
+    content="default-src 'none'; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; font-src https://cdn.jsdelivr.net; script-src https://cdn.jsdelivr.net 'self' 'sha256-nVj/NnPbJL5e5wJ+7LC+cqhLvjQRyCIQRCka3ELZVak='; connect-src 'self'; img-src 'self' data:;" />
 <meta name="description" content="KRDS 3대 원칙 기반 UX 라이팅 자동 검사 도구 — 행정어, 이중 피동형, 주관적 부사, 에러 메시지 패턴 검사">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <style>
@@ -89,15 +90,40 @@
     color: #fff; font-size: 14px; font-weight: 800;
   }
   .gnb-subtitle { font-size: 13px; color: var(--text-muted); font-weight: 400; }
-  .gnb-spacer { flex: 1; }
+  .gnb-nav { display: flex; align-items: center; gap: 2px; }
+  .gnb-nav-link {
+    font-size: 13px; font-weight: 500; color: var(--text-muted);
+    text-decoration: none; padding: 6px 10px; border-radius: 6px;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+  }
+  .gnb-nav-link:hover { background: var(--border); color: var(--text); }
+  .gnb-nav-link.active { color: var(--accent); font-weight: 600; }
   .gnb-theme-btn {
     border: none; background: transparent; cursor: pointer;
-    color: var(--text-muted); font-size: 18px; padding: 6px;
+    color: var(--text-muted); padding: 6px;
     border-radius: 6px; transition: background .15s;
     display: flex; align-items: center; justify-content: center;
     width: 44px; height: 44px;
   }
   .gnb-theme-btn:hover { background: var(--border); }
+  /* SVG 테마 아이콘 — CSS 기반 전환 (이모지 미사용) */
+  .theme-icon-sun { display: none; }
+  .theme-icon-moon { display: block; }
+  [data-theme="dark"] .theme-icon-sun { display: block; }
+  [data-theme="dark"] .theme-icon-moon { display: none; }
+  /* 모바일: 소제목 숨김 (nav 링크는 유지) */
+  @media (max-width: 640px) {
+    .gnb-subtitle { display: none; }
+    .gnb { flex-wrap: wrap; height: auto; padding: 10px 16px; row-gap: 8px; }
+    .gnb-nav { order: 3; flex-basis: 100%; overflow-x: auto; scrollbar-width: none; gap: 4px; }
+    .gnb-nav::-webkit-scrollbar { display: none; }
+    .gnb-nav-link { padding: 6px 7px; font-size: 12px; flex-shrink: 0; min-height: 36px; }
+    .gnb-theme-btn { margin-left: auto; }
+  }
+
+  /* 전역 focus-visible — WCAG 2.1 2.4.7 */
+  *:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
 
   /* ── Hero ── */
   .hero {
@@ -116,8 +142,12 @@
     border: 1px solid rgba(37,110,244,.2);
     letter-spacing: 0.01em;
   }
-  .hero h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.3; margin-bottom: 10px; }
-  .hero p { font-size: 15px; color: var(--text-muted); max-width: 520px; margin: 0 auto; line-height: 1.65; }
+  .hero h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.3; margin-bottom: 10px; word-break: keep-all; }
+  .hero p { font-size: 15px; color: var(--text-muted); max-width: 640px; margin: 0 auto; line-height: 1.65; text-wrap: balance; word-break: keep-all; }
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 22px; }
+    .hero p { font-size: 14px; text-wrap: unset; text-align: left; padding: 0 4px; }
+  }
 
   /* ── 레이아웃 ── */
   .container { max-width: 960px; margin: 0 auto; padding: 24px; }
@@ -409,8 +439,24 @@
     KRDS
   </a>
   <span class="gnb-subtitle">UX 라이팅 린터</span>
-  <div class="gnb-spacer"></div>
-  <button class="gnb-theme-btn" id="themeToggle" aria-label="다크모드 전환">🌙</button>
+  <nav class="gnb-nav" aria-label="주요 메뉴">
+    <a href="./index.html" class="gnb-nav-link">홈</a>
+    <a href="./principles/" class="gnb-nav-link">원칙</a>
+    <a href="./dictionary/" class="gnb-nav-link">사전</a>
+    <a href="./archive.html" class="gnb-nav-link">사례</a>
+    <a href="./before-after.html" class="gnb-nav-link">Before/After</a>
+    <a href="./lint.html" class="gnb-nav-link active" aria-current="page">린터</a>
+    <a href="./generator/index.html" class="gnb-nav-link">생성기</a>
+  </nav>
+  <button class="gnb-theme-btn" id="themeToggle" aria-label="다크모드 전환">
+    <svg class="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+    <svg class="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="5"/>
+      <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+    </svg>
+  </button>
 </nav>
 
 <!-- Hero -->
@@ -448,7 +494,7 @@
 
       <div class="btn-group">
         <button class="btn btn-primary" id="lintBtn">
-          <span aria-hidden="true">🔍</span> 검사 시작
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>검사 시작
         </button>
         <button class="btn btn-secondary" id="clearBtn">초기화</button>
       </div>
@@ -505,13 +551,13 @@
     <div class="export-bar">
       <span class="export-label">검사 결과를 내보낼 수 있습니다</span>
       <button class="btn btn-secondary" id="copyBtn" style="font-size:13px; padding:7px 14px;">
-        <span aria-hidden="true">📋</span> 결과 복사
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;"><rect x="9" y="2" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>결과 복사
       </button>
       <button class="btn btn-secondary" id="downloadBtn" style="font-size:13px; padding:7px 14px;">
-        <span aria-hidden="true">⬇️</span> CSV 내보내기
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV 내보내기
       </button>
       <button class="btn btn-secondary" id="shareLinkBtn" style="font-size:13px; padding:7px 14px;" disabled>
-        <span aria-hidden="true">🔗</span> 결과 링크 복사
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>결과 링크 복사
       </button>
     </div>
   </div>
@@ -519,9 +565,9 @@
   <!-- US-L02: Before/After 개선문 -->
   <div class="card" id="improvedCard" style="margin-top:16px; display:none;">
     <div class="issues-header">
-      <div class="issues-title">✏️ 개선 텍스트</div>
+      <div class="issues-title">개선 텍스트</div>
       <button class="btn btn-secondary" id="copyImprovedBtn" style="font-size:13px; padding:7px 14px;">
-        <span aria-hidden="true">📋</span> 개선문 복사
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;"><rect x="9" y="2" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>개선문 복사
       </button>
     </div>
     <div id="improvedText" style="font-size:14px; line-height:1.8; white-space:pre-wrap; padding:12px 0; color:var(--text);"></div>
@@ -530,7 +576,7 @@
   <!-- US-L04: 검사 이력 -->
   <div class="card" id="historyCard" style="margin-top:16px; display:none;">
     <div class="issues-header">
-      <div class="issues-title">🕐 이전 검사 이력</div>
+      <div class="issues-title">이전 검사 이력</div>
       <button class="btn btn-secondary" id="clearHistoryBtn" style="font-size:13px; padding:7px 14px;">이력 삭제</button>
     </div>
     <div id="historyList" style="display:flex; flex-direction:column; gap:8px; margin-top:8px;"></div>
@@ -540,14 +586,14 @@
   <div id="cliBanner" style="display:none; margin-top:16px; background:var(--color-primary-05); border:1px solid var(--color-primary-30); border-radius:12px; padding:16px 20px;">
     <div style="display:flex; justify-content:space-between; align-items:flex-start;">
       <div>
-        <div style="font-weight:700; font-size:14px; color:var(--accent); margin-bottom:6px;">💻 파일 전체를 자동 검사하려면 CLI를 사용하세요</div>
+        <div style="font-weight:700; font-size:14px; color:var(--accent); margin-bottom:6px;">파일 전체를 자동 검사하려면 CLI를 사용하세요</div>
         <div style="font-size:13px; color:var(--text-muted); margin-bottom:10px;">디렉터리 일괄 검사, CI/CD 연동, JSON 출력 지원</div>
         <code style="display:block; background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:8px 12px; font-size:13px; color:var(--text);">npm install -g github:thenisaid/krds-ux-writing</code>
       </div>
       <button id="cliBannerClose" aria-label="배너 닫기" style="background:none; border:none; cursor:pointer; font-size:18px; color:var(--text-muted); padding:0 0 0 12px;">✕</button>
     </div>
     <button class="btn btn-secondary" id="copyCliBtn" style="margin-top:12px; font-size:13px; padding:7px 14px;">
-      <span aria-hidden="true">📋</span> 설치 명령어 복사
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;"><rect x="9" y="2" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>설치 명령어 복사
     </button>
   </div>
 
@@ -564,8 +610,8 @@
 </footer>
 
 <div id="toast" role="status" aria-live="polite"></div>
-<script src="./jargon-dictionary.js"></script>
-<script src="./krds-lint.js"></script>
-<script src="./lint-ui.js"></script>
+<script src="./jargon-dictionary.js?v=2"></script>
+<script src="./krds-lint.js?v=2"></script>
+<script src="./lint-ui.js?v=2"></script>
 </body>
 </html>

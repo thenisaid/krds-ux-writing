@@ -333,7 +333,8 @@ describe('lint-ui stale result handling', () => {
     vm.runInNewContext(SOURCE, context);
 
     expect(context.document.documentElement.getAttribute('data-theme')).toBe('dark');
-    expect(elements.themeToggle.textContent).toBe('☀️');
+    // 아이콘 전환은 CSS 기반 — textContent는 빈 문자열(SVG 노드 텍스트 없음)
+    expect(elements.themeToggle.textContent).toBe('');
     expect(elements.themeToggle.getAttribute('aria-label')).toBe('라이트모드 전환');
   });
 
@@ -345,7 +346,7 @@ describe('lint-ui stale result handling', () => {
     vm.runInNewContext(SOURCE, context);
 
     expect(context.document.documentElement.getAttribute('data-theme')).toBe('dark');
-    expect(elements.themeToggle.textContent).toBe('☀️');
+    expect(elements.themeToggle.textContent).toBe('');
   });
 
   it('hides the CLI recommendation banner after the source text changes', () => {
@@ -480,7 +481,9 @@ describe('lint-ui stale result handling', () => {
     expect(latestResetTimer).toBeDefined();
     latestResetTimer[1].fn();
 
-    expect(elements.copyBtn.innerHTML).toBe('<span aria-hidden="true">📋</span> 결과 복사');
+    // 복사 버튼 초기화 후 SVG 아이콘 포함 상태 확인 (이모지 사용 안함)
+    expect(elements.copyBtn.innerHTML).toContain('svg');
+    expect(elements.copyBtn.innerHTML).not.toContain('📋');
   });
 
   it('keeps the latest successful result-copy feedback when an older async copy fails later', async () => {
@@ -2494,7 +2497,7 @@ describe('lint-ui uncovered branch coverage', () => {
     elements.themeToggle.dispatch('click');
 
     expect(context.document.documentElement.getAttribute('data-theme')).toBe('dark');
-    expect(elements.themeToggle.textContent).toBe('☀️');
+    expect(elements.themeToggle.textContent).toBe('');
     expect(elements.themeToggle.getAttribute('aria-label')).toBe('라이트모드 전환');
     expect(context.localStorage.getItem('krds-theme')).toBe('dark');
   });
@@ -2509,7 +2512,7 @@ describe('lint-ui uncovered branch coverage', () => {
     elements.themeToggle.dispatch('click');
 
     expect(context.document.documentElement.getAttribute('data-theme')).toBe('light');
-    expect(elements.themeToggle.textContent).toBe('🌙');
+    expect(elements.themeToggle.textContent).toBe('');
     expect(elements.themeToggle.getAttribute('aria-label')).toBe('다크모드 전환');
     expect(context.localStorage.getItem('krds-theme')).toBe('light');
   });

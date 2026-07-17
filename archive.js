@@ -11,7 +11,7 @@
   var themeBtn = document.getElementById('themeToggle');
   function syncThemeButton(theme) {
     if (!themeBtn) return;
-    themeBtn.textContent = theme === 'dark' ? '☾' : '☀';
+    // 아이콘 전환은 CSS ([data-theme="dark"] .theme-icon-*) 가 담당
     themeBtn.setAttribute('aria-label', theme === 'dark' ? '라이트모드 전환' : '다크모드 전환');
   }
   if (themeBtn) {

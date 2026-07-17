@@ -117,7 +117,7 @@ const PAGE_SCRIPT_CONTRACTS = [
   },
   {
     htmlFile: 'lint.html',
-    scriptSrcRe: /<script\b[^>]*\bsrc=(['"])(?:\.\/)?lint-ui\.js\1/i,
+    scriptSrcRe: /<script\b[^>]*\bsrc=(['"])(?:\.\/)?lint-ui\.js(?:\?[^'"]*)?\1/i,
     ids: [
       'themeToggle',
       'inputText',

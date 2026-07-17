@@ -9,7 +9,7 @@
 
   function syncThemeToggle(theme) {
     if (!themeToggle) return;
-    themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+    // 아이콘 전환은 CSS ([data-theme="dark"] .theme-icon-*) 가 담당
     themeToggle.setAttribute('aria-label', theme === 'dark' ? '라이트모드 전환' : '다크모드 전환');
   }
 
@@ -132,7 +132,13 @@
   });
 
   function emptyPlaceholder() {
-    return '<div class="empty-state"><div class="empty-icon" aria-hidden="true">📋</div>' +
+    return '<div class="empty-state"><div class="empty-icon" aria-hidden="true">' +
+      '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+      '<rect x="8" y="4" width="32" height="40" rx="4" stroke="currentColor" stroke-width="2.5"/>' +
+      '<path d="M16 14h16M16 22h16M16 30h10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>' +
+      '<circle cx="38" cy="38" r="8" fill="var(--accent)"/>' +
+      '<path d="M35 38l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '</svg></div>' +
       '<div class="empty-title">텍스트를 입력하고 검사해 주세요</div>' +
       '<div class="empty-desc">품질 점수와 이슈 목록이 여기에 표시됩니다</div></div>';
   }
@@ -290,7 +296,7 @@
       card.style.display = 'block';
       issuesList.innerHTML =
         '<div class="empty-state empty-success">' +
-          '<div class="empty-icon" aria-hidden="true">✅</div>' +
+          '<div class="empty-icon" aria-hidden="true"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="22" stroke="var(--color-success-50,#228738)" stroke-width="2.5"/><path d="M14 25l8 8 14-16" stroke="var(--color-success-50,#228738)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
           '<div class="empty-title">이슈가 없습니다!</div>' +
           '<div class="empty-desc">KRDS UX 라이팅 가이드라인을 준수하고 있습니다.</div>' +
         '</div>';
@@ -410,7 +416,7 @@
     var btn = this;
     var actionId = (btn._copyActionId || 0) + 1;
     btn._copyActionId = actionId;
-    var origHtml = '<span aria-hidden="true">📋</span> 결과 복사';
+    var origHtml = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;"><rect x="9" y="2" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>결과 복사';
     function isLatestAction() {
       return btn._copyActionId === actionId;
     }

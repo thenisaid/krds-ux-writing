@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>(function(){try{var t=localStorage.getItem('krds-theme');var prefersDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.setAttribute('data-theme',t||(prefersDark?'dark':'light'));}catch(e){}})();</script>
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'none'; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; font-src https://cdn.jsdelivr.net; script-src https://cdn.jsdelivr.net 'self'; connect-src 'self'; img-src 'self' data:;" />
+    content="default-src 'none'; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; font-src https://cdn.jsdelivr.net; script-src https://cdn.jsdelivr.net 'self' 'sha256-nVj/NnPbJL5e5wJ+7LC+cqhLvjQRyCIQRCka3ELZVak='; connect-src 'self'; img-src 'self' data:;" />
   <title>기관별 UX Writing 가이드라인 생성기 — KRDS</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
   <link
     href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-gov.min.css"
     rel="stylesheet"
@@ -42,6 +44,25 @@
       --max-width: 720px;
     }
 
+    /* ===== 다크모드 ===== */
+    [data-theme="dark"] {
+      --color-text: #f0f2f5;
+      --krds-text-secondary: #9ea8b3;
+      --krds-surface-subtle: #1e2124;
+      --color-surface: #262b30;
+      --color-border: #3e4855;
+      --color-placeholder: #6b7280;
+      --color-disabled-bg: #333a42;
+      --color-disabled-text: #6b7280;
+      color-scheme: dark;
+    }
+    [data-theme="dark"] .site-header {
+      background: rgba(30,33,36,.92);
+    }
+    [data-theme="dark"] body {
+      background: var(--krds-surface-subtle);
+    }
+
     /* ===== 리셋 ===== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -70,32 +91,79 @@
 
     /* ===== 헤더 ===== */
     .site-header {
-      padding: 24px 0 16px;
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(248,247,245,.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--color-border);
-      margin-bottom: 32px;
+      height: 60px;
+      display: flex; align-items: center;
+      padding: 0 24px;
+      gap: 12px;
+      margin-bottom: 0;
     }
 
     .site-header .inner {
       display: flex;
       align-items: center;
       gap: 8px;
+      width: 100%;
+      max-width: var(--max-width);
+      margin: 0 auto;
     }
 
     .logo-badge {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       background: var(--color-primary-50);
       color: #fff;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: var(--radius-sm);
-      letter-spacing: 0.8px;
+      font-size: 13px;
+      font-weight: 800;
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      flex-shrink: 0;
     }
 
     .site-header .site-name {
-      font-size: 14px;
+      font-size: 14px; font-weight: 700;
+      color: var(--color-text);
+      text-decoration: none;
+    }
+
+    .site-header .gnb-divider {
+      width: 1px; height: 16px;
+      background: #d1d5db;
+    }
+
+    .site-header .gnb-page-subtitle {
+      font-size: 13px; color: var(--krds-text-secondary);
+    }
+
+    .site-header .gnb-nav {
+      display: flex; align-items: center; gap: 2px;
+      margin-left: auto;
+    }
+
+    .site-header .gnb-nav-link {
+      font-size: 13px; font-weight: 500;
       color: var(--krds-text-secondary);
+      text-decoration: none; padding: 6px 10px;
+      border-radius: 6px;
+      transition: background .15s, color .15s;
+    }
+
+    .site-header .gnb-nav-link:hover {
+      background: #f3f4f6; color: var(--color-text);
+    }
+    .site-header .gnb-nav-link.active {
+      color: var(--color-primary-50); font-weight: 600;
+    }
+
+    @media (max-width: 640px) {
+      .site-header .gnb-divider { display: none; }
+      .site-header .gnb-page-subtitle { display: none; }
+      .site-header .gnb-nav-link { padding: 6px 7px; font-size: 12px; }
     }
 
     /* ===== 화면 전환 ===== */
@@ -243,6 +311,9 @@
     }
 
     /* ===== 버튼 ===== */
+    /* 전역 focus-visible — WCAG 2.1 2.4.7 */
+    *:focus-visible { outline: 2px solid var(--color-primary-50); outline-offset: 2px; border-radius: 2px; }
+
     .btn {
       display: inline-flex;
       align-items: center;
@@ -272,6 +343,8 @@
     }
 
     .btn-primary:hover:not(:disabled) { background: var(--color-primary-hover); }
+    .btn-primary:active:not(:disabled) { transform: translateY(1px); opacity: .92; }
+    .btn-secondary:active { transform: translateY(1px); opacity: .85; }
 
     .btn-primary:disabled {
       background: var(--color-disabled-bg);
@@ -763,11 +836,26 @@
 
   <!-- 헤더 -->
   <header class="site-header">
-    <div class="container">
-      <div class="inner">
-        <span class="logo-badge">KRDS</span>
-        <span class="site-name">UX Writing 가이드라인 생성기</span>
-      </div>
+    <div class="inner">
+      <a href="../index.html" class="site-name" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;">
+        <span class="logo-badge" aria-hidden="true">K</span>
+        KRDS
+      </a>
+      <div class="gnb-divider" aria-hidden="true"></div>
+      <span class="gnb-page-subtitle">가이드라인 생성기</span>
+      <nav class="gnb-nav" aria-label="주요 메뉴">
+        <a href="../index.html" class="gnb-nav-link">홈</a>
+        <a href="../principles/" class="gnb-nav-link">원칙</a>
+        <a href="../dictionary/" class="gnb-nav-link">사전</a>
+        <a href="../archive.html" class="gnb-nav-link">사례</a>
+        <a href="../before-after.html" class="gnb-nav-link">Before/After</a>
+        <a href="../lint.html" class="gnb-nav-link">린터</a>
+        <a href="../generator/index.html" class="gnb-nav-link active" aria-current="page">생성기</a>
+      </nav>
+      <button id="genThemeToggle" aria-label="다크모드 전환" style="border:none;background:transparent;cursor:pointer;padding:6px;border-radius:6px;color:#6b7280;width:44px;height:44px;display:flex;align-items:center;justify-content:center;transition:background .15s;">
+        <svg class="gen-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="gen-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="display:none;"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      </button>
     </div>
   </header>
 
@@ -1116,5 +1204,26 @@
 <script src="../jargon-dictionary.js"></script>
 <script src="../krds-lint.js"></script>
 <script src="app.js"></script>
+<script>
+(function() {
+  var btn = document.getElementById('genThemeToggle');
+  var moon = document.querySelector('.gen-icon-moon');
+  var sun = document.querySelector('.gen-icon-sun');
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    if (moon) moon.style.display = t === 'dark' ? 'none' : 'block';
+    if (sun) sun.style.display = t === 'dark' ? 'block' : 'none';
+    if (btn) btn.setAttribute('aria-label', t === 'dark' ? '라이트모드 전환' : '다크모드 전환');
+    try { localStorage.setItem('krds-theme', t); } catch(e) {}
+  }
+  var saved = null;
+  try { saved = localStorage.getItem('krds-theme'); } catch(e) {}
+  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches;
+  applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+  if (btn) btn.addEventListener('click', function() {
+    applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+})();
+</script>
 </body>
 </html>
