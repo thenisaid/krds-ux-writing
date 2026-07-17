@@ -405,6 +405,18 @@
       alt: '느낌표 제거하고 마침표 사용',
     },
 
+    // 한국어 UI 내 영문 단독 레이블: COMING SOON, NEW, HOT 등 미번역 (무번역 원칙)
+    {
+      id: 'english-only-label',
+      name: '영문 단독 레이블',
+      severity: 'error',
+      // 3자 이상 연속 대문자 단어 (URL·약어 예외: GNB, UX, ID, ERROR, HTML, CSS 등 2자 이하 또는 알려진 약어 제외)
+      // 단, 코드·파일명 맥락("ERROR 404") 제외 — ERROR는 error-code-standalone이 별도 처리
+      pattern: /\b(?!ERROR|HTML|CSS|URL|PDF|UX|UI|API|GNB|LNB|FAQ|NEW(?:\s|$)|HOT(?:\s|$)|ID\b)[A-Z]{4,}(?:\s+[A-Z]{3,})*\b/g,
+      message: (match) => `영문 단독 표기 "${match}" — 한국어로 번역하거나 병기하세요.`,
+      alt: '"출시 예정", "신규", "인기" 등 한국어 레이블 사용',
+    },
+
     // 문장 길이: 60자 초과 단일 문장 (국어원 구어적 문서 60자, 공문서 70자 기준)
     // ※ PATTERN_RULES는 줄 단위 적용 — 마침표 없이 이어지는 긴 구문을 감지
     {
