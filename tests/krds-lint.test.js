@@ -856,3 +856,53 @@ describe('RSI Iter4 — minSeverity 옵션', () => {
     expect(rAll.issues.length).toBeGreaterThanOrEqual(rErr.issues.length);
   });
 });
+
+// ─── RSI Iter 5: 실세계 FN 패턴 기반 신규 규칙 ─────────────────────────────
+
+describe('RSI Iter5 — 슬래시 병렬 나열 (slash-parallel)', () => {
+  it('한글 단어 사이 슬래시를 감지한다', () => {
+    const r = KRDSLint.lint('신청/이수 완료 후 다음 단계로 진행하세요.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'slash-parallel')).toBe(true);
+  });
+  it('URL의 슬래시는 감지하지 않는다', () => {
+    const r = KRDSLint.lint('https://www.korea.go.kr/A/B 를 방문하세요.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'slash-parallel')).toBe(false);
+  });
+  it('"및"으로 연결된 표현은 통과한다', () => {
+    const r = KRDSLint.lint('신청 및 이수 완료 후 진행하세요.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'slash-parallel')).toBe(false);
+  });
+});
+
+describe('RSI Iter5 — 불명확 링크 텍스트 (ambiguous-link-text)', () => {
+  it('"바로가기>"를 감지한다', () => {
+    const r = KRDSLint.lint('세금 신고 바로가기>', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'ambiguous-link-text')).toBe(true);
+  });
+  it('구체적 링크 텍스트는 통과한다', () => {
+    const r = KRDSLint.lint('세금 신고하기', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'ambiguous-link-text')).toBe(false);
+  });
+});
+
+describe('RSI Iter5 — 안내 메시지에 느낌표 (exclamation-in-guidance)', () => {
+  it('"입력하세요!"를 감지한다', () => {
+    const r = KRDSLint.lint('검색어를 입력하세요!', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'exclamation-in-guidance')).toBe(true);
+  });
+  it('마침표로 끝나는 안내는 통과한다', () => {
+    const r = KRDSLint.lint('검색어를 입력하세요.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'exclamation-in-guidance')).toBe(false);
+  });
+});
+
+describe('RSI Iter5 — error-no-action 키워드 확장', () => {
+  it('"완료되지 않았습니다."를 감지한다', () => {
+    const r = KRDSLint.lint('처리가 완료되지 않았습니다.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'error-no-action')).toBe(true);
+  });
+  it('"되지 않았습니다. 다시 시도해 주세요."는 통과한다', () => {
+    const r = KRDSLint.lint('처리가 완료되지 않았습니다. 다시 시도해 주세요.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'error-no-action')).toBe(false);
+  });
+});
