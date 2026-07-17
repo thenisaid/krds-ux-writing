@@ -787,3 +787,72 @@ describe('UMD Node.js branch — jargon-dictionary.json load failure falls back 
     expect(result.issues.some((i) => i.match === '잘못 입력하셨습니다')).toBe(true);
   });
 });
+
+// ─── RSI Iter 4: 국제 best practice 기반 신규 규칙 회귀 테스트 ──────────────
+
+describe('RSI Iter4 — 일본어 번역투 (japanese-translation)', () => {
+  it('실시하다를 감지한다', () => {
+    const r = KRDSLint.lint('이번 프로젝트를 실시하겠습니다.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'japanese-translation')).toBe(true);
+  });
+  it('도모하다를 감지한다', () => {
+    const r = KRDSLint.lint('서비스 안정성을 도모하겠습니다.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'japanese-translation')).toBe(true);
+  });
+  it('자연스러운 한국어는 통과한다', () => {
+    const r = KRDSLint.lint('이번 행사를 진행합니다.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'japanese-translation')).toBe(false);
+  });
+});
+
+describe('RSI Iter4 — 명사화 남용 (over-nominalization)', () => {
+  it('안정화를 감지한다', () => {
+    const r = KRDSLint.lint('서비스 안정화를 추진합니다.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'over-nominalization')).toBe(true);
+  });
+  it('동사형 표현은 통과한다', () => {
+    const r = KRDSLint.lint('서비스를 안정적으로 운영합니다.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'over-nominalization')).toBe(false);
+  });
+});
+
+describe('RSI Iter4 — 에러 행동 지침 누락 (error-no-action)', () => {
+  it('행동 지침 없는 에러 문장을 감지한다', () => {
+    const r = KRDSLint.lint('파일 업로드에 실패했습니다.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'error-no-action')).toBe(true);
+  });
+  it('행동 지침이 있으면 통과한다', () => {
+    const r = KRDSLint.lint('파일 크기가 초과되었습니다. 5MB 이하로 줄여 다시 업로드해 주세요.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'error-no-action')).toBe(false);
+  });
+  it('만료 에러도 감지한다', () => {
+    const r = KRDSLint.lint('세션이 만료됩니다.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'error-no-action')).toBe(true);
+  });
+});
+
+describe('RSI Iter4 — 긴 문장 (long-sentence)', () => {
+  it('60자 초과 문장을 감지한다', () => {
+    const long = '모든 서류를 첨부하여 주시기 바라며 처리 결과는 담당자 검토 후 개별 안내드릴 예정이오니 참고하여 주시기 바랍니다';
+    const r = KRDSLint.lint(long, { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'long-sentence')).toBe(true);
+  });
+  it('짧은 문장은 통과한다', () => {
+    const r = KRDSLint.lint('결과를 안내해 드리겠습니다.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'long-sentence')).toBe(false);
+  });
+});
+
+describe('RSI Iter4 — minSeverity 옵션', () => {
+  it('minSeverity=error면 warning/info를 제외한다', () => {
+    const r = KRDSLint.lint('이번 행사를 실시하겠습니다.', { checkPatterns: true, minSeverity: 'error' });
+    expect(r.issues.every(i => i.severity === 'error')).toBe(true);
+    expect(r.issues.some(i => i.severity === 'warning')).toBe(false);
+  });
+  it('minSeverity=info면 모든 이슈를 반환한다', () => {
+    const text = '이번 행사를 실시하겠습니다. 모든 서류를 첨부하여 주시기 바라며 처리 결과는 담당자 검토 후 개별 안내드릴 예정이오니 참고하여 주시기 바랍니다';
+    const rAll = KRDSLint.lint(text, { checkPatterns: true, minSeverity: 'info' });
+    const rErr = KRDSLint.lint(text, { checkPatterns: true, minSeverity: 'error' });
+    expect(rAll.issues.length).toBeGreaterThanOrEqual(rErr.issues.length);
+  });
+});
