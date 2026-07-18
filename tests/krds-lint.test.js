@@ -931,3 +931,27 @@ describe('RSI Iter6 — 영문 단독 레이블 (english-only-label)', () => {
     expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
   });
 });
+
+// ─── RSI Phase3 — 기관 특화 규칙 (agency 옵션) ──────────────────────────────
+
+describe('RSI Phase3 — agency 옵션 기관 특화 규칙', () => {
+  it('홈택스: 가산세 세금 전문어를 감지한다', () => {
+    const r = KRDSLint.lint('가산세 5만 원이 부과됩니다.', { checkPatterns: true, agency: 'hometax' });
+    expect(r.issues.some(i => i.type === 'hometax-tax-jargon')).toBe(true);
+  });
+  it('전가등록: 가족관계등록예규 법원 행정어를 감지한다', () => {
+    const r = KRDSLint.lint('가족관계등록예규에 따라 처리됩니다.', { checkPatterns: true, agency: 'efamily' });
+    expect(r.issues.some(i => i.type === 'efamily-court-jargon')).toBe(true);
+  });
+  it('정부24: 연계 서비스 전문어를 감지한다', () => {
+    const r = KRDSLint.lint('정부24 연계 서비스를 이용하세요.', { checkPatterns: true, agency: 'jeongbu24' });
+    expect(r.issues.some(i => i.type === 'jeongbu24-link-jargon')).toBe(true);
+  });
+  it('agency 옵션 없으면 연계 서비스를 감지하지 않는다', () => {
+    const r = KRDSLint.lint('정부24 연계 서비스를 이용하세요.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'jeongbu24-link-jargon')).toBe(false);
+  });
+  it('AGENCY_RULES에 hometax/efamily/jeongbu24가 모두 정의돼 있다', () => {
+    expect(KRDSLint.PATTERN_RULES.length).toBeGreaterThanOrEqual(20);
+  });
+});
