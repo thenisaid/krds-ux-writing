@@ -430,6 +430,49 @@
     },
   ];
 
+  // ─── 2.5. 기관 특화 규칙 (Phase 3 — agency 옵션으로 활성화) ────────────────
+
+  /**
+   * 기관별 특화 PATTERN_RULES — agency 옵션에 따라 선택적 적용
+   * agency: 'hometax' | 'efamily' | 'jeongbu24' | null (미설정 시 적용 안 함)
+   */
+  var AGENCY_RULES = {
+    hometax: [
+      // 홈택스: 세금 전문어 설명 없이 단독 사용 시 안내 요청
+      {
+        id: 'hometax-tax-jargon',
+        name: '세금 전문용어 미설명',
+        severity: 'warning',
+        // 가산세·원천징수·예정신고 등을 설명 없이 단독 사용
+        pattern: /가산세|원천징수(?!\s*란|\s*이란|\s*는\s*)|예정신고(?!\s*란|\s*이란)|세액공제(?!\s*란|\s*이란)/g,
+        message: (match) => `세금 전문어 "${match}" — 첫 등장 시 괄호로 설명을 추가하세요.`,
+        alt: '"원천징수(급여에서 미리 공제하는 세금)"처럼 첫 사용 시 설명 병기',
+      },
+    ],
+    efamily: [
+      // 전가등록: 법원 내부 행정어
+      {
+        id: 'efamily-court-jargon',
+        name: '법원 내부 행정어',
+        severity: 'error',
+        pattern: /가족관계등록예규|등록선례|(?:등록|판결)\s*선례|^선례|촉탁\s*신청|친족관계(?!\s*증명)|준호적/g,
+        message: (match) => `법원 내부 용어 "${match}" — 시민이 이해하기 어렵습니다. 쉬운 말로 풀어쓰세요.`,
+        alt: '"가족관계 등록 규정", "법원이 알려주는 판례" 등 풀어쓰기',
+      },
+    ],
+    jeongbu24: [
+      // 정부24: 복잡한 서비스 연계 표현
+      {
+        id: 'jeongbu24-link-jargon',
+        name: '정부24 연계 전문어',
+        severity: 'info',
+        pattern: /연계\s*서비스|부처\s*연계|행정\s*공유|정보\s*연계/g,
+        message: (match) => `연계 전문어 "${match}" — 사용자 관점의 혜택으로 바꾸세요.`,
+        alt: '"바로 연결", "함께 이용 가능" 등 혜택 중심 표현',
+      },
+    ],
+  };
+
   // ─── 3. 린팅 핵심 함수 ──────────────────────────────────────────────────────
 
   /**
@@ -438,10 +481,12 @@
    * @param {object} options
    * @param {boolean} options.checkAdminJargon - 행정어 검사 여부 (기본 true)
    * @param {boolean} options.checkPatterns - 패턴 검사 여부 (기본 true)
+   * @param {string|null} options.agency - 기관 특화 규칙 활성화 ('hometax'|'efamily'|'jeongbu24'|null)
+   * @param {string} options.minSeverity - 최소 심각도 필터 ('error'|'warning'|'info')
    * @returns {LintResult}
    */
   function lint(text, options) {
-    options = Object.assign({ checkAdminJargon: true, checkPatterns: true, minSeverity: 'info' }, options || {});
+    options = Object.assign({ checkAdminJargon: true, checkPatterns: true, minSeverity: 'info', agency: null }, options || {});
     const SEV_ORDER = { error: 0, warning: 1, info: 2 };
     const minSevOrd = SEV_ORDER[options.minSeverity] != null ? SEV_ORDER[options.minSeverity] : 2;
     text = text == null ? '' : String(text);
@@ -534,6 +579,29 @@
           }
         });
       });
+
+      // 3-2b. 기관 특화 규칙 (agency 옵션 설정 시)
+      var agencyRules = options.agency && AGENCY_RULES[options.agency];
+      if (agencyRules) {
+        agencyRules.forEach(function (rule) {
+          lines.forEach(function (line, lineIdx) {
+            var re = new RegExp(rule.pattern.source, rule.pattern.flags.replace('g', '') + 'g');
+            var m;
+            while ((m = re.exec(line)) !== null) {
+              issues.push({
+                type: rule.id,
+                severity: rule.severity,
+                category: rule.name,
+                line: lineIdx + 1,
+                col: m.index + 1,
+                match: m[0],
+                message: rule.message(m[0]),
+                suggestion: '→ ' + rule.alt,
+              });
+            }
+          });
+        });
+      }
     }
 
     // 3-3. 중복 제거 (같은 줄+위치+타입)
