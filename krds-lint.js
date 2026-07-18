@@ -638,23 +638,24 @@
     };
   }
 
-  // 이슈 심각도별 패널티 가중치 (품질 점수 차감)
-  var PENALTY_ERROR   = 10;
-  var PENALTY_WARNING = 5;
-  var PENALTY_INFO    = 2;
+  // 이슈 심각도별 패널티 가중치 (RSI Phase4 개선 — 글자 수 기반)
+  var PENALTY_ERROR   = 15;  // Phase4: 10→15 (error 심각도 강화)
+  var PENALTY_WARNING = 8;   // Phase4: 5→8
+  var PENALTY_INFO    = 3;   // Phase4: 2→3
 
   /**
    * 품질 점수 계산 (0~100)
    * 이슈가 없을수록 100에 가까움
    *
-   * 한계: 공백 기준 어절 분리 방식으로, 교착어인 한국어에서는
-   * 형태소 단위 정규화 대비 base 값이 작아 점수가 낮게 산정될 수 있음.
-   * Phase 2: 형태소 분석기(Kiwi 등) 연동으로 개선 예정. (TODOS.md 참조)
+   * Phase 4 개선: 어절(공백) → 한글 글자 수 기반
+   * 한국어는 교착어(조사 결합)이므로 어절 수보다 글자 수가
+   * 텍스트 규모를 더 정확하게 반영함 (국어원 권고 기준 참고)
    */
   function computeScore(text, summary) {
-    // 어절(공백 구분) 수 기반 기준점 — 한국어 형태소 미분리 (TODO: Phase 2)
-    const words = text.replace(/\s+/g, ' ').trim().split(' ').length;
-    const base = Math.max(words, 1);
+    // 한글 글자 수 기반 기준점 (공백·숫자·특수문자 제외)
+    const koreanChars = (text.match(/[가-힣]/g) || []).length;
+    // 최소 기준: 한글 없으면 전체 글자 수 사용 (영문 텍스트 대비)
+    const base = Math.max(koreanChars || text.replace(/\s+/g, '').length, 1);
     const penalty = (summary.errors * PENALTY_ERROR) + (summary.warnings * PENALTY_WARNING) + (summary.infos * PENALTY_INFO);
     const score = Math.max(0, Math.min(100, Math.round(100 - (penalty / base) * 100)));
     return score;
