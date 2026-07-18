@@ -559,7 +559,22 @@
       <button class="btn btn-secondary" id="shareLinkBtn" style="font-size:13px; padding:7px 14px;" disabled>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>결과 링크 복사
       </button>
+      <button class="btn btn-primary" id="aiSuggestBtn" style="font-size:13px; padding:7px 16px; margin-left:auto;" disabled>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>AI 개선 제안
+      </button>
     </div>
+  </div>
+
+  <!-- AI 개선 제안 카드 -->
+  <div class="card" id="aiSuggestCard" style="margin-top:16px; display:none;">
+    <div class="issues-header">
+      <div class="issues-title">AI 개선 제안</div>
+      <button class="btn btn-secondary" id="copyAiSuggestBtn" style="font-size:13px; padding:7px 14px;" disabled>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;"><rect x="9" y="2" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>복사
+      </button>
+    </div>
+    <div id="aiSuggestText" style="font-size:14px; line-height:1.8; white-space:pre-wrap; padding:12px 0; color:var(--text); min-height:60px;"></div>
+    <p style="font-size:11px; color:var(--text-muted); margin-top:8px; border-top:1px solid var(--border); padding-top:8px;">AI 제안은 참고용입니다. KRDS 원칙에 맞게 검토 후 적용하세요.</p>
   </div>
 
   <!-- US-L02: Before/After 개선문 -->
