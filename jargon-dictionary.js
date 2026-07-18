@@ -3,7 +3,7 @@
   'use strict';
   root.KRDS_JARGON_DICT = {
   "version": "1.0.0",
-  "generated": "2026-06-10",
+  "generated": "2026-07-18",
   "source": "principles.md § 2.1",
   "note": "scripts/extract-jargon.js 로 자동 생성. 직접 편집 대신 principles.md를 수정 후 재실행하세요.",
   "entries": [
