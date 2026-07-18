@@ -955,3 +955,31 @@ describe('RSI Phase3 — agency 옵션 기관 특화 규칙', () => {
     expect(KRDSLint.PATTERN_RULES.length).toBeGreaterThanOrEqual(20);
   });
 });
+
+// ─── RSI Phase4 — computeScore 글자 수 기반 개선 ─────────────────────────────
+
+describe('RSI Phase4 — computeScore 글자 수 기반 점수 계산', () => {
+  it('이슈 없는 텍스트는 100점이다', () => {
+    const r = KRDSLint.lint('신청이 완료되었습니다. 결과는 내일까지 알려드립니다.');
+    expect(r.score).toBe(100);
+  });
+  it('이슈 있는 텍스트는 100 미만이다', () => {
+    const r = KRDSLint.lint('귀하의 소득 및 재산 현황을 검토한 결과, 지원 대상에 해당되지 않음을 알려드립니다.');
+    expect(r.score).toBeLessThan(100);
+    expect(r.score).toBeGreaterThan(0);
+  });
+  it('이슈가 많을수록 점수가 낮다', () => {
+    const few = KRDSLint.lint('귀하');
+    const many = KRDSLint.lint('귀하의 소득 및 재산 현황을 검토한 결과 수급권자 소명자료를 첨부하여 제출하시기 바랍니다.');
+    expect(many.score).toBeLessThanOrEqual(few.score);
+  });
+  it('PENALTY_ERROR > PENALTY_WARNING > PENALTY_INFO 순서 유지', () => {
+    const errText = '오류가 발생했습니다.';
+    const warnText = '빠르게 처리하겠습니다.';
+    const rErr = KRDSLint.lint(errText, { checkPatterns: true });
+    const rWarn = KRDSLint.lint(warnText, { checkPatterns: true });
+    // error 패널티가 warning보다 크므로 점수가 더 낮음
+    // (같은 글자 수 대비)
+    expect(rErr.score).toBeLessThanOrEqual(rWarn.score);
+  });
+});
