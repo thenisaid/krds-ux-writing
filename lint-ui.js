@@ -191,6 +191,8 @@
     renderHistory();
     renderCliBanner(lastResult.score, text.length);
     updateShareBtn();
+    updateAiSuggestBtn();
+    if (aiSuggestCard) aiSuggestCard.style.display = 'none';
   }
 
   function handleLintFailure(options) {
@@ -834,6 +836,140 @@
   copyCliBtn.addEventListener('click', function() {
     copyWithToast(CLI_CMD, '✅ 설치 명령어가 복사되었습니다', '❌ 설치 명령어 복사에 실패했습니다');
   });
+
+  // ── AI 개선 제안 (Phase 1 — api/generate.js 프록시 경유) ──
+  var aiSuggestBtn   = document.getElementById('aiSuggestBtn');
+  var aiSuggestCard  = document.getElementById('aiSuggestCard');
+  var aiSuggestText  = document.getElementById('aiSuggestText');
+  var copyAiSuggestBtn = document.getElementById('copyAiSuggestBtn');
+  var aiSuggestAbort = null;
+
+  function updateAiSuggestBtn() {
+    if (!aiSuggestBtn) return;
+    var hasIssues = lastResult && lastResult.issues && lastResult.issues.length > 0;
+    aiSuggestBtn.disabled = !hasIssues;
+  }
+
+  function renderAiSuggestLoading() {
+    if (!aiSuggestCard || !aiSuggestText) return;
+    aiSuggestCard.style.display = 'block';
+    aiSuggestText.textContent = 'AI가 개선안을 생성하는 중입니다...';
+    if (copyAiSuggestBtn) copyAiSuggestBtn.disabled = true;
+  }
+
+  function renderAiSuggestError(msg) {
+    if (!aiSuggestText) return;
+    aiSuggestText.textContent = msg || 'AI 제안을 생성할 수 없습니다. 잠시 후 다시 시도해 주세요.';
+    if (copyAiSuggestBtn) copyAiSuggestBtn.disabled = true;
+  }
+
+  function renderAiSuggestDone(text) {
+    if (!aiSuggestText) return;
+    aiSuggestText.textContent = text;
+    if (copyAiSuggestBtn) copyAiSuggestBtn.disabled = false;
+  }
+
+  function generateImprovement() {
+    if (!lastResult || !lastResult.issues || !lastResult.issues.length) return;
+    if (aiSuggestAbort) { try { aiSuggestAbort.abort(); } catch(e){} }
+    aiSuggestAbort = typeof AbortController !== 'undefined' ? new AbortController() : null;
+
+    var samples = lastResult.issues.slice(0, 3).map(function(i) { return i.match || i.message; });
+    if (!samples.length) { renderAiSuggestError('감지된 이슈가 없습니다.'); return; }
+
+    renderAiSuggestLoading();
+    if (aiSuggestBtn) aiSuggestBtn.disabled = true;
+
+    var timeoutId = setTimeout(function() {
+      if (aiSuggestAbort) aiSuggestAbort.abort();
+      renderAiSuggestError('AI 서비스 응답이 지연되고 있습니다. 잠시 후 다시 시도해 주세요.');
+      if (aiSuggestBtn) updateAiSuggestBtn();
+    }, 15000);
+
+    var body = JSON.stringify({
+      agencyName: '공공기관',
+      agencyType: '중앙행정기관',
+      mode: 'rewrite',
+      samples: samples,
+    });
+
+    var baseUrl = (typeof KRDSBasePath !== 'undefined' && KRDSBasePath.siteRootPath)
+      ? KRDSBasePath.siteRootPath : '';
+    var apiUrl = baseUrl + '/api/generate';
+
+    fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body,
+      signal: aiSuggestAbort ? aiSuggestAbort.signal : undefined,
+    }).then(function(res) {
+      clearTimeout(timeoutId);
+      if (!res.ok) {
+        if (res.status === 429) {
+          renderAiSuggestError('AI 제안 한도를 초과했습니다. 1시간 후 다시 시도해 주세요.');
+        } else {
+          renderAiSuggestError('AI 서비스 연결에 실패했습니다. (오류 코드: ' + res.status + ')');
+        }
+        if (aiSuggestBtn) updateAiSuggestBtn();
+        return;
+      }
+      var reader = res.body.getReader();
+      var decoder = new TextDecoder('utf-8');
+      var buffer = '';
+      var accumulated = '';
+
+      function read() {
+        reader.read().then(function(r) {
+          if (r.done) {
+            if (accumulated.trim()) renderAiSuggestDone(accumulated);
+            if (aiSuggestBtn) updateAiSuggestBtn();
+            return;
+          }
+          buffer += decoder.decode(r.value, { stream: true });
+          var lines = buffer.split('\n');
+          buffer = lines.pop();
+          lines.forEach(function(line) {
+            var trimmed = line.trim();
+            if (!trimmed.startsWith('data:')) return;
+            var jsonStr = trimmed.slice(5).trim();
+            if (!jsonStr || jsonStr === '[DONE]') return;
+            try {
+              var evt = JSON.parse(jsonStr);
+              if (evt.type === 'chunk') accumulated += evt.text;
+              else if (evt.type === 'error') renderAiSuggestError('AI 처리 중 오류가 발생했습니다.');
+              else if (evt.type === 'done') { renderAiSuggestDone(accumulated); if (aiSuggestBtn) updateAiSuggestBtn(); }
+              if (aiSuggestText && evt.type === 'chunk') aiSuggestText.textContent = accumulated + '▋';
+            } catch(e) {}
+          });
+          read();
+        }).catch(function(err) {
+          clearTimeout(timeoutId);
+          if (err && err.name === 'AbortError') return;
+          renderAiSuggestError('연결이 끊겼습니다. 다시 시도해 주세요.');
+          if (aiSuggestBtn) updateAiSuggestBtn();
+        });
+      }
+      read();
+    }).catch(function(err) {
+      clearTimeout(timeoutId);
+      if (err && err.name === 'AbortError') return;
+      var isOffline = !navigator.onLine;
+      renderAiSuggestError(isOffline
+        ? 'AI 제안 일시 불가 — 린팅 결과는 정상 이용 가능합니다. (오프라인 상태)'
+        : 'AI 서비스에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.');
+      if (aiSuggestBtn) updateAiSuggestBtn();
+    });
+  }
+
+  if (aiSuggestBtn) {
+    aiSuggestBtn.addEventListener('click', generateImprovement);
+  }
+  if (copyAiSuggestBtn) {
+    copyAiSuggestBtn.addEventListener('click', function() {
+      var text = aiSuggestText ? aiSuggestText.textContent : '';
+      copyWithToast(text, '✅ AI 제안이 복사되었습니다', '❌ 복사에 실패했습니다');
+    });
+  }
 
   // ── URL 파라미터 자동 로드 ──
   (function () {
