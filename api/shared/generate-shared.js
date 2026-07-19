@@ -174,3 +174,24 @@ export function buildUserMessage(input) {
 
   return sections.filter(Boolean).join('\n');
 }
+
+// ─── 온톨로지 쿼리 모드 (Phase 5) ───────────────────────────────────────────────
+export const ONTOLOGY_QUERY_MODES = ['ontology-query', 'ontology-explain', 'ontology-compare'];
+
+export const ONTOLOGY_SYSTEM_PROMPT = `당신은 KRDS UX Writing 행정어 온톨로지 전문가입니다.
+사용자가 온톨로지에 대해 자연어로 질문하면, 온톨로지 구조와 데이터를 바탕으로 정확하고 구체적으로 답변합니다.
+
+[온톨로지 구조]
+- AdministrativeJargon: 행정어 (금지 표현, 대체어, 심각도, 카테고리)
+- Principle: 무번역·정보핵심화·심리적안전망 (위반 관계)
+- Agency: 정부24·홈택스·전자가족관계등록시스템 (사용 빈도)
+- JargonCategory: 행정관습어·전문용어·과도한수식·이중부정·과도한경어
+
+[답변 규칙]
+- 숫자와 구체적 예시를 포함하세요.
+- 마크다운 표 형식을 활용하세요.
+- 질문에 없는 정보는 추가하지 마세요.`;
+
+export function buildOntologyMessage({ question, ontologyContext }) {
+  return `[온톨로지 질문]\n${question}\n\n[온톨로지 컨텍스트 (요약)]\n${ontologyContext}`;
+}
