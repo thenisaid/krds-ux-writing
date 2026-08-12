@@ -56,8 +56,8 @@ describe('dictionary page content', () => {
     expect(html).toContain('전체 <span class="count">167</span>');
     expect(html).toContain('외래어·전문용어 <span class="count">50</span>');
     expect(html).toContain('<span id="resultCount"><strong>167</strong>개 용어</span>');
-    expect(html).toContain('출처: principles.md 2.1절 — 전체 274개 사전 중 고우선순위 167개 수록 |');
-    expect(html).toContain('전체 사전 274개 보기');
+    expect(html).toContain('출처: principles.md 2.1절 — 전체 283개 사전 중 고우선순위 167개 수록 |');
+    expect(html).toContain('전체 사전 283개 보기');
     expect(html).toContain('코퍼스 공개 현황');
   });
 

@@ -1237,7 +1237,7 @@ describe('principles pages content sync', () => {
     expect(html).toContain('Layer 2 승격과 KRDS/Figma handoff로, 기관 고유 제도면 Layer 3 보류로 넘깁니다.');
     expect(html).toContain('Layer 3 기관 특화 후보');
     expect(html).toContain('대표 사이트 8종(정부24 · 홈택스 · 복지로 · 국민건강보험 · 국민신문고 · 고용24 · 전자가족관계등록시스템 · 서울특별시 응답소) + 대한민국법원 보조 표본 + SeMA Layer 3 파생 사례 재검토 기준 (2026-06-10).');
-    expect(html).toContain('274개 행정어를 5개 카테고리로 분류합니다');
+    expect(html).toContain('283개 행정어를 5개 카테고리로 분류합니다');
     expect(html).toContain('<strong>사례 카드 직접화 메모</strong>');
     expect(html).toContain('<code>CASE 2</code> 카드 본문에서도 <code>부양가족으로 등록하거나 해제할 가족인지</code>, <code>중증질환 본인부담 감면 대상인지</code>, <code>이번 달 건강보험료가 어떻게 계산됐는지</code>가 한 흐름으로 읽혀야 2장 무번역 근거로 인정합니다.');
     expect(html).toContain('<code>변동 신고</code>, <code>경감 신청 자가 진단</code>, <code>임의계속가입 확인</code>처럼 다음 CTA까지 같이 내려 운영 표와 사례 카드가 같은 화면을 가리키게 합니다.');
@@ -2256,7 +2256,7 @@ describe('principles pages content sync', () => {
     expect(markdown).toContain('| 대표 사이트 순회 | 정부24·홈택스·복지로·국민건강보험·국민신문고·고용24·전자가족관계등록시스템·서울특별시 응답소와 대한민국법원 보조 표본에서 같은 과업 단계가 반복되는가? | 코퍼스 로그 + 사례 후보 |');
     expect(markdown).toContain('| KRDS 연계 | Button, Structured list, Notice banner 같은 조합까지 함께 검수했는가? | 7장 컴포넌트 + QA 체크리스트 + 테스트 |');
     expect(markdown).toContain('Layer 3는 `기관이 다르다`는 이유로 만드는 문서가 아닙니다.');
-    expect(markdown).toContain('| 행정어 사전 | 274개 공통 | 기관 전문어 10~30개 추가 |');
+    expect(markdown).toContain('| 행정어 사전 | 283개 공통 | 기관 전문어 10~30개 추가 |');
     expect(markdown).toContain('대표 사이트 8종(정부24 · 홈택스 · 복지로 · 국민건강보험 · 국민신문고 · 고용24 · 전자가족관계등록시스템 · 서울특별시 응답소) + 대한민국법원 보조 표본 + SeMA Layer 3 파생 사례 재검토 (2026-06-10)');
     expect(markdown).toContain('SeMA는 대표 사이트 8종 순회 대상이 아니라 `Layer 3 검증용 기관 예시`입니다.');
     expect(markdown).toContain('대표 서비스 관찰 — 먼저 Layer 2 공통 패턴인지, Layer 3 기관 특화인지 가른다');
@@ -2568,7 +2568,7 @@ describe('principles pages content sync', () => {
     expect(html).toContain('기관 이름과 도메인 맥락을 빼면 과업 의미와 톤이 무너지는가?');
     expect(html).toContain('Button, Structured list, Notice banner 같은 조합까지 함께 검수했는가?');
     expect(html).toContain('Layer 3는 <code>기관이 다르다</code>는 이유로 만드는 문서가 아닙니다.');
-    expect(html).toContain('274개 공통');
+    expect(html).toContain('283개 공통');
     expect(html).toContain('SeMA는 대표 사이트 8종 순회 대상이 아니라');
     expect(html).toContain('대표 서비스 관찰 — 먼저 Layer 2 공통 패턴인지, Layer 3 기관 특화인지 가른다');
     expect(html).toContain('대표 사이트 기반 Layer 2·Layer 3 판정 우선순위');
@@ -2763,8 +2763,8 @@ describe('principles pages content sync', () => {
     expect(html).toContain('원문 3개+CTA 1개, UX/UI 검수 축 1개, CASE 시작점 1개를 먼저 적습니다.');
     expect(html).toContain('세 대표 사이트에서 반복되면 Layer 2 공통 원칙으로, 기관 고유 제도면 Layer 3로 넘깁니다.');
     expect(html).toContain('승격된 항목은 사전·원칙·7장 컴포넌트·Figma Description까지 같은 라운드에서 같이 움직입니다.');
-    expect(html).toContain('행정 관습어·이중 부정·외래어 표기 기준과 274개 공통 행정어 사전을 제공합니다.');
-    expect(html).toContain('2.1 행정어 대체 사전 (274개 공통)');
+    expect(html).toContain('행정 관습어·이중 부정·외래어 표기 기준과 283개 공통 행정어 사전을 제공합니다.');
+    expect(html).toContain('2.1 행정어 대체 사전 (283개 공통)');
     expect(html).toContain('대표 사이트 순회에서 완료·전환·오류·대기 화면을 어떤 톤 축으로 다시 볼지 정합니다.');
     expect(html).toContain('민원·환급·심사 결과와 완료 뒤 후속 흐름에서 결론·예정일·다음 행동을 먼저 드러내는 규칙을 정리합니다.');
     expect(html).toContain('오류, 세션 종료, 조건 미충족, 비가역 결정에서 원인·복구·기한·대안을 먼저 보여 주는 기준을 담습니다.');
@@ -2783,7 +2783,7 @@ describe('principles pages content sync', () => {
     expect(html).toContain('전 원칙 재점검 요약 — 이번 라운드에 어느 축을 먼저 채울지 바로 판단');
     expect(html).toContain('실제 사례 추가 운영 방법 — 원칙 축 시작표·CASE 시작점·10분 판정 루틴');
     expect(html).toContain('Layer 2·Layer 3 판정 — 공통 원칙 후보와 기관 특화 화면 분리');
-    expect(html).toContain('행정어 대체 사전 — 274개 공통 용어 검색');
+    expect(html).toContain('행정어 대체 사전 — 283개 공통 용어 검색');
     expect(html).toContain('이슈 아카이브 — 정부24·홈택스·전자가족관계등록시스템 deep archive 기준점');
     expect(html).toContain('UX/UI 검수 보조 질문 — 화면 검수와 같은 언어로 보기');
   });
