@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>행정 용어 지식 그래프 — KRDS</title>
+<script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/dist/vis-network.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/dist/dist/vis-network.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Pretendard GOV Variable',sans-serif;background:#0d1117;color:#e2e8f0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+header{padding:10px 16px;background:#161b22;border-bottom:1px solid #21262d;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0}
+header h1{font-size:14px;font-weight:700;color:#f0f6ff}
+.badge{background:#256ef4;color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:4px;letter-spacing:.5px}
+.controls{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;align-items:center}
+input.search{background:#21262d;border:1px solid #30363d;color:#e2e8f0;padding:5px 11px;border-radius:6px;font-size:12px;width:180px}
+input.search::placeholder{color:#6e7681}
+.btn{background:#21262d;border:1px solid #30363d;color:#8b949e;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn:hover{border-color:#58a6ff;color:#58a6ff}
+.btn.active{border-color:currentColor;background:#21262d}
+.btn-j.active{color:#58a6ff;border-color:#58a6ff}
+.btn-h.active{color:#d29922;border-color:#d29922}
+.btn-e.active{color:#3fb950;border-color:#3fb950}
+.btn-all.active{color:#58a6ff;border-color:#58a6ff}
+.legend{display:flex;gap:10px;align-items:center;font-size:11px;color:#8b949e;flex-wrap:wrap}
+.ldot{width:9px;height:9px;border-radius:50%;flex-shrink:0;display:inline-block}
+.lsq{width:9px;height:9px;transform:rotate(45deg);flex-shrink:0;display:inline-block}
+main{flex:1;display:flex;min-height:0}
+#graph-wrap{flex:1;position:relative}
+#graph{width:100%;height:100%}
+.tooltip{position:absolute;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:10px 13px;font-size:12px;max-width:260px;pointer-events:none;display:none;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+#panel{width:260px;background:#161b22;border-left:1px solid #21262d;padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;flex-shrink:0}
+#panel h2{font-size:13px;font-weight:700;color:#f0f6ff}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.stat-card{background:#21262d;border-radius:6px;padding:8px;text-align:center;border:1px solid #30363d}
+.stat-num{font-size:20px;font-weight:800;color:#58a6ff}
+.stat-lbl{font-size:10px;color:#6e7681;margin-top:1px}
+.info-section{display:flex;flex-direction:column;gap:6px}
+.info-label{font-size:10px;color:#6e7681;text-transform:uppercase;letter-spacing:.06em}
+.info-value{color:#e2e8f0;font-size:12px;line-height:1.5}
+.tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:600;margin:2px 2px 0 0}
+.alt-box{background:#0d1f12;border:1px solid #238636;border-radius:6px;padding:7px 10px;color:#3fb950;font-size:12px}
+.agency-bar{display:flex;flex-direction:column;gap:3px;margin-top:2px}
+.abar{display:flex;align-items:center;gap:6px;font-size:11px}
+.abar-fill{height:6px;border-radius:3px;flex-shrink:0;transition:width .3s}
+.cross-badge{background:#1f2d1f;border:1px solid #3fb950;color:#3fb950;font-size:10px;padding:1px 6px;border-radius:4px;margin-left:4px}
+.neighbors{display:flex;flex-direction:column;gap:3px;margin-top:4px}
+.nb-item{background:#21262d;border-radius:5px;padding:5px 8px;font-size:11px;cursor:pointer;color:#8b949e;transition:background .15s}
+.nb-item:hover{background:#30363d;color:#e2e8f0}
+.empty-msg{color:#6e7681;font-size:12px;margin-top:4px}
+.tip{font-size:10px;color:#30363d;margin-top:auto;padding-top:8px;border-top:1px solid #21262d}
+.view-tabs{display:flex;gap:4px;margin-bottom:2px}
+.vtab{flex:1;background:#21262d;border:1px solid #30363d;color:#6e7681;padding:4px 6px;border-radius:5px;font-size:11px;cursor:pointer;text-align:center;transition:all .15s}
+.vtab.active{background:#256ef415;border-color:#256ef4;color:#58a6ff}
+</style>
+</head>
+<body>
+<header>
+  <span class="badge">KRDS</span>
+  <h1>행정 용어 지식 그래프</h1>
+  <div class="legend">
+    <span class="ldot" style="background:#3b82f6"></span>행정관습어
+    <span class="ldot" style="background:#8b5cf6"></span>전문용어
+    <span class="ldot" style="background:#f59e0b"></span>과도한수식
+    <span class="ldot" style="background:#ef4444"></span>이중부정
+    <span class="ldot" style="background:#10b981"></span>과도한경어
+    <span class="lsq" style="background:#3b82f6;border-radius:2px"></span>정부24
+    <span class="lsq" style="background:#f59e0b;border-radius:2px"></span>홈택스
+    <span class="lsq" style="background:#10b981;border-radius:2px"></span>전가등록
+  </div>
+  <div class="controls">
+    <input class="search" id="search" placeholder="용어 검색..." type="search">
+    <button class="btn btn-all" id="btn-all" data-view="all">전체</button>
+    <button class="btn btn-j" data-view="jeongbu24">정부24</button>
+    <button class="btn btn-h" data-view="hometax">홈택스</button>
+    <button class="btn btn-e" data-view="efamily">전가등록</button>
+    <button class="btn" id="btn-cross">교차용어만</button>
+    <button class="btn" id="btn-reset">초기화</button>
+  </div>
+</header>
+<main>
+<div id="graph-wrap">
+  <div id="graph"></div>
+  <div class="tooltip" id="tooltip"></div>
+</div>
+<div id="panel">
+  <h2>용어 정보</h2>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-num" id="sTerms">274</div><div class="stat-lbl">전체 용어</div></div>
+    <div class="stat-card"><div class="stat-num" id="sIssues">820</div><div class="stat-lbl">기관 이슈</div></div>
+    <div class="stat-card"><div class="stat-num" id="sCross">11</div><div class="stat-lbl">교차 용어</div></div>
+  </div>
+
+  <div class="view-tabs">
+    <div class="vtab active" data-tab="node">노드 정보</div>
+    <div class="vtab" data-tab="agency">기관 통계</div>
+    <div class="vtab" data-tab="behavior">언어 행태</div>
+  </div>
+
+  <div id="tab-node">
+    <p class="empty-msg">노드를 클릭하면 상세 정보를 볼 수 있습니다.</p>
+    <div id="detail" style="display:none;flex-direction:column;gap:8px">
+      <div class="info-section">
+        <span class="info-label">카테고리</span>
+        <span id="dCat" class="tag"></span>
+      </div>
+      <div class="info-section">
+        <span class="info-label">금지 표현</span>
+        <span id="dBanned" class="info-value"></span>
+      </div>
+      <div class="info-section">
+        <span class="info-label">권장 대체어</span>
+        <div id="dAlt" class="alt-box"></div>
+      </div>
+      <div class="info-section" id="dAgencySection">
+        <span class="info-label">기관별 사용 빈도</span>
+        <div class="agency-bar" id="dAgencyBar"></div>
+      </div>
+      <div class="info-section">
+        <span class="info-label">연결 노드</span>
+        <div class="neighbors" id="dNeighbors"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-agency" style="display:none;flex-direction:column;gap:10px">
+    <div class="info-section">
+      <span class="info-label">기관별 이슈 수</span>
+      <div class="agency-bar" style="margin-top:4px">
+        <div class="abar"><div class="abar-fill" style="background:#3b82f6;width:90px"></div><span style="color:#93c5fd">정부24: 294건</span></div>
+        <div class="abar"><div class="abar-fill" style="background:#f59e0b;width:82px"></div><span style="color:#fcd34d">홈택스: 267건</span></div>
+        <div class="abar"><div class="abar-fill" style="background:#10b981;width:79px"></div><span style="color:#6ee7b7">전가등록: 259건</span></div>
+      </div>
+    </div>
+    <div class="info-section">
+      <span class="info-label">원칙별 위반 (전체)</span>
+      <div class="agency-bar" style="margin-top:4px">
+        <div class="abar"><div class="abar-fill" style="background:#60a5fa;width:51px"></div><span style="color:#93c5fd">무번역: 279건</span></div>
+        <div class="abar"><div class="abar-fill" style="background:#a78bfa;width:100px"></div><span style="color:#c4b5fd">정보핵심화: 541건</span></div>
+        <div class="abar"><div class="abar-fill" style="background:#34d399;width:49px"></div><span style="color:#6ee7b7">심리적안전망: 266건</span></div>
+      </div>
+    </div>
+    <div class="info-section">
+      <span class="info-label">교차 기관 용어 (11개)</span>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;line-height:1.8">
+        이의신청 (3기관) · 귀하 (2기관) · 연말정산 (2기관) · 분납 (3기관) · 상세증명서 (2기관)
+        · 원천징수 (2기관) · 연말정산 간소화 (2기관) · 증명서 (2기관)
+      </div>
+    </div>
+    <div class="info-section">
+      <span class="info-label">가장 많이 등장하는 용어</span>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;line-height:1.8">
+        가산세 (홈택스 24건) · 급여 (정부24 10건) · 이의신청 (3기관 10건)
+        · 원천징수 (홈택스 9건) · 분납 (3기관 7건)
+      </div>
+    </div>
+  </div>
+
+  <!-- 언어 행태 탭 -->
+  <div id="tab-behavior" style="display:none;flex-direction:column;gap:10px">
+    <div style="font-size:11px;color:#6e7681;margin-bottom:2px">5개 축: 무번역·정보핵심화·심리적안전망 위반 비율, 고심각도 비율, 전문용어 밀도</div>
+    <canvas id="radarChart" height="240"></canvas>
+    <div id="behaviorCards" style="display:flex;flex-direction:column;gap:8px;margin-top:4px"></div>
+  </div>
+
+  <p class="tip">드래그: 이동 · 스크롤: 줌 · 클릭: 노드 정보 · 더블클릭: 포커스</p>
+</div>
+</main>
+
+<script>
+const AGENCY_INFO = {
+  jeongbu24: {label:'정부24', color:'#3b82f6', max:294},
+  hometax:   {label:'홈택스', color:'#f59e0b', max:267},
+  efamily:   {label:'전가등록', color:'#10b981', max:259},
+};
+const CAT_BG = {
+  '행정 관습어':'#1e3a5f','전문 용어':'#3b1f60','과도한 수식':'#451a03','이중 부정':'#450a0a','과도한 경어':'#022c22'
+};
+
+let network, allNodes, allEdges, rawNodes, rawEdges, metaData;
+let activeView = 'all';
+let showCrossOnly = false;
+
+// 탭 전환
+document.querySelectorAll('.vtab').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.vtab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  const tab = t.dataset.tab;
+  document.getElementById('tab-node').style.display = tab==='node'?'flex':'none';
+  document.getElementById('tab-agency').style.display = tab==='agency'?'flex':'none';
+  document.getElementById('tab-behavior').style.display = tab==='behavior'?'flex':'none';
+  if(tab==='node') { document.getElementById('tab-node').style.flexDirection='column'; document.getElementById('tab-node').style.gap='8px'; }
+  if(tab==='behavior') { document.getElementById('tab-behavior').style.flexDirection='column'; }
+}));
+
+let radarChart = null;
+function renderBehavior(behaviorData) {
+  const AGENCY_KEYS = ['jeongbu24','hometax','efamily'];
+  const COLORS = {'jeongbu24':'#3b82f6','hometax':'#f59e0b','efamily':'#10b981'};
+  const LABELS = ['무번역\n위반','정보핵심화\n위반','심리적안전망\n위반','고심각도\n비율','전문용어\n밀도'];
+  const AXES = ['무번역위반','정보핵심화위반','심리적안전망위반','고심각도비율','전문용어밀도'];
+
+  const datasets = AGENCY_KEYS.map(key => {
+    const b = behaviorData[key];
+    const r = b.radar || {};
+    return {
+      label: b.label,
+      data: AXES.map(a => r[a] || 0),
+      borderColor: COLORS[key],
+      backgroundColor: COLORS[key]+'25',
+      borderWidth: 2,
+      pointBackgroundColor: COLORS[key],
+      pointRadius: 4,
+    };
+  });
+
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  if(radarChart) radarChart.destroy();
+  radarChart = new Chart(ctx, {
+    type: 'radar',
+    data: { labels: LABELS, datasets },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color:'#8b949e', font:{size:11} } },
+      },
+      scales: {
+        r: {
+          min:0, max:10,
+          ticks: { color:'#6e7681', backdropColor:'transparent', stepSize:2, font:{size:9} },
+          pointLabels: { color:'#8b949e', font:{size:10} },
+          grid: { color:'#21262d' },
+          angleLines: { color:'#21262d' },
+        }
+      }
+    }
+  });
+
+  // 언어 행태 카드
+  const BEHAVIOR_DESC = {
+    'jeongbu24': {
+      title:'정부24 언어 행태',
+      habits:['에러 메시지에 원인 없이 "다시 시도하세요" 반복','정보핵심화 위반 61%로 최다 (과도한 설명·수식)','접근성 문제 동반한 JS 의존 링크 다수'],
+      signature:'"인증서 오류가 발생했습니다. 다시 시도해 주세요."',
+      domain:'민원·복지·주민서비스',
+    },
+    'hometax': {
+      title:'홈택스 언어 행태',
+      habits:['세금 전문어 번역 없이 직수입 (가산세·원천징수 등)','영문 UI 요소 방치 ("COMING SOON", "Hidden")','정보핵심화 위반 69%로 가장 높음'],
+      signature:'"종합소득세신고·지방소득세신고 부가가치세신고 원천세신고..."',
+      domain:'세금·세무·신고납부',
+    },
+    'efamily': {
+      title:'전자가족관계등록 언어 행태',
+      habits:['무번역 위반 비율 가장 높음 (법원 내부 행정어)','같은 메뉴 표기 2~3종 혼재 (공백·구분자 불일치)','★★★ 최고심각도 87건으로 최다'],
+      signature:'"국적취득자의 성본창설 신고" ≠ "국적취득자의 성·본창설 신고"',
+      domain:'가족관계등록·법원서비스',
+    },
+  };
+
+  const cardsEl = document.getElementById('behaviorCards');
+  cardsEl.innerHTML = AGENCY_KEYS.map(key => {
+    const desc = BEHAVIOR_DESC[key];
+    const color = COLORS[key];
+    const b = behaviorData[key];
+    const p = b.principle || {};
+    const total = Object.values(p).reduce((a,b)=>a+b,0) || 1;
+    const pct = name => Math.round((p[name]||0)/total*100);
+
+    return `<div style="background:#161b22;border:1px solid ${color}40;border-left:3px solid ${color};border-radius:6px;padding:10px 12px">
+      <div style="font-size:12px;font-weight:700;color:${color};margin-bottom:6px">${desc.title}</div>
+      <div style="font-size:10px;color:#6e7681;margin-bottom:4px">📍 ${desc.domain}</div>
+      <div style="font-size:11px;color:#8b949e;margin-bottom:6px;line-height:1.6">${desc.habits.map(h=>`• ${h}`).join('<br>')}</div>
+      <div style="background:#0d1117;border-radius:4px;padding:6px 8px;font-size:10px;color:${color}80;font-style:italic;margin-bottom:6px;line-height:1.4">"${desc.signature}"</div>
+      <div style="display:flex;gap:4px;font-size:10px">
+        <span style="background:#21262d;padding:2px 6px;border-radius:4px;color:#60a5fa">A:무번역 ${pct('A')}%</span>
+        <span style="background:#21262d;padding:2px 6px;border-radius:4px;color:#a78bfa">B:정보핵심화 ${pct('B')}%</span>
+        <span style="background:#21262d;padding:2px 6px;border-radius:4px;color:#34d399">C:심리적안전망 ${pct('C')}%</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+fetch('./agency-graph-data.json').then(r=>r.json()).then(data => {
+  rawNodes = data.nodes;
+  rawEdges = data.edges;
+  metaData = data.meta;
+
+  if(metaData) {
+    document.getElementById('sTerms').textContent = metaData.totalTerms || 274;
+    document.getElementById('sIssues').textContent = metaData.totalIssues || 820;
+    document.getElementById('sCross').textContent = metaData.crossTerms || 11;
+  }
+
+  allNodes = new vis.DataSet(rawNodes.map(n => buildVisNode(n)));
+  allEdges = new vis.DataSet(rawEdges.map((e,i) => buildVisEdge(e, i)));
+
+  const container = document.getElementById('graph');
+  network = new vis.Network(container, {nodes:allNodes, edges:allEdges}, {
+    physics:{
+      enabled: true,
+      forceAtlas2Based:{gravitationalConstant:-80, centralGravity:0.005, springLength:180, springConstant:0.06, damping:0.7, avoidOverlap:0.3},
+      solver:'forceAtlas2Based',
+      stabilization:{iterations:300, fit:true},
+      maxVelocity:50,
+    },
+    interaction:{hover:true, tooltipDelay:50, keyboard:{enabled:true,bindToWindow:false}},
+    layout:{improvedLayout:false},
+  });
+
+  // 클릭 이벤트
+  network.on('click', params => {
+    if(!params.nodes.length) {
+      document.getElementById('detail').style.display = 'none';
+      document.querySelector('.empty-msg').style.display = '';
+      return;
+    }
+    const nid = params.nodes[0];
+    const node = rawNodes.find(n => n.id === nid);
+    if(!node || node.type === 'category' || node.type === 'principle') return;
+
+    if(node.type === 'agency') {
+      document.querySelectorAll('.vtab')[1].click(); // 기관 탭으로
+      return;
+    }
+
+    document.querySelector('.empty-msg').style.display = 'none';
+    const det = document.getElementById('detail');
+    det.style.display = 'flex';
+    det.style.flexDirection = 'column';
+    det.style.gap = '8px';
+
+    document.getElementById('dCat').textContent = node.cat || '';
+    document.getElementById('dCat').style.background = CAT_BG[node.cat] || '#21262d';
+    document.getElementById('dBanned').textContent = node.banned || node.label;
+    document.getElementById('dAlt').textContent = node.alt || '(대체어 없음)';
+
+    // 기관별 사용 빈도
+    const agencyHits = node.agencyHits || {};
+    const maxHit = Math.max(...Object.values(agencyHits), 1);
+    const barHtml = Object.entries(AGENCY_INFO).map(([key, info]) => {
+      const cnt = agencyHits[key] || 0;
+      if(!cnt) return `<div class="abar"><div class="abar-fill" style="background:#30363d;width:8px"></div><span style="color:#30363d">${info.label}: 0건</span></div>`;
+      const w = Math.max(8, Math.round(cnt/maxHit*100));
+      return `<div class="abar"><div class="abar-fill" style="background:${info.color};width:${w}px"></div><span style="color:${info.color}">${info.label}: ${cnt}건</span>${Object.keys(agencyHits).length>=2?'<span class="cross-badge">교차</span>':''}</div>`;
+    }).join('');
+    document.getElementById('dAgencyBar').innerHTML = barHtml || '<span style="color:#6e7681;font-size:11px">기관 이슈 없음</span>';
+
+    // 이웃 노드
+    const connected = network.getConnectedNodes(nid);
+    document.getElementById('dNeighbors').innerHTML = connected.slice(0,6).map(cid => {
+      const cn = rawNodes.find(n=>n.id===cid);
+      if(!cn) return '';
+      return `<div class="nb-item" onclick="network.selectNodes(['${cid}']);network.focus('${cid}',{scale:1.3,animation:true})">${cn.label}</div>`;
+    }).join('') || '<span class="empty-msg">연결 없음</span>';
+  });
+
+  // 더블클릭: 포커스 + 이웃만 강조
+  network.on('doubleClick', params => {
+    if(!params.nodes.length) return;
+    network.focus(params.nodes[0], {scale:1.5, animation:{duration:400}});
+  });
+
+  // 안정화 완료
+  network.on('stabilizationIterationsDone', () => network.setOptions({physics:{enabled:false}}));
+
+  // 언어 행태 렌더링
+  if(data.behavior) renderBehavior(data.behavior);
+
+  // 검색
+  document.getElementById('search').addEventListener('input', e => {
+    const q = e.target.value.trim().toLowerCase();
+    if(!q) { allNodes.update(rawNodes.map(n=>({id:n.id,hidden:false}))); return; }
+    const matched = rawNodes.filter(n => (n.label+' '+(n.banned||'')).toLowerCase().includes(q));
+    if(matched.length) {
+      network.selectNodes(matched.map(n=>n.id));
+      network.focus(matched[0].id, {scale:1.4, animation:true});
+    }
+  });
+
+  // 뷰 필터 버튼
+  document.querySelectorAll('[data-view]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-view]').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      activeView = btn.dataset.view;
+      showCrossOnly = false;
+      document.getElementById('btn-cross').classList.remove('active');
+      applyFilter();
+    });
+  });
+
+  // 교차 용어만
+  document.getElementById('btn-cross').addEventListener('click', () => {
+    showCrossOnly = !showCrossOnly;
+    document.getElementById('btn-cross').classList.toggle('active', showCrossOnly);
+    applyFilter();
+  });
+
+  // 초기화
+  document.getElementById('btn-reset').addEventListener('click', () => {
+    activeView = 'all';
+    showCrossOnly = false;
+    document.querySelectorAll('[data-view]').forEach(b=>b.classList.remove('active'));
+    document.getElementById('btn-all').classList.add('active');
+    document.getElementById('btn-cross').classList.remove('active');
+    allNodes.update(rawNodes.map(n=>({id:n.id,hidden:false})));
+    allEdges.update(rawEdges.map((e,i)=>({id:'e'+i,hidden:false})));
+    network.fit();
+  });
+
+  function applyFilter() {
+    rawNodes.forEach(n => {
+      let hide = false;
+      if(n.type === 'term') {
+        const hits = n.agencyHits || {};
+        if(activeView !== 'all' && !hits[activeView]) hide = true;
+        if(showCrossOnly && Object.keys(hits).length < 2) hide = true;
+      }
+      allNodes.update([{id:n.id, hidden:hide}]);
+    });
+
+    rawEdges.forEach((e,i) => {
+      let hide = false;
+      const toNode = rawNodes.find(n=>n.id===e.to);
+      if(toNode) {
+        const toHidden = allNodes.get(e.to)?.hidden;
+        if(toHidden) hide = true;
+      }
+      allEdges.update([{id:'e'+i, hidden:hide}]);
+    });
+  }
+
+  window.network = network;
+});
+
+function buildVisNode(n) {
+  const shapes = {category:'diamond', agency:'square', principle:'hexagon', term:'dot', alt:'star'};
+  const borders = {category:2.5, agency:3, principle:2, term:1.2, alt:1.5};
+  return {
+    id: n.id,
+    label: n.label,
+    color: {
+      background: n.type==='agency' ? n.color+'25' : n.color+(n.type==='category'?'25':'60'),
+      border: n.color,
+      highlight:{background:n.color+'50', border:n.color},
+      hover:{background:n.color+'40', border:n.color},
+    },
+    size: n.size,
+    font: {color:'#c9d1d9', size: n.type==='agency'?14:n.type==='category'?12:10, strokeWidth:2, strokeColor:'#0d1117'},
+    borderWidth: borders[n.type] || 1.2,
+    shape: shapes[n.type] || 'dot',
+    _data: n,
+  };
+}
+
+function buildVisEdge(e, i) {
+  return {
+    id:'e'+i, from:e.from, to:e.to,
+    color:{color:e.color||'#30363d60', opacity:0.6},
+    width: e.width || 1,
+    dashes: e.type==='principle_dist',
+    smooth:{type:e.type==='agency_uses'?'curvedCW':'continuous', roundness:0.2},
+    arrows: e.type==='agency_uses' ? {to:{enabled:true,scaleFactor:0.5}} : undefined,
+  };
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,6703 @@
+{
+  "nodes": [
+    {
+      "id": "cat:행정 관습어",
+      "label": "행정 관습어",
+      "type": "category",
+      "color": "#3b82f6",
+      "size": 28,
+      "group": 1,
+      "cat": "행정 관습어"
+    },
+    {
+      "id": "cat:전문 용어",
+      "label": "전문 용어",
+      "type": "category",
+      "color": "#8b5cf6",
+      "size": 28,
+      "group": 2,
+      "cat": "전문 용어"
+    },
+    {
+      "id": "cat:과도한 수식",
+      "label": "과도한 수식",
+      "type": "category",
+      "color": "#f59e0b",
+      "size": 28,
+      "group": 3,
+      "cat": "과도한 수식"
+    },
+    {
+      "id": "cat:이중 부정",
+      "label": "이중 부정",
+      "type": "category",
+      "color": "#ef4444",
+      "size": 28,
+      "group": 4,
+      "cat": "이중 부정"
+    },
+    {
+      "id": "cat:과도한 경어",
+      "label": "과도한 경어",
+      "type": "category",
+      "color": "#10b981",
+      "size": 28,
+      "group": 5,
+      "cat": "과도한 경어"
+    },
+    {
+      "id": "agency:jeongbu24",
+      "label": "정부24",
+      "type": "agency",
+      "color": "#3b82f6",
+      "size": 36,
+      "group": 20,
+      "agencyKey": "jeongbu24",
+      "short": "정24"
+    },
+    {
+      "id": "agency:hometax",
+      "label": "홈택스",
+      "type": "agency",
+      "color": "#f59e0b",
+      "size": 36,
+      "group": 21,
+      "agencyKey": "hometax",
+      "short": "홈택"
+    },
+    {
+      "id": "agency:efamily",
+      "label": "전자가족관계등록시스템",
+      "type": "agency",
+      "color": "#10b981",
+      "size": 36,
+      "group": 22,
+      "agencyKey": "efamily",
+      "short": "전가등"
+    },
+    {
+      "id": "principle:무번역",
+      "label": "무번역",
+      "type": "principle",
+      "color": "#60a5fa",
+      "size": 22,
+      "group": 30
+    },
+    {
+      "id": "principle:정보핵심화",
+      "label": "정보핵심화",
+      "type": "principle",
+      "color": "#a78bfa",
+      "size": 22,
+      "group": 30
+    },
+    {
+      "id": "principle:심리적안전망",
+      "label": "심리적안전망",
+      "type": "principle",
+      "color": "#34d399",
+      "size": 22,
+      "group": 30
+    },
+    {
+      "id": "term:0:명일까지 제출",
+      "label": "명일까지 제출",
+      "banned": "명일까지 제출",
+      "alt": "내일까지 제출",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:1:직접 내방하여",
+      "label": "직접 내방하여",
+      "banned": "직접 내방하여",
+      "alt": "직접 방문하여",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:2:기표 완료",
+      "label": "기표 완료",
+      "banned": "기표 완료",
+      "alt": "등록 완료",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:3:상기 사항",
+      "label": "상기 사항",
+      "banned": "상기 사항",
+      "alt": "위 내용",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:4:동 기간 내",
+      "label": "동 기간 내",
+      "banned": "동 기간 내",
+      "alt": "같은 기간 안에",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:5:익일까지",
+      "label": "익일까지",
+      "banned": "익일까지",
+      "alt": "다음 날까지",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:6:전일 기준",
+      "label": "전일 기준",
+      "banned": "전일 기준",
+      "alt": "전날 기준",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:7:교부 신청",
+      "label": "교부 신청",
+      "banned": "교부 신청",
+      "alt": "발급 신청",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:8:교부 청구",
+      "label": "교부 청구",
+      "banned": "교부 청구",
+      "alt": "발급 요청",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:9:교부서류",
+      "label": "교부서류",
+      "banned": "교부서류",
+      "alt": "발급 서류",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:10:귀책사유",
+      "label": "귀책사유",
+      "banned": "귀책사유",
+      "alt": "잘못, 책임",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:11:귀하",
+      "label": "귀하",
+      "banned": "귀하",
+      "alt": "고객님, 신청인",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 16,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 1,
+        "hometax": 2
+      },
+      "totalHits": 3
+    },
+    {
+      "id": "term:12:파기",
+      "label": "파기",
+      "banned": "파기",
+      "alt": "삭제",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:13:정보주체",
+      "label": "정보주체",
+      "banned": "정보주체",
+      "alt": "(본인), 개인정보 보유 대상자",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:14:본인확인",
+      "label": "본인확인",
+      "banned": "본인확인",
+      "alt": "본인 확인",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:15:실명확인",
+      "label": "실명확인",
+      "banned": "실명확인",
+      "alt": "본인 확인",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:16:서비스 이용동의",
+      "label": "서비스 이용동의",
+      "banned": "서비스 이용동의",
+      "alt": "서비스 이용 동의",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 14,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 2
+      },
+      "totalHits": 2
+    },
+    {
+      "id": "term:17:자료제공동의",
+      "label": "자료제공동의",
+      "banned": "자료제공동의",
+      "alt": "자료 제공 동의",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:18:부과",
+      "label": "부과",
+      "banned": "부과",
+      "alt": "청구, 부과금",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 18,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1,
+        "efamily": 3
+      },
+      "totalHits": 4
+    },
+    {
+      "id": "term:19:득실 신고",
+      "label": "득실 신고",
+      "banned": "득실 신고",
+      "alt": "취득·상실 신고",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:20:피부양자",
+      "label": "피부양자",
+      "banned": "피부양자",
+      "alt": "부양가족",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:21:본인일부부담금",
+      "label": "본인일부부담금",
+      "banned": "본인일부부담금",
+      "alt": "본인부담금",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:22:산정특례",
+      "label": "산정특례",
+      "banned": "산정특례",
+      "alt": "중증질환 본인부담 감면",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:23:법정대리인",
+      "label": "법정대리인",
+      "banned": "법정대리인",
+      "alt": "부모님 또는 후견인",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:24:인우인 보증서",
+      "label": "인우인 보증서",
+      "banned": "인우인 보증서",
+      "alt": "신원 보증서",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:25:소명자료",
+      "label": "소명자료",
+      "banned": "소명자료",
+      "alt": "증빙 자료",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:26:변상금",
+      "label": "변상금",
+      "banned": "변상금",
+      "alt": "손해배상금, 보상금",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:27:과태료 부과",
+      "label": "과태료 부과",
+      "banned": "과태료 부과",
+      "alt": "과태료 청구",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:28:행정처분",
+      "label": "행정처분",
+      "banned": "행정처분",
+      "alt": "행정 제재",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:29:전입 신고",
+      "label": "전입 신고",
+      "banned": "전입 신고",
+      "alt": "이사 신고",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:30:전출 신고",
+      "label": "전출 신고",
+      "banned": "전출 신고",
+      "alt": "주소 옮김 신고",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:31:이의신청",
+      "label": "이의신청",
+      "banned": "이의신청",
+      "alt": "이의 제기, 이의 신청",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 20,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 4,
+        "hometax": 1,
+        "efamily": 5
+      },
+      "totalHits": 10
+    },
+    {
+      "id": "term:32:신청자격",
+      "label": "신청자격",
+      "banned": "신청자격",
+      "alt": "신청할 수 있는 사람",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 14,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 2
+      },
+      "totalHits": 2
+    },
+    {
+      "id": "term:33:구비서류",
+      "label": "구비서류",
+      "banned": "구비서류",
+      "alt": "준비할 서류",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:34:발급서류",
+      "label": "발급서류",
+      "banned": "발급서류",
+      "alt": "발급되는 서류",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:35:처리기간",
+      "label": "처리기간",
+      "banned": "처리기간",
+      "alt": "처리까지 걸리는 시간",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 14,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 2
+      },
+      "totalHits": 2
+    },
+    {
+      "id": "term:36:이해관계인",
+      "label": "이해관계인",
+      "banned": "이해관계인",
+      "alt": "관련 당사자",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:37:민원해결",
+      "label": "민원해결",
+      "banned": "민원해결",
+      "alt": "민원 처리 결과",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:38:처리현황",
+      "label": "처리현황",
+      "banned": "처리현황",
+      "alt": "진행 상태",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:39:처리기관",
+      "label": "처리기관",
+      "banned": "처리기관",
+      "alt": "담당 기관",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:40:답변예정일",
+      "label": "답변예정일",
+      "banned": "답변예정일",
+      "alt": "답변 예정일",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:41:등록일",
+      "label": "등록일",
+      "banned": "등록일",
+      "alt": "접수한 날",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:42:경정청구",
+      "label": "경정청구",
+      "banned": "경정청구",
+      "alt": "세금 환급 신청",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:43:장기미환급금",
+      "label": "장기미환급금",
+      "banned": "장기미환급금",
+      "alt": "못 받은 세금 환급금",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:44:전자증명서안내",
+      "label": "전자증명서안내",
+      "banned": "전자증명서안내",
+      "alt": "전자증명서 안내",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:45:부가가치세예정신고",
+      "label": "부가가치세예정신고",
+      "banned": "부가가치세예정신고",
+      "alt": "부가가치세 예정 신고",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:46:증명서발급",
+      "label": "증명서발급",
+      "banned": "증명서발급",
+      "alt": "증명서 발급",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 20,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 6
+      },
+      "totalHits": 6
+    },
+    {
+      "id": "term:47:인터넷신고",
+      "label": "인터넷신고",
+      "banned": "인터넷신고",
+      "alt": "온라인 신고",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 20,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 6
+      },
+      "totalHits": 6
+    },
+    {
+      "id": "term:48:가족관계등록부정정",
+      "label": "가족관계등록부정정",
+      "banned": "가족관계등록부정정",
+      "alt": "가족관계 기록 정정",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:49:가족관계등록부정정 허가",
+      "label": "가족관계등록부정정 허가",
+      "banned": "가족관계등록부정정 허가",
+      "alt": "가족관계 기록 정정 허가",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:50:정부민원안내콜센터",
+      "label": "정부민원안내콜센터",
+      "banned": "정부민원안내콜센터",
+      "alt": "정부 민원 안내",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 14,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 2
+      },
+      "totalHits": 2
+    },
+    {
+      "id": "term:51:국세상담센터",
+      "label": "국세상담센터",
+      "banned": "국세상담센터",
+      "alt": "세금 신고·납부 상담",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:52:사용자지원센터",
+      "label": "사용자지원센터",
+      "banned": "사용자지원센터",
+      "alt": "전자가족관계등록 이용 문의",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 16,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 3
+      },
+      "totalHits": 3
+    },
+    {
+      "id": "term:53:서비스 상세 이동",
+      "label": "서비스 상세 이동",
+      "banned": "서비스 상세 이동",
+      "alt": "서비스 이름 + 자세히 보기",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:54:1번째 배너",
+      "label": "1번째 배너",
+      "banned": "1번째 배너",
+      "alt": "배너 제목 + 보기",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:55:AI 켜기",
+      "label": "AI 켜기",
+      "banned": "AI 켜기",
+      "alt": "AI 검색 꺼짐 — 켜려면 클릭 / AI 검색 사용 중 — 끄려면 클릭",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:56:새창",
+      "label": "새창",
+      "banned": "새창",
+      "alt": "제목 + 새 탭에서 열림",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:57:주민등록등본",
+      "label": "주민등록등본",
+      "banned": "주민등록등본",
+      "alt": "가족 전체 주민등록증명서 (등본) — 대출·계약·학교 제출",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 14,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 2
+      },
+      "totalHits": 2
+    },
+    {
+      "id": "term:58:상세증명서",
+      "label": "상세증명서",
+      "banned": "상세증명서",
+      "alt": "상세 가족관계증명서 — 전 가족 기록 포함, 상속·이민 제출",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 18,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 1,
+        "efamily": 3
+      },
+      "totalHits": 4
+    },
+    {
+      "id": "term:59:납세증명서 (금융거래용)",
+      "label": "납세증명서 (금융거래용)",
+      "banned": "납세증명서 (금융거래용)",
+      "alt": "금융거래용 납세증명서 — 은행·대출 제출",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:60:개인정보 제공 범위 선택",
+      "label": "개인정보 제공 범위 선택",
+      "banned": "개인정보 제공 범위 선택",
+      "alt": "은행·학교 제출용 — 주민번호 뒷자리는 제외하고 필요한 항목만 선택",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:61:말소 사항 포함",
+      "label": "말소 사항 포함",
+      "banned": "말소 사항 포함",
+      "alt": "대출·담보 제출용 — 말소 포함 전체 / 소송 제출용 — 현재 유효만",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:62:세무정보 열람권한 부여",
+      "label": "세무정보 열람권한 부여",
+      "banned": "세무정보 열람권한 부여",
+      "alt": "세무사 [대리인 이름]이 [기간] 동안 신고·납부 내역과 과세자료를 확인합니다. 마이페이지에서 해제할 수 있습니다",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:63:건강보험 피부양자 등록 신청",
+      "label": "건강보험 피부양자 등록 신청",
+      "banned": "건강보험 피부양자 등록 신청",
+      "alt": "관계별 서류 확인 — 부모 등록은 가족관계증명서 + 소득 확인서 필요",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:64:연말정산 간소화",
+      "label": "연말정산 간소화",
+      "banned": "연말정산 간소화",
+      "alt": "본인 자료는 바로 조회 / 부양가족 자료는 온라인 동의 또는 세무서 방문 필요",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 16,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 1,
+        "hometax": 2
+      },
+      "totalHits": 3
+    },
+    {
+      "id": "term:65:소송 기록 열람·복사 신청",
+      "label": "소송 기록 열람·복사 신청",
+      "banned": "소송 기록 열람·복사 신청",
+      "alt": "당사자는 온라인 열람 가능 / 이해관계인은 소명 서류 + 허가 절차 필요 / 제3자는 법원 방문 신청",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:66:협의이혼 의사확인 신청",
+      "label": "협의이혼 의사확인 신청",
+      "banned": "협의이혼 의사확인 신청",
+      "alt": "이혼 성립 전 확인 / 배우자 두 분 방문 + 미성년 자녀 협의서 + 숙려기간 뒤 확인기일 출석",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:67:외국인등록번호 *",
+      "label": "외국인등록번호 *",
+      "banned": "외국인등록번호 *",
+      "alt": "외국인이라면 외국인등록번호 입력 (해당자만 필수)",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:68:영세율 신고",
+      "label": "영세율 신고",
+      "banned": "영세율 신고",
+      "alt": "영세율 대상 거래라면 첨부서류 제출 (해당 거래만 필수)",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:69:병적증명서 발급",
+      "label": "병적증명서 발급",
+      "banned": "병적증명서 발급",
+      "alt": "본인 또는 위임장 지참 대리인 신청 가능",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 16,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 3
+      },
+      "totalHits": 3
+    },
+    {
+      "id": "term:70:세무대리인 수임 동의",
+      "label": "세무대리인 수임 동의",
+      "banned": "세무대리인 수임 동의",
+      "alt": "세금 업무 맡기기 동의 / 위임 범위·해지 경로 먼저 확인",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:71:소송 대리인 등록",
+      "label": "소송 대리인 등록",
+      "banned": "소송 대리인 등록",
+      "alt": "서류 제출·열람·기일 신청·항소 대리 / 제한 위임·해임 신고 안내",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:72:파일을 첨부하세요",
+      "label": "파일을 첨부하세요",
+      "banned": "파일을 첨부하세요",
+      "alt": "허용 형식 + 파일당 최대 용량 + 최대 개수 안내",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:73:증빙서류 파일 첨부",
+      "label": "증빙서류 파일 첨부",
+      "banned": "증빙서류 파일 첨부",
+      "alt": "허용 형식 + 총 용량 + 판독 불가 시 재제출 경로 안내",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:74:PDF 형식만 가능",
+      "label": "PDF 형식만 가능",
+      "banned": "PDF 형식만 가능",
+      "alt": "PDF만 가능 · HWP는 PDF 변환 후 제출",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:75:문서확인번호",
+      "label": "문서확인번호",
+      "banned": "문서확인번호",
+      "alt": "진위 확인용 문서 번호",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:76:전자 발급본도 출력 시 원본과 동일 ",
+      "label": "전자 발급본도 출력 시 원본과 동일 효력",
+      "banned": "전자 발급본도 출력 시 원본과 동일 효력",
+      "alt": "출력본도 원본과 같은 효력 / 공공 마이데이터 제출 또는 PDF 첨부",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:77:전자 발급본이 공문서와 동일한 효력",
+      "label": "전자 발급본이 공문서와 동일한 효력",
+      "banned": "전자 발급본이 공문서와 동일한 효력",
+      "alt": "전자 발급본도 공문서와 같은 효력 / 제출 전 증명서 진위 확인 가능",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:78:온라인은 대리인 신청 불가",
+      "label": "온라인은 대리인 신청 불가",
+      "banned": "온라인은 대리인 신청 불가",
+      "alt": "온라인은 본인만 신청할 수 있습니다 / 대리 신청은 방문 시 위임장을 준비해 주세요",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:79:발급일 현재 징수유예액 또는 체납처분",
+      "label": "발급일 현재 징수유예액 또는 체납처분유예액을 제외하…",
+      "banned": "발급일 현재 징수유예액 또는 체납처분유예액을 제외하고는 다른 국세를 체납한 사실이 없음을 증명",
+      "alt": "이 증명서는 지금 미납한 국세가 없을 때 발급됩니다 / 지금 발급되지 않으면 체납 내역부터 확인해 주세요",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:80:집행문 부여 신청",
+      "label": "집행문 부여 신청",
+      "banned": "집행문 부여 신청",
+      "alt": "강제집행 전에 필요한 서류입니다 / 판결·조정조서는 제1심법원, 공정증서는 공증인사무소에 신청",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 18,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 4
+      },
+      "totalHits": 4
+    },
+    {
+      "id": "term:81:판독 불가",
+      "label": "판독 불가",
+      "banned": "판독 불가",
+      "alt": "보완 요청 — 스캔본 판독이 어려워 다시 제출해 주세요 / 재제출 바로 가기",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:82:신고 불수리 통지 조회",
+      "label": "신고 불수리 통지 조회",
+      "banned": "신고 불수리 통지 조회",
+      "alt": "신고 반려 통지 확인 / 거부 사유 보기 + 다시 신고하기",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:83:전자고지(송달) 신청 및 해지",
+      "label": "전자고지(송달) 신청 및 해지",
+      "banned": "전자고지(송달) 신청 및 해지",
+      "alt": "전자 고지서 받기 / 우편으로 다시 받기",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:84:지급명세서 제출·수정·삭제",
+      "label": "지급명세서 제출·수정·삭제",
+      "banned": "지급명세서 제출·수정·삭제",
+      "alt": "지급명세서 제출 / 제출 내역 수정 / 제출 내역 삭제",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:85:현금영수증 발급·취소·수정",
+      "label": "현금영수증 발급·취소·수정",
+      "banned": "현금영수증 발급·취소·수정",
+      "alt": "현금영수증 발급 / 발급 취소 / 발급 정보 수정",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:86:국선대리인 신청(불복청구서 제출전)/",
+      "label": "국선대리인 신청(불복청구서 제출전)/(제출후)",
+      "banned": "국선대리인 신청(불복청구서 제출전)/(제출후)",
+      "alt": "국선대리인 신청 → [불복청구서 제출 전] [제출 후]",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:87:전자(세금)계산서",
+      "label": "전자(세금)계산서",
+      "banned": "전자(세금)계산서",
+      "alt": "세금계산서 / 계산서",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 16,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 3
+      },
+      "totalHits": 3
+    },
+    {
+      "id": "term:88:세대주 변경 신고",
+      "label": "세대주 변경 신고",
+      "banned": "세대주 변경 신고",
+      "alt": "세대 대표자 변경 신고 (세대주 변경) / 기존 세대주의 동의 필요 / 세대 분리 신청과 다름",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:89:사업장 현황 신고",
+      "label": "사업장 현황 신고",
+      "banned": "사업장 현황 신고",
+      "alt": "부가가치세 면세 사업자 신고 / 내 업종 확인 + 신고 기한 확인",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 16,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 3
+      },
+      "totalHits": 3
+    },
+    {
+      "id": "term:90:개명 허가 신청",
+      "label": "개명 허가 신청",
+      "banned": "개명 허가 신청",
+      "alt": "개명 허가 기준 확인 / 허가 사유·심사 기간·불복 방법 보기",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 16,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 3
+      },
+      "totalHits": 3
+    },
+    {
+      "id": "term:91:민원이 접수되었습니다",
+      "label": "민원이 접수되었습니다",
+      "banned": "민원이 접수되었습니다",
+      "alt": "신청이 완료됐습니다 / 처리까지 약 3일 / 나의 민원 확인하기 + 알림 설정하기",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:92:귀하의 종합소득세 신고서가 접수되었습",
+      "label": "귀하의 종합소득세 신고서가 접수되었습니다",
+      "banned": "귀하의 종합소득세 신고서가 접수되었습니다",
+      "alt": "종합소득세 신고가 완료됐습니다 / 접수번호 확인 + 납부 기한 확인 + 지금 납부하기",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:93:신고서가 정상적으로 접수되었습니다",
+      "label": "신고서가 정상적으로 접수되었습니다",
+      "banned": "신고서가 정상적으로 접수되었습니다",
+      "alt": "신고가 접수됐습니다 / 심사 기간 확인 + 처리 현황 조회",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:94:환급금: [금액]",
+      "label": "환급금: [금액]",
+      "banned": "환급금: [금액]",
+      "alt": "환급 결정 완료 / 예상 입금일 확인 + 지연 사유 조회 + 계좌 등록하기",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:95:개인정보 보호를 위해 로그인 후 약 ",
+      "label": "개인정보 보호를 위해 로그인 후 약 0분 동안 서비…",
+      "banned": "개인정보 보호를 위해 로그인 후 약 0분 동안 서비스 이용이 없어 자동 로그아웃 됩니다.",
+      "alt": "5분 뒤 자동으로 로그아웃됩니다 / 작성 중인 내용은 임시 저장됩니다 / 로그인 유지하기",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:96:세션이 만료되었습니다. 처음부터 다시",
+      "label": "세션이 만료되었습니다. 처음부터 다시 시작하세요.",
+      "banned": "세션이 만료되었습니다. 처음부터 다시 시작하세요.",
+      "alt": "자리를 비운 사이 로그인이 끊겼습니다 / 다시 로그인하면 이어서 작성할 수 있습니다",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:97:로그아웃 되었습니다.",
+      "label": "로그아웃 되었습니다.",
+      "banned": "로그아웃 되었습니다.",
+      "alt": "로그아웃 됐습니다 / 메인으로 가기 + 다시 로그인하기",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:98:서비스 이용이 일시적으로 중단되었습니",
+      "label": "서비스 이용이 일시적으로 중단되었습니다.",
+      "banned": "서비스 이용이 일시적으로 중단되었습니다.",
+      "alt": "지금은 이 서비스를 이용할 수 없습니다 / 다시 열리는 시각 + 대체 경로 안내",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:99:지방세 연계 납부",
+      "label": "지방세 연계 납부",
+      "banned": "지방세 연계 납부",
+      "alt": "위택스에서 별도 신고·납부 / 연계 오류 시 납부 처리 상태 확인",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:100:친권 상실 청구",
+      "label": "친권 상실 청구",
+      "banned": "친권 상실 청구",
+      "alt": "112 또는 1577-1391로 먼저 연락 / 보호 조치 후 친권 상실·일시 정지 절차 이어서 신청",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:101:소상공인 정책자금 신청",
+      "label": "소상공인 정책자금 신청",
+      "banned": "소상공인 정책자금 신청",
+      "alt": "보증서 필요 여부 먼저 확인 / 직접·대리대출 비교 / 보증서 발급 1~2주 소요",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:102:부재자 재산 관리인 선임 청구",
+      "label": "부재자 재산 관리인 선임 청구",
+      "banned": "부재자 재산 관리인 선임 청구",
+      "alt": "재산 처분이 급하면 가압류·가처분 병행 / 관리인 선임만으로는 부동산 매각·담보 설정 차단 불가",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:103:정부24 앱으로 더 편리하게 이용하세",
+      "label": "정부24 앱으로 더 편리하게 이용하세요.",
+      "banned": "정부24 앱으로 더 편리하게 이용하세요.",
+      "alt": "앱에서 가능한 기능 안내 / 앱 열기 + 앱 다운로드",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:104:해당 서비스는 PC 홈택스에서만 이용",
+      "label": "해당 서비스는 PC 홈택스에서만 이용하실 수 있습니…",
+      "banned": "해당 서비스는 PC 홈택스에서만 이용하실 수 있습니다",
+      "alt": "이 서비스는 PC에서 이용 가능 / PC로 이동하는 QR코드 보기",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:105:증명서발급과 인터넷신고는 PC를 이용",
+      "label": "증명서발급과 인터넷신고는 PC를 이용하여 주시기 바…",
+      "banned": "증명서발급과 인터넷신고는 PC를 이용하여 주시기 바랍니다.",
+      "alt": "일부 서비스는 PC에서만 이용 가능 / PC에서 다시 접속해 주세요",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:106:정보이용료",
+      "label": "정보이용료",
+      "banned": "정보이용료",
+      "alt": "추가 서비스 요금",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 16,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 3
+      },
+      "totalHits": 3
+    },
+    {
+      "id": "term:107:계좌신고",
+      "label": "계좌신고",
+      "banned": "계좌신고",
+      "alt": "환급 계좌 등록",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:108:사전답변",
+      "label": "사전답변",
+      "banned": "사전답변",
+      "alt": "세법 적용 결과 미리 확인",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:109:해임",
+      "label": "해임",
+      "banned": "해임",
+      "alt": "위임 취소",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 14,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1,
+        "efamily": 1
+      },
+      "totalHits": 2
+    },
+    {
+      "id": "term:110:세액공제",
+      "label": "세액공제",
+      "banned": "세액공제",
+      "alt": "세금 감면",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 20,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 5
+      },
+      "totalHits": 5
+    },
+    {
+      "id": "term:111:원천징수",
+      "label": "원천징수",
+      "banned": "원천징수",
+      "alt": "급여에서 미리 뗀 세금",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 20,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 1,
+        "hometax": 9
+      },
+      "totalHits": 10
+    },
+    {
+      "id": "term:112:연말정산",
+      "label": "연말정산",
+      "banned": "연말정산",
+      "alt": "한 해 세금 정산",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 20,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 1,
+        "hometax": 6
+      },
+      "totalHits": 7
+    },
+    {
+      "id": "term:113:가산세",
+      "label": "가산세",
+      "banned": "가산세",
+      "alt": "추가 세금",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 20,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 24
+      },
+      "totalHits": 24
+    },
+    {
+      "id": "term:114:환급세액",
+      "label": "환급세액",
+      "banned": "환급세액",
+      "alt": "돌려받을 세금",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:115:과납",
+      "label": "과납",
+      "banned": "과납",
+      "alt": "더 낸 세금",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:116:체납",
+      "label": "체납",
+      "banned": "체납",
+      "alt": "세금·보험료 미납",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 16,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 1,
+        "hometax": 2
+      },
+      "totalHits": 3
+    },
+    {
+      "id": "term:117:결손처분",
+      "label": "결손처분",
+      "banned": "결손처분",
+      "alt": "세금 면제 처리",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:118:예정신고",
+      "label": "예정신고",
+      "banned": "예정신고",
+      "alt": "미리 신고",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 20,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 5
+      },
+      "totalHits": 5
+    },
+    {
+      "id": "term:119:예정 고지",
+      "label": "예정 고지",
+      "banned": "예정 고지",
+      "alt": "미리 청구",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:120:납세지 관할 세무서장",
+      "label": "납세지 관할 세무서장",
+      "banned": "납세지 관할 세무서장",
+      "alt": "담당 세무서",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:121:부득이한 사유",
+      "label": "부득이한 사유",
+      "banned": "부득이한 사유",
+      "alt": "불가피한 사정, 어쩔 수 없는 경우",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:122:생계형 체납자",
+      "label": "생계형 체납자",
+      "banned": "생계형 체납자",
+      "alt": "생활이 어려운 미납자",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:123:체납액 납부의무 소멸특례",
+      "label": "체납액 납부의무 소멸특례",
+      "banned": "체납액 납부의무 소멸특례",
+      "alt": "세금 탕감 제도",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:124:탈세제보",
+      "label": "탈세제보",
+      "banned": "탈세제보",
+      "alt": "불법 탈세 신고",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:125:출연재산",
+      "label": "출연재산",
+      "banned": "출연재산",
+      "alt": "기부받은 재산",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:126:신분증명서",
+      "label": "신분증명서",
+      "banned": "신분증명서",
+      "alt": "신분증",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:127:인감증명서의 첨부",
+      "label": "인감증명서의 첨부",
+      "banned": "인감증명서의 첨부",
+      "alt": "인감증명서 제출",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:128:공시가격",
+      "label": "공시가격",
+      "banned": "공시가격",
+      "alt": "정부가 발표한 기준 가격",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:129:기준시가",
+      "label": "기준시가",
+      "banned": "기준시가",
+      "alt": "세금 계산용 정부 고시 부동산 가격",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:130:재산세 과세표준",
+      "label": "재산세 과세표준",
+      "banned": "재산세 과세표준",
+      "alt": "재산세 계산 기준 금액",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:131:합산배제",
+      "label": "합산배제",
+      "banned": "합산배제",
+      "alt": "과세 대상에서 제외",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:132:연부연납",
+      "label": "연부연납",
+      "banned": "연부연납",
+      "alt": "분할 납부",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:133:납부유예",
+      "label": "납부유예",
+      "banned": "납부유예",
+      "alt": "납부 연기, 나중에 내기",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:134:지급명세서",
+      "label": "지급명세서",
+      "banned": "지급명세서",
+      "alt": "소득 지급 내역서",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 16,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 3
+      },
+      "totalHits": 3
+    },
+    {
+      "id": "term:135:과세이연",
+      "label": "과세이연",
+      "banned": "과세이연",
+      "alt": "세금 납부 미루기",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:136:세무대리",
+      "label": "세무대리",
+      "banned": "세무대리",
+      "alt": "세무사 대리 신고·관리",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 20,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 5
+      },
+      "totalHits": 5
+    },
+    {
+      "id": "term:137:국선대리인",
+      "label": "국선대리인",
+      "banned": "국선대리인",
+      "alt": "무료 세무 대리인",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:138:기초생활수급자",
+      "label": "기초생활수급자",
+      "banned": "기초생활수급자",
+      "alt": "기초생활 지원 대상자",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:139:차상위계층",
+      "label": "차상위계층",
+      "banned": "차상위계층",
+      "alt": "기초생활 지원 바로 위 소득 계층",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:140:수급권자",
+      "label": "수급권자",
+      "banned": "수급권자",
+      "alt": "지원 대상자",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:141:급여",
+      "label": "급여",
+      "banned": "급여",
+      "alt": "(복지 맥락) 지원금, 혜택 / (세금 맥락) 급여 유지",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 20,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 10
+      },
+      "totalHits": 10
+    },
+    {
+      "id": "term:142:의료급여",
+      "label": "의료급여",
+      "banned": "의료급여",
+      "alt": "의료비 지원",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 12,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {
+        "jeongbu24": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:143:현물지급",
+      "label": "현물지급",
+      "banned": "현물지급",
+      "alt": "물품으로 지급",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:144:자활",
+      "label": "자활",
+      "banned": "자활",
+      "alt": "자립, 스스로 살아가기",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:145:선정기준",
+      "label": "선정기준",
+      "banned": "선정기준",
+      "alt": "지원 자격",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:146:복지사각지대",
+      "label": "복지사각지대",
+      "banned": "복지사각지대",
+      "alt": "복지 혜택을 받지 못하는 사각지대",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:147:취약계층",
+      "label": "취약계층",
+      "banned": "취약계층",
+      "alt": "도움이 필요한 분, 어려운 형편의 가구",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:148:지급개시일",
+      "label": "지급개시일",
+      "banned": "지급개시일",
+      "alt": "지원 시작일",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:149:양육비 채무자",
+      "label": "양육비 채무자",
+      "banned": "양육비 채무자",
+      "alt": "양육비를 주지 않는 상대방",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:150:고유식별정보",
+      "label": "고유식별정보",
+      "banned": "고유식별정보",
+      "alt": "주민등록번호 (병기 설명 사용)",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:151:신청간주",
+      "label": "신청간주",
+      "banned": "신청간주",
+      "alt": "자동 신청 처리",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:152:복지위기알림",
+      "label": "복지위기알림",
+      "banned": "복지위기알림",
+      "alt": "위기가구 신고",
+      "type": "term",
+      "color": "#3b82f6",
+      "size": 10,
+      "group": 1,
+      "cat": "행정 관습어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:153:그러하지 아니하다",
+      "label": "그러하지 아니하다",
+      "banned": "그러하지 아니하다",
+      "alt": "그렇지 않습니다",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:154:해당하지 아니합니다",
+      "label": "해당하지 아니합니다",
+      "banned": "해당하지 아니합니다",
+      "alt": "해당하지 않습니다",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:155:완납하지 아니한 경우",
+      "label": "완납하지 아니한 경우",
+      "banned": "완납하지 아니한 경우",
+      "alt": "납부하지 않은 경우",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:156:인정하지 아니하는",
+      "label": "인정하지 아니하는",
+      "banned": "인정하지 아니하는",
+      "alt": "인정하지 않는",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:157:미비하지 않으면 신청 가능합니다",
+      "label": "미비하지 않으면 신청 가능합니다",
+      "banned": "미비하지 않으면 신청 가능합니다",
+      "alt": "모두 준비되면 신청할 수 있습니다",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:158:불가능하지 않은 경우",
+      "label": "불가능하지 않은 경우",
+      "banned": "불가능하지 않은 경우",
+      "alt": "가능한 경우",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:159:제한이 없는 것은 아닙니다",
+      "label": "제한이 없는 것은 아닙니다",
+      "banned": "제한이 없는 것은 아닙니다",
+      "alt": "제한이 있습니다",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:160:무관하지 않습니다",
+      "label": "무관하지 않습니다",
+      "banned": "무관하지 않습니다",
+      "alt": "관련이 있습니다",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:161:예외가 없지 않습니다",
+      "label": "예외가 없지 않습니다",
+      "banned": "예외가 없지 않습니다",
+      "alt": "예외가 있습니다",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:162:거절할 수 없는 것이 아닙니다",
+      "label": "거절할 수 없는 것이 아닙니다",
+      "banned": "거절할 수 없는 것이 아닙니다",
+      "alt": "거절할 수 있습니다",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:163:~하지 아니하였거나",
+      "label": "~하지 아니하였거나",
+      "banned": "~하지 아니하였거나",
+      "alt": "~하지 않았거나",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:164:갈음할 수 있습니다",
+      "label": "갈음할 수 있습니다",
+      "banned": "갈음할 수 있습니다",
+      "alt": "대신합니다",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:165:~한 것으로 간주됩니다",
+      "label": "~한 것으로 간주됩니다",
+      "banned": "~한 것으로 간주됩니다",
+      "alt": "~한 것으로 봅니다",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:166:변경이 불가하며",
+      "label": "변경이 불가하며",
+      "banned": "변경이 불가하며",
+      "alt": "바꿀 수 없으며",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:167:이행하지 아니한 경우에는",
+      "label": "이행하지 아니한 경우에는",
+      "banned": "이행하지 아니한 경우에는",
+      "alt": "하지 않으면",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:168:생계수급자 등으로의 하락을 사전에 예",
+      "label": "생계수급자 등으로의 하락을 사전에 예방",
+      "banned": "생계수급자 등으로의 하락을 사전에 예방",
+      "alt": "기초수급자로 떨어지지 않도록 미리 지원합니다",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:169:재산세 30만원 이상 납부 대상자는 ",
+      "label": "재산세 30만원 이상 납부 대상자는 지원되지 않습니…",
+      "banned": "재산세 30만원 이상 납부 대상자는 지원되지 않습니다",
+      "alt": "재산세가 30만원 이상이면 신청할 수 없습니다",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:170:명시적인 거부 의사를 표시하지 않을 ",
+      "label": "명시적인 거부 의사를 표시하지 않을 경우, 신청한 …",
+      "banned": "명시적인 거부 의사를 표시하지 않을 경우, 신청한 것으로 간주합니다",
+      "alt": "계속 이용하면 신청한 것으로 봅니다",
+      "type": "term",
+      "color": "#ef4444",
+      "size": 10,
+      "group": 4,
+      "cat": "이중 부정",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:171:행태정보",
+      "label": "행태정보",
+      "banned": "행태정보",
+      "alt": "행동 패턴 정보, 브라우징 기록",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:172:쿠키(Cookie)",
+      "label": "쿠키(Cookie)",
+      "banned": "쿠키(Cookie)",
+      "alt": "웹사이트 방문 기록",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:173:디지털 인증서",
+      "label": "디지털 인증서",
+      "banned": "디지털 인증서",
+      "alt": "공인인증서, 공동인증서",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:174:전자문서지갑",
+      "label": "전자문서지갑",
+      "banned": "전자문서지갑",
+      "alt": "전자증명서 보관함",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:175:디스클로저",
+      "label": "디스클로저",
+      "banned": "디스클로저",
+      "alt": "접기·펼치기",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:176:코치마크",
+      "label": "코치마크",
+      "banned": "코치마크",
+      "alt": "초보자 안내 표시",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:177:플로팅 버튼",
+      "label": "플로팅 버튼",
+      "banned": "플로팅 버튼",
+      "alt": "떠 있는 버튼, 빠른 버튼",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:178:후레쉬(Fresh)",
+      "label": "후레쉬(Fresh)",
+      "banned": "후레쉬(Fresh)",
+      "alt": "새로 고침, 최신 정보",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:179:아카이브",
+      "label": "아카이브",
+      "banned": "아카이브",
+      "alt": "자료실, 기록 보관소",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:180:레거시",
+      "label": "레거시",
+      "banned": "레거시",
+      "alt": "기존 시스템, 이전 방식",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:181:API 연동",
+      "label": "API 연동",
+      "banned": "API 연동",
+      "alt": "시스템 연결",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:182:손말이음센터",
+      "label": "손말이음센터",
+      "banned": "손말이음센터",
+      "alt": "청각장애인 통신중계",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 14,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "hometax": 2
+      },
+      "totalHits": 2
+    },
+    {
+      "id": "term:183:유부녀",
+      "label": "유부녀",
+      "banned": "유부녀",
+      "alt": "기혼 여성",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:184:창설적 신분행위",
+      "label": "창설적 신분행위",
+      "banned": "창설적 신분행위",
+      "alt": "법적 신분 변경 (결혼, 입양 등)",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:185:인지대",
+      "label": "인지대",
+      "banned": "인지대",
+      "alt": "법원에 내는 수수료",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 12,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:186:송달료",
+      "label": "송달료",
+      "banned": "송달료",
+      "alt": "서류를 보내는 우편 비용",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 12,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:187:강제집행",
+      "label": "강제집행",
+      "banned": "강제집행",
+      "alt": "판결 뒤 돈·재산을 강제로 받는 절차",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 14,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "efamily": 2
+      },
+      "totalHits": 2
+    },
+    {
+      "id": "term:188:성년후견",
+      "label": "성년후견",
+      "banned": "성년후견",
+      "alt": "판단이 어려운 성인을 돕는 법원 보호 제도",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 20,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "efamily": 5
+      },
+      "totalHits": 5
+    },
+    {
+      "id": "term:189:친권 상실",
+      "label": "친권 상실",
+      "banned": "친권 상실",
+      "alt": "부모의 법적 결정권을 없애는 절차",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 12,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:190:친권 일시 정지",
+      "label": "친권 일시 정지",
+      "banned": "친권 일시 정지",
+      "alt": "부모의 법적 결정권을 일정 기간 멈추는 절차",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:191:임시 후견인",
+      "label": "임시 후견인",
+      "banned": "임시 후견인",
+      "alt": "급한 상황에서 잠시 대신 보호·결정할 사람",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:192:국적 이탈",
+      "label": "국적 이탈",
+      "banned": "국적 이탈",
+      "alt": "한국 국적 포기 신고",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 12,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:193:국적 회복",
+      "label": "국적 회복",
+      "banned": "국적 회복",
+      "alt": "한국 국적 다시 받기",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 12,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:194:개명 허가",
+      "label": "개명 허가",
+      "banned": "개명 허가",
+      "alt": "이름 바꾸기 허가",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 18,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "jeongbu24": 1,
+        "efamily": 3
+      },
+      "totalHits": 4
+    },
+    {
+      "id": "term:195:협의이혼 의사확인",
+      "label": "협의이혼 의사확인",
+      "banned": "협의이혼 의사확인",
+      "alt": "부부가 이혼에 합의했는지 확인",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 12,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "efamily": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:196:상속포기",
+      "label": "상속포기",
+      "banned": "상속포기",
+      "alt": "상속 거부 신고",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 16,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "efamily": 3
+      },
+      "totalHits": 3
+    },
+    {
+      "id": "term:197:임의비급여",
+      "label": "임의비급여",
+      "banned": "임의비급여",
+      "alt": "보험 미적용 비용",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:198:요양급여",
+      "label": "요양급여",
+      "banned": "요양급여",
+      "alt": "의료비 지원, 건강보험 혜택",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:199:장기요양인정",
+      "label": "장기요양인정",
+      "banned": "장기요양인정",
+      "alt": "장기요양 등급 신청",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:200:보험료 산정",
+      "label": "보험료 산정",
+      "banned": "보험료 산정",
+      "alt": "보험료 계산",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 12,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "jeongbu24": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:201:소득세 경정청구",
+      "label": "소득세 경정청구",
+      "banned": "소득세 경정청구",
+      "alt": "소득세 환급 신청",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:202:중간예납",
+      "label": "중간예납",
+      "banned": "중간예납",
+      "alt": "중간에 미리 내는 세금",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 16,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "hometax": 3
+      },
+      "totalHits": 3
+    },
+    {
+      "id": "term:203:원천징수영수증",
+      "label": "원천징수영수증",
+      "banned": "원천징수영수증",
+      "alt": "급여에서 공제된 세금 확인서",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 14,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "hometax": 2
+      },
+      "totalHits": 2
+    },
+    {
+      "id": "term:204:세금포인트",
+      "label": "세금포인트",
+      "banned": "세금포인트",
+      "alt": "세금 납부 혜택 포인트",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 16,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "hometax": 3
+      },
+      "totalHits": 3
+    },
+    {
+      "id": "term:205:반기납부",
+      "label": "반기납부",
+      "banned": "반기납부",
+      "alt": "1년에 두 번 나눠 내기",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 12,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:206:간이과세자",
+      "label": "간이과세자",
+      "banned": "간이과세자",
+      "alt": "소규모 사업자용 부가세 방식",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 16,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "hometax": 3
+      },
+      "totalHits": 3
+    },
+    {
+      "id": "term:207:부가세",
+      "label": "부가세",
+      "banned": "부가세",
+      "alt": "부가가치세 (풀어서 쓰거나 병기)",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 20,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "hometax": 5
+      },
+      "totalHits": 5
+    },
+    {
+      "id": "term:208:지방소득세",
+      "label": "지방소득세",
+      "banned": "지방소득세",
+      "alt": "지방자치단체에 따로 내는 소득세",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 14,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "hometax": 2
+      },
+      "totalHits": 2
+    },
+    {
+      "id": "term:209:간주임대료",
+      "label": "간주임대료",
+      "banned": "간주임대료",
+      "alt": "보증금을 이자로 계산한 임대수입",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 12,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:210:확정일자",
+      "label": "확정일자",
+      "banned": "확정일자",
+      "alt": "전세 계약서 날짜 확인 (보증금 보호)",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 12,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "jeongbu24": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:211:임의가입",
+      "label": "임의가입",
+      "banned": "임의가입",
+      "alt": "원하면 직접 가입",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 12,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "jeongbu24": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:212:추납",
+      "label": "추납",
+      "banned": "추납",
+      "alt": "못 낸 기간 보험료 나중에 내기",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:213:임의계속가입",
+      "label": "임의계속가입",
+      "banned": "임의계속가입",
+      "alt": "퇴직 뒤 예전 직장 보험료로 계속 가입",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 12,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "jeongbu24": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:214:분납",
+      "label": "분납",
+      "banned": "분납",
+      "alt": "세금 나눠 내기",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 20,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "jeongbu24": 1,
+        "hometax": 5,
+        "efamily": 1
+      },
+      "totalHits": 7
+    },
+    {
+      "id": "term:215:소득인정액",
+      "label": "소득인정액",
+      "banned": "소득인정액",
+      "alt": "가구 소득·재산 합산액",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 18,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "jeongbu24": 4
+      },
+      "totalHits": 4
+    },
+    {
+      "id": "term:216:기준 중위소득",
+      "label": "기준 중위소득",
+      "banned": "기준 중위소득",
+      "alt": "소득이 중간 가구의 기준값 (비율로 비교)",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:217:소득평가액",
+      "label": "소득평가액",
+      "banned": "소득평가액",
+      "alt": "월 소득으로 계산한 금액",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:218:소득환산액",
+      "label": "소득환산액",
+      "banned": "소득환산액",
+      "alt": "재산을 소득으로 바꾼 금액",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:219:전자바우처",
+      "label": "전자바우처",
+      "banned": "전자바우처",
+      "alt": "전자 서비스 이용권, 복지카드",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:220:첫만남이용권",
+      "label": "첫만남이용권",
+      "banned": "첫만남이용권",
+      "alt": "출생아 첫 지원금",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 12,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "jeongbu24": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:221:국민행복카드",
+      "label": "국민행복카드",
+      "banned": "국민행복카드",
+      "alt": "임신·출산·육아 지원 카드",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:222:사회서비스 이용권",
+      "label": "사회서비스 이용권",
+      "banned": "사회서비스 이용권",
+      "alt": "돌봄·활동 지원 서비스 이용권",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 12,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "jeongbu24": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:223:긴급복지지원",
+      "label": "긴급복지지원",
+      "banned": "긴급복지지원",
+      "alt": "갑작스러운 위기 가구를 위한 생계·의료·주거 지원",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 16,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "jeongbu24": 3
+      },
+      "totalHits": 3
+    },
+    {
+      "id": "term:224:경계선지능아동",
+      "label": "경계선지능아동",
+      "banned": "경계선지능아동",
+      "alt": "인지·학습에 어려움이 있는 아동",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:225:거치 후 균분상환",
+      "label": "거치 후 균분상환",
+      "banned": "거치 후 균분상환",
+      "alt": "일정 기간 후 같은 금액으로 나눠 갚기",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:226:드림스타트",
+      "label": "드림스타트",
+      "banned": "드림스타트",
+      "alt": "아동 통합 지원 사업 (첫 등장 시 설명 병기)",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:227:실업인정",
+      "label": "실업인정",
+      "banned": "실업인정",
+      "alt": "실업 상태 확인",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:228:실업인정일",
+      "label": "실업인정일",
+      "banned": "실업인정일",
+      "alt": "실업급여를 확인하는 날",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:229:적극적인 재취업활동",
+      "label": "적극적인 재취업활동",
+      "banned": "적극적인 재취업활동",
+      "alt": "재취업 활동",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:230:조기재취업수당",
+      "label": "조기재취업수당",
+      "banned": "조기재취업수당",
+      "alt": "빨리 다시 취업했을 때 받는 수당",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:231:통신판매중개자",
+      "label": "통신판매중개자",
+      "banned": "통신판매중개자",
+      "alt": "판매를 중개하는 플랫폼",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:232:노무제공플랫폼사업자",
+      "label": "노무제공플랫폼사업자",
+      "banned": "노무제공플랫폼사업자",
+      "alt": "일을 연결하는 플랫폼 사업자",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:233:APA 연례보고서",
+      "label": "APA 연례보고서",
+      "banned": "APA 연례보고서",
+      "alt": "사전가격합의 연간 보고서",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:234:파생상품",
+      "label": "파생상품",
+      "banned": "파생상품",
+      "alt": "선물·옵션 등 파생금융상품",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:235:세무대리인",
+      "label": "세무대리인",
+      "banned": "세무대리인",
+      "alt": "세금 업무를 대신하는 전문가",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 16,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "hometax": 3
+      },
+      "totalHits": 3
+    },
+    {
+      "id": "term:236:수임",
+      "label": "수임",
+      "banned": "수임",
+      "alt": "업무 맡기기",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 18,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "hometax": 4
+      },
+      "totalHits": 4
+    },
+    {
+      "id": "term:237:일괄제공",
+      "label": "일괄제공",
+      "banned": "일괄제공",
+      "alt": "한 번에 제공",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 12,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {
+        "hometax": 1
+      },
+      "totalHits": 1
+    },
+    {
+      "id": "term:238:수탁자",
+      "label": "수탁자",
+      "banned": "수탁자",
+      "alt": "위탁 업체",
+      "type": "term",
+      "color": "#8b5cf6",
+      "size": 10,
+      "group": 2,
+      "cat": "전문 용어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:239:사용자 인터페이스의 가장 작은 단위로",
+      "label": "사용자 인터페이스의 가장 작은 단위로 과업에 상관없…",
+      "banned": "사용자 인터페이스의 가장 작은 단위로 과업에 상관없이 일관성 있게 사용되는 공통 요소에 대한 가이드를 의미한다",
+      "alt": "UI를 만드는 기본 재료입니다. 버튼·입력창처럼 어디서나 같은 모양으로 쓰는 요소를 다룹니다.",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:240:귀하의 소득 및 재산 현황을 검토한 ",
+      "label": "귀하의 소득 및 재산 현황을 검토한 결과, 지원 대…",
+      "banned": "귀하의 소득 및 재산 현황을 검토한 결과, 지원 대상에 해당되지 않음을 알려드립니다",
+      "alt": "지원 대상이 아닙니다. 소득 기준을 초과했습니다.",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:241:사용자 여정 기반의 사용자 경험 설계",
+      "label": "사용자 여정 기반의 사용자 경험 설계 가이드",
+      "banned": "사용자 여정 기반의 사용자 경험 설계 가이드",
+      "alt": "자주 하는 작업을 단계별로 안내합니다",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:242:소중한 개인정보 보호를 위해 안전하게",
+      "label": "소중한 개인정보 보호를 위해 안전하게 처리됩니다",
+      "banned": "소중한 개인정보 보호를 위해 안전하게 처리됩니다",
+      "alt": "(삭제 — 당연한 사항)",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:243:더욱 편리하고 안전한 서비스 제공을 ",
+      "label": "더욱 편리하고 안전한 서비스 제공을 위해",
+      "banned": "더욱 편리하고 안전한 서비스 제공을 위해",
+      "alt": "(삭제 — 당연한 사항)",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:244:원활한 서비스 이용을 위하여",
+      "label": "원활한 서비스 이용을 위하여",
+      "banned": "원활한 서비스 이용을 위하여",
+      "alt": "(삭제 — 당연한 사항)",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:245:본인 확인을 위한 개인정보 수집·이용",
+      "label": "본인 확인을 위한 개인정보 수집·이용·제공에 동의",
+      "banned": "본인 확인을 위한 개인정보 수집·이용·제공에 동의",
+      "alt": "본인 확인에 필요한 정보 수집에 동의",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:246:정보통신망 이용촉진 및 정보보호 등에",
+      "label": "정보통신망 이용촉진 및 정보보호 등에 관한 법률",
+      "banned": "정보통신망 이용촉진 및 정보보호 등에 관한 법률",
+      "alt": "(풀이 불가 시 약칭 병기: 정보통신망법)",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:247:개인정보 보호법 제15조 제1항 제1",
+      "label": "개인정보 보호법 제15조 제1항 제1호에 따라",
+      "banned": "개인정보 보호법 제15조 제1항 제1호에 따라",
+      "alt": "개인정보 보호법에 따라",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:248:재무상태표 상 총자산총액이 5억원 이",
+      "label": "재무상태표 상 총자산총액이 5억원 이상이거나 해당 …",
+      "banned": "재무상태표 상 총자산총액이 5억원 이상이거나 해당 과세기간 또는 사업연도 수입금액과 그 과세기간 또는 사업연도에 출연받은 재산가액의 합계액이 3억원 이상인 공익법인등",
+      "alt": "총자산이 5억 원 이상이거나, 해당 연도 수입과 기부받은 재산을 합쳐 3억 원 이상인 공익법인",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:249:생계형체납자의 체납액 납부의무 소멸특",
+      "label": "생계형체납자의 체납액 납부의무 소멸특례 제도",
+      "banned": "생계형체납자의 체납액 납부의무 소멸특례 제도",
+      "alt": "생활이 어려운 미납자를 위한 세금 탕감 제도",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:250:사업연도 종료일부터 4개월 이내에 납",
+      "label": "사업연도 종료일부터 4개월 이내에 납세지 관할세무서…",
+      "banned": "사업연도 종료일부터 4개월 이내에 납세지 관할세무서장에게 제출하여야 합니다",
+      "alt": "사업 연도가 끝난 후 4개월 안에 담당 세무서에 내세요",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:251:부가가치세 예정신고·예정고지 조회",
+      "label": "부가가치세 예정신고·예정고지 조회",
+      "banned": "부가가치세 예정신고·예정고지 조회",
+      "alt": "부가세 미리 신고·청구 확인",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:252:근로자 소득·세액공제 자료 조회",
+      "label": "근로자 소득·세액공제 자료 조회",
+      "banned": "근로자 소득·세액공제 자료 조회",
+      "alt": "근로자 소득·세금 공제 자료 보기",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:253:삶의 질 제고를 도모합니다",
+      "label": "삶의 질 제고를 도모합니다",
+      "banned": "삶의 질 제고를 도모합니다",
+      "alt": "삶의 질을 높입니다",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:254:경제적 안정 도모",
+      "label": "경제적 안정 도모",
+      "banned": "경제적 안정 도모",
+      "alt": "생활이 나아지도록 돕습니다",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:255:맞춤형 사회서비스를 통합 제공합니다",
+      "label": "맞춤형 사회서비스를 통합 제공합니다",
+      "banned": "맞춤형 사회서비스를 통합 제공합니다",
+      "alt": "상황에 맞는 서비스를 한 번에 받을 수 있습니다",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:256:예산범위 내에서 지원대상자 적합여부 ",
+      "label": "예산범위 내에서 지원대상자 적합여부 선별",
+      "banned": "예산범위 내에서 지원대상자 적합여부 선별",
+      "alt": "예산 한도 내에서 기준에 맞는 분을 선정합니다",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:257:총 근로(사업)소득이 기준 중위소득 ",
+      "label": "총 근로(사업)소득이 기준 중위소득 40%의 60%…",
+      "banned": "총 근로(사업)소득이 기준 중위소득 40%의 60% 이상",
+      "alt": "일해서 버는 소득이 기준 금액 이상",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:258:학습지업체 청구에 의거 학습지지원 대",
+      "label": "학습지업체 청구에 의거 학습지지원 대상 아동의 학습…",
+      "banned": "학습지업체 청구에 의거 학습지지원 대상 아동의 학습지 이용요금 지급",
+      "alt": "업체 청구에 따라 학습지 이용료를 지원합니다",
+      "type": "term",
+      "color": "#f59e0b",
+      "size": 10,
+      "group": 3,
+      "cat": "과도한 수식",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:259:~하시기 바랍니다",
+      "label": "~하시기 바랍니다",
+      "banned": "~하시기 바랍니다",
+      "alt": "~해 주세요",
+      "type": "term",
+      "color": "#10b981",
+      "size": 10,
+      "group": 5,
+      "cat": "과도한 경어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:260:~하여 주시기 바랍니다",
+      "label": "~하여 주시기 바랍니다",
+      "banned": "~하여 주시기 바랍니다",
+      "alt": "~해 주세요",
+      "type": "term",
+      "color": "#10b981",
+      "size": 10,
+      "group": 5,
+      "cat": "과도한 경어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:261:~하시길 권장드립니다",
+      "label": "~하시길 권장드립니다",
+      "banned": "~하시길 권장드립니다",
+      "alt": "~하세요 / ~하는 것을 권합니다",
+      "type": "term",
+      "color": "#10b981",
+      "size": 10,
+      "group": 5,
+      "cat": "과도한 경어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:262:~해 주시어 감사합니다",
+      "label": "~해 주시어 감사합니다",
+      "banned": "~해 주시어 감사합니다",
+      "alt": "~해 주셔서 감사합니다",
+      "type": "term",
+      "color": "#10b981",
+      "size": 10,
+      "group": 5,
+      "cat": "과도한 경어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:263:~하실 수 있으십니다",
+      "label": "~하실 수 있으십니다",
+      "banned": "~하실 수 있으십니다",
+      "alt": "~하실 수 있습니다",
+      "type": "term",
+      "color": "#10b981",
+      "size": 10,
+      "group": 5,
+      "cat": "과도한 경어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:264:~이용해 주시면 감사하겠습니다",
+      "label": "~이용해 주시면 감사하겠습니다",
+      "banned": "~이용해 주시면 감사하겠습니다",
+      "alt": "~이용해 주세요",
+      "type": "term",
+      "color": "#10b981",
+      "size": 10,
+      "group": 5,
+      "cat": "과도한 경어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:265:~문의하여 주시기 바랍니다",
+      "label": "~문의하여 주시기 바랍니다",
+      "banned": "~문의하여 주시기 바랍니다",
+      "alt": "~문의해 주세요",
+      "type": "term",
+      "color": "#10b981",
+      "size": 10,
+      "group": 5,
+      "cat": "과도한 경어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:266:의견이 있으십니까?",
+      "label": "의견이 있으십니까?",
+      "banned": "의견이 있으십니까?",
+      "alt": "의견이 있으신가요?",
+      "type": "term",
+      "color": "#10b981",
+      "size": 10,
+      "group": 5,
+      "cat": "과도한 경어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:267:~되오니 양지하여 주시기 바랍니다",
+      "label": "~되오니 양지하여 주시기 바랍니다",
+      "banned": "~되오니 양지하여 주시기 바랍니다",
+      "alt": "~이오니 참고해 주세요",
+      "type": "term",
+      "color": "#10b981",
+      "size": 10,
+      "group": 5,
+      "cat": "과도한 경어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:268:~드리오니",
+      "label": "~드리오니",
+      "banned": "~드리오니",
+      "alt": "~드리니",
+      "type": "term",
+      "color": "#10b981",
+      "size": 10,
+      "group": 5,
+      "cat": "과도한 경어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:269:협조를 부탁드리오며",
+      "label": "협조를 부탁드리오며",
+      "banned": "협조를 부탁드리오며",
+      "alt": "협조 부탁드립니다",
+      "type": "term",
+      "color": "#10b981",
+      "size": 10,
+      "group": 5,
+      "cat": "과도한 경어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:270:~하여야 합니다",
+      "label": "~하여야 합니다",
+      "banned": "~하여야 합니다",
+      "alt": "~해야 합니다 / ~하세요",
+      "type": "term",
+      "color": "#10b981",
+      "size": 10,
+      "group": 5,
+      "cat": "과도한 경어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:271:제출하시기 바랍니다",
+      "label": "제출하시기 바랍니다",
+      "banned": "제출하시기 바랍니다",
+      "alt": "제출하세요",
+      "type": "term",
+      "color": "#10b981",
+      "size": 10,
+      "group": 5,
+      "cat": "과도한 경어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:272:확인하시기 바랍니다",
+      "label": "확인하시기 바랍니다",
+      "banned": "확인하시기 바랍니다",
+      "alt": "확인하세요",
+      "type": "term",
+      "color": "#10b981",
+      "size": 10,
+      "group": 5,
+      "cat": "과도한 경어",
+      "agencyHits": {},
+      "totalHits": 0
+    },
+    {
+      "id": "term:273:납세지 관할 세무서장에게 제출하여야 ",
+      "label": "납세지 관할 세무서장에게 제출하여야 합니다",
+      "banned": "납세지 관할 세무서장에게 제출하여야 합니다",
+      "alt": "담당 세무서에 제출하세요",
+      "type": "term",
+      "color": "#10b981",
+      "size": 10,
+      "group": 5,
+      "cat": "과도한 경어",
+      "agencyHits": {},
+      "totalHits": 0
+    }
+  ],
+  "edges": [
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:0:명일까지 제출",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:1:직접 내방하여",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:2:기표 완료",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:3:상기 사항",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:4:동 기간 내",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:5:익일까지",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:6:전일 기준",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:7:교부 신청",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:8:교부 청구",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:9:교부서류",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:10:귀책사유",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:11:귀하",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:12:파기",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:13:정보주체",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:14:본인확인",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:15:실명확인",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:16:서비스 이용동의",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:17:자료제공동의",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:18:부과",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:19:득실 신고",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:20:피부양자",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:21:본인일부부담금",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:22:산정특례",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:23:법정대리인",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:24:인우인 보증서",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:25:소명자료",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:26:변상금",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:27:과태료 부과",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:28:행정처분",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:29:전입 신고",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:30:전출 신고",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:31:이의신청",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:32:신청자격",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:33:구비서류",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:34:발급서류",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:35:처리기간",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:36:이해관계인",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:37:민원해결",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:38:처리현황",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:39:처리기관",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:40:답변예정일",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:41:등록일",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:42:경정청구",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:43:장기미환급금",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:44:전자증명서안내",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:45:부가가치세예정신고",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:46:증명서발급",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:47:인터넷신고",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:48:가족관계등록부정정",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:49:가족관계등록부정정 허가",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:50:정부민원안내콜센터",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:51:국세상담센터",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:52:사용자지원센터",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:53:서비스 상세 이동",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:54:1번째 배너",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:55:AI 켜기",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:56:새창",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:57:주민등록등본",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:58:상세증명서",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:59:납세증명서 (금융거래용)",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:60:개인정보 제공 범위 선택",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:61:말소 사항 포함",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:62:세무정보 열람권한 부여",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:63:건강보험 피부양자 등록 신청",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:64:연말정산 간소화",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:65:소송 기록 열람·복사 신청",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:66:협의이혼 의사확인 신청",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:67:외국인등록번호 *",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:68:영세율 신고",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:69:병적증명서 발급",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:70:세무대리인 수임 동의",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:71:소송 대리인 등록",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:72:파일을 첨부하세요",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:73:증빙서류 파일 첨부",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:74:PDF 형식만 가능",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:75:문서확인번호",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:76:전자 발급본도 출력 시 원본과 동일 ",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:77:전자 발급본이 공문서와 동일한 효력",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:78:온라인은 대리인 신청 불가",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:79:발급일 현재 징수유예액 또는 체납처분",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:80:집행문 부여 신청",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:81:판독 불가",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:82:신고 불수리 통지 조회",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:83:전자고지(송달) 신청 및 해지",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:84:지급명세서 제출·수정·삭제",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:85:현금영수증 발급·취소·수정",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:86:국선대리인 신청(불복청구서 제출전)/",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:87:전자(세금)계산서",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:88:세대주 변경 신고",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:89:사업장 현황 신고",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:90:개명 허가 신청",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:91:민원이 접수되었습니다",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:92:귀하의 종합소득세 신고서가 접수되었습",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:93:신고서가 정상적으로 접수되었습니다",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:94:환급금: [금액]",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:95:개인정보 보호를 위해 로그인 후 약 ",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:96:세션이 만료되었습니다. 처음부터 다시",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:97:로그아웃 되었습니다.",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:98:서비스 이용이 일시적으로 중단되었습니",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:99:지방세 연계 납부",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:100:친권 상실 청구",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:101:소상공인 정책자금 신청",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:102:부재자 재산 관리인 선임 청구",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:103:정부24 앱으로 더 편리하게 이용하세",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:104:해당 서비스는 PC 홈택스에서만 이용",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:105:증명서발급과 인터넷신고는 PC를 이용",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:106:정보이용료",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:107:계좌신고",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:108:사전답변",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:109:해임",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:110:세액공제",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:111:원천징수",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:112:연말정산",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:113:가산세",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:114:환급세액",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:115:과납",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:116:체납",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:117:결손처분",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:118:예정신고",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:119:예정 고지",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:120:납세지 관할 세무서장",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:121:부득이한 사유",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:122:생계형 체납자",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:123:체납액 납부의무 소멸특례",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:124:탈세제보",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:125:출연재산",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:126:신분증명서",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:127:인감증명서의 첨부",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:128:공시가격",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:129:기준시가",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:130:재산세 과세표준",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:131:합산배제",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:132:연부연납",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:133:납부유예",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:134:지급명세서",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:135:과세이연",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:136:세무대리",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:137:국선대리인",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:138:기초생활수급자",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:139:차상위계층",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:140:수급권자",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:141:급여",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:142:의료급여",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:143:현물지급",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:144:자활",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:145:선정기준",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:146:복지사각지대",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:147:취약계층",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:148:지급개시일",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:149:양육비 채무자",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:150:고유식별정보",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:151:신청간주",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:행정 관습어",
+      "to": "term:152:복지위기알림",
+      "type": "belongs_to",
+      "color": "#3b82f650"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:153:그러하지 아니하다",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:154:해당하지 아니합니다",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:155:완납하지 아니한 경우",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:156:인정하지 아니하는",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:157:미비하지 않으면 신청 가능합니다",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:158:불가능하지 않은 경우",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:159:제한이 없는 것은 아닙니다",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:160:무관하지 않습니다",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:161:예외가 없지 않습니다",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:162:거절할 수 없는 것이 아닙니다",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:163:~하지 아니하였거나",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:164:갈음할 수 있습니다",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:165:~한 것으로 간주됩니다",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:166:변경이 불가하며",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:167:이행하지 아니한 경우에는",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:168:생계수급자 등으로의 하락을 사전에 예",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:169:재산세 30만원 이상 납부 대상자는 ",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:이중 부정",
+      "to": "term:170:명시적인 거부 의사를 표시하지 않을 ",
+      "type": "belongs_to",
+      "color": "#ef444450"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:171:행태정보",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:172:쿠키(Cookie)",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:173:디지털 인증서",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:174:전자문서지갑",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:175:디스클로저",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:176:코치마크",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:177:플로팅 버튼",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:178:후레쉬(Fresh)",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:179:아카이브",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:180:레거시",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:181:API 연동",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:182:손말이음센터",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:183:유부녀",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:184:창설적 신분행위",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:185:인지대",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:186:송달료",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:187:강제집행",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:188:성년후견",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:189:친권 상실",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:190:친권 일시 정지",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:191:임시 후견인",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:192:국적 이탈",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:193:국적 회복",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:194:개명 허가",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:195:협의이혼 의사확인",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:196:상속포기",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:197:임의비급여",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:198:요양급여",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:199:장기요양인정",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:200:보험료 산정",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:201:소득세 경정청구",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:202:중간예납",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:203:원천징수영수증",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:204:세금포인트",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:205:반기납부",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:206:간이과세자",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:207:부가세",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:208:지방소득세",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:209:간주임대료",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:210:확정일자",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:211:임의가입",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:212:추납",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:213:임의계속가입",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:214:분납",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:215:소득인정액",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:216:기준 중위소득",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:217:소득평가액",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:218:소득환산액",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:219:전자바우처",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:220:첫만남이용권",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:221:국민행복카드",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:222:사회서비스 이용권",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:223:긴급복지지원",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:224:경계선지능아동",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:225:거치 후 균분상환",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:226:드림스타트",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:227:실업인정",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:228:실업인정일",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:229:적극적인 재취업활동",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:230:조기재취업수당",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:231:통신판매중개자",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:232:노무제공플랫폼사업자",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:233:APA 연례보고서",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:234:파생상품",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:235:세무대리인",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:236:수임",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:237:일괄제공",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:전문 용어",
+      "to": "term:238:수탁자",
+      "type": "belongs_to",
+      "color": "#8b5cf650"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:239:사용자 인터페이스의 가장 작은 단위로",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:240:귀하의 소득 및 재산 현황을 검토한 ",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:241:사용자 여정 기반의 사용자 경험 설계",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:242:소중한 개인정보 보호를 위해 안전하게",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:243:더욱 편리하고 안전한 서비스 제공을 ",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:244:원활한 서비스 이용을 위하여",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:245:본인 확인을 위한 개인정보 수집·이용",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:246:정보통신망 이용촉진 및 정보보호 등에",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:247:개인정보 보호법 제15조 제1항 제1",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:248:재무상태표 상 총자산총액이 5억원 이",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:249:생계형체납자의 체납액 납부의무 소멸특",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:250:사업연도 종료일부터 4개월 이내에 납",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:251:부가가치세 예정신고·예정고지 조회",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:252:근로자 소득·세액공제 자료 조회",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:253:삶의 질 제고를 도모합니다",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:254:경제적 안정 도모",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:255:맞춤형 사회서비스를 통합 제공합니다",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:256:예산범위 내에서 지원대상자 적합여부 ",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:257:총 근로(사업)소득이 기준 중위소득 ",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 수식",
+      "to": "term:258:학습지업체 청구에 의거 학습지지원 대",
+      "type": "belongs_to",
+      "color": "#f59e0b50"
+    },
+    {
+      "from": "cat:과도한 경어",
+      "to": "term:259:~하시기 바랍니다",
+      "type": "belongs_to",
+      "color": "#10b98150"
+    },
+    {
+      "from": "cat:과도한 경어",
+      "to": "term:260:~하여 주시기 바랍니다",
+      "type": "belongs_to",
+      "color": "#10b98150"
+    },
+    {
+      "from": "cat:과도한 경어",
+      "to": "term:261:~하시길 권장드립니다",
+      "type": "belongs_to",
+      "color": "#10b98150"
+    },
+    {
+      "from": "cat:과도한 경어",
+      "to": "term:262:~해 주시어 감사합니다",
+      "type": "belongs_to",
+      "color": "#10b98150"
+    },
+    {
+      "from": "cat:과도한 경어",
+      "to": "term:263:~하실 수 있으십니다",
+      "type": "belongs_to",
+      "color": "#10b98150"
+    },
+    {
+      "from": "cat:과도한 경어",
+      "to": "term:264:~이용해 주시면 감사하겠습니다",
+      "type": "belongs_to",
+      "color": "#10b98150"
+    },
+    {
+      "from": "cat:과도한 경어",
+      "to": "term:265:~문의하여 주시기 바랍니다",
+      "type": "belongs_to",
+      "color": "#10b98150"
+    },
+    {
+      "from": "cat:과도한 경어",
+      "to": "term:266:의견이 있으십니까?",
+      "type": "belongs_to",
+      "color": "#10b98150"
+    },
+    {
+      "from": "cat:과도한 경어",
+      "to": "term:267:~되오니 양지하여 주시기 바랍니다",
+      "type": "belongs_to",
+      "color": "#10b98150"
+    },
+    {
+      "from": "cat:과도한 경어",
+      "to": "term:268:~드리오니",
+      "type": "belongs_to",
+      "color": "#10b98150"
+    },
+    {
+      "from": "cat:과도한 경어",
+      "to": "term:269:협조를 부탁드리오며",
+      "type": "belongs_to",
+      "color": "#10b98150"
+    },
+    {
+      "from": "cat:과도한 경어",
+      "to": "term:270:~하여야 합니다",
+      "type": "belongs_to",
+      "color": "#10b98150"
+    },
+    {
+      "from": "cat:과도한 경어",
+      "to": "term:271:제출하시기 바랍니다",
+      "type": "belongs_to",
+      "color": "#10b98150"
+    },
+    {
+      "from": "cat:과도한 경어",
+      "to": "term:272:확인하시기 바랍니다",
+      "type": "belongs_to",
+      "color": "#10b98150"
+    },
+    {
+      "from": "cat:과도한 경어",
+      "to": "term:273:납세지 관할 세무서장에게 제출하여야 ",
+      "type": "belongs_to",
+      "color": "#10b98150"
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:35:처리기간",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 2,
+      "count": 2
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:36:이해관계인",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:50:정부민원안내콜센터",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 2,
+      "count": 2
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:11:귀하",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:11:귀하",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 2,
+      "count": 2
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:44:전자증명서안내",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:16:서비스 이용동의",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 2,
+      "count": 2
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:53:서비스 상세 이동",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:55:AI 켜기",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:57:주민등록등본",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 2,
+      "count": 2
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:88:세대주 변경 신고",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:64:연말정산 간소화",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:64:연말정산 간소화",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 2,
+      "count": 2
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:112:연말정산",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:112:연말정산",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 4,
+      "count": 6
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:69:병적증명서 발급",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 2,
+      "count": 3
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:58:상세증명서",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:58:상세증명서",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 2,
+      "count": 3
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:91:민원이 접수되었습니다",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:31:이의신청",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 3,
+      "count": 4
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:31:이의신청",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:31:이의신청",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 3,
+      "count": 5
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:210:확정일자",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:33:구비서류",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:211:임의가입",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:194:개명 허가",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:194:개명 허가",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 2,
+      "count": 3
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:200:보험료 산정",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:213:임의계속가입",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:215:소득인정액",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 3,
+      "count": 4
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:141:급여",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 4,
+      "count": 10
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:20:피부양자",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:116:체납",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:116:체납",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 2,
+      "count": 2
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:214:분납",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:214:분납",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 3,
+      "count": 5
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:214:분납",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:138:기초생활수급자",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:223:긴급복지지원",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 2,
+      "count": 3
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:101:소상공인 정책자금 신청",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:111:원천징수",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:111:원천징수",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 4,
+      "count": 9
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:142:의료급여",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:220:첫만남이용권",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:jeongbu24",
+      "to": "term:222:사회서비스 이용권",
+      "type": "agency_uses",
+      "color": "#3b82f680",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:208:지방소득세",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 2,
+      "count": 2
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:92:귀하의 종합소득세 신고서가 접수되었습",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:18:부과",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:18:부과",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 2,
+      "count": 3
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:113:가산세",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 4,
+      "count": 24
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:96:세션이 만료되었습니다. 처음부터 다시",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:45:부가가치세예정신고",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:118:예정신고",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 3,
+      "count": 5
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:51:국세상담센터",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:110:세액공제",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 3,
+      "count": 5
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:182:손말이음센터",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 2,
+      "count": 2
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:131:합산배제",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:17:자료제공동의",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:136:세무대리",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 3,
+      "count": 5
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:236:수임",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 3,
+      "count": 4
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:83:전자고지(송달) 신청 및 해지",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:137:국선대리인",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:108:사전답변",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:109:해임",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:109:해임",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:235:세무대리인",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 2,
+      "count": 3
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:87:전자(세금)계산서",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 2,
+      "count": 3
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:54:1번째 배너",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:104:해당 서비스는 PC 홈택스에서만 이용",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:202:중간예납",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 2,
+      "count": 3
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:43:장기미환급금",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:84:지급명세서 제출·수정·삭제",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:134:지급명세서",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 2,
+      "count": 3
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:107:계좌신고",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:203:원천징수영수증",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 2,
+      "count": 2
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:85:현금영수증 발급·취소·수정",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:206:간이과세자",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 2,
+      "count": 3
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:204:세금포인트",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 2,
+      "count": 3
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:70:세무대리인 수임 동의",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:205:반기납부",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:237:일괄제공",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:89:사업장 현황 신고",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 2,
+      "count": 3
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:207:부가세",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 3,
+      "count": 5
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:68:영세율 신고",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:99:지방세 연계 납부",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:42:경정청구",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:119:예정 고지",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:132:연부연납",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:hometax",
+      "to": "term:209:간주임대료",
+      "type": "agency_uses",
+      "color": "#f59e0b80",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:56:새창",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:52:사용자지원센터",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 2,
+      "count": 3
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:106:정보이용료",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 2,
+      "count": 3
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:46:증명서발급",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 4,
+      "count": 6
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:47:인터넷신고",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 4,
+      "count": 6
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:32:신청자격",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 2,
+      "count": 2
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:23:법정대리인",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:41:등록일",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:48:가족관계등록부정정",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:49:가족관계등록부정정 허가",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:105:증명서발급과 인터넷신고는 PC를 이용",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:39:처리기관",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:93:신고서가 정상적으로 접수되었습니다",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:82:신고 불수리 통지 조회",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:90:개명 허가 신청",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 2,
+      "count": 3
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:188:성년후견",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 3,
+      "count": 5
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:196:상속포기",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 2,
+      "count": 3
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:185:인지대",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:186:송달료",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:80:집행문 부여 신청",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 3,
+      "count": 4
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:115:과납",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:61:말소 사항 포함",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:187:강제집행",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 2,
+      "count": 2
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:71:소송 대리인 등록",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:193:국적 회복",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:189:친권 상실",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:66:협의이혼 의사확인 신청",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:195:협의이혼 의사확인",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "agency:efamily",
+      "to": "term:192:국적 이탈",
+      "type": "agency_uses",
+      "color": "#10b98180",
+      "width": 1,
+      "count": 1
+    },
+    {
+      "from": "principle:무번역",
+      "to": "agency:jeongbu24",
+      "type": "principle_dist",
+      "color": "#60a5fa60",
+      "width": 1,
+      "count": 77
+    },
+    {
+      "from": "principle:정보핵심화",
+      "to": "agency:jeongbu24",
+      "type": "principle_dist",
+      "color": "#a78bfa60",
+      "width": 4,
+      "count": 181
+    },
+    {
+      "from": "principle:심리적안전망",
+      "to": "agency:jeongbu24",
+      "type": "principle_dist",
+      "color": "#34d39960",
+      "width": 2,
+      "count": 97
+    },
+    {
+      "from": "principle:정보핵심화",
+      "to": "agency:hometax",
+      "type": "principle_dist",
+      "color": "#a78bfa60",
+      "width": 4,
+      "count": 191
+    },
+    {
+      "from": "principle:무번역",
+      "to": "agency:hometax",
+      "type": "principle_dist",
+      "color": "#60a5fa60",
+      "width": 1,
+      "count": 79
+    },
+    {
+      "from": "principle:심리적안전망",
+      "to": "agency:hometax",
+      "type": "principle_dist",
+      "color": "#34d39960",
+      "width": 1,
+      "count": 78
+    },
+    {
+      "from": "principle:무번역",
+      "to": "agency:efamily",
+      "type": "principle_dist",
+      "color": "#60a5fa60",
+      "width": 3,
+      "count": 123
+    },
+    {
+      "from": "principle:심리적안전망",
+      "to": "agency:efamily",
+      "type": "principle_dist",
+      "color": "#34d39960",
+      "width": 2,
+      "count": 91
+    },
+    {
+      "from": "principle:정보핵심화",
+      "to": "agency:efamily",
+      "type": "principle_dist",
+      "color": "#a78bfa60",
+      "width": 4,
+      "count": 169
+    }
+  ],
+  "meta": {
+    "totalTerms": 274,
+    "totalIssues": 820,
+    "crossTerms": 11,
+    "agencies": [
+      "jeongbu24",
+      "hometax",
+      "efamily"
+    ]
+  },
+  "behavior": {
+    "jeongbu24": {
+      "label": "정부24",
+      "endings": {
+        "~바랍니다": 2,
+        "~드리겠습니다": 0,
+        "~하십시오": 0,
+        "~됩니다": 4,
+        "~습니다": 10
+      },
+      "topics": {
+        "세금·세무": 16,
+        "증명서·등록": 57,
+        "오류·안내": 80,
+        "개인정보": 54,
+        "민원·복지": 116
+      },
+      "triple_star_count": 58,
+      "triple_star_samples": [
+        "혜택알리미 이용하기 전체 링크 href=\"\" — JS 의존 접근성 문제 ★★★ [원칙 B — 정보핵심화]",
+        "\"외국인과 결혼할 때\" 캐러셀·목록 설명 불일치 ★★★ [원칙 A — 무번역]",
+        "\"발급하기\" 버튼 href=\"\" 빈 링크 반복"
+      ],
+      "principle": {
+        "A": 77,
+        "B": 131,
+        "C": 14
+      },
+      "sample_titles": [
+        "공동인증서 로그인 실패 에러",
+        "발급 미완료 (수수료 미결제)",
+        "서비스 점검 안내",
+        "처리 기한 초과 안내",
+        "서류 첨부 오류"
+      ],
+      "sample_originals": [
+        "인증서 오류가 발생했습니다.\n다시 시도해 주세요.",
+        "처리가 완료되지 않았습니다.",
+        "서비스를 일시적으로 이용할 수 없습니다."
+      ],
+      "radar": {
+        "무번역위반": 3.5,
+        "정보핵심화위반": 5.9,
+        "심리적안전망위반": 0.6,
+        "고심각도비율": 10,
+        "전문용어밀도": 0.5
+      }
+    },
+    "hometax": {
+      "label": "홈택스",
+      "endings": {
+        "~바랍니다": 0,
+        "~드리겠습니다": 0,
+        "~하십시오": 0,
+        "~됩니다": 3,
+        "~습니다": 6
+      },
+      "topics": {
+        "세금·세무": 192,
+        "증명서·등록": 56,
+        "오류·안내": 71,
+        "개인정보": 13,
+        "민원·복지": 58
+      },
+      "triple_star_count": 66,
+      "triple_star_samples": [
+        "\"COMING SOON\" 영문 비번역 공지 제목 ★★★ [원칙 A — 무번역]",
+        "\"구분Hidden\" 개발자 텍스트 테이블 헤더 노출 ★★★ [원칙 B — 정보핵심화]",
+        "\"(개별·교통세)면세미납세멸실폐기(증명)신청\" 초밀도 복합어"
+      ],
+      "principle": {
+        "A": 79,
+        "B": 138,
+        "C": 4
+      },
+      "sample_titles": [
+        "공지사항 상태 뱃지",
+        "공지사항 테이블 스크린리더 칼럼명",
+        "세금신고 진입 화면 (사용자 유형 분기)",
+        "신고 완료 화면",
+        "납부 방법 선택 (카드 버튼 통일)"
+      ],
+      "sample_originals": [
+        "COMING SOON  (영문)\nNEW          (영문)\nHOT          (영문)",
+        "<th>구분Hidden</th>",
+        "종합소득세신고·지방소득세신고\n부가가치세신고\n원천세신고\n법인세신고\n... (14개 나열)"
+      ],
+      "radar": {
+        "무번역위반": 3.6,
+        "정보핵심화위반": 6.2,
+        "심리적안전망위반": 0.2,
+        "고심각도비율": 10,
+        "전문용어밀도": 4.9
+      }
+    },
+    "efamily": {
+      "label": "전자가족관계등록시스템",
+      "endings": {
+        "~바랍니다": 2,
+        "~드리겠습니다": 0,
+        "~하십시오": 0,
+        "~됩니다": 0,
+        "~습니다": 5
+      },
+      "topics": {
+        "세금·세무": 35,
+        "증명서·등록": 84,
+        "오류·안내": 80,
+        "개인정보": 13,
+        "민원·복지": 72
+      },
+      "triple_star_count": 87,
+      "triple_star_samples": [
+        "\"국제 · 국내입양에 관한 특별법/친양자입양 현황\" 구분자 3종 혼용",
+        "\"국적취득자의 성본창설 신고\" vs \"국적취득자의 성·본창설 신고\" 동일 메뉴 두 표기 혼재",
+        "\"아포스티유 안내\" 국제 행정 외래어 단독 메뉴명"
+      ],
+      "principle": {
+        "A": 123,
+        "B": 92,
+        "C": 7
+      },
+      "sample_titles": [
+        "알림창 중복 해소",
+        "자주찾는메뉴 용어 풀어쓰기",
+        "새창 링크 처리",
+        "알림창: 7개 공지 × 2~3회 중복 (DOM 전수 로드)",
+        "푸터 영역 h2/h3 시맨틱 오류"
+      ],
+      "sample_originals": [
+        "알림창 캐러셀: 동일 공지 3회 반복 (7개 슬라이드 중)",
+        "후견등기사항부존재 증명서",
+        "가족관계에 관한 영문증명서 발급 서비스 시행 안내 새창"
+      ],
+      "radar": {
+        "무번역위반": 5.5,
+        "정보핵심화위반": 4.1,
+        "심리적안전망위반": 0.3,
+        "고심각도비율": 10,
+        "전문용어밀도": 1.2
+      }
+    }
+  }
+}
