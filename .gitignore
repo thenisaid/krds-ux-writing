@@ -38,3 +38,6 @@ krds-sections-data.json
 
 # Node.js 의존성
 node_modules/
+
+# graphify 캐시 (graphify update . 로 재생성)
+graphify-out/
