@@ -9,7 +9,10 @@
   "scripts": {
     "lint": "node bin/krds-lint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "fetch:mcst": "node scripts/fetch-mcst-terms.js",
+    "score:mcst": "node scripts/score-mcst-candidates.js",
+    "apply:mcst": "node scripts/apply-mcst-approved.js"
   },
   "keywords": [
     "krds",
