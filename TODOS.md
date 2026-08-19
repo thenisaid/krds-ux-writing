@@ -7,6 +7,39 @@
 
 ## 열린 항목
 
+### TODO-015: AI 인라인 지적 — 겹친 팝오버 UI 처리
+**Priority**: P3
+**Discovered by**: /autoplan (CEO 리뷰) 2026-08-20
+**What**: 두 개 이상의 지적이 화면상 인접/겹칠 때 팝오버를 어떻게 배치할지 미설계.
+**Why**: 짧은 문장에 여러 위반이 몰리면(예: 행정어+이중부정 동시 발생) 팝오버가 겹쳐 가독성이 떨어질 수 있음.
+**Pros**: 실사용 시 혼란 방지, 완성도 상승
+**Cons**: 지금 막지 않아도 초기 데모(시연 페이지 1곳, 공개 예시 문구)에서는 드문 케이스
+**Context**: 설계 문서(7457948-main-design-20260819.md) Section 4 리뷰에서 발견. content script 구현(Next Steps #2) 중 실제로 겹치는 사례가 나오면 그때 UI 패턴 결정.
+**Effort**: S (human) → S (CC)
+**Depends on**: content script 뼈대 구현 완료 후
+
+### TODO-016: AI 인라인 지적 — 반복 문장 캐싱
+**Priority**: P3
+**Discovered by**: /autoplan (CEO 리뷰) 2026-08-20
+**What**: 사용자가 커서만 이동하고 텍스트를 바꾸지 않았는데 동일 문장이 재검사되는 경우 캐싱.
+**Why**: API 호출 비용/레이턴시(Open Questions #3)를 줄이는 손쉬운 최적화.
+**Pros**: 비용 절감, 체감 속도 향상
+**Cons**: 캐시 무효화 시점(원칙/사전 버전이 바뀌면?) 추가 설계 필요
+**Context**: Section 7(Performance) 리뷰에서 발견. Next Steps #1 API 계약 스파이크 이후, 실제 호출 빈도를 보고 우선순위 재평가.
+**Effort**: S (human) → S (CC)
+**Depends on**: Next Steps #1 (API 계약 스파이크) 완료
+
+### TODO-017: AI 인라인 지적 — 룰 후보 반영 배지·Top5 요약·PR 미리보기
+**Priority**: P3
+**Discovered by**: /autoplan (CEO 리뷰, CEO 플랜 문서에서 이관) 2026-08-20
+**What**: (1) 룰 후보가 실제 반영되면 확장에 배지/알림 표시 (2) 옵션 화면에 "이번 주 거절 패턴 Top 5" 요약 (3) 룰 후보 diff를 GitHub PR처럼 미리보기.
+**Why**: 학습 루프에 기여했다는 피드백을 사용자에게 주는 델라이트 요소 — CEO 리뷰의 10x 확장 스캔에서 발견됐으나 학습 루프 인프라(이벤트 수집처+스키마)가 먼저 서야 의미가 있어 이번 사이클에서는 보류.
+**Pros**: 사용자 참여감 상승, "죽어있는 도구"가 아니라 "살아있는 헌법"이라는 비전에 부합
+**Cons**: 이벤트 수집처/스키마 확정 전에는 구현 불가능한 3개 항목을 한 TODO로 묶음 — 실제 착수 시 분리 필요
+**Context**: CEO 플랜(~/.gstack/projects/thenisaid-krds-ux-writing/ceo-plans/2026-08-20-ai-inline-lint-rule-loop.md) Expansion scan에서 (b)(c)(e)로 식별, DEFERRED 결정.
+**Effort**: M (human) → S (CC) per item
+**Depends on**: Next Steps #3(이벤트 수집처 결정), #4(이벤트 스키마 설계) 완료
+
 ### TODO-011: Anthropic API 월 사용량 한도 설정
 **Priority**: P2
 **What**: Anthropic 대시보드 → Settings → Billing → Usage limits에서 월 하드 리밋($10-20) 설정
