@@ -51,6 +51,61 @@
 **Effort**: S (human) → S (CC)
 **Depends on**: Next Steps #4 (이벤트 스키마 설계)
 
+### TODO-019: AI 인라인 지적 — Range 재계산 로직 공백 정규화 유닛테스트
+**Priority**: P2
+**Discovered by**: /autoplan (Eng 리뷰, Section 2) 2026-08-20
+**What**: MutationObserver 기반 Range 재계산 시 줄바꿈/공백 삭제로 하이라이트 범위가 의도와 어긋나는 케이스에 대한 유닛테스트.
+**Why**: 웹검색으로 확인된 CSS Custom Highlight API의 알려진 함정(whitespace sensitivity) — 순수함수로 분리 가능해 vitest 커버 가능.
+**Pros**: 회귀 방지, 조용한 오검출 예방
+**Cons**: Range 재계산 로직 자체가 아직 미구현
+**Context**: 7457948-main-design-20260819.md Eng Review Section 2/3에서 발견.
+**Effort**: S (human) → S (CC)
+**Depends on**: Next Steps #1(API 계약 스파이크), TODO-020(에디터 타입 결정)
+
+### TODO-020: AI 인라인 지적 — textarea 대상 렌더링 전략(mirror overlay) 설계
+**Priority**: P1
+**Discovered by**: /autoplan (Eng 리뷰, Codex 듀얼보이스) 2026-08-20
+**What**: CSS Custom Highlight API는 DOM Range 기반이라 `<textarea>` 내부 텍스트에는 적용 불가(텍스트가 실제 DOM 노드가 아님). textarea 대상으로는 투명 오버레이 div + 스크롤/줄바꿈/리사이즈 동기화("mirror overlay") 패턴이 별도로 필요.
+**Why**: 원본 설계(Next Steps #2)가 "textarea/contenteditable 감지"를 둘 다 대상으로 명시했는데, Highlight API 하나로는 textarea를 커버 못 함 — 이 결정 없이는 구현 범위 자체가 불확실.
+**Pros**: 실제 공공기관 폼(다수가 순수 textarea)까지 커버 가능
+**Cons**: mirror overlay는 스크롤 위치·줄바꿈·폰트 렌더링을 픽셀 단위로 동기화해야 해 구현 난이도가 Highlight API보다 높음
+**Context**: 7457948-main-design-20260819.md Eng Review에서 Codex가 발견. "이번 데모를 contenteditable 전용으로 좁힐지, textarea까지 포함할지" 먼저 결정 필요 — Codex 권고: 편집기 타입 결정이 최우선 선행 작업.
+**Effort**: M (human) → S (CC)
+**Depends on**: 없음 (최우선 선행 결정)
+
+### TODO-021: AI 인라인 지적 — accept 액션의 MutationObserver 재트리거 억제
+**Priority**: P2
+**Discovered by**: /autoplan (Eng 리뷰, Claude subagent) 2026-08-20
+**What**: 확장 자신의 수락(accept) 액션이 MutationObserver를 재트리거해 방금 수락한 문구를 다시 검사하고 새 지적을 만들 수 있음 — 학습 신호 오염 위험.
+**Why**: 프로그래밍 방식 편집과 사용자 편집을 구분 못하면 룰 후보 학습 데이터 품질이 떨어짐.
+**Pros**: 학습 신호 정확도 보호
+**Cons**: 구분 플래그/WeakSet 관리 오버헤드 추가
+**Context**: 7457948-main-design-20260819.md Eng Review에서 발견.
+**Effort**: S (human) → S (CC)
+**Depends on**: TODO-020
+
+### TODO-022: AI 인라인 지적 — orphaned Range(대상 문장 삭제됨) 무시 처리
+**Priority**: P2
+**Discovered by**: /autoplan (Eng 리뷰, Claude subagent) 2026-08-20
+**What**: 사용자가 지적 대상 문장 전체를 삭제했을 때 `highlights.set()` 호출이 예외로 죽지 않고 조용히 해당 하이라이트를 제거하도록 처리 + 테스트.
+**Why**: 테스트 없이 방치하면 "2am 금요일" 크래시 후보 — 흔한 사용자 행동(문장 통째로 지우기)이 트리거.
+**Pros**: 안정성
+**Cons**: 없음 (작은 방어 로직)
+**Context**: 7457948-main-design-20260819.md Eng Review에서 발견.
+**Effort**: S (human) → S (CC)
+**Depends on**: TODO-020
+
+### TODO-023: AI 인라인 지적 — GitHub Issue 이벤트 dedup
+**Priority**: P2
+**Discovered by**: /autoplan (Eng 리뷰, Claude subagent) 2026-08-20
+**What**: 키 입력마다 원시 이벤트를 그대로 쌓지 않고, 정규화된 문장+액션 기준으로 중복 제거해 발생 횟수 카운터가 있는 Issue 1개로 관리.
+**Why**: dedup 없이는 실시간 타이핑 볼륨을 관리자 1인이 검토할 수 없어 MCST식 사람 검토 단계가 무너짐.
+**Pros**: 검토 가능한 볼륨 유지
+**Cons**: 정규화 로직(같은 문제로 취급할 기준) 별도 설계 필요
+**Context**: 7457948-main-design-20260819.md Eng Review에서 발견. Decision Audit Trail #13(서버 릴레이 결정)과 함께 설계.
+**Effort**: M (human) → S (CC)
+**Depends on**: Decision #13 (이벤트 수집처 = 서버 릴레이)
+
 ### TODO-011: Anthropic API 월 사용량 한도 설정
 **Priority**: P2
 **What**: Anthropic 대시보드 → Settings → Billing → Usage limits에서 월 하드 리밋($10-20) 설정
