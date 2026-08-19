@@ -930,6 +930,10 @@ describe('RSI Iter6 — 영문 단독 레이블 (english-only-label)', () => {
     const r = KRDSLint.lint('서비스 이용 방법을 안내합니다.', { checkPatterns: true });
     expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
   });
+  it('KRDS, KWCAG는 정부 디자인 시스템·접근성 지침 고유명사라 통과한다', () => {
+    const r = KRDSLint.lint('KRDS 공식 사이트는 KWCAG 기준을 따릅니다.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+  });
 });
 
 // ─── RSI Phase3 — 기관 특화 규칙 (agency 옵션) ──────────────────────────────
@@ -981,5 +985,136 @@ describe('RSI Phase4 — computeScore 글자 수 기반 점수 계산', () => {
     // error 패널티가 warning보다 크므로 점수가 더 낮음
     // (같은 글자 수 대비)
     expect(rErr.score).toBeLessThanOrEqual(rWarn.score);
+  });
+});
+
+// ─── 코드/인용 구간 마스킹 (maskNonProseRegions) ────────────────────────────
+// <script>, <!DOCTYPE>, 코드 블록/스팬은 사용자에게 보이는 문구가 아니므로
+// 검사 대상에서 제외한다. 2026-08-19 codex 리뷰에서 DOCTYPE·JS 변수명이
+// english-only-label 오탐으로 지적된 뒤 추가.
+describe('코드/인용 구간 마스킹', () => {
+  it('<script> 블록 내부의 대문자 변수명은 감지하지 않는다', () => {
+    const html = '<html><script>const COLORS = {a:1}; const LABELS = [];</script></html>';
+    const r = KRDSLint.lint(html, { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+  });
+  it('<!DOCTYPE html>은 감지하지 않는다', () => {
+    const r = KRDSLint.lint('<!DOCTYPE html>\n<html lang="ko"></html>', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+  });
+  it('인라인 코드 스팬(백틱) 내부의 파일명·ID는 감지하지 않는다', () => {
+    const r = KRDSLint.lint('`TODOS.md`의 `TODO-010` 항목을 참고하세요.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+  });
+  it('펜스드 코드 블록 내부는 감지하지 않는다', () => {
+    const r = KRDSLint.lint('```\nconst APPLY = "STATUS";\n```', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+  });
+  it('코드 구간 밖의 실제 영문 레이블은 여전히 감지한다', () => {
+    const r = KRDSLint.lint('버튼에 COMING SOON이라고 적혀 있습니다.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(true);
+  });
+  it('마스킹은 line/col을 보존한다 (같은 줄의 다른 이슈 위치가 밀리지 않음)', () => {
+    const r = KRDSLint.lint('`TODO` 항목과 별개로 귀하께 안내드립니다.', { checkAdminJargon: true, checkPatterns: true });
+    const jargonIssue = r.issues.find(i => i.type === 'admin-jargon' && i.match === '귀하');
+    expect(jargonIssue).toBeDefined();
+    expect(jargonIssue.line).toBe(1);
+  });
+
+  // 2026-08-19 2차 codex 리뷰 — 펜스·코드스팬 예외 케이스 하드닝
+  it('~~~ 틸드 펜스 코드 블록 내부는 감지하지 않는다', () => {
+    const r = KRDSLint.lint('~~~js\nconst COLORS = "LABELS";\n~~~', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+  });
+  it('닫히지 않은 펜스(EOF까지)도 마스킹한다', () => {
+    const r = KRDSLint.lint('```js\nconst COLORS = "LABELS";\n', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+  });
+  it('4개 백틱 펜스 안에 3개 백틱이 포함돼도 안전하게 닫는다', () => {
+    const r = KRDSLint.lint('````js\nconst OK = 1;\n```\nconst COLORS = "LABELS";\n````', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+  });
+  it('2개 백틱 인라인 스팬 내부에 단일 백틱이 있어도 안전하게 닫는다', () => {
+    const r = KRDSLint.lint('``파일 `COLORS` 설명``', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+  });
+  it('줄바꿈을 포함하는 인라인 코드 스팬도 감지하지 않는다', () => {
+    const r = KRDSLint.lint('`const COLORS =\n"LABELS"`', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+  });
+  it('닫는 스크립트 태그 앞에 공백이 있어도 마스킹한다 (</script >)', () => {
+    const r = KRDSLint.lint('<script>const COLORS = "LABELS";</script >', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+  });
+
+  // 2026-08-19 3차 codex 리뷰 — `m` 플래그 `$` 오매칭·long-sentence 오탐·KRDS 접두사 회귀
+  it('3줄 이상인 펜스 코드 블록은 첫 줄에서 끊기지 않고 전체가 마스킹된다', () => {
+    const r = KRDSLint.lint('```js\nconst ALPHA = 1;\nconst COLORS = "LABELS";\n```', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+  });
+  it('인라인 코드 스팬 여러 개로 나뉜 문장은 long-sentence 오탐이 없다', () => {
+    const text = '대신 `공식 KRDS 가이드를 참조하여 기관이 정한 적용 범위에서`, `접근성 전문 검수와 병행하여`, `발주기관 조달·계약 기준에 따라`, `기관 검토 후 확정`으로 표현한다.';
+    const r = KRDSLint.lint(text, { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'long-sentence')).toBe(false);
+  });
+  it('KRDS/KWCAG로 시작하지만 다른 단어인 레이블은 여전히 감지한다', () => {
+    const r = KRDSLint.lint('KRDSNOTICE 표시가 있습니다.', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label' && i.match === 'KRDSNOTICE')).toBe(true);
+  });
+
+  // 2026-08-19 4차 codex 리뷰 — 펜스 길이 불일치·소스 NUL 바이트·score 오탐
+  it('닫는 펜스가 여는 펜스보다 길어도(CommonMark 허용) 정확히 닫히고, 그 뒤 문구는 계속 검사된다', () => {
+    const r = KRDSLint.lint('```js\nconst COLORS = "LABELS";\n````\n귀하께 안내드립니다.', { checkAdminJargon: true, checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+    expect(r.issues.some(i => i.type === 'admin-jargon' && i.match === '귀하')).toBe(true);
+  });
+  it('4개 백틱 펜스 안에 3개 백틱 줄이 있어도 조기에 닫히지 않고, 진짜 닫는 펜스까지 마스킹된다', () => {
+    const r = KRDSLint.lint('````js\nconst OK = 1;\n```\nconst COLORS = "LABELS";\n````\n귀하', { checkAdminJargon: true, checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+    expect(r.issues.some(i => i.type === 'admin-jargon' && i.match === '귀하')).toBe(true);
+  });
+  it('소스 코드 자체에 리터럴 NUL 바이트가 없다 (grep/file 등 텍스트 도구 호환성)', () => {
+    const fs = require('fs');
+    const path = require('path');
+    const src = fs.readFileSync(path.join(__dirname, '..', 'krds-lint.js'));
+    expect(src.includes(0)).toBe(false);
+  });
+  it('큰 펜스 코드 블록이 있어도 점수는 마스킹된(실제 검사된) 텍스트 기준으로 계산된다', () => {
+    const bigMaskedBlock = '```js\n' + '// 아주 긴 한글 주석입니다 '.repeat(50) + '\n```\n귀하';
+    const r = KRDSLint.lint(bigMaskedBlock, { checkAdminJargon: true, checkPatterns: true });
+    // 코드 블록의 방대한 한글 주석이 분모를 부풀리면 100에 가까운 점수가 나옴 —
+    // 실제로 검사 대상(마스킹 후 "귀하" 두 글자)만 남으므로 점수가 크게 낮아야 한다
+    expect(r.score).toBeLessThan(50);
+  });
+
+  // 2026-08-19 5차 codex 리뷰 — CRLF 닫는 펜스 미인식·영문 전용 fallback 점수 오탐
+  it('CRLF(\\r\\n) 개행 문서에서도 닫는 펜스를 인식하고, 그 뒤 문구를 계속 검사한다', () => {
+    const crlf = '```js\r\nconst COLORS = "LABELS";\r\n```\r\n귀하께 안내드립니다.';
+    const r = KRDSLint.lint(crlf, { checkAdminJargon: true, checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+    expect(r.issues.some(i => i.type === 'admin-jargon' && i.match === '귀하')).toBe(true);
+  });
+  it('한글이 없는 영문 텍스트에서도 큰 마스킹 블록이 fallback 점수를 부풀리지 않는다', () => {
+    const bigBlock = '```js\n' + '// long comment '.repeat(80) + '\n```\nCOMING SOON';
+    const r = KRDSLint.lint(bigBlock, { checkAdminJargon: true, checkPatterns: true });
+    expect(r.score).toBeLessThan(50);
+  });
+
+  // 2026-08-20 6차 codex 리뷰 — 리스트/인용 중첩 펜스 오인식·백틱 길이 불일치
+  it('리스트 항목 안에 중첩된 펜스 코드 블록도 마스킹하고, 블록 밖 문구는 계속 검사한다', () => {
+    const text = '- ```js\n  const COLORS = "LABELS";\n  ```\n\n귀하';
+    const r = KRDSLint.lint(text, { checkAdminJargon: true, checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+    expect(r.issues.some(i => i.type === 'admin-jargon' && i.match === '귀하')).toBe(true);
+  });
+  it('블록인용(>) 안에 중첩된 펜스 코드 블록도 마스킹하고, 블록 밖 문구는 계속 검사한다', () => {
+    const text = '> ```js\n> const COLORS = "LABELS";\n> ```\n> 귀하';
+    const r = KRDSLint.lint(text, { checkAdminJargon: true, checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label')).toBe(false);
+    expect(r.issues.some(i => i.type === 'admin-jargon' && i.match === '귀하')).toBe(true);
+  });
+  it('여는 백틱과 닫는 백틱 개수가 다르면 유효한 코드 스팬으로 보지 않고 계속 검사한다', () => {
+    const r = KRDSLint.lint('설명 ``COMING SOON``` 표시', { checkPatterns: true });
+    expect(r.issues.some(i => i.type === 'english-only-label' && i.match === 'COMING SOON')).toBe(true);
   });
 });
