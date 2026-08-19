@@ -412,7 +412,8 @@
       severity: 'error',
       // 3자 이상 연속 대문자 단어 (URL·약어 예외: GNB, UX, ID, ERROR, HTML, CSS 등 2자 이하 또는 알려진 약어 제외)
       // 단, 코드·파일명 맥락("ERROR 404") 제외 — ERROR는 error-code-standalone이 별도 처리
-      pattern: /\b(?!ERROR|HTML|CSS|URL|PDF|UX|UI|API|GNB|LNB|FAQ|NEW(?:\s|$)|HOT(?:\s|$)|ID\b)[A-Z]{4,}(?:\s+[A-Z]{3,})*\b/g,
+      // KRDS/KWCAG: 정부 공식 디자인 시스템·접근성 지침의 고유명사 — 번역 대상 아님 (제품/표준 이름)
+      pattern: /\b(?!ERROR|HTML|CSS|URL|PDF|UX|UI|API|GNB|LNB|FAQ|KRDS\b|KWCAG\b|NEW(?:\s|$)|HOT(?:\s|$)|ID\b)[A-Z]{4,}(?:\s+[A-Z]{3,})*\b/g,
       message: (match) => `영문 단독 표기 "${match}" — 한국어로 번역하거나 병기하세요.`,
       alt: '"출시 예정", "신규", "인기" 등 한국어 레이블 사용',
     },
@@ -485,6 +486,96 @@
    * @param {string} options.minSeverity - 최소 심각도 필터 ('error'|'warning'|'info')
    * @returns {LintResult}
    */
+  /**
+   * <script>...</script>, <!DOCTYPE ...>, 마크다운 펜스드/인라인 코드 구간을
+   * 같은 길이의 공백으로 치환합니다. 줄바꿈은 보존해 line/col이 그대로 유지됩니다.
+   * 이 구간은 코드·파일명·ID이지 사용자에게 보이는 문구가 아니므로 검사 대상에서 제외합니다.
+   */
+  // 마스킹 치환 문자 — 공백을 쓰면 long-sentence 규칙의 허용 문자([가-힣\s,·])와
+  // 겹쳐 마스킹된 구간 양옆의 무관한 한글 구절이 하나의 긴 문장으로 오탐된다.
+  // String.fromCharCode(0)(NUL)은 어떤 PATTERN_RULES 문자 클래스에도 속하지
+  // 않아 안전하게 끊어준다. 소스에 리터럴 NUL 바이트를 직접 넣으면 grep/file
+  // 등 텍스트 도구가 파일을 바이너리로 오인하므로 런타임에 생성한다
+  // (2026-08-19 codex 리뷰에서 발견).
+  var MASK_CHAR = String.fromCharCode(0);
+
+  function maskNonProseRegions(text) {
+    var maskRanges = function (str, regex) {
+      return str.replace(regex, function (match) {
+        return match.replace(/[^\n]/g, MASK_CHAR);
+      });
+    };
+    // 닫는 태그 앞 공백 허용 (</script >)
+    text = maskRanges(text, /<script\b[^>]*>[\s\S]*?<\/script\s*>/gi);
+    text = maskRanges(text, /<!DOCTYPE[^>]*>/gi);
+    text = maskFencedCodeBlocks(text);
+    // 인라인 코드 스팬: N개 백틱으로 열고 정확히 같은 개수로 닫음 (줄바꿈 포함
+    // 가능, 스팬 내부에 더 짧은 백틱 런이 있어도 안전). CommonMark은 여는
+    // 백틱 개수와 정확히 같은 개수로만 닫히므로, 닫는 런의 앞뒤 모두에
+    // 백틱이 더 있으면 안 된다 — 뒤쪽만 확인하면 3개 이상 이어진 백틱 런
+    // 안에서 앞쪽 한 글자를 "내용"으로 흡수해 다른 조합으로 재시도하다
+    // 결국 닫히는 걸로 잘못 인식한다 (2026-08-19 6차 codex 리뷰에서 발견).
+    text = maskRanges(text, /(`+)[\s\S]*?(?<!`)\1(?!`)/g);
+    return text;
+  }
+
+  // 리스트 항목("- ", "1. " 등)이나 블록인용("> ")으로 시작하는 줄에서 그
+  // 컨테이너 표시를 제거한 나머지로 펜스 여부를 판정한다. 그렇지 않으면
+  // 리스트/인용 안에 중첩된 펜스의 여는 줄을 못 찾아 실제로는 닫는 펜스인
+  // 줄을 새 여는 펜스로 오인해, 그 뒤 실제 문구가 EOF까지 통째로 마스킹될
+  // 수 있다 (2026-08-19 5차 codex 리뷰).
+  var CONTAINER_PREFIX_RE = /^(?:[ \t]{0,3}>[ \t]?)+|^[ \t]{0,3}(?:[-*+]|\d{1,9}[.)])[ \t]+/;
+  function stripContainerPrefix(line) {
+    var m = CONTAINER_PREFIX_RE.exec(line);
+    return m ? line.slice(m[0].length) : line;
+  }
+
+  // 알려진 한계 (2026-08-19/20 codex 리뷰, 6~8차에서 발견 — 의도적으로 미수정):
+  // 이스케이프된 백틱(\`), 인용문+리스트 복합 중첩 컨테이너, 중첩 리스트의
+  // 닫는 펜스 들여쓰기, 그리고 한 줄짜리 인라인 코드 스팬으로 시작하는
+  // 문단(예: "```TODO``` 귀하")이 펜스 여는 줄로 오인식되는 경우는 정확히
+  // 처리하지 못한다. 이 저장소의 실제 콘텐츠 어디에도 해당 패턴이 없어
+  // (전수 검색 확인 완료) 완전한 CommonMark 파서 수준까지는 가지 않기로 함.
+  // 또한 인라인 코드 스팬 정규식은 특정 형태의 입력(내림차순으로 짧아지는
+  // 백틱 런 반복)에서 처리 시간이 급격히 늘어날 수 있음 — krds-lint.js는
+  // lint.html에서 순수 클라이언트 사이드로만 실행되므로(서버 처리 없음)
+  // 영향 범위는 실행한 브라우저 탭 자신으로 한정됨.
+  /**
+   * 펜스드 코드 블록(``` 또는 ~~~, 3개 이상)을 줄 단위로 스캔해 마스킹합니다.
+   * 정규식 백레퍼런스는 "닫는 펜스 길이 >= 여는 펜스 길이"(CommonMark 규칙)를
+   * 표현할 수 없어 — 정확히 같은 길이만 요구하면 여는 쪽보다 긴 닫는 펜스 뒤의
+   * 실제 문구가 전부 마스킹되고, "3개 이상이면 무엇이든 닫는다"로 완화하면
+   * 4개 백틱 펜스 안에 포함된 3개 백틱 줄에서 조기에 닫혀버린다 — 줄 단위
+   * 스캔으로 두 문제를 모두 정확히 처리한다 (2026-08-19 2차 codex 리뷰).
+   */
+  function maskFencedCodeBlocks(text) {
+    var lines = text.split('\n');
+    var openRe = /^([ \t]{0,3})(`{3,}|~{3,})/;
+    var i = 0;
+    while (i < lines.length) {
+      var open = openRe.exec(stripContainerPrefix(lines[i]));
+      if (!open) {
+        i += 1;
+        continue;
+      }
+      var fenceChar = open[2][0];
+      var fenceLen = open[2].length;
+      // CRLF 개행(\r\n)으로 split('\n')하면 각 줄 끝에 \r이 남으므로 허용한다
+      // (2026-08-19 4차 codex 리뷰에서 발견)
+      var closeRe = new RegExp('^[ \\t]{0,3}\\' + fenceChar + '{' + fenceLen + ',}[ \\t]*\\r?$');
+      var j = i + 1;
+      while (j < lines.length && !closeRe.test(stripContainerPrefix(lines[j]))) {
+        j += 1;
+      }
+      var end = Math.min(j, lines.length - 1);
+      for (var k = i; k <= end; k += 1) {
+        lines[k] = lines[k].replace(/[^\n]/g, MASK_CHAR);
+      }
+      i = end + 1;
+    }
+    return lines.join('\n');
+  }
+
   function lint(text, options) {
     options = Object.assign({ checkAdminJargon: true, checkPatterns: true, minSeverity: 'info', agency: null }, options || {});
     const SEV_ORDER = { error: 0, warning: 1, info: 2 };
@@ -492,7 +583,8 @@
     text = text == null ? '' : String(text);
 
     const issues = [];
-    const lines = text.split('\n');
+    const maskedText = maskNonProseRegions(text);
+    const lines = maskedText.split('\n');
 
     // 3-1. 행정어 검사
     if (options.checkAdminJargon) {
@@ -634,7 +726,10 @@
     return {
       issues: filtered,
       summary: summary,
-      score: computeScore(text, summary),
+      // 마스킹된 텍스트 기준으로 점수 계산 — 원본 text를 쓰면 코드/인용 구간의
+      // 부피가 분모를 부풀려 실제 검사 대상 밖의 텍스트가 많을수록 점수가
+      // 실제보다 후하게 나온다 (2026-08-19 2차 codex 리뷰에서 발견).
+      score: computeScore(maskedText, summary),
     };
   }
 
@@ -655,7 +750,10 @@
     // 한글 글자 수 기반 기준점 (공백·숫자·특수문자 제외)
     const koreanChars = (text.match(/[가-힣]/g) || []).length;
     // 최소 기준: 한글 없으면 전체 글자 수 사용 (영문 텍스트 대비)
-    const base = Math.max(koreanChars || text.replace(/\s+/g, '').length, 1);
+    // MASK_CHAR(NUL)는 공백이 아니라서 \s+ 제거로 안 걸러짐 — 마스킹된
+    // 코드·인용 구간의 부피가 영문 텍스트 기준점을 부풀리지 않도록 먼저
+    // 제거한다 (2026-08-19 4차 codex 리뷰에서 발견).
+    const base = Math.max(koreanChars || text.split(MASK_CHAR).join('').replace(/\s+/g, '').length, 1);
     const penalty = (summary.errors * PENALTY_ERROR) + (summary.warnings * PENALTY_WARNING) + (summary.infos * PENALTY_INFO);
     const score = Math.max(0, Math.min(100, Math.round(100 - (penalty / base) * 100)));
     return score;
