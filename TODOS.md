@@ -40,6 +40,17 @@
 **Effort**: M (human) → S (CC) per item
 **Depends on**: Next Steps #3(이벤트 수집처 결정), #4(이벤트 스키마 설계) 완료
 
+### TODO-018: AI 인라인 지적 — 반복 거절 위반 세션 내 재표시 억제
+**Priority**: P3
+**Discovered by**: /autoplan (Design 리뷰, Pass 3) 2026-08-20
+**What**: 사용자가 동일 위반을 세션 내에서 이미 여러 번 거절했다면 해당 세션에서 재표시를 억제.
+**Why**: Design 리뷰 Pass 3(User Journey)에서 발견 — 반복 거절 시 "안도" 대신 "짜증"으로 감정 곡선이 꺾일 위험.
+**Pros**: 반복 인터럽트 감소, 무심하게 타이핑하는 목표(핵심 체험) 보호
+**Cons**: "억제"가 곧 그 문구가 옳다는 뜻은 아님 — 학습 루프 스키마(신호 신뢰도 가중치, Reviewer Concerns 참고)와 연동해야 정확히 설계 가능
+**Context**: 7457948-main-design-20260819.md Design Review Pass 3에서 발견. 이벤트 스키마 확정(Next Steps #4) 이후 착수.
+**Effort**: S (human) → S (CC)
+**Depends on**: Next Steps #4 (이벤트 스키마 설계)
+
 ### TODO-011: Anthropic API 월 사용량 한도 설정
 **Priority**: P2
 **What**: Anthropic 대시보드 → Settings → Billing → Usage limits에서 월 하드 리밋($10-20) 설정
