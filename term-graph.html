@@ -51,7 +51,8 @@ main{flex:1;display:flex;min-height:0}
 .empty-msg{color:#6e7681;font-size:12px;margin-top:4px}
 .tip{font-size:10px;color:#30363d;margin-top:auto;padding-top:8px;border-top:1px solid #21262d}
 .view-tabs{display:flex;gap:4px;margin-bottom:2px}
-.vtab{flex:1;background:#21262d;border:1px solid #30363d;color:#6e7681;padding:4px 6px;border-radius:5px;font-size:11px;cursor:pointer;text-align:center;transition:all .15s}
+.vtab{flex:1;background:#21262d;border:1px solid #30363d;color:#6e7681;padding:4px 6px;border-radius:5px;font-size:11px;font-family:inherit;cursor:pointer;text-align:center;transition:all .15s}
+.vtab:focus-visible{outline:2px solid #58a6ff;outline-offset:1px}
 .vtab.active{background:#256ef415;border-color:#256ef4;color:#58a6ff}
 </style>
 </head>
@@ -87,15 +88,18 @@ main{flex:1;display:flex;min-height:0}
 <div id="panel">
   <h2>용어 정보</h2>
   <div class="stat-grid">
-    <div class="stat-card"><div class="stat-num" id="sTerms">274</div><div class="stat-lbl">전체 용어</div></div>
+    <!-- 표시 숫자만 283으로 갱신(2026-08-20) — 아래 term-graph-data.json 노드/엣지
+         자체는 원본 생성 스크립트 소실로 274개 스냅샷 그대로임. 재생성 스크립트를
+         복원·재작성하기 전까지는 그래프 시각화(노드 수)와 이 숫자가 불일치할 수 있음 -->
+    <div class="stat-card"><div class="stat-num" id="sTerms">283</div><div class="stat-lbl">전체 용어</div></div>
     <div class="stat-card"><div class="stat-num" id="sIssues">820</div><div class="stat-lbl">기관 이슈</div></div>
     <div class="stat-card"><div class="stat-num" id="sCross">11</div><div class="stat-lbl">교차 용어</div></div>
   </div>
 
-  <div class="view-tabs">
-    <div class="vtab active" data-tab="node">노드 정보</div>
-    <div class="vtab" data-tab="agency">기관 통계</div>
-    <div class="vtab" data-tab="behavior">언어 행태</div>
+  <div class="view-tabs" role="tablist">
+    <button type="button" class="vtab active" role="tab" aria-selected="true" data-tab="node">노드 정보</button>
+    <button type="button" class="vtab" role="tab" aria-selected="false" data-tab="agency">기관 통계</button>
+    <button type="button" class="vtab" role="tab" aria-selected="false" data-tab="behavior">언어 행태</button>
   </div>
 
   <div id="tab-node">
@@ -184,8 +188,9 @@ let showCrossOnly = false;
 
 // 탭 전환
 document.querySelectorAll('.vtab').forEach(t => t.addEventListener('click', () => {
-  document.querySelectorAll('.vtab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.vtab').forEach(x=>{ x.classList.remove('active'); x.setAttribute('aria-selected','false'); });
   t.classList.add('active');
+  t.setAttribute('aria-selected','true');
   const tab = t.dataset.tab;
   document.getElementById('tab-node').style.display = tab==='node'?'flex':'none';
   document.getElementById('tab-agency').style.display = tab==='agency'?'flex':'none';
@@ -288,7 +293,7 @@ fetch('./agency-graph-data.json').then(r=>r.json()).then(data => {
   metaData = data.meta;
 
   if(metaData) {
-    document.getElementById('sTerms').textContent = metaData.totalTerms || 274;
+    document.getElementById('sTerms').textContent = metaData.totalTerms || 283;
     document.getElementById('sIssues').textContent = metaData.totalIssues || 820;
     document.getElementById('sCross').textContent = metaData.crossTerms || 11;
   }
