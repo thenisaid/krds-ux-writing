@@ -85,25 +85,25 @@
     <rdfs:label xml:lang="ko">심리적안전망 원칙</rdfs:label>
     <rdfs:comment xml:lang="ko">오류·경고·안내에 상황+원인+행동 3단 구조</rdfs:comment>
   </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Category_전문_용어">
-    <rdf:type rdf:resource="http://krds.go.kr/ontology/uxwriting#JargonCategory"/>
-    <rdfs:label xml:lang="ko">전문 용어</rdfs:label>
-  </owl:NamedIndividual>
   <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Category_행정_관습어">
     <rdf:type rdf:resource="http://krds.go.kr/ontology/uxwriting#JargonCategory"/>
     <rdfs:label xml:lang="ko">행정 관습어</rdfs:label>
   </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Category_이중_부정">
+  <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Category_전문_용어">
     <rdf:type rdf:resource="http://krds.go.kr/ontology/uxwriting#JargonCategory"/>
-    <rdfs:label xml:lang="ko">이중 부정</rdfs:label>
+    <rdfs:label xml:lang="ko">전문 용어</rdfs:label>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Category_과도한_수식">
+    <rdf:type rdf:resource="http://krds.go.kr/ontology/uxwriting#JargonCategory"/>
+    <rdfs:label xml:lang="ko">과도한 수식</rdfs:label>
   </owl:NamedIndividual>
   <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Category_과도한_경어">
     <rdf:type rdf:resource="http://krds.go.kr/ontology/uxwriting#JargonCategory"/>
     <rdfs:label xml:lang="ko">과도한 경어</rdfs:label>
   </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Category_과도한_수식">
+  <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Category_이중_부정">
     <rdf:type rdf:resource="http://krds.go.kr/ontology/uxwriting#JargonCategory"/>
-    <rdfs:label xml:lang="ko">과도한 수식</rdfs:label>
+    <rdfs:label xml:lang="ko">이중 부정</rdfs:label>
   </owl:NamedIndividual>
   <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Agency_jeongbu24">
     <rdf:type rdf:resource="http://krds.go.kr/ontology/uxwriting#Agency"/>
@@ -2743,6 +2743,96 @@
     <ns0:severity>error</ns0:severity>
     <ns0:hasReplacement rdf:resource="http://krds.go.kr/ontology/uxwriting#Replacement_위탁_업체"/>
     <rdfs:comment xml:lang="ko">대체어: 위탁 업체</rdfs:comment>
+    <ns0:belongsToCategory rdf:resource="http://krds.go.kr/ontology/uxwriting#Category_전문_용어"/>
+    <ns0:violatesPrinciple rdf:resource="http://krds.go.kr/ontology/uxwriting#Principle_무번역"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Jargon_데이터_바우처">
+    <rdf:type rdf:resource="http://krds.go.kr/ontology/uxwriting#AdministrativeJargon"/>
+    <rdfs:label xml:lang="ko">데이터 바우처</rdfs:label>
+    <ns0:bannedForm>데이터 바우처</ns0:bannedForm>
+    <ns0:severity>error</ns0:severity>
+    <ns0:hasReplacement rdf:resource="http://krds.go.kr/ontology/uxwriting#Replacement_데이터_이용권"/>
+    <rdfs:comment xml:lang="ko">대체어: 데이터 이용권</rdfs:comment>
+    <ns0:belongsToCategory rdf:resource="http://krds.go.kr/ontology/uxwriting#Category_전문_용어"/>
+    <ns0:violatesPrinciple rdf:resource="http://krds.go.kr/ontology/uxwriting#Principle_무번역"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Jargon_디플로마">
+    <rdf:type rdf:resource="http://krds.go.kr/ontology/uxwriting#AdministrativeJargon"/>
+    <rdfs:label xml:lang="ko">디플로마</rdfs:label>
+    <ns0:bannedForm>디플로마</ns0:bannedForm>
+    <ns0:severity>error</ns0:severity>
+    <ns0:hasReplacement rdf:resource="http://krds.go.kr/ontology/uxwriting#Replacement_졸업장_수료증_학위_증명서"/>
+    <rdfs:comment xml:lang="ko">대체어: 졸업장, 수료증, 학위 증명서</rdfs:comment>
+    <ns0:belongsToCategory rdf:resource="http://krds.go.kr/ontology/uxwriting#Category_전문_용어"/>
+    <ns0:violatesPrinciple rdf:resource="http://krds.go.kr/ontology/uxwriting#Principle_무번역"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Jargon_메디컬_비자">
+    <rdf:type rdf:resource="http://krds.go.kr/ontology/uxwriting#AdministrativeJargon"/>
+    <rdfs:label xml:lang="ko">메디컬 비자</rdfs:label>
+    <ns0:bannedForm>메디컬 비자</ns0:bannedForm>
+    <ns0:severity>error</ns0:severity>
+    <ns0:hasReplacement rdf:resource="http://krds.go.kr/ontology/uxwriting#Replacement_의료_비자_의료_사증"/>
+    <rdfs:comment xml:lang="ko">대체어: 의료 비자, 의료 사증</rdfs:comment>
+    <ns0:belongsToCategory rdf:resource="http://krds.go.kr/ontology/uxwriting#Category_전문_용어"/>
+    <ns0:violatesPrinciple rdf:resource="http://krds.go.kr/ontology/uxwriting#Principle_무번역"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Jargon_배리어_프리">
+    <rdf:type rdf:resource="http://krds.go.kr/ontology/uxwriting#AdministrativeJargon"/>
+    <rdfs:label xml:lang="ko">배리어 프리</rdfs:label>
+    <ns0:bannedForm>배리어 프리</ns0:bannedForm>
+    <ns0:severity>error</ns0:severity>
+    <ns0:hasReplacement rdf:resource="http://krds.go.kr/ontology/uxwriting#Replacement_무장애_무장벽_장애물_없는_장벽_없는"/>
+    <rdfs:comment xml:lang="ko">대체어: 무장애, 무장벽, 장애물 없는, 장벽 없는</rdfs:comment>
+    <ns0:belongsToCategory rdf:resource="http://krds.go.kr/ontology/uxwriting#Category_전문_용어"/>
+    <ns0:violatesPrinciple rdf:resource="http://krds.go.kr/ontology/uxwriting#Principle_무번역"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Jargon_서티피케이션">
+    <rdf:type rdf:resource="http://krds.go.kr/ontology/uxwriting#AdministrativeJargon"/>
+    <rdfs:label xml:lang="ko">서티피케이션</rdfs:label>
+    <ns0:bannedForm>서티피케이션</ns0:bannedForm>
+    <ns0:severity>error</ns0:severity>
+    <ns0:hasReplacement rdf:resource="http://krds.go.kr/ontology/uxwriting#Replacement_인증서"/>
+    <rdfs:comment xml:lang="ko">대체어: 인증서</rdfs:comment>
+    <ns0:belongsToCategory rdf:resource="http://krds.go.kr/ontology/uxwriting#Category_전문_용어"/>
+    <ns0:violatesPrinciple rdf:resource="http://krds.go.kr/ontology/uxwriting#Principle_무번역"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Jargon_실버_카">
+    <rdf:type rdf:resource="http://krds.go.kr/ontology/uxwriting#AdministrativeJargon"/>
+    <rdfs:label xml:lang="ko">실버 카</rdfs:label>
+    <ns0:bannedForm>실버 카</ns0:bannedForm>
+    <ns0:severity>error</ns0:severity>
+    <ns0:hasReplacement rdf:resource="http://krds.go.kr/ontology/uxwriting#Replacement_노인_보행_보조_기구"/>
+    <rdfs:comment xml:lang="ko">대체어: 노인 보행 보조 기구</rdfs:comment>
+    <ns0:belongsToCategory rdf:resource="http://krds.go.kr/ontology/uxwriting#Category_전문_용어"/>
+    <ns0:violatesPrinciple rdf:resource="http://krds.go.kr/ontology/uxwriting#Principle_무번역"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Jargon_옴부즈맨">
+    <rdf:type rdf:resource="http://krds.go.kr/ontology/uxwriting#AdministrativeJargon"/>
+    <rdfs:label xml:lang="ko">옴부즈맨</rdfs:label>
+    <ns0:bannedForm>옴부즈맨</ns0:bannedForm>
+    <ns0:severity>error</ns0:severity>
+    <ns0:hasReplacement rdf:resource="http://krds.go.kr/ontology/uxwriting#Replacement_민원_도우미"/>
+    <rdfs:comment xml:lang="ko">대체어: 민원 도우미</rdfs:comment>
+    <ns0:belongsToCategory rdf:resource="http://krds.go.kr/ontology/uxwriting#Category_전문_용어"/>
+    <ns0:violatesPrinciple rdf:resource="http://krds.go.kr/ontology/uxwriting#Principle_무번역"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Jargon_옴부즈퍼슨">
+    <rdf:type rdf:resource="http://krds.go.kr/ontology/uxwriting#AdministrativeJargon"/>
+    <rdfs:label xml:lang="ko">옴부즈퍼슨</rdfs:label>
+    <ns0:bannedForm>옴부즈퍼슨</ns0:bannedForm>
+    <ns0:severity>error</ns0:severity>
+    <ns0:hasReplacement rdf:resource="http://krds.go.kr/ontology/uxwriting#Replacement_민원_도우미"/>
+    <rdfs:comment xml:lang="ko">대체어: 민원 도우미</rdfs:comment>
+    <ns0:belongsToCategory rdf:resource="http://krds.go.kr/ontology/uxwriting#Category_전문_용어"/>
+    <ns0:violatesPrinciple rdf:resource="http://krds.go.kr/ontology/uxwriting#Principle_무번역"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://krds.go.kr/ontology/uxwriting#Jargon_케어_플랜">
+    <rdf:type rdf:resource="http://krds.go.kr/ontology/uxwriting#AdministrativeJargon"/>
+    <rdfs:label xml:lang="ko">케어 플랜</rdfs:label>
+    <ns0:bannedForm>케어 플랜</ns0:bannedForm>
+    <ns0:severity>error</ns0:severity>
+    <ns0:hasReplacement rdf:resource="http://krds.go.kr/ontology/uxwriting#Replacement_돌봄_계획"/>
+    <rdfs:comment xml:lang="ko">대체어: 돌봄 계획</rdfs:comment>
     <ns0:belongsToCategory rdf:resource="http://krds.go.kr/ontology/uxwriting#Category_전문_용어"/>
     <ns0:violatesPrinciple rdf:resource="http://krds.go.kr/ontology/uxwriting#Principle_무번역"/>
   </owl:NamedIndividual>
