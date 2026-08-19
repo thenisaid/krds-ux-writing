@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated": "2026-07-19T21:54:33.763063",
+  "generated": "2026-08-20T07:39:56.048807",
   "stats": {
     "classes": 6,
     "object_properties": 5,
@@ -8,7 +8,7 @@
     "principles": 3,
     "agencies": 3,
     "categories": 5,
-    "jargon_instances": 274,
+    "jargon_instances": 283,
     "agency_term_links": 118
   },
   "ontology_iri": "http://krds.go.kr/ontology/uxwriting",
