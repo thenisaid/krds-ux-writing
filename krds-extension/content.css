@@ -1,0 +1,103 @@
+/* KRDS 인라인 지적 — mirror overlay (textarea 위에 겹치는 하이라이트 레이어)
+   textarea 자체의 value/DOM은 건드리지 않는다 — 브라우저 네이티브 undo 스택 보존
+   (설계 문서 Design Review T2/Eng Review 정정 참고) */
+
+.krds-inline-lint-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.krds-inline-lint-highlights {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: transparent;
+  pointer-events: auto;
+}
+
+.krds-inline-lint-mark {
+  color: transparent;
+  background: transparent;
+  border-radius: 2px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* 색상만이 아니라 밑줄 스타일 자체로도 구분 (색맹 고려 — Design Review Pass 6) */
+.krds-inline-lint-mark.krds-sev-error {
+  text-decoration: underline wavy var(--krds-color-danger, #d9342b);
+  text-decoration-thickness: 2px;
+}
+.krds-inline-lint-mark.krds-sev-warning {
+  text-decoration: underline dotted var(--color-warning-50, #92580a);
+  text-decoration-thickness: 2px;
+}
+
+.krds-inline-lint-input {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+}
+
+/* 검사 중 미세 표시 — 로딩과 "문제 없음"을 구분 (Design Review Pass 2 CRITICAL) */
+.krds-inline-lint-status {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent, #256ef4);
+  opacity: 0;
+  transition: opacity .15s;
+  z-index: 2;
+  pointer-events: none;
+}
+.krds-inline-lint-status.krds-checking {
+  opacity: 1;
+  animation: krds-inline-lint-pulse 1s ease-in-out infinite;
+}
+
+@keyframes krds-inline-lint-pulse {
+  0%, 100% { transform: scale(1); opacity: .5; }
+  50% { transform: scale(1.6); opacity: 1; }
+}
+
+.krds-inline-lint-popover {
+  position: absolute;
+  max-width: 320px;
+  background: var(--bg, #fff);
+  border: 1px solid var(--color-border-emphasis, #cdd1d5);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.16);
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text, #1e2124);
+  z-index: 2147483647;
+}
+
+.krds-popover-problem {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.krds-popover-rationale {
+  color: var(--text-muted, #5a6169);
+  margin-bottom: 6px;
+}
+
+.krds-popover-alt {
+  font-weight: 600;
+  color: var(--accent, #256ef4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .krds-inline-lint-status.krds-checking {
+    animation: none;
+    opacity: 1;
+  }
+}
