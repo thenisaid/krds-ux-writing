@@ -71,16 +71,43 @@
     syncStyles();
 
     var debounceTimer = null;
-    textarea.addEventListener('input', function () {
+    function scheduleLint() {
       statusDot.classList.add('krds-checking');
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(runLint, DEBOUNCE_MS);
-    });
+    }
+
+    textarea.addEventListener('input', scheduleLint);
     textarea.addEventListener('scroll', syncScroll);
     window.addEventListener('resize', syncStyles);
     if (window.ResizeObserver) {
       new ResizeObserver(syncStyles).observe(textarea);
     }
+
+    // lint.html의 샘플/초기화/기록 복원 버튼은 textarea.value를 직접
+    // 대입하고 네이티브 'input' 이벤트를 발생시키지 않는다 — value 프로퍼티
+    // 자체를 가로채서 프로그램적 변경도 동일하게 감지한다
+    // (2026-08-20 codex 리뷰 P2 — 샘플 텍스트를 불러와도 밑줄이 안 뜨던 문제).
+    (function interceptProgrammaticValueChanges() {
+      var proto = window.HTMLTextAreaElement.prototype;
+      var desc = Object.getOwnPropertyDescriptor(proto, 'value');
+      if (!desc || !desc.set || !desc.get) return;
+      Object.defineProperty(textarea, 'value', {
+        configurable: true,
+        enumerable: true,
+        get: function () { return desc.get.call(textarea); },
+        set: function (v) {
+          desc.set.call(textarea, v);
+          scheduleLint();
+        },
+      });
+    })();
+
+    // 옵션 칩(행정어 검사/패턴 규칙 검사) 토글 시에도 다시 검사 — 텍스트를
+    // 안 바꾸고 옵션만 꺼도/켜도 인라인 지적이 즉시 반영되도록 함.
+    document.querySelectorAll('.opt-chip[data-opt]').forEach(function (chip) {
+      chip.addEventListener('click', scheduleLint);
+    });
 
     runLint();
 
@@ -103,6 +130,12 @@
       highlightsLayer.style.transform = 'translate(' + (-textarea.scrollLeft) + 'px,' + (-textarea.scrollTop) + 'px)';
     }
 
+    function isOptChecked(optName) {
+      var chip = document.querySelector('.opt-chip[data-opt="' + optName + '"]');
+      // 칩을 못 찾으면(페이지 구조 변경 등) 기본값 true로 안전하게 폴백
+      return chip ? chip.getAttribute('aria-checked') === 'true' : true;
+    }
+
     function runLint() {
       statusDot.classList.remove('krds-checking');
       var text = textarea.value;
@@ -112,7 +145,13 @@
         return;
       }
       if (!window.KRDSLint) return;
-      var result = window.KRDSLint.lint(text, { checkAdminJargon: true, checkPatterns: true });
+      // 페이지 자체의 "행정어 검사"/"패턴 규칙 검사" 옵션 칩 상태를 그대로
+      // 따른다 — 켜져있지 않으면 지적 표시도 하지 않는다
+      // (2026-08-20 codex 리뷰 P2 — 옵션을 꺼도 인라인 밑줄만 계속 뜨던 문제).
+      var result = window.KRDSLint.lint(text, {
+        checkAdminJargon: isOptChecked('checkAdminJargon'),
+        checkPatterns: isOptChecked('checkPatterns'),
+      });
       var issues = (result && result.issues) || [];
       render(text, issues);
       liveRegion.textContent = issues.length
@@ -195,15 +234,29 @@
       }
 
       var rect = markEl.getBoundingClientRect();
-      popover.style.left = window.scrollX + rect.left + 'px';
-      popover.style.top = window.scrollY + rect.bottom + 4 + 'px';
+      // 먼저 화면 밖(hidden 유지)에서 실제 크기를 잰다 — 크기를 알아야
+      // 아래/위 배치와 클리핑을 정확히 계산할 수 있다.
+      popover.style.visibility = 'hidden';
       popover.hidden = false;
+      var popoverHeight = popover.offsetHeight;
+      var popoverWidth = popover.offsetWidth;
 
-      // 뷰포트 가장자리 클리핑 방지 (Design Review Pass 7)
-      var maxLeft = window.scrollX + document.documentElement.clientWidth - popover.offsetWidth - 8;
-      if (parseFloat(popover.style.left) > maxLeft) {
-        popover.style.left = Math.max(8, maxLeft) + 'px';
-      }
+      // 뷰포트 아래쪽에 공간이 부족하면 밑줄 위쪽에 배치
+      // (2026-08-20 codex 리뷰 P2 — 화면 하단 근처 지적은 팝오버가 아예
+      // 뷰포트 밖으로 나가 근거/대안이 안 보이던 문제).
+      var spaceBelow = window.innerHeight - rect.bottom;
+      var top = spaceBelow >= popoverHeight + 8
+        ? window.scrollY + rect.bottom + 4
+        : window.scrollY + rect.top - popoverHeight - 4;
+      top = Math.max(window.scrollY + 8, top);
+
+      var left = window.scrollX + rect.left;
+      var maxLeft = window.scrollX + document.documentElement.clientWidth - popoverWidth - 8;
+      left = Math.min(left, Math.max(window.scrollX + 8, maxLeft));
+
+      popover.style.top = top + 'px';
+      popover.style.left = left + 'px';
+      popover.style.visibility = '';
     }
 
     function hidePopover() {
