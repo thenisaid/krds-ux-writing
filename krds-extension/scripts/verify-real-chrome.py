@@ -61,15 +61,23 @@ with sync_playwright() as p:
 
 print(json.dumps(results, ensure_ascii=False, indent=2))
 
-try:
-    assert results.get("backdrop_present_before_sample") is True, "확장이 attach되지 않음 (backdrop 없음)"
-    assert "16건 발견" in (results.get("live_region_after_sample") or ""), \
-        "샘플 로드 후 live region이 예상과 다름 — MAIN world 브리지 이벤트가 전달되지 않았을 가능성"
-    assert (results.get("mark_count_after_sample") or 0) > 0, "밑줄 마크가 하나도 렌더링되지 않음"
-    assert results.get("popover_visible_after_click") is True, "마크 클릭 후 팝오버가 표시되지 않음"
-    assert results.get("popover_text"), "팝오버가 비어 있음"
-except AssertionError as e:
-    print(f"FAIL: {e}", file=sys.stderr)
+# assert는 `python3 -O`/PYTHONOPTIMIZE에서 컴파일 시점에 제거되어 검증이
+# 무력화된다(2026-08-20 codex 리뷰) — 명시적 if로 검사한다.
+failures = []
+if results.get("backdrop_present_before_sample") is not True:
+    failures.append("확장이 attach되지 않음 (backdrop 없음)")
+if "16건 발견" not in (results.get("live_region_after_sample") or ""):
+    failures.append("샘플 로드 후 live region이 예상과 다름 — MAIN world 브리지 이벤트가 전달되지 않았을 가능성")
+if (results.get("mark_count_after_sample") or 0) <= 0:
+    failures.append("밑줄 마크가 하나도 렌더링되지 않음")
+if results.get("popover_visible_after_click") is not True:
+    failures.append("마크 클릭 후 팝오버가 표시되지 않음")
+if not results.get("popover_text"):
+    failures.append("팝오버가 비어 있음")
+
+if failures:
+    for f in failures:
+        print(f"FAIL: {f}", file=sys.stderr)
     sys.exit(1)
 
 print("PASS: 실제 확장 로딩 기준 종단간 검증 통과")
