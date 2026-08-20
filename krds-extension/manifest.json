@@ -30,6 +30,16 @@
         "http://localhost:8300/lint.html*",
         "http://127.0.0.1:8300/lint.html*"
       ],
+      "js": ["page-hook.js"],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://thenisaid.github.io/krds-ux-writing/lint.html*",
+        "http://localhost:8300/lint.html*",
+        "http://127.0.0.1:8300/lint.html*"
+      ],
       "js": ["lib/jargon-dictionary.js", "lib/krds-lint.js", "content.js"],
       "css": ["content.css"],
       "run_at": "document_idle"

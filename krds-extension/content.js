@@ -85,23 +85,14 @@
     }
 
     // lint.html의 샘플/초기화/기록 복원 버튼은 textarea.value를 직접
-    // 대입하고 네이티브 'input' 이벤트를 발생시키지 않는다 — value 프로퍼티
-    // 자체를 가로채서 프로그램적 변경도 동일하게 감지한다
-    // (2026-08-20 codex 리뷰 P2 — 샘플 텍스트를 불러와도 밑줄이 안 뜨던 문제).
-    (function interceptProgrammaticValueChanges() {
-      var proto = window.HTMLTextAreaElement.prototype;
-      var desc = Object.getOwnPropertyDescriptor(proto, 'value');
-      if (!desc || !desc.set || !desc.get) return;
-      Object.defineProperty(textarea, 'value', {
-        configurable: true,
-        enumerable: true,
-        get: function () { return desc.get.call(textarea); },
-        set: function (v) {
-          desc.set.call(textarea, v);
-          scheduleLint();
-        },
-      });
-    })();
+    // 대입하고 네이티브 'input' 이벤트를 발생시키지 않는다 — page-hook.js
+    // (MAIN world content script)가 대입 시점에 쏘는 커스텀 이벤트를
+    // 구독해서 감지한다. isolated world인 이 스크립트에서 textarea
+    // 인스턴스에 직접 defineProperty를 걸면 페이지 자체 코드(lint-ui.js)가
+    // 쓰는 MAIN world 래퍼와 다른 객체가 되어 전혀 감지되지 않는다
+    // (2026-08-20 codex 리뷰 P2 — 최초 접근은 isolated world 내부에서만
+    // 테스트해 통과로 오판했음. page-hook.js 참고).
+    textarea.addEventListener('krds:value-changed', scheduleLint);
 
     // 옵션 칩(행정어 검사/패턴 규칙 검사) 토글 시에도 다시 검사 — 텍스트를
     // 안 바꾸고 옵션만 꺼도/켜도 인라인 지적이 즉시 반영되도록 함.
