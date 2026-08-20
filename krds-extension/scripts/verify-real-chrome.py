@@ -8,8 +8,11 @@ Playwright MCP(browser_evaluate로 <script src> 직접 주입)나 headless Chrom
 
 사전 준비: `python3 -m http.server 8300` 를 리포 루트에서 실행해 둘 것.
 실행: `python3 krds-extension/scripts/verify-real-chrome.py`
+실패 시 AssertionError와 함께 nonzero exit — 결과 dict가 아니라 이 스크립트
+자체의 성공/실패 여부로 판단할 것(2026-08-20 codex 리뷰 — assert 없이 결과만
+출력하면 확장이 아예 붙지 않아도 조용히 "성공"으로 보임).
 """
-import json, os, tempfile
+import json, os, sys, tempfile
 from playwright.sync_api import sync_playwright
 
 EXT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -57,3 +60,16 @@ with sync_playwright() as p:
         ctx.close()
 
 print(json.dumps(results, ensure_ascii=False, indent=2))
+
+try:
+    assert results.get("backdrop_present_before_sample") is True, "확장이 attach되지 않음 (backdrop 없음)"
+    assert "16건 발견" in (results.get("live_region_after_sample") or ""), \
+        "샘플 로드 후 live region이 예상과 다름 — MAIN world 브리지 이벤트가 전달되지 않았을 가능성"
+    assert (results.get("mark_count_after_sample") or 0) > 0, "밑줄 마크가 하나도 렌더링되지 않음"
+    assert results.get("popover_visible_after_click") is True, "마크 클릭 후 팝오버가 표시되지 않음"
+    assert results.get("popover_text"), "팝오버가 비어 있음"
+except AssertionError as e:
+    print(f"FAIL: {e}", file=sys.stderr)
+    sys.exit(1)
+
+print("PASS: 실제 확장 로딩 기준 종단간 검증 통과")
