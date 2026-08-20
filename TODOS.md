@@ -7,7 +7,7 @@
 
 ## 열린 항목
 
-### TODO-015: AI 인라인 지적 — 겹친 팝오버 UI 처리
+### TODO-015: AI 인라인 지적 — 겹친 팝오버 UI 처리 — ⚠️ MOOT (2026-08-20, 실제 구현 확인)
 **Priority**: P3
 **Discovered by**: /autoplan (CEO 리뷰) 2026-08-20
 **What**: 두 개 이상의 지적이 화면상 인접/겹칠 때 팝오버를 어떻게 배치할지 미설계.
@@ -17,6 +17,7 @@
 **Context**: 설계 문서(7457948-main-design-20260819.md) Section 4 리뷰에서 발견. content script 구현(Next Steps #2) 중 실제로 겹치는 사례가 나오면 그때 UI 패턴 결정.
 **Effort**: S (human) → S (CC)
 **Depends on**: content script 뼈대 구현 완료 후
+**해당 없음**: content.js는 팝오버 DOM 요소를 `attach()`당 1개만 생성해 재사용한다(`createPopover()`가 한 번만 호출되고, `showPopover()`는 매번 같은 요소의 `innerHTML`을 비우고 다시 채운다). 실제 unpacked 확장에서 마크 2개를 순차 클릭해 확인한 결과 DOM에 `.krds-inline-lint-popover` 요소가 항상 정확히 1개만 존재 — "팝오버 2개가 동시에 겹친다"는 이 TODO의 전제 자체가 현재 아키텍처에서 구조적으로 발생할 수 없다. 닫아도 됨.
 
 ### TODO-016: AI 인라인 지적 — 반복 문장 캐싱
 **Priority**: P3
