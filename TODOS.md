@@ -62,7 +62,7 @@
 **Effort**: S (human) → S (CC)
 **Depends on**: Next Steps #1(API 계약 스파이크), TODO-020(에디터 타입 결정)
 
-### TODO-020: AI 인라인 지적 — textarea 대상 렌더링 전략(mirror overlay) 설계
+### TODO-020: AI 인라인 지적 — textarea 대상 렌더링 전략(mirror overlay) 설계 — ✅ 완료 (2026-08-20)
 **Priority**: P1
 **Discovered by**: /autoplan (Eng 리뷰, Codex 듀얼보이스) 2026-08-20
 **What**: CSS Custom Highlight API는 DOM Range 기반이라 `<textarea>` 내부 텍스트에는 적용 불가(텍스트가 실제 DOM 노드가 아님). textarea 대상으로는 투명 오버레이 div + 스크롤/줄바꿈/리사이즈 동기화("mirror overlay") 패턴이 별도로 필요.
@@ -72,6 +72,7 @@
 **Context**: 7457948-main-design-20260819.md Eng Review에서 Codex가 발견. "이번 데모를 contenteditable 전용으로 좁힐지, textarea까지 포함할지" 먼저 결정 필요 — Codex 권고: 편집기 타입 결정이 최우선 선행 작업.
 **Effort**: M (human) → S (CC)
 **Depends on**: 없음 (최우선 선행 결정)
+**해결**: textarea mirror overlay로 사용자 확정(ET1). `krds-extension/content.js`/`content.css`에 1차 구현(commit 55bb2ff) — backdrop div + highlightsLayer로 밑줄/팝오버 렌더링, 스크롤/리사이즈 동기화. codex 리뷰로 z-index 히트테스트, 프로그램적 value 감지, 옵션 칩 반영, 팝오버 뷰포트 클리핑 4건 수정(commit 0d2ab96). 이어서 isolated/MAIN world 격리 문제 발견 및 MAIN world 브리지(`page-hook.js`)로 재구현(commit ea36639). 실브라우저 마우스 클릭(Playwright browser_click) 기준 동작 검증 완료 — 단, isolated/MAIN world 경계를 넘는 부분은 Playwright로 재현 불가해 unpacked 확장을 실제 Chrome에 로드한 수동 검증이 아직 남음.
 
 ### TODO-021: AI 인라인 지적 — accept 액션의 MutationObserver 재트리거 억제
 **Priority**: P2
