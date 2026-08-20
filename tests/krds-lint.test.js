@@ -1118,3 +1118,57 @@ describe('코드/인용 구간 마스킹', () => {
     expect(r.issues.some(i => i.type === 'english-only-label' && i.match === 'COMING SOON')).toBe(true);
   });
 });
+
+// 2026-08-20 TODO-026 — accept 액션(적용 버튼) undo-safety 검증 후, "자동 적용
+// 가능한 alt인지" 판별하는 isSimpleReplacement 도입. PATTERN_RULES의 alt는
+// 전부 예시 나열형이라 항상 applyable: false, ADMIN_JARGON은 단순 치환일 때만
+// applyable: true.
+describe('isSimpleReplacement — 자동 적용 안전성 판별', () => {
+  it('짧고 구분자가 없는 단순 치환 문구는 true를 반환한다', () => {
+    expect(KRDSLint.isSimpleReplacement('내일까지')).toBe(true);
+    expect(KRDSLint.isSimpleReplacement('부모님 또는 후견인')).toBe(true);
+  });
+  it('슬래시(/)로 복수 대안을 나열한 문구는 false를 반환한다', () => {
+    expect(KRDSLint.isSimpleReplacement('"일치하지 않습니다" / "확인이 필요합니다"')).toBe(false);
+  });
+  it('플러스(+)로 여러 단계를 이어붙인 문구는 false를 반환한다', () => {
+    expect(KRDSLint.isSimpleReplacement('예상 입금일 확인 + 지연 사유 조회 + 계좌 등록하기')).toBe(false);
+  });
+  it('em dash(—)로 설명을 덧붙인 문구는 false를 반환한다', () => {
+    expect(KRDSLint.isSimpleReplacement('가족 전체 주민등록증명서 (등본) — 대출·계약·학교 제출')).toBe(false);
+  });
+  it('괄호로 사용 안내를 덧붙인 문구는 false를 반환한다', () => {
+    expect(KRDSLint.isSimpleReplacement('주민등록번호 (병기 설명 사용)')).toBe(false);
+  });
+  it('20자를 초과하는 문구는 false를 반환한다', () => {
+    expect(KRDSLint.isSimpleReplacement('가'.repeat(21))).toBe(false);
+  });
+  it('20자 이하 경계값은 true를 반환한다', () => {
+    expect(KRDSLint.isSimpleReplacement('가'.repeat(20))).toBe(true);
+  });
+  it('줄바꿈이 포함된 문구는 false를 반환한다', () => {
+    expect(KRDSLint.isSimpleReplacement('첫 줄\n둘째 줄')).toBe(false);
+  });
+  it('빈 문자열·null·undefined·비문자열은 false를 반환한다', () => {
+    expect(KRDSLint.isSimpleReplacement('')).toBe(false);
+    expect(KRDSLint.isSimpleReplacement(null)).toBe(false);
+    expect(KRDSLint.isSimpleReplacement(undefined)).toBe(false);
+    expect(KRDSLint.isSimpleReplacement(42)).toBe(false);
+  });
+});
+
+describe('lint() 이슈 객체의 applyable/applyText 필드', () => {
+  it('단순 치환 가능한 행정어 이슈는 applyable: true와 applyText를 포함한다', () => {
+    const r = KRDSLint.lint('기표 완료 처리되었습니다.', { checkAdminJargon: true, checkPatterns: false });
+    const issue = r.issues.find(i => i.type === 'admin-jargon' && i.match === '기표 완료');
+    expect(issue).toBeTruthy();
+    expect(issue.applyable).toBe(true);
+    expect(issue.applyText).toBe('등록 완료');
+  });
+  it('PATTERN_RULES 이슈는 항상 applyable: false다 (alt가 예시 나열형이라 삽입 불가)', () => {
+    const r = KRDSLint.lint('신청서가 접수되어지다.', { checkAdminJargon: false, checkPatterns: true });
+    const issue = r.issues.find(i => i.type === 'double-passive');
+    expect(issue).toBeTruthy();
+    expect(issue.applyable).toBe(false);
+  });
+});
