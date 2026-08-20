@@ -108,6 +108,39 @@
 **Effort**: M (human) → S (CC)
 **Depends on**: Decision #13 (이벤트 수집처 = 서버 릴레이)
 
+### TODO-024: AI 지적 가치 검증 실험 설계
+**Priority**: P1
+**Discovered by**: /autoplan Increment 2 CEO Review — Codex 듀얼보이스 2026-08-20 (야간 무인 `/loop` 사이클)
+**What**: 고정된 한국어 문서 코퍼스 + 사람 검토로 "룰 엔진 전용" vs "AI 후보 포함" 지적의 정확도·수용률·수정 후 품질·허용 지연을 비교하는 실험 설계.
+**Why**: ET2(네트워크 경로)와 ET3(이벤트 수집)를 설계하기 전에, AI 기반 지적이 실제로 룰 엔진보다 가치 있는지 자체가 검증된 적이 없다. Codex 리뷰: "지금 풀어야 할 건 기술 경로가 아니라 효용 검증"이라며 Next Steps #1(API 계약 스파이크)보다 이 실험이 선행돼야 한다고 지적.
+**Pros**: 인프라 투자 전에 핵심 가설(맥락 판단은 규칙만으론 부족하다)을 실제 데이터로 검증, 헛수고(dead code) 방지
+**Cons**: 코퍼스 준비와 사람 검토 세션이 필요해 무인 자동화로 진행 불가 — 사용자 시간 필요
+**Context**: TODO-020(ET1) 완료 후 진행된 Increment 2 CEO 리뷰에서 Claude subagent와 Codex 양쪽이 독립적으로 "지금 인프라부터 짓는 건 순서가 거꾸로"라고 6/6 컨센서스로 지적 — User Challenge로 분류되어 구현 보류, 사용자 재확인 대기 중.
+**Effort**: M (human) → M (CC, 코퍼스 준비는 사람 필요)
+**Depends on**: 없음 (Next Steps #1보다 먼저 진행 권고)
+
+### TODO-025: ET3 데이터 거버넌스 설계 — raw 문장 export의 개인정보/기밀 리스크
+**Priority**: P1
+**Discovered by**: /autoplan Increment 2 CEO Review — Codex 듀얼보이스 2026-08-20
+**What**: ET3의 "로컬 배치 export(JSON 다운로드)" 결정이 스스로를 "보안 표면 0"이라 칭했으나, 공공기관 문안에는 개인정보·기밀·보존정책 문제가 있을 수 있어 이 주장은 틀렸다. 원문/제안문/최종문을 그대로 저장·export하기 전에 익명화·마스킹·보존기간 정책을 먼저 설계해야 한다.
+**Why**: Codex 리뷰: "raw 문장 JSON export는 '보안 표면 0'이 아니다." 토큰이 없다고 데이터 자체의 민감도 문제가 사라지는 게 아님 — 원래 CLAUDE.md/design doc의 Constraints("정부 문서를 외부 AI API로 보내는 것은 법적/보안 리스크")가 로컬 export에도 동일하게 적용됨을 놓치고 있었다.
+**Pros**: 이후 실제 공공기관 파일럿 단계에서 재작업 없이 바로 적용 가능한 정책 확보
+**Cons**: 정책 설계 자체가 법률/보안 검토 성격이라 CC 단독으로 완결하기 어려움
+**Context**: TODO-024와 함께 Increment 2 CEO Review에서 발견. Decision Audit Trail(Increment 2)의 User Challenge 참고.
+**Effort**: M (human, 법률 검토 포함) → S (CC, 초안 정책 문서만)
+**Depends on**: 없음
+
+### TODO-026: ET1 팝오버에 "적용(수락)" 액션 추가 여부 결정
+**Priority**: P2
+**Discovered by**: /autoplan Increment 2 CEO Review — Claude subagent 2026-08-20
+**What**: 현재 ET1의 팝오버는 문제/근거/대안을 표시만 하고 실제로 텍스트를 교체하는 "적용" 버튼이 없다. ET3(이벤트 수집)가 전제하는 accept 신호 자체가 UI에 존재하지 않는다는 뜻 — 추가할지, 어떤 범위로 할지 결정 필요.
+**Why**: Claude subagent 리뷰: "ET3는 accept/reject/edit를 학습 데이터로 과대해석하는데, 지금 존재하는 제안은 규칙 기반뿐이고 그마저 accept 버튼이 없다." 이 갭을 메우지 않으면 TODO-024 실험도 "수용률" 지표를 측정할 방법이 없다.
+**Pros**: TODO-024 실험에 필요한 실제 accept/reject 신호를 지금 당장(AI 없이도) 확보 가능
+**Cons**: 텍스트 교체는 원래 Design Review T2(CRITICAL)에서 지적된 undo-safety 문제(beforeinput/execCommand가 undo를 보장하지 않음)를 다시 불러옴 — 별도 호환성 게이트 재검토 필요
+**Context**: Increment 2 CEO Review, Decision Audit Trail 참고. 기존 Design Review T2와 연결됨.
+**Effort**: M (human) → M (CC, undo-safety 검증 포함)
+**Depends on**: 없음, 단 T2(undo-safety) 재검토 필수 선행
+
 ### TODO-011: Anthropic API 월 사용량 한도 설정
 **Priority**: P2
 **What**: Anthropic 대시보드 → Settings → Billing → Usage limits에서 월 하드 리밋($10-20) 설정
