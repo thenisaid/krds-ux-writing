@@ -203,7 +203,8 @@
       return el;
     }
 
-    function showPopover(markEl, issue) {
+    function showPopover(markEl, m) {
+      var issue = m.issue;
       popover.innerHTML = '';
 
       var problem = document.createElement('div');
@@ -222,6 +223,25 @@
         alt.className = 'krds-popover-alt';
         alt.textContent = '대안: ' + String(issue.suggestion).replace(/^→\s*/, '');
         popover.appendChild(alt);
+      }
+
+      // 행정어 사전 중 "단순 1:1 치환"으로 판별된 항목만 적용 버튼을 보여준다
+      // (krds-lint.js의 isSimpleReplacement — 패턴 규칙의 alt는 전부 예시
+      // 나열형이라 원천적으로 applyable: false). 텍스트 교체는
+      // execCommand('insertText')로 실행해 네이티브 undo/redo를 보존한다
+      // (2026-08-20 TODO-026 — Playwright로 Ctrl+Z/Ctrl+Shift+Z 검증 완료).
+      if (issue.applyable && issue.applyText) {
+        var applyBtn = document.createElement('button');
+        applyBtn.type = 'button';
+        applyBtn.className = 'krds-popover-apply';
+        applyBtn.textContent = '적용';
+        applyBtn.addEventListener('click', function () {
+          textarea.focus();
+          textarea.setSelectionRange(m.start, m.end);
+          document.execCommand('insertText', false, issue.applyText);
+          hidePopover();
+        });
+        popover.appendChild(applyBtn);
       }
 
       var rect = markEl.getBoundingClientRect();
@@ -262,7 +282,7 @@
       var markEl = e.target.closest('mark.krds-inline-lint-mark');
       if (!markEl) return;
       var m = markAt(Number(markEl.dataset.idx));
-      if (m) showPopover(markEl, m.issue);
+      if (m) showPopover(markEl, m);
     });
 
     // 키보드 접근성 — Tab으로 밑줄 이동, Enter/Space로 팝오버, Esc로 닫기
@@ -272,7 +292,7 @@
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         var m = markAt(Number(markEl.dataset.idx));
-        if (m) showPopover(markEl, m.issue);
+        if (m) showPopover(markEl, m);
       }
     });
 
