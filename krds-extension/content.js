@@ -72,6 +72,11 @@
 
     var debounceTimer = null;
     function scheduleLint() {
+      // 텍스트가 바뀌면 열려 있던 팝오버의 m.start/m.end가 즉시 낡은 값이
+      // 된다 — 그대로 두면 사용자가 팝오버를 연 뒤 다른 곳을 typing하고
+      // 돌아와 "적용"을 눌렀을 때 엉뚱한 구간이 교체될 수 있다
+      // (2026-08-20 codex 리뷰 P2). 재검사를 기다릴 것 없이 즉시 닫는다.
+      hidePopover();
       statusDot.classList.add('krds-checking');
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(runLint, DEBOUNCE_MS);
@@ -236,6 +241,14 @@
         applyBtn.className = 'krds-popover-apply';
         applyBtn.textContent = '적용';
         applyBtn.addEventListener('click', function () {
+          // scheduleLint의 input 리스너가 텍스트 변경 시 팝오버를 즉시 닫지만,
+          // 이중 안전장치로 교체 직전에도 그 구간이 여전히 이 이슈가 잡았던
+          // 문구와 정확히 같은지 확인한다 — 다르면 조용히 아무 것도 하지 않는다
+          // (2026-08-20 codex 리뷰 P2 — 낡은 offset으로 엉뚱한 구간을 지우는 것 방지).
+          if (textarea.value.slice(m.start, m.end) !== issue.match) {
+            hidePopover();
+            return;
+          }
           textarea.focus();
           textarea.setSelectionRange(m.start, m.end);
           document.execCommand('insertText', false, issue.applyText);

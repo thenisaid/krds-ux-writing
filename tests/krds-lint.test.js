@@ -1140,6 +1140,10 @@ describe('isSimpleReplacement — 자동 적용 안전성 판별', () => {
   it('괄호로 사용 안내를 덧붙인 문구는 false를 반환한다', () => {
     expect(KRDSLint.isSimpleReplacement('주민등록번호 (병기 설명 사용)')).toBe(false);
   });
+  it('쉼표로 복수 대안을 나열한 문구는 false를 반환한다 (2026-08-20 codex 리뷰 — 18개 사전 항목에서 발견)', () => {
+    expect(KRDSLint.isSimpleReplacement('고객님, 신청인')).toBe(false);
+    expect(KRDSLint.isSimpleReplacement('잘못, 책임')).toBe(false);
+  });
   it('20자를 초과하는 문구는 false를 반환한다', () => {
     expect(KRDSLint.isSimpleReplacement('가'.repeat(21))).toBe(false);
   });
