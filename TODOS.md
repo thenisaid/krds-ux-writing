@@ -134,7 +134,7 @@
 **초안 내용** (`research/et3-data-governance-2026-08-20.md`): (1) 기존 `manifest.json` host_permissions가 "어느 페이지에서 실행되는가"는 이미 기술적으로 막고 있음을 재확인, (2) 잔여 위험은 "그 페이지에 사용자가 실제로 무엇을 타이핑하는가" — 필드별 민감도 분류표로 `suggested_alt`(고정 문자열, 안전)와 `original_snippet`(사용자 실제 텍스트 일부, 위험) 구분, (3) 저장 직전 PII 정규식 마스킹(전화번호/이메일/주민번호 형식)을 "옵션이 아니라 저장 함수에 내장"하도록 강제, (4) 30일 자동 보존기간 + 즉시삭제 버튼, (5) export 시 사람 확인 게이트(정규식이 못 잡는 비정형 PII의 최후 방어선), (6) `edited_text`(자유 형식 수정문)는 TODO-026 결정 전까지 수집 범위에서 제외. **사용자 최종 승인 필요** — 법률/보안 최종 판단은 CC 몫이 아님을 문서 자체에 명시.
 **Depends on**: 없음
 
-### TODO-026: ET1 팝오버에 "적용(수락)" 액션 추가 여부 결정
+### TODO-026: ET1 팝오버에 "적용(수락)" 액션 추가 여부 결정 — ✅ 완료 (2026-08-20)
 **Priority**: P2
 **Discovered by**: /autoplan Increment 2 CEO Review — Claude subagent 2026-08-20
 **What**: 현재 ET1의 팝오버는 문제/근거/대안을 표시만 하고 실제로 텍스트를 교체하는 "적용" 버튼이 없다. ET3(이벤트 수집)가 전제하는 accept 신호 자체가 UI에 존재하지 않는다는 뜻 — 추가할지, 어떤 범위로 할지 결정 필요.
@@ -144,6 +144,8 @@
 **Context**: Increment 2 CEO Review, Decision Audit Trail 참고. 기존 Design Review T2와 연결됨.
 **Effort**: M (human) → M (CC, undo-safety 검증 포함)
 **Depends on**: 없음, 단 T2(undo-safety) 재검토 필수 선행
+**해결**: **결정 = 추가하되 범위를 좁힘.** (1) Playwright로 실제 브라우저에서 undo-safety 재검증 — 실제 키보드 타이핑으로 undo 히스토리를 쌓은 뒤 `setSelectionRange` + `execCommand('insertText')`로 교체하고 Ctrl+Z/Ctrl+Shift+Z까지 확인한 결과, 프로그램적 교체가 네이티브 undo 스택에 정확히 한 단계로 통합되고 주변 타이핑 히스토리도 손상되지 않음을 확인 — Design Review T2 CRITICAL 우려가 이 방식으로는 해소됨. (2) 행정어 사전(290개) 감사 결과 상당수 alt가 "/", "+", "—", "()", ","로 복수 대안·부가설명을 나열한 복합 문구라 그대로 삽입하면 문장이 깨짐 — `krds-lint.js`에 `isSimpleReplacement()` 순수 함수를 추가해 "단순 1:1 치환"인 항목에만 적용 버튼을 노출(패턴 규칙 20개는 alt가 전부 예시 나열형이라 원천적으로 제외). (3) codex 리뷰가 쉼표 나열 오탐(18개 항목)과 팝오버 stale-range(팝오버가 열린 채 다른 곳을 편집하면 낡은 offset으로 엉뚱한 구간을 교체) 2건을 추가로 발견해 즉시 수정·재검증. 최종적으로 실제 unpacked 확장 + 실제 마우스/키보드 상호작용으로 종단간 검증 완료. `krds-extension/content.js`(commit 7d25448, 332bd00), `krds-lint.js`(isSimpleReplacement, commit bf36114). npm test 1266개 통과.
+**남은 것**: ET3(이벤트 수집·카운팅)는 여전히 미구현·보류 — 이 TODO는 "적용" UI 액션 자체만 다룬다. accept 신호를 실제로 저장/집계하려면 TODO-025 승인 이후 별도 착수 필요.
 
 ### TODO-011: Anthropic API 월 사용량 한도 설정
 **Priority**: P2
