@@ -51,16 +51,17 @@
 **Effort**: S (human) → S (CC)
 **Depends on**: Next Steps #4 (이벤트 스키마 설계)
 
-### TODO-019: AI 인라인 지적 — Range 재계산 로직 공백 정규화 유닛테스트
+### TODO-019: AI 인라인 지적 — Range 재계산 로직 공백 정규화 유닛테스트 — ⚠️ MOOT (2026-08-20, 아키텍처 전환으로 해당 없음)
 **Priority**: P2
 **Discovered by**: /autoplan (Eng 리뷰, Section 2) 2026-08-20
 **What**: MutationObserver 기반 Range 재계산 시 줄바꿈/공백 삭제로 하이라이트 범위가 의도와 어긋나는 케이스에 대한 유닛테스트.
 **Why**: 웹검색으로 확인된 CSS Custom Highlight API의 알려진 함정(whitespace sensitivity) — 순수함수로 분리 가능해 vitest 커버 가능.
 **Pros**: 회귀 방지, 조용한 오검출 예방
 **Cons**: Range 재계산 로직 자체가 아직 미구현
-**Context**: 7457948-main-design-20260819.md Eng Review Section 2/3에서 발견.
+**Context**: 7457948-main-design-20260819.md Eng Review Section 2/3에서 발견. 이 TODO는 CSS Custom Highlight API(DOM Range 기반) 가정으로 작성됨.
 **Effort**: S (human) → S (CC)
 **Depends on**: Next Steps #1(API 계약 스파이크), TODO-020(에디터 타입 결정)
+**해당 없음**: TODO-020에서 textarea mirror overlay로 확정되면서 CSS Custom Highlight API 자체를 사용하지 않게 됨(`krds-extension/content.js`에 `MutationObserver`/`Range`/`highlights.set` 전무 확인). mirror overlay는 매 `runLint()`마다 현재 텍스트를 오프셋 기반으로 전면 재계산해 `innerHTML`을 다시 그리므로, "재계산 시 공백 정규화로 범위가 어긋나는" 문제 자체가 구조적으로 발생하지 않는다. Range 기반 구현으로 전환하지 않는 한 이 TODO는 닫아도 됨.
 
 ### TODO-020: AI 인라인 지적 — textarea 대상 렌더링 전략(mirror overlay) 설계 — ✅ 완료 (2026-08-20)
 **Priority**: P1
@@ -75,25 +76,26 @@
 **해결**: textarea mirror overlay로 사용자 확정(ET1). `krds-extension/content.js`/`content.css`에 1차 구현(commit 55bb2ff) — backdrop div + highlightsLayer로 밑줄/팝오버 렌더링, 스크롤/리사이즈 동기화. codex 리뷰로 z-index 히트테스트, 프로그램적 value 감지, 옵션 칩 반영, 팝오버 뷰포트 클리핑 4건 수정(commit 0d2ab96). 이어서 isolated/MAIN world 격리 문제 발견 및 MAIN world 브리지(`page-hook.js`)로 재구현(commit ea36639).
 **최종 검증**: `krds-extension/scripts/verify-real-chrome.py` — 실제 unpacked 확장을 `--load-extension`으로 헤드풀 Chromium에 로드해(Playwright MCP의 스크립트 직접 주입이 아님) isolated/MAIN world 경계를 그대로 재현한 종단간 테스트. 결과: 확장 attach 확인, 샘플 로드→16건 감지 announce, 실제 마우스 클릭→팝오버 정상 표시 모두 통과. TODO-020 완전히 종료.
 
-### TODO-021: AI 인라인 지적 — accept 액션의 MutationObserver 재트리거 억제
+### TODO-021: AI 인라인 지적 — accept 액션의 자기 재트리거 억제 — 🔄 갱신 (2026-08-20, 트리거 메커니즘 정정)
 **Priority**: P2
 **Discovered by**: /autoplan (Eng 리뷰, Claude subagent) 2026-08-20
-**What**: 확장 자신의 수락(accept) 액션이 MutationObserver를 재트리거해 방금 수락한 문구를 다시 검사하고 새 지적을 만들 수 있음 — 학습 신호 오염 위험.
+**What**: 확장 자신의 수락(accept) 액션이 재검사를 재트리거해 방금 수락한 문구를 다시 검사하고 새 지적을 만들 수 있음 — 학습 신호 오염 위험.
 **Why**: 프로그래밍 방식 편집과 사용자 편집을 구분 못하면 룰 후보 학습 데이터 품질이 떨어짐.
 **Pros**: 학습 신호 정확도 보호
 **Cons**: 구분 플래그/WeakSet 관리 오버헤드 추가
-**Context**: 7457948-main-design-20260819.md Eng Review에서 발견.
+**Context**: 7457948-main-design-20260819.md Eng Review에서 발견. 원문은 "MutationObserver 재트리거"로 서술됐으나 실제 채택된 mirror overlay 구현(`content.js`)은 MutationObserver를 쓰지 않고 `textarea`의 네이티브 `input` 이벤트(`scheduleLint`) + `page-hook.js`의 `krds:value-changed` 커스텀 이벤트로 재검사를 트리거한다 — 재트리거 우려 자체는 여전히 유효(accept가 프로그램적으로 `.value`를 바꾸면 두 트리거 중 하나가 반드시 재검사를 일으킴), 메커니즘 서술만 정정.
 **Effort**: S (human) → S (CC)
-**Depends on**: TODO-020
+**Depends on**: TODO-020(완료), TODO-026(accept UI 자체가 아직 없어 실제 착수는 TODO-026 이후)
 
-### TODO-022: AI 인라인 지적 — orphaned Range(대상 문장 삭제됨) 무시 처리
+### TODO-022: AI 인라인 지적 — orphaned 지적(대상 문장 삭제됨) 처리 — ⚠️ MOOT (2026-08-20, 아키텍처 전환으로 해당 없음)
 **Priority**: P2
 **Discovered by**: /autoplan (Eng 리뷰, Claude subagent) 2026-08-20
 **What**: 사용자가 지적 대상 문장 전체를 삭제했을 때 `highlights.set()` 호출이 예외로 죽지 않고 조용히 해당 하이라이트를 제거하도록 처리 + 테스트.
 **Why**: 테스트 없이 방치하면 "2am 금요일" 크래시 후보 — 흔한 사용자 행동(문장 통째로 지우기)이 트리거.
 **Pros**: 안정성
 **Cons**: 없음 (작은 방어 로직)
-**Context**: 7457948-main-design-20260819.md Eng Review에서 발견.
+**Context**: 7457948-main-design-20260819.md Eng Review에서 발견. 이 TODO는 CSS Custom Highlight API(`highlights.set()`)가 특정 Range 객체를 계속 참조하며 부분 갱신하는 구조를 가정함.
+**해당 없음**: mirror overlay 구현은 `runLint()`마다 `textarea.value` 전체를 다시 읽어 `krds-lint.js`로 처음부터 재검사하고, `render()`가 `innerHTML`을 통째로 재생성한다(TODO-019와 동일 근거) — 삭제된 문장은 다음 재검사에서 애초에 이슈 목록에 나타나지 않으므로 "죽은 Range를 참조해 예외가 나는" 실패 클래스 자체가 구조적으로 존재하지 않는다. 닫아도 됨.
 **Effort**: S (human) → S (CC)
 **Depends on**: TODO-020
 
