@@ -474,6 +474,29 @@
     ],
   };
 
+  // ─── 2.6. 자동 적용 안전성 판별 ────────────────────────────────────────────
+
+  /**
+   * alt(대안) 문구가 텍스트에 그대로 삽입해도 안전한 "단순 1:1 치환"인지 판별합니다.
+   * 행정어 사전(290개) 감사 결과, 대다수는 단순 치환("명일까지"→"내일까지")이지만
+   * 일부는 복합 안내문("환급금: [금액]"→"환급 결정 완료 / 예상 입금일 확인 + ...")이라
+   * 그대로 삽입하면 문장이 깨진다. PATTERN_RULES의 alt는 전부 예시 나열형
+   * (예: '"처리됩니다", "완료됩니다" 등 단순 피동형 사용')이라 원천적으로 삽입 불가.
+   * 이 함수는 "적용" 가능 여부만 판별하고, 실제 텍스트 교체(undo-safe 방식)는
+   * 확장의 content.js(브라우저 DOM IIFE, 별도 스크립트)에서 담당한다
+   * (2026-08-20, TODO-026 — accept 액션 undo-safety 검증 후 도입).
+   */
+  function isSimpleReplacement(alt) {
+    if (typeof alt !== 'string' || !alt) return false;
+    if (alt.length > 20) return false;
+    // "/", "+"는 이 사전에서 복수 대안·복합 단계를 나열할 때만 쓰인다.
+    // "—"(em dash)와 괄호는 "왜/어떻게 쓰는지"를 덧붙이는 설명용으로 쓰인다 —
+    // 둘 다 있으면 alt 자체가 문장에 그대로 들어갈 완성된 대체 문구가 아니다.
+    if (/[/+—()]/.test(alt)) return false;
+    if (/\n/.test(alt)) return false;
+    return true;
+  }
+
   // ─── 3. 린팅 핵심 함수 ──────────────────────────────────────────────────────
 
   /**
@@ -614,6 +637,8 @@
                   match: matchedText,
                   message: '행정어/금지어: "' + matchedText + '"',
                   suggestion: '→ ' + entry.alt,
+                  applyable: isSimpleReplacement(entry.alt),
+                  applyText: entry.alt,
                 });
                 occupiedRanges.push({ start: start, end: end });
               }
@@ -641,6 +666,8 @@
                 match: entry.banned,
                 message: '행정어/금지어: "' + entry.banned + '"',
                 suggestion: '→ ' + entry.alt,
+                applyable: isSimpleReplacement(entry.alt),
+                applyText: entry.alt,
               });
               occupiedRanges.push({ start: idx, end: end });
             }
@@ -667,6 +694,9 @@
               match: m[0],
               message: rule.message(m[0]),
               suggestion: '→ ' + rule.alt,
+              // PATTERN_RULES의 alt는 전부 예시 나열형 안내문이라 텍스트에 그대로
+              // 삽입할 완성된 대체 문구가 아니다 — 항상 자동 적용 불가.
+              applyable: false,
             });
           }
         });
@@ -786,6 +816,7 @@
     formatCLI: formatCLI,
     ADMIN_JARGON: ADMIN_JARGON,
     PATTERN_RULES: PATTERN_RULES,
+    isSimpleReplacement: isSimpleReplacement,
     version: '1.0.0',
   };
 
