@@ -1029,6 +1029,59 @@ describe('lint-ui stale result handling', () => {
     expect(elements.inputText.value).toBe('');
   });
 
+  it('persists a migrated savedAt timestamp for legacy history entries missing one (2026-08-21 TTL fix)', () => {
+    const { context, elements } = buildContext();
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      {
+        date: '2026. 6. 9.',
+        score: 82,
+        text: '레거시 이력 항목입니다.',
+        fullText: '레거시 이력 항목입니다.',
+        issueCount: 1,
+        // savedAt은 의도적으로 생략 — 30일 TTL 도입 이전 데이터를 시뮬레이션
+      },
+    ]));
+
+    vm.runInNewContext(SOURCE, context);
+
+    const stored = JSON.parse(context.localStorage.getItem('krds-lint-history'));
+    expect(stored).toHaveLength(1);
+    expect(typeof stored[0].savedAt).toBe('number');
+    expect(Number.isFinite(stored[0].savedAt)).toBe(true);
+    expect(elements.historyList.innerHTML).toContain('레거시 이력 항목입니다.');
+  });
+
+  it('prunes history entries older than the 30-day TTL and persists the pruned result', () => {
+    const { context, elements } = buildContext();
+    const thirtyOneDaysAgo = Date.now() - 31 * 24 * 60 * 60 * 1000;
+    context.localStorage.setItem('krds-lint-history', JSON.stringify([
+      {
+        date: '2026. 6. 1.',
+        savedAt: thirtyOneDaysAgo,
+        score: 50,
+        text: '30일 지난 이력입니다.',
+        fullText: '30일 지난 이력입니다.',
+        issueCount: 3,
+      },
+      {
+        date: '2026. 8. 20.',
+        savedAt: Date.now(),
+        score: 90,
+        text: '최근 이력입니다.',
+        fullText: '최근 이력입니다.',
+        issueCount: 0,
+      },
+    ]));
+
+    vm.runInNewContext(SOURCE, context);
+
+    const stored = JSON.parse(context.localStorage.getItem('krds-lint-history'));
+    expect(stored).toHaveLength(1);
+    expect(stored[0].fullText).toBe('최근 이력입니다.');
+    expect(elements.historyList.innerHTML).not.toContain('30일 지난 이력입니다.');
+    expect(elements.historyList.innerHTML).toContain('최근 이력입니다.');
+  });
+
   it('escapes HTML special characters in the unmatched tail when rendering the highlight view', () => {
     const { context, elements } = buildContext();
     const text = '이루어지다 <script>alert(1)</script>';
