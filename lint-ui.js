@@ -754,20 +754,23 @@
       var parsed = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
       if (!Array.isArray(parsed)) return [];
       var now = Date.now();
-      var expired = false;
+      var dirty = false; // 항목이 제거되었거나 savedAt이 새로 채워져 저장소 갱신이 필요함
       var result = parsed.map(function(entry) {
-        if (!entry || typeof entry !== 'object') { expired = true; return null; }
+        if (!entry || typeof entry !== 'object') { dirty = true; return null; }
         var fullText = typeof entry.fullText === 'string'
           ? entry.fullText
           : typeof entry.text === 'string'
             ? entry.text
             : '';
-        if (!fullText) { expired = true; return null; }
+        if (!fullText) { dirty = true; return null; }
         // savedAt이 없는 이전 버전 데이터는 지금 막 저장된 것으로 간주해
-        // 유예 기간을 준다(즉시 삭제로 인한 데이터 손실 방지).
+        // 유예 기간을 준다(즉시 삭제로 인한 데이터 손실 방지). 이때
+        // 마이그레이션된 값을 반드시 저장소에 다시 써야 유예가 실제로
+        // 시작된다 — 안 그러면 매번 읽을 때마다 now로 재할당되어
+        // 영원히 만료되지 않는다(2026-08-21 codex 감사).
         var savedAt = Number(entry.savedAt);
-        if (!isFinite(savedAt)) savedAt = now;
-        if (now - savedAt > HISTORY_TTL_MS) { expired = true; return null; }
+        if (!isFinite(savedAt)) { savedAt = now; dirty = true; }
+        if (now - savedAt > HISTORY_TTL_MS) { dirty = true; return null; }
         var previewText = typeof entry.text === 'string' && entry.text
           ? entry.text
           : fullText.slice(0, 80);
@@ -783,7 +786,7 @@
         };
       }).filter(Boolean).slice(0, 5);
 
-      if (expired) {
+      if (dirty) {
         try { localStorage.setItem(HISTORY_KEY, JSON.stringify(result)); } catch(e) {}
       }
       return result;
