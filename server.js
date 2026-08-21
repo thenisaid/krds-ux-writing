@@ -923,14 +923,27 @@ const server = http.createServer((req, res) => {
 });
 
 if (require.main === module) {
-  server.listen(PORT, '0.0.0.0', () => {
-    const localIp = LOCAL_LAN_IP || 'localhost';
+  // 기본값은 loopback만 — 0.0.0.0으로 열면 API 키를 쓰는 /api/generate가
+  // 같은 네트워크의 누구에게나 노출된다(2026-08-21 /cso 감사 SEC-01).
+  // "팀 공유" 자체는 의도된 기능이므로 완전히 없애지 않고, 명시적
+  // opt-in 환경변수를 켰을 때만 LAN에 연다.
+  const allowLan = process.env.ALLOW_LAN_ACCESS === 'true';
+  const bindHost = allowLan ? '0.0.0.0' : '127.0.0.1';
+
+  server.listen(PORT, bindHost, () => {
     const backend = getOllamaUrl()
       ? `로컬 Ollama (${OLLAMA_MODEL})`
       : 'Claude API (claude-sonnet-4-6)';
     console.log(`\n✅ KRDS 가이드라인 생성기 실행 중`);
     console.log(`\n  내 PC:   http://localhost:${PORT}/generator/`);
-    console.log(`  팀 공유: http://${localIp}:${PORT}/generator/`);
+    if (allowLan) {
+      const localIp = LOCAL_LAN_IP || 'localhost';
+      console.log(`  팀 공유: http://${localIp}:${PORT}/generator/`);
+      console.log(`  ⚠️  같은 네트워크의 누구나 이 주소로 접속해 AI API 키를 사용할 수 있습니다.`);
+    } else if (LOCAL_LAN_IP) {
+      console.log(`  팀 공유: 비활성화됨 — 켜려면 ALLOW_LAN_ACCESS=true node server.js`);
+      console.log(`           (같은 네트워크의 누구나 AI API 키를 쓸 수 있게 되니 신뢰하는 환경에서만 켜세요)`);
+    }
     console.log(`  AI 백엔드: ${backend}\n`);
   });
 }
