@@ -1,0 +1,9 @@
+# 민감 경로 리뷰어 지정 (2026-08-21 /cso 감사 CI-03)
+# 배포 크레덴셜, CI 파이프라인, AI 프록시(API 키 경로)를 건드리는 변경은
+# 반드시 코드 오너 리뷰를 거치도록 표시한다.
+/.github/                @thenisaid
+/api/                    @thenisaid
+/functions/              @thenisaid
+/server.js               @thenisaid
+/vercel.json             @thenisaid
+/wrangler.toml           @thenisaid
