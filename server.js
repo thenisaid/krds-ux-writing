@@ -128,20 +128,14 @@ function getRequestHeader(req, name) {
 }
 
 function getClientIp(req) {
-  const cfIp = getRequestHeader(req, 'cf-connecting-ip');
-  if (cfIp) return cfIp;
-
-  const realIp = getRequestHeader(req, 'x-real-ip');
-  if (realIp) return realIp;
-
-  // x-forwarded-for: 프록시가 실제 IP를 마지막에 append하므로 마지막 값이 신뢰 가능
-  const forwarded = getRequestHeader(req, 'x-forwarded-for');
-  if (forwarded) {
-    const parts = forwarded.split(',').map(part => part.trim()).filter(Boolean);
-    const clientIp = parts[parts.length - 1];
-    if (clientIp) return clientIp;
-  }
-
+  // 이 서버는 `node server.js`로 직접 실행되며 앞단에 검증된 리버스
+  // 프록시가 없다 — cf-connecting-ip/x-real-ip/x-forwarded-for는 전부
+  // 클라이언트가 원하는 값을 그대로 보낼 수 있는 헤더라 신뢰할 수 없다.
+  // TCP 소켓의 실제 접속 주소만 스푸핑 불가능하므로 이것만 사용한다
+  // (2026-08-21 /cso 감사 — 헤더 우선 신뢰 로직이 요청마다 다른 헤더
+  // 값을 보내는 것만으로 시간당 5회 제한을 우회하게 해줬음. 실제로
+  // 검증된 리버스 프록시 뒤에 배포하는 경우가 생기면 그 프록시가 설정을
+  // 보증하는 헤더만 별도로 다시 추가할 것).
   return req && req.socket && req.socket.remoteAddress
     ? req.socket.remoteAddress
     : 'unknown';
@@ -709,6 +703,17 @@ const server = http.createServer((req, res) => {
 
   // ── POST /api/generate ──────────────────────────────────────────────────
   if ((pathname === '/api/generate' || pathname === `${SITE_BASE_PATH}/api/generate`) && req.method === 'POST') {
+    // Origin 허용 목록 강제 — 정적 파일 서빙과 달리 이 엔드포인트는 실제
+    // AI API 호출 비용이 발생하므로, CORS 헤더만 조건부로 설정하는 것과
+    // 별개로 허용되지 않은 Origin의 요청 자체를 거부해야 한다
+    // (2026-08-21 codex 감사 — no-cors 요청은 응답을 못 읽어도 서버
+    // 처리는 이미 실행돼버림).
+    if (!ALLOWED_ORIGINS.includes(reqOrigin)) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '허용되지 않은 출처입니다.' }));
+      return;
+    }
+
     const ip = getClientIp(req);
 
     if (!checkRateLimit(ip)) {
