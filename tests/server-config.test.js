@@ -278,13 +278,24 @@ describe('server.js configuration', () => {
   });
 
   it('keeps local/dev CORS origins aligned with preview workflows', () => {
-    expect(ALLOWED_ORIGINS).toEqual([
+    // 2026-08-21 codex 감사 — 서버가 자신의 LAN 주소로 접속한 요청도
+    // 허용해야(팀 공유 배너가 광고하는 것과 동일한 origin) 하므로, 실행
+    // 환경에 non-internal IPv4 인터페이스가 있으면 마지막에 한 항목이
+    // 더 붙는다. CI/샌드박스 환경마다 유무가 달라질 수 있어 고정 5개는
+    // 항상 앞쪽에 있는지만 확인한다.
+    const fixedOrigins = [
       'https://thenisaid.github.io',
       'http://localhost:3000',
       'http://127.0.0.1:3000',
       'http://localhost:8300',
       'http://127.0.0.1:8300',
-    ]);
+    ];
+    expect(ALLOWED_ORIGINS.slice(0, fixedOrigins.length)).toEqual(fixedOrigins);
+    expect(ALLOWED_ORIGINS.length).toBeGreaterThanOrEqual(fixedOrigins.length);
+    expect(ALLOWED_ORIGINS.length).toBeLessThanOrEqual(fixedOrigins.length + 1);
+    if (ALLOWED_ORIGINS.length > fixedOrigins.length) {
+      expect(ALLOWED_ORIGINS[fixedOrigins.length]).toMatch(/^http:\/\/\d+\.\d+\.\d+\.\d+:3000$/);
+    }
   });
 
   it('rejects non-object JSON bodies in the local server instead of crashing', async () => {

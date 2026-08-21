@@ -45,12 +45,33 @@ function getOllamaUrl() {
 }
 const SERVICE_CONFIG_ERROR =
   'AI 서비스 구성이 완료되지 않았습니다. 관리자에게 문의해 주세요.';
+
+// "팀 공유" 배너가 광고하는 LAN 주소로 접속한 브라우저가 보내는
+// same-origin fetch('/api/generate')의 Origin은 이 LAN IP다 — 허용
+// 목록에 없으면 2026-08-21 Origin 강제 검사(codex 감사)가 그 정상 요청을
+// 막아버린다(codex 재검토로 발견). 서버가 실제로 바인딩하는 주소를
+// 그대로 반영해야 하므로 모듈 로드 시 한 번 계산해 재사용한다.
+function detectLocalLanIp() {
+  const { networkInterfaces } = require('os');
+  const nets = networkInterfaces();
+  for (const iface of Object.values(nets)) {
+    for (const addr of iface) {
+      if (addr.family === 'IPv4' && !addr.internal) {
+        return addr.address;
+      }
+    }
+  }
+  return null;
+}
+
+const LOCAL_LAN_IP = detectLocalLanIp();
 const ALLOWED_ORIGINS = [
   'https://thenisaid.github.io',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
   'http://localhost:8300',
   'http://127.0.0.1:8300',
+  ...(LOCAL_LAN_IP ? [`http://${LOCAL_LAN_IP}:${PORT}`] : []),
 ];
 const SITE_BASE_PATH = '/krds-ux-writing';
 
@@ -903,17 +924,7 @@ const server = http.createServer((req, res) => {
 
 if (require.main === module) {
   server.listen(PORT, '0.0.0.0', () => {
-    const { networkInterfaces } = require('os');
-    const nets = networkInterfaces();
-    let localIp = 'localhost';
-    for (const iface of Object.values(nets)) {
-      for (const addr of iface) {
-        if (addr.family === 'IPv4' && !addr.internal) {
-          localIp = addr.address;
-          break;
-        }
-      }
-    }
+    const localIp = LOCAL_LAN_IP || 'localhost';
     const backend = getOllamaUrl()
       ? `로컬 Ollama (${OLLAMA_MODEL})`
       : 'Claude API (claude-sonnet-4-6)';
