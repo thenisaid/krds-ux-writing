@@ -15,6 +15,11 @@ const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1시간
 const RATE_LIMIT_MAP_MAX = 1000;
 const rateLimitMap = new Map();
 
+// 2026-08-21 codex 감사: 이 Cloudflare Pages Functions 배포 대상은 사용자
+// 확인 결과 실제로는 배포·사용하고 있지 않은 미사용 코드다(wrangler.toml만
+// 존재). 실제로 Cloudflare Pages 배포를 쓰기 시작하면 그 *.pages.dev
+// 또는 커스텀 도메인을 여기에 반드시 추가해야 한다 — 안 하면 Origin
+// 강제 거부(403)에 배포된 사이트 자신의 요청까지 걸린다.
 const ALLOWED_ORIGINS = new Set([
   'https://thenisaid.github.io',
   'http://localhost:3000',

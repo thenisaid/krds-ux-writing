@@ -18,6 +18,12 @@ const RATE_LIMIT_MAP_MAX = 1000;              // 최대 추적 IP 수
 const rateLimitMap = new Map();
 
 // CORS 허용 오리진 (배포 도메인 + 로컬 개발)
+// 2026-08-21 codex 감사: Origin 강제 거부(403)를 도입하면서 Vercel 자신의
+// 배포 도메인(*.vercel.app 또는 커스텀 도메인)이 이 목록에 없다는 지적을
+// 받았다 — 확인 결과 이 프로젝트는 실제로 Vercel에 배포해 쓰고 있지
+// 않으므로(사용자 확인) 지금은 추가하지 않는다. 나중에 실제로 Vercel
+// 배포를 쓰기 시작하면 그 도메인을 반드시 여기 추가해야 한다 — 안 하면
+// 배포된 사이트 자신이 /api/generate를 호출할 때도 403으로 거부된다.
 const ALLOWED_ORIGINS = new Set([
   'https://thenisaid.github.io',
   'http://localhost:3000',
