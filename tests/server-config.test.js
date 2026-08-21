@@ -294,7 +294,12 @@ describe('server.js configuration', () => {
     expect(ALLOWED_ORIGINS.length).toBeGreaterThanOrEqual(fixedOrigins.length);
     expect(ALLOWED_ORIGINS.length).toBeLessThanOrEqual(fixedOrigins.length + 1);
     if (ALLOWED_ORIGINS.length > fixedOrigins.length) {
-      expect(ALLOWED_ORIGINS[fixedOrigins.length]).toMatch(/^http:\/\/\d+\.\d+\.\d+\.\d+:3000$/);
+      // server.js는 process.env.PORT || 3000을 읽어 LAN origin을 만든다 —
+      // 3000을 하드코딩하면 PORT 환경변수로 테스트를 돌릴 때 깨진다
+      // (2026-08-21 codex 재검토).
+      const port = process.env.PORT || 3000;
+      const lanOriginPattern = new RegExp(`^http://\\d+\\.\\d+\\.\\d+\\.\\d+:${port}$`);
+      expect(ALLOWED_ORIGINS[fixedOrigins.length]).toMatch(lanOriginPattern);
     }
   });
 
