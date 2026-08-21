@@ -543,11 +543,20 @@
     }
   }
 
+  var shareLinkConsented = false;
+
   shareLinkBtn.addEventListener('click', function () {
     var text = inputText.value.trim();
     if (!text || text.length > 500) {
       showToast('⚠️ 500자 이하 텍스트만 링크로 공유할 수 있습니다');
       return;
+    }
+    if (!shareLinkConsented) {
+      var confirmed = typeof window.confirm === 'function'
+        ? window.confirm('이 링크에는 입력한 전체 텍스트가 그대로 담깁니다. 민감정보가 포함되지 않았는지 확인했나요?\n\n계속하려면 확인을 눌러주세요.')
+        : true;
+      if (!confirmed) return;
+      shareLinkConsented = true;
     }
     var url = '';
     try {
@@ -739,18 +748,26 @@
 
   // ── US-L04: 검사 이력 ──
   var HISTORY_KEY = 'krds-lint-history';
+  var HISTORY_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 2026-08-21 /cso 감사: 원문 전체를 담은 이력이 무기한 보존되지 않도록 30일 제한
   function readHistory() {
     try {
       var parsed = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
       if (!Array.isArray(parsed)) return [];
-      return parsed.map(function(entry) {
-        if (!entry || typeof entry !== 'object') return null;
+      var now = Date.now();
+      var expired = false;
+      var result = parsed.map(function(entry) {
+        if (!entry || typeof entry !== 'object') { expired = true; return null; }
         var fullText = typeof entry.fullText === 'string'
           ? entry.fullText
           : typeof entry.text === 'string'
             ? entry.text
             : '';
-        if (!fullText) return null;
+        if (!fullText) { expired = true; return null; }
+        // savedAt이 없는 이전 버전 데이터는 지금 막 저장된 것으로 간주해
+        // 유예 기간을 준다(즉시 삭제로 인한 데이터 손실 방지).
+        var savedAt = Number(entry.savedAt);
+        if (!isFinite(savedAt)) savedAt = now;
+        if (now - savedAt > HISTORY_TTL_MS) { expired = true; return null; }
         var previewText = typeof entry.text === 'string' && entry.text
           ? entry.text
           : fullText.slice(0, 80);
@@ -758,12 +775,18 @@
         var issueCount = Number(entry.issueCount);
         return {
           date: typeof entry.date === 'string' && entry.date ? entry.date : '',
+          savedAt: savedAt,
           score: isFinite(score) ? score : 0,
           text: previewText,
           fullText: fullText,
           issueCount: isFinite(issueCount) ? issueCount : 0
         };
       }).filter(Boolean).slice(0, 5);
+
+      if (expired) {
+        try { localStorage.setItem(HISTORY_KEY, JSON.stringify(result)); } catch(e) {}
+      }
+      return result;
     } catch(e) {
       return [];
     }
@@ -772,7 +795,7 @@
   function saveHistory(text, score, issueCount) {
     try {
       var history = readHistory();
-      history.unshift({ date: new Date().toLocaleDateString('ko-KR'), score: score, text: text.slice(0, 80), fullText: text, issueCount: issueCount });
+      history.unshift({ date: new Date().toLocaleDateString('ko-KR'), savedAt: Date.now(), score: score, text: text.slice(0, 80), fullText: text, issueCount: issueCount });
       if (history.length > 5) history = history.slice(0, 5);
       localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
     } catch(e) {}
@@ -869,8 +892,19 @@
     if (copyAiSuggestBtn) copyAiSuggestBtn.disabled = false;
   }
 
+  var aiSuggestConsented = false;
+
   function generateImprovement() {
     if (!lastResult || !lastResult.issues || !lastResult.issues.length) return;
+
+    if (!aiSuggestConsented) {
+      var confirmed = typeof window.confirm === 'function'
+        ? window.confirm('감지된 문구 일부(최대 3개)가 외부 AI 서비스로 전송됩니다. 민감정보가 포함되지 않았는지 확인했나요?\n\n계속하려면 확인을 눌러주세요.')
+        : true;
+      if (!confirmed) return;
+      aiSuggestConsented = true;
+    }
+
     if (aiSuggestAbort) { try { aiSuggestAbort.abort(); } catch(e){} }
     aiSuggestAbort = typeof AbortController !== 'undefined' ? new AbortController() : null;
 
