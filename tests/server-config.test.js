@@ -46,6 +46,15 @@ afterEach(() => {
   else process.env.OLLAMA_URL = savedOllamaUrl;
 });
 
+let defaultServerRequestIpCounter = 0;
+function buildDefaultServerTestIp() {
+  defaultServerRequestIpCounter += 1;
+  const second = Math.floor(defaultServerRequestIpCounter / 65536) % 256;
+  const third = Math.floor(defaultServerRequestIpCounter / 256) % 256;
+  const fourth = defaultServerRequestIpCounter % 256;
+  return `192.0.${second + third}.${fourth}`;
+}
+
 async function runServerRequest(options = {}) {
   const responseState = { statusCode: null, headers: {}, body: '' };
   const targetServer = options.serverInstance || server;
@@ -53,9 +62,21 @@ async function runServerRequest(options = {}) {
   req.url = options.url || '/api/generate';
   req.method = options.method || 'POST';
   req.headers = {
+    // 2026-08-21 codex 감사 이후 /api/generate는 허용된 Origin이 없으면
+    // 403으로 거부한다 — 이 헬퍼가 시뮬레이션하는 "정상 요청"은 브라우저가
+    // 항상 보내는 유효한 Origin을 기본값으로 갖는다. Origin 거부 자체를
+    // 테스트하는 케이스는 options.headers.origin으로 명시적으로 덮어쓴다.
+    origin: 'http://localhost:3000',
     ...(options.headers || {}),
   };
-  req.socket = { remoteAddress: options.remoteAddress || '127.0.0.1' };
+  // getClientIp()가 더 이상 헤더를 신뢰하지 않고 소켓 주소만 쓰므로
+  // (2026-08-21 /cso 감사), 이 헬퍼가 매번 같은 기본 remoteAddress를 쓰면
+  // 실제로는 무관한 테스트들이 같은 rate-limit 버킷을 공유해 서로
+  // 오염시킨다. 실제 운영에서는 서로 다른 클라이언트가 자연히 서로 다른
+  // 소켓 주소를 갖는 것과 같은 이유로, 명시적으로 지정하지 않으면 호출마다
+  // 고유한 주소를 기본값으로 준다 — rate-limit 자체를 테스트하는 케이스만
+  // remoteAddress를 명시적으로 고정/재사용한다.
+  req.socket = { remoteAddress: options.remoteAddress || buildDefaultServerTestIp() };
 
   const done = new Promise((resolve) => {
     const res = {
@@ -184,13 +205,19 @@ describe('server.js configuration', () => {
     expect(freshServerModule.API_ENDPOINT).toBe('https://proxy.internal/custom/v1/messages');
   });
 
-  it('normalizes local server headers and client IPs the same way as deployed handlers', () => {
+  it('normalizes local server headers, and ignores client-supplied IP headers entirely', () => {
     expect(getRequestHeader({
       headers: {
         origin: [' https://thenisaid.github.io ', 'https://ignored.example'],
       },
     }, 'origin')).toBe('https://thenisaid.github.io');
 
+    // 2026-08-21 /cso 감사 — 이 서버는 앞단에 검증된 리버스 프록시 없이
+    // 직접 실행되므로, cf-connecting-ip/x-real-ip/x-forwarded-for는
+    // 전부 클라이언트가 원하는 값을 보낼 수 있는 신뢰 불가 헤더다.
+    // getClientIp()는 이런 헤더를 전부 무시하고 TCP 소켓의 실제 접속
+    // 주소만 사용한다(요청마다 다른 헤더 값을 보내는 것만으로 시간당
+    // 5회 제한을 우회할 수 있었던 문제 수정).
     expect(getClientIp({
       headers: {
         'cf-connecting-ip': '198.51.100.7',
@@ -198,23 +225,7 @@ describe('server.js configuration', () => {
         'x-forwarded-for': '198.51.100.9, 203.0.113.5',
       },
       socket: { remoteAddress: '127.0.0.1' },
-    })).toBe('198.51.100.7');
-
-    expect(getClientIp({
-      headers: {
-        'x-real-ip': '198.51.100.8',
-        'x-forwarded-for': ['198.51.100.9, 203.0.113.5'],
-      },
-      socket: { remoteAddress: '127.0.0.1' },
-    })).toBe('198.51.100.8');
-
-    // 마지막 XFF 값(프록시가 append한 실제 IP) 사용
-    expect(getClientIp({
-      headers: {
-        'x-forwarded-for': ['198.51.100.9, 203.0.113.5'],
-      },
-      socket: { remoteAddress: '127.0.0.1' },
-    })).toBe('203.0.113.5');
+    })).toBe('127.0.0.1');
 
     expect(getClientIp({
       headers: {},
@@ -222,17 +233,13 @@ describe('server.js configuration', () => {
     })).toBe('10.0.0.5');
 
     expect(getClientIp({ headers: {} })).toBe('unknown');
+    expect(getClientIp({ headers: {}, socket: {} })).toBe('unknown');
   });
 
-  it('returns an empty string when a header array contains only blank or non-string entries', () => {
+  it('returns an empty string for getRequestHeader when a header array contains only blank or non-string entries', () => {
     expect(getRequestHeader({
       headers: { 'x-forwarded-for': ['   ', ''] },
     }, 'x-forwarded-for')).toBe('');
-
-    expect(getClientIp({
-      headers: { 'x-forwarded-for': ',' },
-      socket: { remoteAddress: '127.0.0.1' },
-    })).toBe('127.0.0.1');
   });
 
   it('accepts the same agency types as the generator UI and deployed handlers', async () => {
@@ -353,7 +360,7 @@ describe('server.js configuration', () => {
     });
   });
 
-  it('omits Access-Control-Allow-Origin for disallowed origins in the local server, matching deployed handlers', async () => {
+  it('rejects disallowed origins with 403 before validation in the local server (2026-08-21 codex 감사)', async () => {
     const responseState = await runServerRequest({
       headers: {
         'content-type': 'application/json',
@@ -366,11 +373,11 @@ describe('server.js configuration', () => {
       },
     });
 
-    expect(responseState.statusCode).toBe(400);
+    expect(responseState.statusCode).toBe(403);
     expect(responseState.headers['access-control-allow-origin']).toBeUndefined();
     expect(responseState.headers.vary).toBe('Origin');
     expect(JSON.parse(responseState.body)).toEqual({
-      error: '기관명은 1~50자 사이여야 합니다.',
+      error: '허용되지 않은 출처입니다.',
     });
   });
 
@@ -863,10 +870,10 @@ describe('server.js configuration', () => {
     for (let i = 0; i < 1000; i += 1) {
       const responseState = await runServerRequest({
         serverInstance: freshServer,
+        remoteAddress: buildUniqueTestIp(i + 9000),
         headers: {
           'content-type': 'application/json',
           origin: 'http://localhost:3000',
-          'cf-connecting-ip': buildUniqueTestIp(i + 9000),
         },
         body: {
           agencyName: '',
@@ -880,10 +887,10 @@ describe('server.js configuration', () => {
 
     const saturated = await runServerRequest({
       serverInstance: freshServer,
+      remoteAddress: buildUniqueTestIp(12000),
       headers: {
         'content-type': 'application/json',
         origin: 'http://localhost:3000',
-        'cf-connecting-ip': buildUniqueTestIp(12000),
       },
       body: {
         agencyName: '',
@@ -911,10 +918,10 @@ describe('server.js configuration', () => {
       for (let i = 0; i < 1000; i += 1) {
         await runServerRequest({
           serverInstance: freshServer,
+          remoteAddress: buildUniqueTestIp(i + 30000),
           headers: {
             'content-type': 'application/json',
             origin: 'http://localhost:3000',
-            'cf-connecting-ip': buildUniqueTestIp(i + 30000),
           },
           body: { agencyName: '', agencyType: '', samples: [] },
         });
@@ -924,10 +931,10 @@ describe('server.js configuration', () => {
 
       const response = await runServerRequest({
         serverInstance: freshServer,
+        remoteAddress: buildUniqueTestIp(40000),
         headers: {
           'content-type': 'application/json',
           origin: 'http://localhost:3000',
-          'cf-connecting-ip': buildUniqueTestIp(40000),
         },
         body: { agencyName: '', agencyType: '', samples: [] },
       });
@@ -2070,7 +2077,7 @@ describe('server.js configuration', () => {
     const req = new EventEmitter();
     req.url = '/api/generate';
     req.method = 'POST';
-    req.headers = { 'content-type': 'application/json', 'x-forwarded-for': '203.0.113.99' };
+    req.headers = { origin: 'http://localhost:3000', 'content-type': 'application/json', 'x-forwarded-for': '203.0.113.99' };
     req.socket = { remoteAddress: '127.0.0.1' };
 
     const done = new Promise((resolve) => {
@@ -2123,7 +2130,7 @@ describe('server.js configuration', () => {
         const req = new EventEmitter();
         req.url = '/api/generate';
         req.method = 'POST';
-        req.headers = { 'x-forwarded-for': '203.0.113.55' };
+        req.headers = { origin: 'http://localhost:3000', 'x-forwarded-for': '203.0.113.55' };
         req.socket = { remoteAddress: '127.0.0.1' };
         const res = {
           setHeader(name, value) { responseState.headers[String(name).toLowerCase()] = String(value); },
@@ -2227,7 +2234,7 @@ describe('server.js configuration', () => {
       const req = new EventEmitter();
       req.url = '/api/generate';
       req.method = 'POST';
-      req.headers = { 'x-forwarded-for': '203.0.113.93' };
+      req.headers = { origin: 'http://localhost:3000', 'x-forwarded-for': '203.0.113.93' };
       req.socket = { remoteAddress: '127.0.0.1' };
       const res = {
         setHeader() {},
@@ -2270,7 +2277,6 @@ describe('server.js configuration', () => {
         };
 
         runServerRequest({
-          headers: { 'cf-connecting-ip': '203.0.113.99' },
           body: {
             agencyName: '테스트 기관',
             agencyType: '지방자치단체',
@@ -2343,13 +2349,15 @@ describe('server.js configuration', () => {
     vi.spyOn(Date, 'now').mockReturnValue(pinnedNow);
     try {
       // Fill the map with 1000 unique non-expired IPs (count=1 each, all valid)
+      // (runServerRequest는 remoteAddress를 지정하지 않으면 매 호출마다
+      // 자동으로 고유한 값을 준다 — 2026-08-21 /cso 감사 이후 서버가
+      // 헤더 기반 IP를 신뢰하지 않게 되면서 반영된 헬퍼 기본 동작)
       for (let i = 0; i < 1000; i += 1) {
         await runServerRequest({
           serverInstance: freshServer,
           headers: {
             'content-type': 'application/json',
             origin: 'http://localhost:3000',
-            'cf-connecting-ip': buildUniqueTestIp(i + 50000),
           },
           body: { agencyName: '', agencyType: '', samples: [] },
         });
@@ -2361,7 +2369,6 @@ describe('server.js configuration', () => {
         headers: {
           'content-type': 'application/json',
           origin: 'http://localhost:3000',
-          'cf-connecting-ip': buildUniqueTestIp(60000),
         },
         body: { agencyName: '', agencyType: '', samples: [] },
       });
@@ -2433,7 +2440,8 @@ describe('server.js configuration', () => {
     for (let i = 0; i < 5; i += 1) {
       const r = await runServerRequest({
         serverInstance: freshServer,
-        headers: { 'content-type': 'application/json', 'cf-connecting-ip': sameIp },
+        remoteAddress: sameIp,
+        headers: { 'content-type': 'application/json' },
         body: { agencyName: '', agencyType: '', samples: [] },
       });
       expect(r.statusCode).toBe(400);
@@ -2441,7 +2449,8 @@ describe('server.js configuration', () => {
 
     const over = await runServerRequest({
       serverInstance: freshServer,
-      headers: { 'content-type': 'application/json', 'cf-connecting-ip': sameIp },
+      remoteAddress: sameIp,
+      headers: { 'content-type': 'application/json' },
       body: { agencyName: '', agencyType: '', samples: [] },
     });
     expect(over.statusCode).toBe(429);
@@ -2460,7 +2469,8 @@ describe('server.js configuration', () => {
     try {
       const first = await runServerRequest({
         serverInstance: freshServer,
-        headers: { 'content-type': 'application/json', 'cf-connecting-ip': sameIp },
+        remoteAddress: sameIp,
+        headers: { 'content-type': 'application/json' },
         body: { agencyName: '', agencyType: '', samples: [] },
       });
       expect(first.statusCode).toBe(400);
@@ -2469,7 +2479,8 @@ describe('server.js configuration', () => {
 
       const after = await runServerRequest({
         serverInstance: freshServer,
-        headers: { 'content-type': 'application/json', 'cf-connecting-ip': sameIp },
+        remoteAddress: sameIp,
+        headers: { 'content-type': 'application/json' },
         body: { agencyName: '', agencyType: '', samples: [] },
       });
       // Window expired → entry reset → rate limit allowed again → reaches validation → 400

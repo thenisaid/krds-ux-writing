@@ -31,7 +31,11 @@ jobs:
           node-version: '20'
 
       - name: Vercel CLI 설치
-        run: npm install --global vercel@latest
+        # 배포 토큰으로 실행되는 바이너리이므로 @latest로 두면 업스트림
+        # 패키지가 손상됐을 때 프로덕션 배포 잡에서 그대로 실행된다 —
+        # GitHub Actions 자체를 SHA로 고정한 것과 같은 이유로 정확한
+        # 버전에 고정한다 (2026-08-21 codex 감사). 올릴 때는 의도적으로.
+        run: npm install --global vercel@59.3.0
 
       - name: Vercel 프로젝트 환경 설정 Pull
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}

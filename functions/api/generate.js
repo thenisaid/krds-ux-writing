@@ -36,10 +36,14 @@ function jsonResponse(data, status, extraHeaders) {
 }
 
 function getClientIp(request) {
+  // 이 파일은 Cloudflare Pages Functions 전용 배포 대상이다 — Cloudflare가
+  // 실제로 연결을 종단하므로 cf-connecting-ip는 Cloudflare가 검증·설정하는
+  // 신뢰 가능한 헤더다. 반면 x-real-ip는 Cloudflare가 보증하는 헤더가
+  // 아니므로(설정에 따라 의미가 달라짐) 신뢰하지 않는다
+  // (2026-08-21 /cso + codex 감사 — 대칭적으로 api/generate.js(Vercel
+  // 배포)에서는 반대로 cf-connecting-ip를 신뢰할 수 없어 제거했다).
   const cfIp = request.headers.get('cf-connecting-ip');
   if (cfIp) return cfIp.trim();
-  const realIp = request.headers.get('x-real-ip')?.trim();
-  if (realIp) return realIp;
   const forwarded = request.headers.get('x-forwarded-for');
   if (forwarded) {
     const clientIp = forwarded
@@ -108,6 +112,13 @@ export async function onRequestPost(context) {
   const { request, env } = context;
   const origin = request.headers.get('Origin') || request.headers.get('origin') || '';
   const corsHeaders = getCorsHeaders(origin);
+
+  // Origin 허용 목록 강제 — api/generate.js와 동일한 이유
+  // (2026-08-21 codex 감사, no-cors 요청으로 응답을 못 읽어도 처리 자체는
+  // 이미 실행돼버리는 문제).
+  if (!ALLOWED_ORIGINS.has(origin)) {
+    return jsonResponse({ error: '허용되지 않은 출처입니다.' }, 403, corsHeaders);
+  }
 
   // 레이트 리밋
   const ip = getClientIp(request);

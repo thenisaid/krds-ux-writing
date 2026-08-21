@@ -45,7 +45,10 @@ function buildRequest(body, origin, extraHeaders) {
     headers: {
       'Content-Type': 'application/json',
       Origin: origin || ALLOWED_ORIGIN,
-      ...(hasExplicitIpHeader ? {} : { 'CF-Connecting-IP': buildUniqueTestIp(++defaultRequestIpCounter) }),
+      // 2026-08-21 codex 감사 이후 api/generate.js(Vercel)는 cf-connecting-ip를
+      // 신뢰하지 않는다 — x-forwarded-for만 신뢰하므로 기본 IP 구분용
+      // 헤더도 이것으로 바꾼다.
+      ...(hasExplicitIpHeader ? {} : { 'X-Forwarded-For': buildUniqueTestIp(++defaultRequestIpCounter) }),
       ...providedHeaders,
     },
     body: JSON.stringify(body),
@@ -63,7 +66,10 @@ function buildRawJsonRequest(rawBody, origin, extraHeaders) {
     headers: {
       'Content-Type': 'application/json',
       Origin: origin || ALLOWED_ORIGIN,
-      ...(hasExplicitIpHeader ? {} : { 'CF-Connecting-IP': buildUniqueTestIp(++defaultRequestIpCounter) }),
+      // 2026-08-21 codex 감사 이후 api/generate.js(Vercel)는 cf-connecting-ip를
+      // 신뢰하지 않는다 — x-forwarded-for만 신뢰하므로 기본 IP 구분용
+      // 헤더도 이것으로 바꾼다.
+      ...(hasExplicitIpHeader ? {} : { 'X-Forwarded-For': buildUniqueTestIp(++defaultRequestIpCounter) }),
       ...providedHeaders,
     },
     body: rawBody,
@@ -178,7 +184,10 @@ describe('generator API handlers', () => {
     });
   });
 
-  it('omits Access-Control-Allow-Origin but still varies on Origin for disallowed deployed origins', async () => {
+  it('rejects disallowed origins with 403 before reaching validation (2026-08-21 codex 감사)', async () => {
+    // no-cors 요청은 응답을 못 읽어도 서버가 이미 처리를 실행해버리는 문제
+    // (codex 감사)를 막기 위해, 허용되지 않은 Origin은 검증 단계까지
+    // 가지 않고 즉시 거부돼야 한다.
     const vercelResponse = await vercelHandler(buildRequest(
       { agencyName: '', agencyType: '', samples: [] },
       'https://untrusted.example',
@@ -191,18 +200,18 @@ describe('generator API handlers', () => {
       env: {},
     });
 
-    expect(vercelResponse.status).toBe(400);
+    expect(vercelResponse.status).toBe(403);
     expect(vercelResponse.headers.get('access-control-allow-origin')).toBeNull();
     expect(vercelResponse.headers.get('vary')).toBe('Origin');
     expect(await vercelResponse.json()).toEqual({
-      error: '기관명은 1~50자 사이여야 합니다.',
+      error: '허용되지 않은 출처입니다.',
     });
 
-    expect(cloudflareResponse.status).toBe(400);
+    expect(cloudflareResponse.status).toBe(403);
     expect(cloudflareResponse.headers.get('access-control-allow-origin')).toBeNull();
     expect(cloudflareResponse.headers.get('vary')).toBe('Origin');
     expect(await cloudflareResponse.json()).toEqual({
-      error: '기관명은 1~50자 사이여야 합니다.',
+      error: '허용되지 않은 출처입니다.',
     });
   });
 
@@ -666,7 +675,11 @@ describe('generator API handlers', () => {
     expect(blocked.status).toBe(429);
   });
 
-  it('rate-limits requests by the X-Real-IP header when CF-Connecting-IP is absent', async () => {
+  it('does not trust X-Real-IP on the Vercel handler (2026-08-21 codex 감사 — 스푸핑 가능해 신뢰 제거)', async () => {
+    // Vercel은 x-real-ip를 공식적으로 보증하는 헤더로 문서화하지 않는다 —
+    // 요청자가 매번 다른 값을 보내 5회 제한을 우회할 수 있었다. 이제는
+    // x-real-ip 값과 무관하게 전부 "unknown" 버킷을 공유해야 한다.
+    const { default: freshVercelHandler } = await importFreshModule('api/generate.js');
     const fetchMock = mockAnthropicFetch();
     global.fetch = fetchMock;
 
@@ -677,14 +690,16 @@ describe('generator API handlers', () => {
     };
 
     for (let i = 0; i < 5; i += 1) {
-      const response = await vercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
-        'X-Real-IP': '203.0.113.77',
+      // 매 요청마다 다른 X-Real-IP 값을 보내도 더 이상 별도 버킷을
+      // 얻지 못해야 한다 — 전부 "unknown"으로 수렴한다.
+      const response = await freshVercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
+        'X-Real-IP': `203.0.113.${i + 1}`,
       }));
       expect(response.status).toBe(200);
     }
 
-    const blocked = await vercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
-      'X-Real-IP': '203.0.113.77',
+    const blocked = await freshVercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
+      'X-Real-IP': '203.0.113.99',
     }));
     expect(blocked.status).toBe(429);
   });
@@ -775,7 +790,10 @@ describe('generator API handlers', () => {
     expect(fetchMock).toHaveBeenCalledTimes(6);
   });
 
-  it('rate-limits by the X-Real-IP header when CF-Connecting-IP is absent', async () => {
+  it('collides distinct X-Real-IP values into the same "unknown" bucket as plain no-IP requests', async () => {
+    // X-Real-IP가 더 이상 신뢰되지 않으므로, 서로 다른 값을 보내는 요청과
+    // 아예 IP 헤더가 없는 요청이 전부 같은 "unknown" 버킷을 공유해야 한다.
+    const { default: freshVercelHandler } = await importFreshModule('api/generate.js');
     const fetchMock = mockAnthropicFetch();
     global.fetch = fetchMock;
 
@@ -785,20 +803,35 @@ describe('generator API handlers', () => {
       samples: ['샘플 문구'],
     };
 
-    for (let i = 0; i < 5; i += 1) {
-      const response = await vercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
-        'X-Real-IP': '198.51.100.33',
+    const first = await freshVercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
+      'X-Real-IP': '198.51.100.33',
+    }));
+    expect(first.status).toBe(200);
+
+    for (let i = 0; i < 3; i += 1) {
+      const response = await freshVercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
+        'X-Real-IP': `198.51.100.${40 + i}`,
       }));
       expect(response.status).toBe(200);
     }
 
-    const blocked = await vercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
-      'X-Real-IP': '198.51.100.33',
+    // 5번째 요청은 IP 헤더가 아예 없어도 같은 "unknown" 버킷을 공유한다
+    // (buildRequest는 명시적 IP 헤더가 없으면 테스트 격리를 위해 자동으로
+    // 고유 X-Forwarded-For를 채워 넣으므로, 빈 문자열로 명시해 그 기본
+    // 동작을 끈다).
+    const fifth = await freshVercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
+      'X-Forwarded-For': '',
+    }));
+    expect(fifth.status).toBe(200);
+
+    const blocked = await freshVercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
+      'X-Real-IP': '198.51.100.200',
     }));
     expect(blocked.status).toBe(429);
   });
 
   it('treats all requests without any IP header as sharing the "unknown" rate-limit bucket', async () => {
+    const { default: freshVercelHandler } = await importFreshModule('api/generate.js');
     const fetchMock = mockAnthropicFetch();
     global.fetch = fetchMock;
 
@@ -809,7 +842,7 @@ describe('generator API handlers', () => {
     };
 
     for (let i = 0; i < 5; i += 1) {
-      const response = await vercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
+      const response = await freshVercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
         'CF-Connecting-IP': '',
         'X-Real-IP': '',
         'X-Forwarded-For': '',
@@ -817,7 +850,7 @@ describe('generator API handlers', () => {
       expect(response.status).toBe(200);
     }
 
-    const blocked = await vercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
+    const blocked = await freshVercelHandler(buildRequest(basePayload, ALLOWED_ORIGIN, {
       'CF-Connecting-IP': '',
       'X-Real-IP': '',
       'X-Forwarded-For': '',
@@ -931,7 +964,9 @@ describe('generator API handlers', () => {
       const response = await freshVercelHandler(buildRequest(
         { agencyName: '', agencyType: '', samples: [] },
         ALLOWED_ORIGIN,
-        { 'CF-Connecting-IP': buildUniqueTestIp(i + 1) },
+        // 2026-08-21 codex 감사 이후 Vercel 핸들러는 cf-connecting-ip를
+        // 신뢰하지 않으므로 x-forwarded-for로 고유 IP를 만든다.
+        { 'X-Forwarded-For': buildUniqueTestIp(i + 1) },
       ));
       expect(response.status).toBe(400);
     }
@@ -939,7 +974,7 @@ describe('generator API handlers', () => {
     const saturated = await freshVercelHandler(buildRequest(
       { agencyName: '', agencyType: '', samples: [] },
       ALLOWED_ORIGIN,
-      { 'CF-Connecting-IP': buildUniqueTestIp(2001) },
+      { 'X-Forwarded-For': buildUniqueTestIp(2001) },
     ));
 
     expect(saturated.status).toBe(429);

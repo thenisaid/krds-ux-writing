@@ -43,13 +43,17 @@ function jsonResponse(data, status, extraHeaders) {
 }
 
 function getClientIp(request) {
-  // CF-Connecting-IP: Cloudflare 프록시 뒤에 배포 시 실제 클라이언트 IP (최우선)
-  const cfIp = request.headers.get('cf-connecting-ip');
-  if (cfIp) return cfIp.trim();
-  // x-real-ip: Vercel이 설정하는 실제 클라이언트 IP (스푸핑 불가)
-  // x-forwarded-for: Vercel이 실제 IP를 마지막에 append하므로 마지막 값이 신뢰 가능
-  const realIp = request.headers.get('x-real-ip')?.trim();
-  if (realIp) return realIp;
+  // 이 파일은 Vercel Edge Function 전용 배포 대상이다 — Cloudflare가 앞단에
+  // 있지 않으므로 cf-connecting-ip는 Vercel이 검증·설정하는 헤더가 아니라
+  // 요청자가 그대로 보낼 수 있는 값이다. x-real-ip도 Vercel 공식 문서상
+  // "Vercel이 신뢰성을 보증한다"고 명시된 헤더가 아니라(프록시 설정에 따라
+  // 의미가 달라짐) 신뢰할 수 없다. Vercel이 공식적으로 문서화하고 자체
+  // 엣지에서 실제 클라이언트 IP를 채워 넣는다고 보증하는 값은
+  // x-forwarded-for 하나뿐이므로 이것만 신뢰한다
+  // (2026-08-21 /cso + codex 감사 — cf-connecting-ip/x-real-ip를 우선
+  // 신뢰해 요청마다 다른 값을 보내는 것만으로 시간당 5회 제한을 우회할 수
+  // 있었음. functions/api/generate.js(Cloudflare 배포)는 반대로
+  // cf-connecting-ip가 실제로 신뢰 가능하므로 그쪽 로직은 유지한다).
   const forwarded = request.headers.get('x-forwarded-for');
   if (forwarded) {
     const parts = forwarded.split(',').map((part) => part.trim()).filter(Boolean);
@@ -147,6 +151,16 @@ export default async function handler(request) {
   // POST 전용
   if (request.method !== 'POST') {
     return jsonResponse({ error: '허용되지 않는 메서드입니다.' }, 405, corsHeaders);
+  }
+
+  // Origin 허용 목록 강제 — CORS는 브라우저가 "응답을 읽을 수 있는지"만
+  // 제어할 뿐 서버가 요청을 처리하는지는 막지 못한다. mode:'no-cors'로
+  // 요청하면 응답은 못 읽어도 이 함수는 이미 실행되어 Claude API를
+  // 호출해버린다 — 허용되지 않은 Origin은 처리 자체를 거부해야 한다
+  // (2026-08-21 codex 감사 — 임의 웹사이트가 방문자 브라우저를 통해
+  // 조용히 API 예산을 소모시킬 수 있었음).
+  if (!ALLOWED_ORIGINS.has(origin)) {
+    return jsonResponse({ error: '허용되지 않은 출처입니다.' }, 403, corsHeaders);
   }
 
   // 레이트 리밋 (KV 우선, 폴백 in-memory)
