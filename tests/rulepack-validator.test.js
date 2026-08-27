@@ -58,7 +58,7 @@ describe('validateRulePack() — 유효한 Rule Pack', () => {
   });
 
   it('entries가 정확히 500개이면 통과시킨다 (경계값)', () => {
-    const entries = Array.from({ length: 500 }, () => baseEntry({ rationale: 'ab' }));
+    const entries = Array.from({ length: 500 }, (_, i) => baseEntry({ term: 't' + i, rationale: 'ab' }));
     const result = RulePackValidator.validateRulePack(json(basePack({ entries })));
     expect(result.valid).toBe(true);
     expect(result.data.entries).toHaveLength(500);
@@ -191,7 +191,7 @@ describe('validateRulePack() — 최상위 필드', () => {
   });
 
   it('entries가 500개를 초과하면 거부한다', () => {
-    const entries = Array.from({ length: 501 }, () => baseEntry({ rationale: 'ab' }));
+    const entries = Array.from({ length: 501 }, (_, i) => baseEntry({ term: 't' + i, rationale: 'ab' }));
     const result = RulePackValidator.validateRulePack(json(basePack({ entries })));
     expect(result.valid).toBe(false);
     expect(result.errors.some((e) => e.includes('최대 500개까지 허용'))).toBe(true);
@@ -274,6 +274,39 @@ describe('validateRulePack() — entries 항목 필드', () => {
     const entry = baseEntry({ term: '' });
     const result = RulePackValidator.validateRulePack(json(basePack({ entries: [entry] })));
     expect(result.valid).toBe(false);
+  });
+});
+
+// ── 중복 term 검증 ───────────────────────────────────────────────────────────
+
+describe('validateRulePack() — 중복 term 거부', () => {
+  it('동일한 term이 두 항목에 있으면 거부한다', () => {
+    const entries = [baseEntry({ term: '귀하' }), baseEntry({ term: '귀하', approver: '김철수' })];
+    const result = RulePackValidator.validateRulePack(json(basePack({ entries })));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('중복') && e.includes('귀하'))).toBe(true);
+  });
+
+  it('중복 오류 메시지에 중복된 항목들의 인덱스가 모두 포함된다', () => {
+    const entries = [baseEntry({ term: '귀하' }), baseEntry({ term: '상이' }), baseEntry({ term: '귀하' })];
+    const result = RulePackValidator.validateRulePack(json(basePack({ entries })));
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('entries[0]') && e.includes('entries[2]'))).toBe(true);
+  });
+
+  it('서로 다른 term끼리는 중복으로 취급하지 않고 통과시킨다', () => {
+    const entries = [baseEntry({ term: '귀하' }), baseEntry({ term: '상이' })];
+    const result = RulePackValidator.validateRulePack(json(basePack({ entries })));
+    expect(result.valid).toBe(true);
+  });
+
+  it('term이 유효하지 않은(문자열이 아닌) 항목끼리는 중복 검사에서 제외된다', () => {
+    const entries = [baseEntry({ term: 123 }), baseEntry({ term: 123, approver: '김철수' })];
+    const result = RulePackValidator.validateRulePack(json(basePack({ entries })));
+    expect(result.valid).toBe(false);
+    // 타입 오류만 있고, "중복" 오류는 발생하지 않아야 한다
+    expect(result.errors.some((e) => e.includes('중복'))).toBe(false);
+    expect(result.errors.filter((e) => e.includes("'term' 필드는 문자열"))).toHaveLength(2);
   });
 });
 

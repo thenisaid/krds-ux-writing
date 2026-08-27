@@ -40,19 +40,36 @@
   function renderResult(result) {
     clearChildren(resultPanel);
 
+    // 기관 승인 예외로 처리된 이슈는 실제 위반이 아니므로 집계(총 건수 ·
+    // 오류/경고/안내 개수)에서 제외해 표시한다. 품질 점수는 krds-lint.js
+    // 내부의 마스킹·글자수 기반 계산식을 그대로 재사용해야 정확한데
+    // 그 계산식은 이 UI 레벨에 노출되어 있지 않으므로, 여기서는 원본
+    // 점수를 "예외 적용 전" 값임을 명시해 표시한다(카운트 재계산 fix, codex 리뷰 반영).
+    var visibleIssues = result.issues.filter(function (issue) {
+      return !ruleExceptions.has(issue.match);
+    });
+    var exemptCount = result.issues.length - visibleIssues.length;
+    var effectiveSummary = {
+      total: visibleIssues.length,
+      errors: visibleIssues.filter(function (i) { return i.severity === 'error'; }).length,
+      warnings: visibleIssues.filter(function (i) { return i.severity === 'warning'; }).length,
+      infos: visibleIssues.filter(function (i) { return i.severity === 'info'; }).length,
+    };
+
     var summary = document.createElement('div');
     summary.className = 'summary';
 
     var score = document.createElement('div');
     score.className = 'score';
-    score.textContent = '품질 점수 ' + result.score + '/100';
+    score.textContent = '품질 점수 ' + result.score + '/100' + (exemptCount > 0 ? ' (예외 적용 전 원본 값)' : '');
     summary.appendChild(score);
 
     var counts = document.createElement('div');
     counts.className = 'counts';
     counts.textContent =
-      '총 ' + result.summary.total + '건 (오류 ' + result.summary.errors +
-      ' · 경고 ' + result.summary.warnings + ' · 안내 ' + result.summary.infos + ')';
+      '총 ' + effectiveSummary.total + '건 (오류 ' + effectiveSummary.errors +
+      ' · 경고 ' + effectiveSummary.warnings + ' · 안내 ' + effectiveSummary.infos + ')' +
+      (exemptCount > 0 ? ' · 기관 승인 예외 ' + exemptCount + '건 제외' : '');
     summary.appendChild(counts);
 
     resultPanel.appendChild(summary);
@@ -201,6 +218,18 @@
   function loadRulePackFile() {
     var file = rulepackFile.files && rulepackFile.files[0];
     if (!file) return;
+
+    // 큰 파일을 메모리에 올리기 전에 크기부터 거부한다 (FileReader 호출 전 검사).
+    var maxBytes =
+      (window.KRDSRulePackSchema && window.KRDSRulePackSchema.MAX_FILE_SIZE_BYTES) || 100 * 1024;
+    if (file.size > maxBytes) {
+      renderRulePackStatus({
+        valid: false,
+        errors: ['파일 크기가 최대 허용치(' + (maxBytes / 1024) + 'KB)를 초과했습니다.'],
+      });
+      rulepackFile.value = '';
+      return;
+    }
 
     var reader = new FileReader();
     reader.onload = function () {
