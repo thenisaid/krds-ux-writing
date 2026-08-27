@@ -11,6 +11,7 @@
     "krds-lint.js",
     "jargon-dictionary.json",
     "scripts/fetch-mcst-terms.js",
+    "scripts/score-mcst-candidates.js",
     "NOTICE"
   ],
   "scripts": {
@@ -18,8 +19,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "fetch:mcst": "node scripts/fetch-mcst-terms.js",
-    "score:mcst": "node scripts/score-mcst-candidates.js",
-    "apply:mcst": "node scripts/apply-mcst-approved.js"
+    "score:mcst": "node scripts/score-mcst-candidates.js"
   },
   "keywords": [
     "krds",
