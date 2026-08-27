@@ -11,7 +11,8 @@
  *
  * - npm 번들: `npm pack --dry-run --json` 결과를 package.json의 files 필드와 대조.
  * - offline-app 번들: offline-app/ 디렉터리를 실제로 순회해 release-manifest.json의
- *   include 목록과 정확히 일치하는지 확인(node_modules 등 excludeDirs는 순회에서 제외).
+ *   releaseFiles + repoOnlyFiles 합집합과 정확히 일치하는지 확인(node_modules 등
+ *   excludeDirs는 순회에서 제외).
  *
  * 사용법:
  *   node scripts/verify-release-manifest.js
@@ -78,8 +79,9 @@ function computeNpmViolations(packedPaths, filesField, forbiddenPrefixes) {
 }
 
 /**
- * 실제로 존재하는 파일 목록(actualPaths)과 release-manifest.json의 include 선언
- * (declaredPaths)을 서로 대조한다. 순수 함수 — 디렉터리를 직접 순회하지 않는다.
+ * 실제로 존재하는 파일 목록(actualPaths)과 release-manifest.json의
+ * releaseFiles + repoOnlyFiles 합집합(declaredPaths)을 서로 대조한다.
+ * 순수 함수 — 디렉터리를 직접 순회하지 않는다.
  */
 function computeBundleViolations(actualPaths, declaredPaths, bundleRootLabel, forbiddenPrefixes) {
   const violations = [];
@@ -96,7 +98,7 @@ function computeBundleViolations(actualPaths, declaredPaths, bundleRootLabel, fo
       violations.push(
         'offline-app 번들: release-manifest.json에 선언되지 않은 파일이 존재함 — "' +
           fullRelPath +
-          '" (배포 대상에 포함하려면 release-manifest.json의 include 목록을 먼저 갱신할 것)'
+          '" (release-manifest.json의 bundles.offlineApp에서 배포 대상이면 releaseFiles에, 저장소 전용이면 repoOnlyFiles에 추가할 것)'
       );
     }
   });
