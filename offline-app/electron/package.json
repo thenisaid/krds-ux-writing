@@ -1,0 +1,13 @@
+{
+  "name": "krds-ux-writing-offline-electron",
+  "version": "0.1.0",
+  "private": true,
+  "description": "KRDS UX Writing Assistant Offline — 오프라인 문구 검사기를 감싸는 최소 Electron 데스크톱 셸",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^44.0.0"
+  }
+}
