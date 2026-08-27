@@ -64,6 +64,7 @@
 
   @media (min-width: 760px) {
     main { grid-template-columns: 1fr 1fr; align-items: start; }
+    .rulepack-panel { grid-column: 1 / -1; }
   }
 
   section {
@@ -192,6 +193,44 @@
     color: var(--color-success-50);
   }
 
+  .rulepack-panel textarea {
+    width: 100%;
+    min-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 13px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+  }
+
+  #rulepack-apply-btn {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .rulepack-status p {
+    margin: 12px 0 0;
+    font-size: 13px;
+  }
+
+  .rulepack-status .success { color: var(--color-success-50); }
+  .rulepack-status .error { color: var(--color-danger); }
+
+  .rulepack-status ul {
+    margin: 4px 0 0;
+    padding-left: 20px;
+    font-size: 13px;
+    color: var(--color-danger);
+  }
+
+  .badge-exempt { background: var(--color-success-10); color: var(--color-success-50); }
+
+  .issue-exempt { border-color: var(--color-success-50); }
+
+  .exempt-note { color: var(--color-success-50); }
+
   footer {
     margin-top: 24px;
     font-size: 12px;
@@ -218,6 +257,15 @@
       <section class="result-panel" id="result-panel" aria-live="polite">
         <p class="empty-state">검사 버튼을 누르면 결과가 여기에 표시됩니다.</p>
       </section>
+      <section class="rulepack-panel" id="rulepack-panel">
+        <label for="rulepack-input">기관 Rule Pack JSON (선택 사항)</label>
+        <textarea id="rulepack-input" placeholder='{"agencyName":"...","version":"1.0","entries":[...]}' aria-label="Rule Pack JSON 입력"></textarea>
+        <div class="actions">
+          <input type="file" id="rulepack-file" accept="application/json,.json" aria-label="Rule Pack JSON 파일 선택">
+          <button id="rulepack-apply-btn" type="button">Rule Pack 적용</button>
+        </div>
+        <div id="rulepack-status" class="rulepack-status" aria-live="polite"></div>
+      </section>
     </main>
     <footer>
       <p>KRDS UX Writing Assistant Offline &middot; 규칙 기반 검사 엔진 (네트워크 미사용)</p>
@@ -225,6 +273,8 @@
   </div>
   <script src="./dist/jargon-dictionary.js"></script>
   <script src="./dist/krds-lint.js"></script>
+  <script src="./rulepack-schema.js"></script>
+  <script src="./rulepack-validator.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>

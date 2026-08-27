@@ -9,9 +9,19 @@
   var lintBtn = document.getElementById('lint-btn');
   var clearBtn = document.getElementById('clear-btn');
   var resultPanel = document.getElementById('result-panel');
+  var rulepackInput = document.getElementById('rulepack-input');
+  var rulepackFile = document.getElementById('rulepack-file');
+  var rulepackApplyBtn = document.getElementById('rulepack-apply-btn');
+  var rulepackStatus = document.getElementById('rulepack-status');
 
   var SEVERITY_LABEL = { error: '오류', warning: '경고', info: '안내' };
   var EMPTY_MESSAGE = '검사 버튼을 누르면 결과가 여기에 표시됩니다.';
+
+  // 기관 Rule Pack에서 승인된 예외 용어. term(문자열) -> entry.
+  // 임의의 term 값(예: "__proto__")이 들어와도 프로토타입 오염이 발생하지
+  // 않도록 일반 객체 리터럴 대신 Map을 사용한다.
+  var ruleExceptions = new Map();
+  var lastLintResult = null;
 
   function clearChildren(el) {
     while (el.firstChild) {
@@ -59,12 +69,18 @@
     list.className = 'issue-list';
 
     result.issues.forEach(function (issue) {
+      var exemption = ruleExceptions.get(issue.match);
       var item = document.createElement('li');
-      item.className = 'issue issue-' + issue.severity;
+      item.className = 'issue issue-' + issue.severity + (exemption ? ' issue-exempt' : '');
 
       var badge = document.createElement('span');
-      badge.className = 'badge';
-      badge.textContent = SEVERITY_LABEL[issue.severity] || issue.severity;
+      if (exemption) {
+        badge.className = 'badge badge-exempt';
+        badge.textContent = '기관 승인 예외';
+      } else {
+        badge.className = 'badge';
+        badge.textContent = SEVERITY_LABEL[issue.severity] || issue.severity;
+      }
       item.appendChild(badge);
 
       var loc = document.createElement('span');
@@ -82,7 +98,14 @@
       msg.textContent = issue.message;
       item.appendChild(msg);
 
-      if (issue.suggestion) {
+      if (exemption) {
+        var note = document.createElement('p');
+        note.className = 'suggestion exempt-note';
+        note.textContent =
+          '승인 근거: ' + exemption.rationale + ' (' + exemption.agencyName + ' · ' +
+          exemption.approver + ', 재검토일 ' + exemption.reviewDate + ')';
+        item.appendChild(note);
+      } else if (issue.suggestion) {
         var sug = document.createElement('p');
         sug.className = 'suggestion';
         sug.textContent = issue.suggestion;
@@ -108,15 +131,86 @@
     }
 
     var result = window.KRDSLint.lint(text);
+    lastLintResult = result;
     renderResult(result);
   }
 
   function clearAll() {
     textarea.value = '';
+    lastLintResult = null;
     renderEmpty(EMPTY_MESSAGE);
     textarea.focus();
   }
 
+  function buildExceptionMap(entries) {
+    var map = new Map();
+    entries.forEach(function (entry) {
+      map.set(entry.term, entry);
+    });
+    return map;
+  }
+
+  function renderRulePackStatus(result) {
+    clearChildren(rulepackStatus);
+
+    if (result.valid) {
+      var p = document.createElement('p');
+      p.className = 'success';
+      p.textContent =
+        '적용됨: ' + result.data.agencyName + ' Rule Pack (버전 ' + result.data.version +
+        ', 승인 예외 용어 ' + result.data.entries.length + '건)';
+      rulepackStatus.appendChild(p);
+      return;
+    }
+
+    var errorHeading = document.createElement('p');
+    errorHeading.className = 'error';
+    errorHeading.textContent = 'Rule Pack 적용 실패:';
+    rulepackStatus.appendChild(errorHeading);
+
+    var ul = document.createElement('ul');
+    result.errors.forEach(function (message) {
+      var li = document.createElement('li');
+      li.textContent = message;
+      ul.appendChild(li);
+    });
+    rulepackStatus.appendChild(ul);
+  }
+
+  function applyRulePack() {
+    if (typeof window.KRDSRulePackValidator === 'undefined') {
+      renderRulePackStatus({ valid: false, errors: ['Rule Pack 검증 모듈을 불러오지 못했습니다.'] });
+      return;
+    }
+
+    var result = window.KRDSRulePackValidator.validateRulePack(rulepackInput.value);
+    if (!result.valid) {
+      // 검증 실패 시 이전에 적용된 유효한 Rule Pack은 그대로 유지한다.
+      renderRulePackStatus(result);
+      return;
+    }
+
+    ruleExceptions = buildExceptionMap(result.data.entries);
+    renderRulePackStatus(result);
+
+    if (lastLintResult) {
+      renderResult(lastLintResult);
+    }
+  }
+
+  function loadRulePackFile() {
+    var file = rulepackFile.files && rulepackFile.files[0];
+    if (!file) return;
+
+    var reader = new FileReader();
+    reader.onload = function () {
+      rulepackInput.value = typeof reader.result === 'string' ? reader.result : '';
+    };
+    reader.readAsText(file);
+  }
+
   lintBtn.addEventListener('click', runLint);
   clearBtn.addEventListener('click', clearAll);
+  rulepackApplyBtn.addEventListener('click', applyRulePack);
+  rulepackFile.addEventListener('change', loadRulePackFile);
 })();
