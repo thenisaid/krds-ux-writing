@@ -4,7 +4,7 @@
 
 ## 설치 (CLI)
 
-Node.js 20.19+ 또는 22.12+ 필요 (vite 의존성 요구 범위: `^20.19.0 || >=22.12.0`)
+Node.js 20.19.0 이상 20.x, 또는 22.12.0 이상 필요 — 21.x 불가 (vite 의존성 요구 범위: `^20.19.0 || >=22.12.0`)
 
 ```bash
 npm install -g github:thenisaid/krds-ux-writing
