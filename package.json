@@ -6,6 +6,13 @@
   "bin": {
     "krds-lint": "bin/krds-lint"
   },
+  "files": [
+    "bin/",
+    "krds-lint.js",
+    "jargon-dictionary.json",
+    "scripts/fetch-mcst-terms.js",
+    "NOTICE"
+  ],
   "scripts": {
     "lint": "node bin/krds-lint",
     "test": "vitest run",
