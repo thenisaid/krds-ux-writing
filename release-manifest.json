@@ -1,0 +1,51 @@
+{
+  "$comment": "이 저장소가 만들어내는 배포 번들(bundle)별 명시적 allowlist. scripts/verify-release-manifest.js가 이 파일을 읽어 실제 npm pack 결과 및 offline-app/ 디렉터리 내용과 대조한다. 새 파일을 배포 대상에 추가하려면 이 파일을 먼저 수정해야 한다 — 그래야 리뷰 없이 조용히 번들이 커지는 것을 막을 수 있다.",
+  "forbidden": {
+    "$comment": "어떤 번들에도 절대 포함되면 안 되는 경로 접두사. 웹 데모(.vercelignore)·npm(package.json files)·offline-app(아래 offline-app 섹션) 세 배포 경로 모두에 공통 적용.",
+    "prefixes": [
+      "research/",
+      "b2g-service-package/",
+      "tests/",
+      ".claude/",
+      ".env",
+      ".git/",
+      ".github/",
+      "node_modules/",
+      "krds-extension/",
+      "api/",
+      ".gstack/",
+      ".ralph/",
+      ".context/",
+      ".wrangler/",
+      "PPT/"
+    ]
+  },
+  "bundles": {
+    "npm": {
+      "description": "npm publish 대상인 krds-lint CLI 패키지. 실제 allowlist는 package.json의 files 필드가 단일 소스 오브 트루스이며, 여기서는 검증 방식만 기록한다.",
+      "sourceOfTruth": "package.json#files",
+      "verifyWith": "npm pack --dry-run --json"
+    },
+    "offlineApp": {
+      "description": "기관 담당자 PC용 오프라인 문구 검사기(정적 웹 앱 + 최소 Electron 셸). offline-app/ 디렉터리 자체가 배포 소스이며 이 밖의 어떤 루트 파일도 참조하지 않는다(offline-app/MANIFEST.md 참고).",
+      "root": "offline-app",
+      "include": [
+        "index.html",
+        "app.js",
+        "rulepack-schema.js",
+        "rulepack-validator.js",
+        "MANIFEST.md",
+        "dist/krds-lint.js",
+        "dist/jargon-dictionary.js",
+        "electron/main.js",
+        "electron/preload.js",
+        "electron/package.json",
+        "electron/package-lock.json",
+        "electron/README.md"
+      ],
+      "excludeDirs": [
+        "electron/node_modules"
+      ]
+    }
+  }
+}
