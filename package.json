@@ -35,7 +35,7 @@
     "url": "https://github.com/thenisaid/krds-ux-writing"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=20.19.0"
   },
   "devDependencies": {
     "vitest": "^4.1.6"
