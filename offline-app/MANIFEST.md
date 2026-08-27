@@ -6,8 +6,10 @@
 
 | 경로 | 역할 |
 |------|------|
-| `index.html` | 앱 진입점. textarea 입력 + 검사/지우기 버튼 UI, 결과 표시 영역, 엄격한 CSP(`default-src 'self'; connect-src 'none'`) 메타 태그. 외부 CDN 참조 없음(시스템 폰트 스택만 사용). 인라인 `<script>` 없음. |
-| `app.js` | UI 로직 전부. `window.KRDSLint.lint()` 호출 결과를 DOM에 렌더링한다. `fetch`/`XMLHttpRequest`/`WebSocket`/`localStorage`/`sessionStorage`/URL 쿼리 공유 코드를 포함하지 않는다 — AI 제안, 자동 이력 저장, 링크 공유 기능은 이 앱에 존재하지 않는다(끄는 것이 아니라 애초에 코드가 없음). |
+| `index.html` | 앱 진입점. textarea 입력 + 검사/지우기 버튼 UI, 결과 표시 영역, 기관 Rule Pack 적용 패널, 엄격한 CSP(`default-src 'self'; connect-src 'none'`) 메타 태그. 외부 CDN 참조 없음(시스템 폰트 스택만 사용). 인라인 `<script>` 없음. |
+| `app.js` | UI 로직 전부. `window.KRDSLint.lint()` 호출 결과를 DOM에 렌더링하고, `window.KRDSRulePackValidator.validateRulePack()`으로 검증된 기관 Rule Pack의 승인 예외 용어를 후처리로 반영한다(krds-lint.js 자체는 수정하지 않음). `fetch`/`XMLHttpRequest`/`WebSocket`/`localStorage`/`sessionStorage`/URL 쿼리 공유 코드를 포함하지 않는다 — AI 제안, 자동 이력 저장, 링크 공유 기능은 이 앱에 존재하지 않는다(끄는 것이 아니라 애초에 코드가 없음). Rule Pack 파일 선택은 `FileReader`로 로컬에서만 읽으며 네트워크 호출이 아니다. |
+| `rulepack-schema.js` | 기관 Rule Pack JSON 스키마 정의(필드 길이 제한, 날짜 형식, entries 최대 개수 500, 파일 크기 제한 100KB). 데이터 정의만 담고 검증 로직은 없다. |
+| `rulepack-validator.js` | `validateRulePack(jsonString)` — Rule Pack JSON import 검증. **`JSON.parse`만 사용하며 `eval`/`new Function`/`Function` 생성자를 절대 사용하지 않는다.** 필수 필드 누락, 타입 불일치, 날짜 형식·순서 오류, 크기·개수 제한 초과를 한국어 오류 메시지로 모두 수집해 반환한다. |
 | `dist/krds-lint.js` | 루트 `krds-lint.js`의 빌드 시점 복사본. **직접 편집 금지.** `node scripts/build-offline-app.js`로 재생성한다(단일 소스 오브 트루스는 루트 `krds-lint.js`). |
 | `dist/jargon-dictionary.js` | 루트 `jargon-dictionary.js`의 빌드 시점 복사본. **직접 편집 금지.** 위와 동일한 방식으로 재생성한다. |
 | `MANIFEST.md` | 이 문서. |
