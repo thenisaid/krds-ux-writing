@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
@@ -10,6 +11,7 @@ const {
   matchesNpmAllowlist,
   computeNpmViolations,
   computeBundleViolations,
+  walkDir,
   verify,
 } = require('../scripts/verify-release-manifest.js');
 
@@ -64,16 +66,30 @@ describe('computeNpmViolations', () => {
   });
 
   it('flags a forbidden path (and separately that it is undeclared, since it is both)', () => {
-    const result = computeNpmViolations(['.claude/settings.local.json'], filesField, forbidden);
-    expect(result).toHaveLength(2);
-    expect(result.some((v) => v.includes('forbidden'))).toBe(true);
-    expect(result.every((v) => v.includes('.claude/settings.local.json'))).toBe(true);
+    const result = computeNpmViolations(
+      ['bin/krds-lint', 'krds-lint.js', '.claude/settings.local.json'],
+      filesField,
+      forbidden
+    );
+    const aboutLeak = result.filter((v) => v.includes('.claude/settings.local.json'));
+    expect(aboutLeak).toHaveLength(2);
+    expect(aboutLeak.some((v) => v.includes('forbidden'))).toBe(true);
   });
 
   it('flags a file that is neither declared nor forbidden', () => {
-    const result = computeNpmViolations(['surprise.txt'], filesField, forbidden);
+    const result = computeNpmViolations(['bin/krds-lint', 'krds-lint.js', 'surprise.txt'], filesField, forbidden);
     expect(result).toHaveLength(1);
     expect(result[0]).toContain('선언되지 않은 파일');
+  });
+
+  it('flags a declared file that silently disappeared from the npm pack output', () => {
+    const result = computeNpmViolations(['bin/krds-lint'], filesField, forbidden);
+    expect(result.some((v) => v.includes('누락됨') && v.includes('krds-lint.js'))).toBe(true);
+  });
+
+  it('flags a declared directory that has zero files in the npm pack output', () => {
+    const result = computeNpmViolations(['krds-lint.js'], filesField, forbidden);
+    expect(result.some((v) => v.includes('하나도 없음') && v.includes('bin/'))).toBe(true);
   });
 });
 
@@ -98,10 +114,43 @@ describe('computeBundleViolations', () => {
     expect(result[0]).toContain('실제 파일이 없음');
   });
 
-  it('flags a forbidden path nested inside the bundle root', () => {
-    const result = computeBundleViolations(['tests/fixture.js'], ['tests/fixture.js'], 'offline-app', ['offline-app/tests/']);
+  it('flags a forbidden path nested inside the bundle root, matched bundle-relatively (not root-relatively)', () => {
+    // forbidden prefixes are the same root-relative list used for the npm bundle
+    // (e.g. "tests/"), so matching must happen against the path *inside* the
+    // bundle, not against "offline-app/tests/..." — otherwise a rule like
+    // "tests/" would never fire for anything nested under offline-app/.
+    const result = computeBundleViolations(['tests/fixture.js'], ['tests/fixture.js'], 'offline-app', ['tests/']);
     expect(result).toHaveLength(1);
     expect(result[0]).toContain('forbidden');
+    expect(result[0]).toContain('offline-app/tests/fixture.js');
+  });
+});
+
+describe('walkDir', () => {
+  function makeTempTree() {
+    // os.tmpdir() (not ROOT) — other tests glob the whole repo for HTML files,
+    // and a temp fixture literally named index.html living under the repo root
+    // can be caught mid-write/mid-delete by that scan (observed in practice).
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'krds-verify-release-'));
+    fs.writeFileSync(path.join(dir, 'index.html'), '<html></html>', 'utf8');
+    fs.mkdirSync(path.join(dir, 'declared-dep'));
+    fs.writeFileSync(path.join(dir, 'declared-dep', 'lib.js'), '', 'utf8');
+    fs.mkdirSync(path.join(dir, 'node_modules'));
+    fs.writeFileSync(path.join(dir, 'node_modules', 'evil.js'), '', 'utf8');
+    return dir;
+  }
+
+  it('skips only explicitly excluded directories, not every directory named node_modules', () => {
+    const dir = makeTempTree();
+    try {
+      const excluded = walkDir(dir, [path.join(dir, 'declared-dep')]);
+      expect(excluded.sort()).toEqual(['index.html', 'node_modules/evil.js']);
+
+      const notExcluded = walkDir(dir, []);
+      expect(notExcluded.sort()).toEqual(['declared-dep/lib.js', 'index.html', 'node_modules/evil.js']);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
 
