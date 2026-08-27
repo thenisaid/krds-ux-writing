@@ -129,6 +129,26 @@
       data.entries.forEach(function (entry, index) {
         validateEntry(entry, index, errors);
       });
+
+      // 동일한 term이 여러 항목에 걸쳐 반복되면 어느 승인 근거를 적용해야
+      // 할지 모호해지므로 거부한다. Map을 사용해 term이 "__proto__" 같은
+      // 값이어도 프로토타입 오염 없이 안전하게 집계한다.
+      var termIndices = new Map();
+      data.entries.forEach(function (entry, index) {
+        if (Schema.isPlainObject(entry) && typeof entry.term === 'string') {
+          if (!termIndices.has(entry.term)) {
+            termIndices.set(entry.term, []);
+          }
+          termIndices.get(entry.term).push(index);
+        }
+      });
+      termIndices.forEach(function (indices, term) {
+        if (indices.length > 1) {
+          errors.push(
+            "'term' 값이 중복되었습니다: \"" + term + '" (entries[' + indices.join('], entries[') + '])'
+          );
+        }
+      });
     }
 
     if (errors.length > 0) {
