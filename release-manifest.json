@@ -27,21 +27,23 @@
       "verifyWith": "npm pack --dry-run --json"
     },
     "offlineApp": {
-      "description": "기관 담당자 PC용 오프라인 문구 검사기(정적 웹 앱 + 최소 Electron 셸). offline-app/ 디렉터리 자체가 배포 소스이며 이 밖의 어떤 루트 파일도 참조하지 않는다(offline-app/MANIFEST.md 참고).",
+      "description": "기관 담당자 PC용 오프라인 문구 검사기(정적 웹 앱 + 최소 Electron 셸). offline-app/ 디렉터리 자체가 배포 소스이며 이 밖의 어떤 루트 파일도 참조하지 않는다(offline-app/MANIFEST.md 참고). releaseFiles/repoOnlyFiles가 이 번들의 단일 소스 오브 트루스 — scripts/verify-release-manifest.js(디렉터리 전체가 이 둘의 합집합과 일치하는지)와 scripts/verify-offline-app-bundle.js(실제 배포 산출물은 releaseFiles만이라는 것과 MANIFEST.md 드리프트)가 둘 다 여기서 값을 읽는다. 한쪽만 고치고 다른 쪽을 안 고치는 일을 막기 위함(2026-08-27 codex 감사 지적 반영).",
       "root": "offline-app",
-      "include": [
+      "releaseFiles": [
         "index.html",
         "app.js",
         "rulepack-schema.js",
         "rulepack-validator.js",
-        "MANIFEST.md",
         "dist/krds-lint.js",
         "dist/jargon-dictionary.js",
         "electron/main.js",
         "electron/preload.js",
-        "electron/package.json",
-        "electron/package-lock.json",
-        "electron/README.md"
+        "electron/package.json"
+      ],
+      "repoOnlyFiles": [
+        "MANIFEST.md",
+        "electron/README.md",
+        "electron/package-lock.json"
       ],
       "excludeDirs": [
         "electron/node_modules"

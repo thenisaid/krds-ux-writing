@@ -6,8 +6,6 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const {
-  RELEASE_FILES,
-  REPO_ONLY_FILES,
   computeBundleClassificationViolations,
   parseManifestTable,
   computeManifestDriftViolations,
@@ -16,35 +14,47 @@ const {
 
 const ROOT = process.cwd();
 
-describe('computeBundleClassificationViolations', () => {
-  const declared = [...RELEASE_FILES, ...REPO_ONLY_FILES];
+function readReleaseManifestOfflineAppBundle() {
+  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'release-manifest.json'), 'utf8'));
+  return manifest.bundles.offlineApp;
+}
 
-  it('returns no violations when actual files exactly match RELEASE_FILES + REPO_ONLY_FILES', () => {
-    expect(computeBundleClassificationViolations(declared)).toEqual([]);
+describe('computeBundleClassificationViolations', () => {
+  const bundle = readReleaseManifestOfflineAppBundle();
+  const { releaseFiles, repoOnlyFiles } = bundle;
+  const declared = [...releaseFiles, ...repoOnlyFiles];
+
+  it('returns no violations when actual files exactly match releaseFiles + repoOnlyFiles', () => {
+    expect(computeBundleClassificationViolations(declared, releaseFiles, repoOnlyFiles)).toEqual([]);
   });
 
   it('flags an undeclared file (e.g. a stray file someone dropped into offline-app/)', () => {
-    const result = computeBundleClassificationViolations([...declared, 'rogue.js']);
+    const result = computeBundleClassificationViolations([...declared, 'rogue.js'], releaseFiles, repoOnlyFiles);
     expect(result.some((v) => v.includes('rogue.js') && v.includes('선언되지 않은'))).toBe(true);
   });
 
-  it('flags a declared RELEASE_FILES entry that is missing on disk', () => {
+  it('flags a declared releaseFiles entry that is missing on disk', () => {
     const withoutIndexHtml = declared.filter((f) => f !== 'index.html');
-    const result = computeBundleClassificationViolations(withoutIndexHtml);
+    const result = computeBundleClassificationViolations(withoutIndexHtml, releaseFiles, repoOnlyFiles);
     expect(result.some((v) => v.includes('index.html') && v.includes('실제로 없음'))).toBe(true);
   });
 
-  it('flags a declared REPO_ONLY_FILES entry that is missing on disk', () => {
+  it('flags a declared repoOnlyFiles entry that is missing on disk', () => {
     const withoutManifest = declared.filter((f) => f !== 'MANIFEST.md');
-    const result = computeBundleClassificationViolations(withoutManifest);
+    const result = computeBundleClassificationViolations(withoutManifest, releaseFiles, repoOnlyFiles);
     expect(result.some((v) => v.includes('MANIFEST.md') && v.includes('실제로 없음'))).toBe(true);
   });
 
-  it('never classifies electron/node_modules content as part of the release bundle', () => {
+  it('flags an entry declared in both releaseFiles and repoOnlyFiles', () => {
+    const result = computeBundleClassificationViolations(['index.html'], ['index.html'], ['index.html']);
+    expect(result.some((v) => v.includes('동시에 선언된'))).toBe(true);
+  });
+
+  it('never classifies electron/node_modules content as part of the release bundle (source of truth: release-manifest.json)', () => {
     // node_modules is excluded from the walk entirely (see verify()), but as a
     // defense-in-depth check: it must never appear in either declared list.
-    expect(RELEASE_FILES.some((f) => f.includes('node_modules'))).toBe(false);
-    expect(REPO_ONLY_FILES.some((f) => f.includes('node_modules'))).toBe(false);
+    expect(releaseFiles.some((f) => f.includes('node_modules'))).toBe(false);
+    expect(repoOnlyFiles.some((f) => f.includes('node_modules'))).toBe(false);
   });
 });
 
@@ -101,15 +111,21 @@ describe('computeManifestDriftViolations', () => {
 });
 
 describe('verify (orchestration with injected manifest text and dir listing)', () => {
+  const bundle = readReleaseManifestOfflineAppBundle();
+  const { releaseFiles, repoOnlyFiles, excludeDirs } = bundle;
+
   it('passes when the manifest documents exactly what listDir returns', () => {
     const manifestMarkdown = ['## 파일 목록', '| 경로 | 역할 |', '|---|---|']
-      .concat([...RELEASE_FILES, ...REPO_ONLY_FILES].map((f) => '| `' + f + '` | desc |'))
+      .concat([...releaseFiles, ...repoOnlyFiles].map((f) => '| `' + f + '` | desc |'))
       .join('\n');
 
     const { violations, okLines } = verify({
       offlineAppRoot: '/fake/offline-app',
       manifestMarkdown,
-      listDir: () => [...RELEASE_FILES, ...REPO_ONLY_FILES],
+      releaseFiles,
+      repoOnlyFiles,
+      excludeDirs,
+      listDir: () => [...releaseFiles, ...repoOnlyFiles],
     });
 
     expect(violations).toEqual([]);
@@ -118,13 +134,16 @@ describe('verify (orchestration with injected manifest text and dir listing)', (
 
   it('fails when listDir reports a file the manifest never documented', () => {
     const manifestMarkdown = ['## 파일 목록', '| 경로 | 역할 |', '|---|---|']
-      .concat([...RELEASE_FILES, ...REPO_ONLY_FILES].map((f) => '| `' + f + '` | desc |'))
+      .concat([...releaseFiles, ...repoOnlyFiles].map((f) => '| `' + f + '` | desc |'))
       .join('\n');
 
     const { violations } = verify({
       offlineAppRoot: '/fake/offline-app',
       manifestMarkdown,
-      listDir: () => [...RELEASE_FILES, ...REPO_ONLY_FILES, 'electron/node_modules/leaked.js'],
+      releaseFiles,
+      repoOnlyFiles,
+      excludeDirs,
+      listDir: () => [...releaseFiles, ...repoOnlyFiles, 'electron/node_modules/leaked.js'],
     });
 
     expect(violations.length).toBeGreaterThan(0);
@@ -133,7 +152,7 @@ describe('verify (orchestration with injected manifest text and dir listing)', (
 });
 
 describe('scripts/verify-offline-app-bundle.js CLI (integration, read-only)', () => {
-  it('exits 0 against the real offline-app/ directory and MANIFEST.md', () => {
+  it('exits 0 against the real offline-app/ directory, MANIFEST.md, and release-manifest.json', () => {
     const result = spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'verify-offline-app-bundle.js')], {
       cwd: ROOT,
       encoding: 'utf8',
@@ -145,8 +164,9 @@ describe('scripts/verify-offline-app-bundle.js CLI (integration, read-only)', ()
     expect(result.stdout).toContain('통과');
   });
 
-  it('every RELEASE_FILES and REPO_ONLY_FILES entry exists under the real offline-app/', () => {
-    [...RELEASE_FILES, ...REPO_ONLY_FILES].forEach((relPath) => {
+  it('every releaseFiles and repoOnlyFiles entry declared in release-manifest.json exists under the real offline-app/', () => {
+    const bundle = readReleaseManifestOfflineAppBundle();
+    [...bundle.releaseFiles, ...bundle.repoOnlyFiles].forEach((relPath) => {
       const abs = path.join(ROOT, 'offline-app', relPath);
       expect(fs.existsSync(abs)).toBe(true);
     });

@@ -185,7 +185,7 @@ function verify({ rootDir, manifest, pkg, packNpm = runNpmPackDryRun, listDir = 
     } else {
       const excludeDirsAbs = (bundle.excludeDirs || []).map((d) => path.join(bundleRoot, d));
       const actualPaths = listDir(bundleRoot, excludeDirsAbs).sort();
-      const declaredPaths = (bundle.include || []).slice().sort();
+      const declaredPaths = [...(bundle.releaseFiles || []), ...(bundle.repoOnlyFiles || [])].sort();
       const bundleViolations = computeBundleViolations(actualPaths, declaredPaths, bundle.root, forbiddenPrefixes);
       if (bundleViolations.length === 0) {
         okLines.push('offline-app 번들: ' + actualPaths.length + '개 파일 모두 release-manifest.json과 정확히 일치, forbidden 경로 없음.');

@@ -160,7 +160,8 @@ describe('verify (orchestration with injected npm/dir readers)', () => {
     bundles: {
       offlineApp: {
         root: 'offline-app',
-        include: ['index.html'],
+        releaseFiles: ['index.html'],
+        repoOnlyFiles: [],
         excludeDirs: [],
       },
     },
@@ -232,11 +233,12 @@ describe('scripts/verify-release-manifest.js CLI (integration, read-only)', () =
     expect(result.stdout).toContain('통과');
   });
 
-  it('release-manifest.json declares an offline-app include list matching the real files on disk', () => {
+  it('release-manifest.json declares an offline-app releaseFiles+repoOnlyFiles list matching the real files on disk', () => {
     const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'release-manifest.json'), 'utf8'));
-    const declared = manifest.bundles.offlineApp.include;
+    const bundle = manifest.bundles.offlineApp;
+    const declared = [...bundle.releaseFiles, ...bundle.repoOnlyFiles];
     declared.forEach((relPath) => {
-      const abs = path.join(ROOT, manifest.bundles.offlineApp.root, relPath);
+      const abs = path.join(ROOT, bundle.root, relPath);
       expect(fs.existsSync(abs)).toBe(true);
     });
   });
