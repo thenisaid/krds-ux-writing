@@ -19,7 +19,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "fetch:mcst": "node scripts/fetch-mcst-terms.js",
-    "score:mcst": "node scripts/score-mcst-candidates.js"
+    "score:mcst": "node scripts/score-mcst-candidates.js",
+    "verify:release": "node scripts/verify-release-manifest.js"
   },
   "keywords": [
     "krds",
