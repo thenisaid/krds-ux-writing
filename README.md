@@ -4,7 +4,7 @@
 
 ## 설치 (CLI)
 
-Node.js 14+ 필요
+Node.js 20+ 필요
 
 ```bash
 npm install -g github:thenisaid/krds-ux-writing
@@ -55,6 +55,17 @@ KRDS는 `ANTHROPIC_BASE_URL=http://localhost:8200/krds`를 감지하면 `ANTHROP
 1. **무번역 원칙** — 행정 용어를 시민 언어로 전환
 2. **정보핵심화 원칙** — 불필요한 표현 제거, 핵심만 남기기
 3. **심리적 안전망 원칙** — 오류 메시지에 상황·이유·다음 행동 명시
+
+## 버전 관리
+
+이 저장소는 서로 다른 배포 주기를 갖는 여러 산출물을 담고 있어, 산출물마다 독립적인 버전 번호를 쓴다. 하나의 숫자로 통일하지 않는 이유는 각 산출물이 별도 채널(npm, GitHub Pages, Chrome 웹 스토어, 기관 설치 파일)로 릴리스되기 때문이다.
+
+| 산출물 | 버전 출처 | 비고 |
+|--------|-----------|------|
+| `krds-lint` npm 패키지 (CLI) | `package.json`의 `version` | `npm install -g`로 설치되는 CLI/린트 엔진 |
+| 웹 데모 사이트 (index.html, lint.html, generator 등) | `VERSION` 파일 + `CHANGELOG.md` | GitHub Pages/Vercel 배포 기준 |
+| Chrome 확장 프로그램 | `krds-extension/manifest.json`의 `version` | Chrome 웹 스토어 배포 기준(현재 미등록, 로컬 설치만) |
+| 오프라인 데스크톱 앱 | `offline-app/electron/package.json`의 `version` | 웹 데모와 물리적으로 분리된 별도 배포 산출물 |
 
 ## 라이선스
 

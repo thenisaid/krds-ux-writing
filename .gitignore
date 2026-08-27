@@ -39,5 +39,8 @@ krds-sections-data.json
 # Node.js 의존성
 node_modules/
 
+# pnpm — 이 프로젝트는 npm(package-lock.json)을 기준으로 함, pnpm-lock.yaml 재생성 방지
+pnpm-lock.yaml
+
 # graphify 캐시 (graphify update . 로 재생성)
 graphify-out/
