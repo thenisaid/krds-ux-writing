@@ -5,19 +5,31 @@
 # 파일을 제외시킨다 (2026-08-27 codex 감사 P1 — .vercelignore만으로는
 # GitHub Pages 노출을 막지 못한다는 지적 반영).
 #
-# offline-app/(공공기관 오프라인판), research/(감사·전략·B2G 인접 내부
-# 자료), b2g-service-package/(대외 배포 금지 제안서 초안)는 공개 웹 데모와
-# 물리적으로 분리되어야 한다.
+# 주의: Jekyll의 exclude는 디렉터리 단위로 걸면 그 안을 아예 순회하지
+# 않아서 include로 개별 파일을 다시 살릴 수 없다(2026-08-27 codex 감사
+# 재지적 — "research/"를 통째로 막고 공개 코퍼스 2개를 include하려던
+# 첫 시도가 깨졌다). 그래서 research/ 디렉터리 자체는 제외 목록에 넣지
+# 않고, 그 안의 "비공개" 파일만 하나씩 나열한다.
 #
-# 단, corpus/index.html과 dictionary/full.html이 직접 링크하는 공개 코퍼스
-# 원문 2개는 실제로 공개되어야 하는 콘텐츠이므로 include로 예외 처리한다
-# (2026-08-27 codex 감사 P2 — research/ 전체를 막으면 이 두 링크가 깨진다는
-# 지적 반영).
+# ⚠️ research/에 새 파일을 추가하면 기본값은 "공개"다(fail-open). 대외
+# 배포 대상이 아닌 새 문서를 추가할 때는 반드시 아래 목록에 함께 추가할 것.
+# 공개 유지 대상: research/public-service-corpus.md,
+# research/public-service-survey-expanded.md
+# (corpus/index.html, dictionary/full.html이 직접 링크함).
 exclude:
-  - research/
+  - research/2026-08-20-audit-evidence-matrix.md
+  - research/2026-08-20-offline-release-benchmark.md
+  - research/2026-08-20-project-audit-business-strategy.md
+  - research/2026-08-21-security-review.md
+  - research/2026-public-agency-adoption-plan.md
+  - research/agency-rule-pack-template.md
+  - research/ai-vs-rules-validation-2026-08-20.md
+  - research/et3-data-governance-2026-08-20.md
+  - research/mcst-terms-candidates.json
+  - research/mcst-terms-candidates.md
+  - research/mcst-terms-review.md
+  - research/mcst-terms-scored.json
+  - research/phase4-runtime-verification.md
+  - research/raw/
   - b2g-service-package/
   - offline-app/
-
-include:
-  - research/public-service-corpus.md
-  - research/public-service-survey-expanded.md

@@ -11,7 +11,9 @@ offline-app/
 # 단, corpus/index.html·dictionary/full.html이 직접 링크하는 공개 코퍼스
 # 원문 2개는 예외 처리한다("research/" 디렉터리 자체를 제외 패턴으로 쓰면
 # 이후 negation이 적용되지 않으므로 "research/*"로 파일 단위 제외 — 2026-08-27
-# codex 감사 P2 지적 반영).
+# codex 감사 P2 지적 반영). Vercel은 .gitignore와 동일한 negation 문법을
+# 지원하므로 이 방식이 그대로 통한다(Jekyll의 exclude와는 동작이 다르다 —
+# _config.yml 참고).
 research/*
 !research/public-service-corpus.md
 !research/public-service-survey-expanded.md
