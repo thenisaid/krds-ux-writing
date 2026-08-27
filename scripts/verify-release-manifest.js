@@ -48,6 +48,8 @@ function matchesNpmAllowlist(relPath, filesField) {
  */
 function computeNpmViolations(packedPaths, filesField, forbiddenPrefixes) {
   const violations = [];
+  const packedSet = new Set(packedPaths);
+
   packedPaths.forEach((relPath) => {
     const hit = matchesForbidden(relPath, forbiddenPrefixes);
     if (hit) {
@@ -57,6 +59,21 @@ function computeNpmViolations(packedPaths, filesField, forbiddenPrefixes) {
       violations.push('npm 번들: package.json files에 선언되지 않은 파일이 npm pack 결과에 포함됨 — "' + relPath + '"');
     }
   });
+
+  filesField.forEach((entry) => {
+    if (entry.endsWith('/')) {
+      const dirPrefix = entry;
+      const hasAny = packedPaths.some((p) => p.startsWith(dirPrefix));
+      if (!hasAny) {
+        violations.push('npm 번들: package.json files에 선언된 디렉터리가 npm pack 결과에 하나도 없음 — "' + entry + '"');
+      }
+      return;
+    }
+    if (!packedSet.has(entry)) {
+      violations.push('npm 번들: package.json files에 선언된 파일이 npm pack 결과에서 누락됨 — "' + entry + '"');
+    }
+  });
+
   return violations;
 }
 
@@ -71,7 +88,7 @@ function computeBundleViolations(actualPaths, declaredPaths, bundleRootLabel, fo
 
   actualPaths.forEach((relPath) => {
     const fullRelPath = bundleRootLabel + '/' + relPath;
-    const hit = matchesForbidden(fullRelPath, forbiddenPrefixes);
+    const hit = matchesForbidden(relPath, forbiddenPrefixes);
     if (hit) {
       violations.push('offline-app 번들: forbidden 경로 매치 — "' + fullRelPath + '" (규칙: ' + hit + ')');
     }
@@ -95,6 +112,13 @@ function computeBundleViolations(actualPaths, declaredPaths, bundleRootLabel, fo
   return violations;
 }
 
+/**
+ * root 이하를 재귀 순회한다. excludeDirsAbs에 명시적으로 선언된 디렉터리만
+ * 건너뛴다 — node_modules 등을 이름만으로 암묵적으로 건너뛰면, release-manifest.json에
+ * 선언되지 않은 새 node_modules(또는 다른 대용량 디렉터리)가 조용히 검증을
+ * 우회하게 된다. 선언되지 않은 디렉터리는 그대로 순회해 그 안의 파일들이
+ * allowlist 위반으로 잡히게 한다.
+ */
 function walkDir(root, excludeDirsAbs) {
   const results = [];
   function walk(current) {
@@ -103,7 +127,6 @@ function walkDir(root, excludeDirsAbs) {
       const abs = path.join(current, entry.name);
       if (excludeDirsAbs.includes(abs)) return;
       if (entry.isDirectory()) {
-        if (entry.name === 'node_modules' || entry.name === '.git') return;
         walk(abs);
       } else if (entry.isFile()) {
         results.push(path.relative(root, abs).split(path.sep).join('/'));
