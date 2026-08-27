@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none';">
+<title>KRDS UX 라이팅 검사기 (오프라인)</title>
+<style>
+  :root {
+    --accent: #256ef4;
+    --color-success-50: #228738;
+    --color-success-10: #e6f4ea;
+    --color-danger: #d9342b;
+    --color-danger-10: #fdecea;
+    --color-warning-50: #92580a;
+    --color-warning-10: #fdf3dc;
+    --color-info-50: #1565c0;
+    --color-info-10: #e3f2fd;
+    --bg: #ffffff;
+    --bg-subtle: #f8f7f5;
+    --border: #cdd1d5;
+    --text: #1e2124;
+    --text-muted: #5a6270;
+    --radius-card: 12px;
+    --radius-btn: 8px;
+    --radius-badge: 4px;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    background: var(--bg-subtle);
+    color: var(--text);
+    line-height: 1.5;
+    font-size: 15px;
+  }
+
+  .app {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 32px 20px 64px;
+  }
+
+  header h1 {
+    font-size: 22px;
+    margin: 0 0 8px;
+  }
+
+  header .subtitle {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin: 0 0 28px;
+  }
+
+  main {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  @media (min-width: 760px) {
+    main { grid-template-columns: 1fr 1fr; align-items: start; }
+  }
+
+  section {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 20px;
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 260px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 14px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+  }
+
+  .actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: var(--radius-btn);
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+
+  #lint-btn {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  #clear-btn {
+    background: var(--bg);
+    color: var(--text);
+    border-color: var(--border);
+  }
+
+  .empty-state {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin: 0;
+  }
+
+  .summary {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .score {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .counts {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .issue-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 460px;
+    overflow-y: auto;
+  }
+
+  .issue {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+  }
+
+  .issue .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: var(--radius-badge);
+    margin-right: 8px;
+  }
+
+  .issue-error .badge { background: var(--color-danger-10); color: var(--color-danger); }
+  .issue-warning .badge { background: var(--color-warning-10); color: var(--color-warning-50); }
+  .issue-info .badge { background: var(--color-info-10); color: var(--color-info-50); }
+
+  .issue .loc,
+  .issue .category {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-right: 8px;
+  }
+
+  .issue .message {
+    margin: 8px 0 4px;
+    font-size: 14px;
+  }
+
+  .issue .suggestion {
+    margin: 0;
+    font-size: 13px;
+    color: var(--color-success-50);
+  }
+
+  footer {
+    margin-top: 24px;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>KRDS UX 라이팅 검사기 (오프라인)</h1>
+      <p class="subtitle">입력한 문구는 이 기기 밖으로 전송되지 않습니다. 네트워크 연결 없이 동작합니다.</p>
+    </header>
+    <main>
+      <section class="input-panel">
+        <label for="input-text">검사할 문구</label>
+        <textarea id="input-text" placeholder="검사할 문구를 입력하세요" aria-label="검사할 문구"></textarea>
+        <div class="actions">
+          <button id="lint-btn" type="button">검사</button>
+          <button id="clear-btn" type="button">지우기</button>
+        </div>
+      </section>
+      <section class="result-panel" id="result-panel" aria-live="polite">
+        <p class="empty-state">검사 버튼을 누르면 결과가 여기에 표시됩니다.</p>
+      </section>
+    </main>
+    <footer>
+      <p>KRDS UX Writing Assistant Offline &middot; 규칙 기반 검사 엔진 (네트워크 미사용)</p>
+    </footer>
+  </div>
+  <script src="./dist/jargon-dictionary.js"></script>
+  <script src="./dist/krds-lint.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
