@@ -1,0 +1,23 @@
+# GitHub Pages(legacy build, Jekyll) 노출 제어.
+# 이 저장소의 공개 웹 데모는 GitHub Pages에서 main 브랜치 루트를 그대로
+# 빌드한다(build_type: legacy, source path: "/"). .vercelignore/.gitignore는
+# Pages 빌드에 아무 영향이 없고, Jekyll의 exclude만 실제로 빌드 산출물에서
+# 파일을 제외시킨다 (2026-08-27 codex 감사 P1 — .vercelignore만으로는
+# GitHub Pages 노출을 막지 못한다는 지적 반영).
+#
+# offline-app/(공공기관 오프라인판), research/(감사·전략·B2G 인접 내부
+# 자료), b2g-service-package/(대외 배포 금지 제안서 초안)는 공개 웹 데모와
+# 물리적으로 분리되어야 한다.
+#
+# 단, corpus/index.html과 dictionary/full.html이 직접 링크하는 공개 코퍼스
+# 원문 2개는 실제로 공개되어야 하는 콘텐츠이므로 include로 예외 처리한다
+# (2026-08-27 codex 감사 P2 — research/ 전체를 막으면 이 두 링크가 깨진다는
+# 지적 반영).
+exclude:
+  - research/
+  - b2g-service-package/
+  - offline-app/
+
+include:
+  - research/public-service-corpus.md
+  - research/public-service-survey-expanded.md
