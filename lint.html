@@ -324,6 +324,14 @@
   }
   .issue-suggest { font-size: 13px; color: var(--color-success-50); margin-top: 5px; }
 
+  /* ── Rule Pack 기관 승인 예외 표시 ── */
+  .issue-item.issue-exempt { border-color: var(--color-success-50); background: var(--color-success-10); }
+  .issue-item.issue-exempt .issue-sev { background: var(--color-success-10); color: var(--color-success-50); }
+  .issue-item.issue-exempt .issue-suggest { color: var(--color-success-50); }
+  .rulepack-status-error { color: var(--krds-color-danger); font-size: 13px; margin-top: 8px; }
+  .rulepack-status-success { color: var(--color-success-50); font-size: 13px; margin-top: 8px; }
+  .rulepack-status-list { margin: 4px 0 0; padding-left: 20px; font-size: 13px; color: var(--krds-color-danger); }
+
   /* ── 빈 상태 ── */
   .empty-state { text-align: center; padding: 36px 16px; color: var(--text-muted); }
   .empty-icon { display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; width: 48px; height: 48px; }
@@ -567,6 +575,20 @@
     <p style="font-size:13px; color:var(--text-muted); text-align:right; margin-top:4px;">⚠️ "AI 개선 제안"을 누르면 감지된 문구 일부(최대 3개)가 외부 AI 서비스로 전송됩니다. 민감정보가 포함된 문구는 피해 주세요.</p>
   </div>
 
+  <!-- 기관 Rule Pack -->
+  <div class="card" id="rulepackCard" style="margin-top:16px;">
+    <div class="card-title">기관 Rule Pack (선택 사항)</div>
+    <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">기관에서 승인한 예외 용어 목록(JSON)을 붙여넣거나 파일로 불러오면, 검사 결과에서 해당 용어를 "기관 승인 예외"로 표시하고 오류·경고 집계에서 제외합니다. 입력한 내용은 이 브라우저 안에서만 처리되며 외부로 전송되지 않습니다.</p>
+    <div class="textarea-wrap">
+      <textarea id="rulepackInput" style="min-height:100px; font-size:13px; font-family:monospace;" placeholder='{"agencyName":"...","version":"1.0","entries":[...]}' aria-label="Rule Pack JSON 입력"></textarea>
+    </div>
+    <div class="btn-group">
+      <input type="file" id="rulepackFile" accept="application/json,.json" aria-label="Rule Pack JSON 파일 선택">
+      <button class="btn btn-primary" id="rulepackApplyBtn" type="button">Rule Pack 적용</button>
+    </div>
+    <div id="rulepackStatus" aria-live="polite"></div>
+  </div>
+
   <!-- AI 개선 제안 카드 -->
   <div class="card" id="aiSuggestCard" style="margin-top:16px; display:none;">
     <div class="issues-header">
@@ -629,6 +651,8 @@
 <div id="toast" role="status" aria-live="polite"></div>
 <script src="./jargon-dictionary.js?v=2"></script>
 <script src="./krds-lint.js?v=2"></script>
-<script src="./lint-ui.js?v=2"></script>
+<script src="./rulepack-schema.js?v=1"></script>
+<script src="./rulepack-validator.js?v=1"></script>
+<script src="./lint-ui.js?v=3"></script>
 </body>
 </html>

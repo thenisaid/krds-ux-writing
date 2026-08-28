@@ -32,10 +32,10 @@
       "releaseFiles": [
         "index.html",
         "app.js",
-        "rulepack-schema.js",
-        "rulepack-validator.js",
         "dist/krds-lint.js",
         "dist/jargon-dictionary.js",
+        "dist/rulepack-schema.js",
+        "dist/rulepack-validator.js",
         "electron/main.js",
         "electron/preload.js",
         "electron/package.json"

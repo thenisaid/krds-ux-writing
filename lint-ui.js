@@ -236,6 +236,7 @@
     var colorClass = s >= 80 ? 'score-good' : s >= 50 ? 'score-warning' : 'score-danger';
     var desc = s >= 80 ? '좋음' : s >= 50 ? '개선 필요' : '주의 필요';
     var descColor = s >= 80 ? 'var(--color-success-50)' : s >= 50 ? 'var(--color-warning-50)' : 'var(--color-danger-50)';
+    var exempt = computeExemptCounts(result.issues || []);
 
     scoreSection.innerHTML =
       '<div class="score-ring" aria-label="품질 점수 ' + s + '점">' +
@@ -251,10 +252,13 @@
       '<div class="score-label">/100점</div>' +
       '<div class="score-desc" style="color:' + descColor + '">' + desc + '</div>' +
       '<div class="stat-row">' +
-        '<div class="stat-badge stat-error"><div class="num">' + result.summary.errors + '</div><div class="lbl">오류</div></div>' +
-        '<div class="stat-badge stat-warning"><div class="num">' + result.summary.warnings + '</div><div class="lbl">경고</div></div>' +
-        '<div class="stat-badge stat-info"><div class="num">' + result.summary.infos + '</div><div class="lbl">안내</div></div>' +
-      '</div>';
+        '<div class="stat-badge stat-error"><div class="num">' + (result.summary.errors - exempt.errors) + '</div><div class="lbl">오류</div></div>' +
+        '<div class="stat-badge stat-warning"><div class="num">' + (result.summary.warnings - exempt.warnings) + '</div><div class="lbl">경고</div></div>' +
+        '<div class="stat-badge stat-info"><div class="num">' + (result.summary.infos - exempt.infos) + '</div><div class="lbl">안내</div></div>' +
+      '</div>' +
+      (exempt.total > 0
+        ? '<div style="font-size:12px; color:var(--text-muted); margin-top:8px;">기관 승인 예외 ' + exempt.total + '건 제외</div>'
+        : '');
   }
 
   // ── 하이라이트 렌더 ──
@@ -306,7 +310,9 @@
       return;
     }
     card.style.display = 'block';
-    issuesTitle.textContent = '이슈 목록 (' + issues.length + '건)';
+    var exempt = computeExemptCounts(issues);
+    issuesTitle.textContent = '이슈 목록 (' + (issues.length - exempt.total) + '건)' +
+      (exempt.total > 0 ? ' · 기관 승인 예외 ' + exempt.total + '건 제외' : '');
     renderFilteredIssues(issues, currentFilter);
   }
 
@@ -314,10 +320,11 @@
     var filtered = filter === 'all' ? issues : issues.filter(function (i) { return i.severity === filter; });
     var html = '';
     filtered.forEach(function (issue) {
-      var sevLabel = { error: '오류', warning: '경고', info: '안내' }[issue.severity] || issue.severity;
-      html += '<div class="issue-item sev-' + issue.severity + '" role="listitem">' +
+      var exemption = ruleExceptions.get(issue.match);
+      var sevLabel = exemption ? '기관 승인 예외' : ({ error: '오류', warning: '경고', info: '안내' }[issue.severity] || issue.severity);
+      html += '<div class="issue-item sev-' + issue.severity + (exemption ? ' issue-exempt' : '') + '" role="listitem">' +
         '<div class="issue-row1">' +
-          '<span class="issue-sev">' + sevLabel + '</span>' +
+          '<span class="issue-sev">' + escapeHtml(sevLabel) + '</span>' +
           '<span class="issue-cat">' + escapeHtml(issue.category) + '</span>' +
           '<span class="issue-pos">' + issue.line + '줄 ' + issue.col + '열</span>' +
         '</div>' +
@@ -325,7 +332,12 @@
           escapeHtml(issue.message.replace('"' + issue.match + '"', '')) +
           '<span class="issue-match">' + escapeHtml(issue.match) + '</span>' +
         '</div>' +
-        '<div class="issue-suggest">' + escapeHtml(issue.suggestion) + '</div>' +
+        '<div class="issue-suggest">' +
+          (exemption
+            ? '승인 근거: ' + escapeHtml(exemption.rationale) + ' (' + escapeHtml(exemption.agencyName) + ' · ' +
+              escapeHtml(exemption.approver) + ', 재검토일 ' + escapeHtml(exemption.reviewDate) + ')'
+            : escapeHtml(issue.suggestion)) +
+        '</div>' +
       '</div>';
     });
     issuesList.innerHTML = html || '<div class="empty-state"><div class="empty-desc">선택한 필터에 이슈가 없습니다.</div></div>';
@@ -862,6 +874,100 @@
   copyCliBtn.addEventListener('click', function() {
     copyWithToast(CLI_CMD, '✅ 설치 명령어가 복사되었습니다', '❌ 설치 명령어 복사에 실패했습니다');
   });
+
+  // ── 기관 Rule Pack (승인된 예외 용어) ──
+  var rulepackInput = document.getElementById('rulepackInput');
+  var rulepackFile = document.getElementById('rulepackFile');
+  var rulepackApplyBtn = document.getElementById('rulepackApplyBtn');
+  var rulepackStatus = document.getElementById('rulepackStatus');
+
+  // term(문자열) -> Rule Pack entry. 임의의 term 값("__proto__" 등)이 들어와도
+  // 프로토타입 오염이 발생하지 않도록 일반 객체 리터럴 대신 Map을 사용한다
+  // (offline-app/app.js와 동일한 방어 패턴).
+  var ruleExceptions = new Map();
+
+  function computeExemptCounts(issues) {
+    var counts = { total: 0, errors: 0, warnings: 0, infos: 0 };
+    issues.forEach(function (issue) {
+      if (!issue || !ruleExceptions.has(issue.match)) return;
+      counts.total += 1;
+      if (issue.severity === 'error') counts.errors += 1;
+      else if (issue.severity === 'warning') counts.warnings += 1;
+      else if (issue.severity === 'info') counts.infos += 1;
+    });
+    return counts;
+  }
+
+  function buildExceptionMap(entries) {
+    var map = new Map();
+    entries.forEach(function (entry) { map.set(entry.term, entry); });
+    return map;
+  }
+
+  function renderRulePackStatus(result) {
+    if (!rulepackStatus) return;
+    if (result.valid) {
+      rulepackStatus.innerHTML =
+        '<p class="rulepack-status-success">적용됨: ' + escapeHtml(result.data.agencyName) +
+        ' Rule Pack (버전 ' + escapeHtml(String(result.data.version)) +
+        ', 승인 예외 용어 ' + result.data.entries.length + '건)</p>';
+      return;
+    }
+    var html = '<p class="rulepack-status-error">Rule Pack 적용 실패:</p><ul class="rulepack-status-list">';
+    result.errors.forEach(function (message) {
+      html += '<li>' + escapeHtml(message) + '</li>';
+    });
+    html += '</ul>';
+    rulepackStatus.innerHTML = html;
+  }
+
+  function applyRulePack() {
+    if (!rulepackInput) return;
+    if (typeof KRDSRulePackValidator === 'undefined' || !KRDSRulePackValidator) {
+      renderRulePackStatus({ valid: false, errors: ['Rule Pack 검증 모듈을 불러오지 못했습니다.'] });
+      return;
+    }
+    var result = KRDSRulePackValidator.validateRulePack(rulepackInput.value);
+    if (!result.valid) {
+      // 검증 실패 시 이전에 적용된 유효한 Rule Pack은 그대로 유지한다.
+      renderRulePackStatus(result);
+      return;
+    }
+    ruleExceptions = buildExceptionMap(result.data.entries);
+    renderRulePackStatus(result);
+    if (lastResult) {
+      renderScore(lastResult);
+      renderIssues(lastResult.issues);
+    }
+  }
+
+  function loadRulePackFile() {
+    if (!rulepackFile || !rulepackInput) return;
+    var file = rulepackFile.files && rulepackFile.files[0];
+    if (!file) return;
+
+    // 큰 파일을 메모리에 올리기 전에 크기부터 거부한다 (FileReader 호출 전 검사).
+    var maxBytes =
+      (typeof KRDSRulePackSchema !== 'undefined' && KRDSRulePackSchema && KRDSRulePackSchema.MAX_FILE_SIZE_BYTES) ||
+      100 * 1024;
+    if (file.size > maxBytes) {
+      renderRulePackStatus({
+        valid: false,
+        errors: ['파일 크기가 최대 허용치(' + (maxBytes / 1024) + 'KB)를 초과했습니다.'],
+      });
+      rulepackFile.value = '';
+      return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function () {
+      rulepackInput.value = typeof reader.result === 'string' ? reader.result : '';
+    };
+    reader.readAsText(file);
+  }
+
+  if (rulepackApplyBtn) rulepackApplyBtn.addEventListener('click', applyRulePack);
+  if (rulepackFile) rulepackFile.addEventListener('change', loadRulePackFile);
 
   // ── AI 개선 제안 (Phase 1 — api/generate.js 프록시 경유) ──
   var aiSuggestBtn   = document.getElementById('aiSuggestBtn');

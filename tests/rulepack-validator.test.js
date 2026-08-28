@@ -4,7 +4,7 @@
  * Run: npm test
  */
 import { describe, it, expect, afterEach } from 'vitest';
-import RulePackValidator from '../offline-app/rulepack-validator.js';
+import RulePackValidator from '../rulepack-validator.js';
 
 function baseEntry(overrides) {
   return Object.assign(

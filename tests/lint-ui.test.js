@@ -2,8 +2,25 @@ import { describe, expect, it, vi } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
+import RulePackValidator from '../rulepack-validator.js';
+import RulePackSchema from '../rulepack-schema.js';
 
 const SOURCE = fs.readFileSync(path.join(process.cwd(), 'lint-ui.js'), 'utf8');
+
+function validRulePackJson(overrides) {
+  return JSON.stringify(Object.assign({
+    agencyName: '테스트기관',
+    version: '1.0',
+    entries: [{
+      term: '귀하',
+      agencyName: '테스트기관',
+      rationale: '내부 법정 서식에서 그대로 사용하는 용어로 승인됨',
+      approver: '홍길동',
+      approvedDate: '2026-01-01',
+      reviewDate: '2026-06-01',
+    }],
+  }, overrides));
+}
 
 function createClassList(initial = []) {
   const classes = new Set(initial);
@@ -113,6 +130,10 @@ function buildContext(options = {}) {
     copyCliBtn: createElement(),
     charCount: createElement({ textContent: '0' }),
     toast: createElement(),
+    rulepackInput: createElement(),
+    rulepackFile: createElement(),
+    rulepackApplyBtn: createElement(),
+    rulepackStatus: createElement(),
   };
 
   const storage = new Map();
@@ -172,6 +193,8 @@ function buildContext(options = {}) {
       revokeObjectURL() {},
     },
     Blob,
+    KRDSRulePackValidator: RulePackValidator,
+    KRDSRulePackSchema: RulePackSchema,
     KRDSLint: {
       lint: vi.fn(() => options.lintResult || ({
         score: 82,
@@ -2734,4 +2757,144 @@ describe('lint-ui uncovered branch coverage', () => {
     expect(html).not.toContain('" & "');
   });
 
+});
+
+describe('lint-ui Rule Pack (기관 승인 예외)', () => {
+  function twoIssueLintResult() {
+    return {
+      score: 55,
+      summary: { errors: 1, warnings: 1, infos: 0 },
+      issues: [
+        {
+          line: 1, col: 1, severity: 'error', category: '행정어',
+          message: '행정어/금지어: "귀하"', match: '귀하', suggestion: '→ 고객님', type: 'admin-jargon',
+        },
+        {
+          line: 2, col: 1, severity: 'warning', category: '패턴',
+          message: '"되어지다"는 이중 피동 표현입니다.', match: '되어지다', suggestion: '→ 되다', type: 'double-passive',
+        },
+      ],
+    };
+  }
+
+  it('applies a valid Rule Pack, marks the matching issue as an institutional exception, and excludes it from the error count', () => {
+    const { context, elements } = buildContext({ lintResult: twoIssueLintResult() });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하\n되어지다';
+    elements.lintBtn.dispatch('click');
+
+    // Before applying the Rule Pack, both issues count toward the totals.
+    expect(elements.issuesList.innerHTML).not.toContain('기관 승인 예외');
+    const errorNumBefore = elements.scoreSection.innerHTML.match(/stat-error"><div class="num">(-?\d+)</)[1];
+    expect(errorNumBefore).toBe('1');
+
+    elements.rulepackInput.value = validRulePackJson();
+    elements.rulepackApplyBtn.dispatch('click');
+
+    expect(elements.rulepackStatus.innerHTML).toContain('적용됨');
+    expect(elements.rulepackStatus.innerHTML).toContain('테스트기관');
+
+    // Re-rendered issue list marks the matching issue as exempt and keeps the other as-is.
+    expect(elements.issuesList.innerHTML).toContain('기관 승인 예외');
+    expect(elements.issuesList.innerHTML).toContain('승인 근거');
+    expect(elements.issuesList.innerHTML).toContain('내부 법정 서식에서 그대로 사용하는 용어로 승인됨');
+    expect(elements.issuesTitle.textContent).toContain('기관 승인 예외 1건 제외');
+
+    const errorNumAfter = elements.scoreSection.innerHTML.match(/stat-error"><div class="num">(-?\d+)</)[1];
+    expect(errorNumAfter).toBe('0');
+    expect(elements.scoreSection.innerHTML).toContain('기관 승인 예외 1건 제외');
+  });
+
+  it('rejects an invalid Rule Pack JSON, shows the validation errors, and leaves the issue list unaffected', () => {
+    const { context, elements } = buildContext({ lintResult: twoIssueLintResult() });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하\n되어지다';
+    elements.lintBtn.dispatch('click');
+
+    elements.rulepackInput.value = JSON.stringify({ agencyName: '테스트기관' }); // version, entries 누락
+    elements.rulepackApplyBtn.dispatch('click');
+
+    expect(elements.rulepackStatus.innerHTML).toContain('Rule Pack 적용 실패');
+    expect(elements.rulepackStatus.innerHTML).toContain("'version' 필드가 없습니다");
+    expect(elements.rulepackStatus.innerHTML).toContain("'entries' 필드가 없습니다");
+    expect(elements.issuesList.innerHTML).not.toContain('기관 승인 예외');
+  });
+
+  it('keeps a previously applied Rule Pack in effect when a later JSON payload fails validation', () => {
+    const { context, elements } = buildContext({ lintResult: twoIssueLintResult() });
+    vm.runInNewContext(SOURCE, context);
+
+    elements.inputText.value = '귀하\n되어지다';
+    elements.lintBtn.dispatch('click');
+
+    elements.rulepackInput.value = validRulePackJson();
+    elements.rulepackApplyBtn.dispatch('click');
+    expect(elements.issuesList.innerHTML).toContain('기관 승인 예외');
+
+    elements.rulepackInput.value = '{ not valid json';
+    elements.rulepackApplyBtn.dispatch('click');
+
+    expect(elements.rulepackStatus.innerHTML).toContain('Rule Pack 적용 실패');
+    // 이전에 적용된 유효한 Rule Pack의 예외 처리는 그대로 유지된다 (재렌더링되지 않았을 뿐).
+    expect(elements.issuesList.innerHTML).toContain('기관 승인 예외');
+  });
+
+  it('shows a module-unavailable error when KRDSRulePackValidator is not loaded', () => {
+    const { context, elements } = buildContext();
+    context.KRDSRulePackValidator = undefined;
+    vm.runInNewContext(SOURCE, context);
+
+    elements.rulepackInput.value = validRulePackJson();
+    elements.rulepackApplyBtn.dispatch('click');
+
+    expect(elements.rulepackStatus.innerHTML).toContain('Rule Pack 검증 모듈을 불러오지 못했습니다');
+  });
+
+  it('loads a Rule Pack file into the textarea via FileReader without making a network request', () => {
+    const { context, elements } = buildContext();
+    let capturedOnload;
+    context.FileReader = function () {
+      this.readAsText = vi.fn((file) => {
+        capturedOnload = () => {
+          this.result = file.__content;
+          this.onload();
+        };
+      });
+    };
+    vm.runInNewContext(SOURCE, context);
+
+    const fakeFile = { size: 100, __content: validRulePackJson() };
+    elements.rulepackFile.files = [fakeFile];
+    elements.rulepackFile.dispatch('change');
+    capturedOnload();
+
+    expect(elements.rulepackInput.value).toBe(validRulePackJson());
+  });
+
+  it('rejects a Rule Pack file exceeding the max size before reading it', () => {
+    const { context, elements } = buildContext();
+    const readAsText = vi.fn();
+    context.FileReader = function () {
+      this.readAsText = readAsText;
+    };
+    vm.runInNewContext(SOURCE, context);
+
+    elements.rulepackFile.files = [{ size: 200 * 1024 }];
+    elements.rulepackFile.dispatch('change');
+
+    expect(readAsText).not.toHaveBeenCalled();
+    expect(elements.rulepackStatus.innerHTML).toContain('파일 크기가 최대 허용치');
+    expect(elements.rulepackFile.value).toBe('');
+  });
+
+  it('does nothing when the file input change fires with no selected file', () => {
+    const { context, elements } = buildContext();
+    vm.runInNewContext(SOURCE, context);
+
+    elements.rulepackFile.files = [];
+    expect(() => elements.rulepackFile.dispatch('change')).not.toThrow();
+    expect(elements.rulepackInput.value).toBe('');
+  });
 });
