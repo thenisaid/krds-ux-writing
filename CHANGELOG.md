@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.2] - 2026-08-28
+
+### Changed
+
+- **Version scheme unified**: `package.json`'s `version` field and the root `VERSION` file previously disagreed (`0.1.0` vs `0.1.0.2`) — flagged in the 2026-08-20 audit (REL-06). `0.1.0.2` is not valid semver, so `package.json` could not simply adopt it (`npm publish`/tooling would reject it). Both files now read `0.1.2`; `0.1.0.1`/`0.1.0.2` below map to this release's history. Other independently-versioned artifacts in this repo (web UI, Chrome extension, offline app) intentionally keep their own version numbers — see README "버전 관리".
+
+### Security
+
+- Product-boundary separation for a government-agency offline deployment: new `offline-app/` (rule-based lint only, no AI/network/history/URL-share), Rule Pack import with schema validation, minimal Electron scaffold with hardened `BrowserWindow` settings.
+- Closed a GitHub Pages/Vercel/npm exposure gap where `research/`, `b2g-service-package/`, and `offline-app/` could have been served or packaged publicly.
+- `LICENSE`, `NOTICE`, `SECURITY.md` added; `pnpm-lock.yaml` removed in favor of a single npm lockfile; two high-severity dev-dependency advisories (nanoid, postcss) resolved.
+- Full detail: `research/2026-08-27-overnight-delivery-report.md`.
+
 ## [0.1.0.2] - 2026-05-07
 
 ### Quality Assurance
