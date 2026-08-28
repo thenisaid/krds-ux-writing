@@ -9,7 +9,7 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const DIST_DIR = path.join(ROOT, 'offline-app', 'dist');
-const FILES = ['krds-lint.js', 'jargon-dictionary.js'];
+const FILES = ['krds-lint.js', 'jargon-dictionary.js', 'rulepack-schema.js', 'rulepack-validator.js'];
 
 fs.mkdirSync(DIST_DIR, { recursive: true });
 
