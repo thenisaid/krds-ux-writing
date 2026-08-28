@@ -1,6 +1,6 @@
 {
   "name": "krds-lint",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "KRDS UX Writing 자동화 린터 CLI — 공공기관 행정어 자동 감지",
   "main": "krds-lint.js",
   "bin": {
