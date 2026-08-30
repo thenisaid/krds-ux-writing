@@ -315,6 +315,15 @@ fetch('./agency-graph-data.json').then(r=>r.json()).then(data => {
     layout:{improvedLayout:false},
   });
 
+  // 이웃 노드 카드 클릭(이벤트 위임 — CSP script-src에 인라인 핸들러를 넣지 않기 위함)
+  document.getElementById('dNeighbors').addEventListener('click', e => {
+    const item = e.target.closest('[data-neighbor-id]');
+    if (!item) return;
+    const cid = item.dataset.neighborId;
+    network.selectNodes([cid]);
+    network.focus(cid, {scale:1.3, animation:true});
+  });
+
   // 클릭 이벤트
   network.on('click', params => {
     if(!params.nodes.length) {
@@ -358,7 +367,7 @@ fetch('./agency-graph-data.json').then(r=>r.json()).then(data => {
     document.getElementById('dNeighbors').innerHTML = connected.slice(0,6).map(cid => {
       const cn = rawNodes.find(n=>n.id===cid);
       if(!cn) return '';
-      return `<div class="nb-item" onclick="network.selectNodes(['${cid}']);network.focus('${cid}',{scale:1.3,animation:true})">${cn.label}</div>`;
+      return `<div class="nb-item" data-neighbor-id="${cid}">${cn.label}</div>`;
     }).join('') || '<span class="empty-msg">연결 없음</span>';
   });
 
