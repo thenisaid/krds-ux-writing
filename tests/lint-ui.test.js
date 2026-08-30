@@ -50,18 +50,43 @@ function createClassList(initial = []) {
   };
 }
 
+// appendChild-built elements don't produce real HTML — approximate enough
+// text content for `.innerHTML`-based test assertions (`.toContain(...)`)
+// to keep working whether a node's content came from a direct `.textContent =`
+// assignment or from appended children.
+function textSnapshot(el) {
+  if (el.innerHTML) return el.innerHTML;
+  return el.textContent || '';
+}
+
 function createElement(options = {}) {
   const listeners = new Map();
   const attributes = new Map(Object.entries(options.attributes || {}));
-  return {
+  const children = [];
+  const self = {
     value: options.value || '',
     textContent: options.textContent || '',
     innerHTML: options.innerHTML || '',
+    className: options.className || '',
     disabled: !!options.disabled,
     title: options.title || '',
     dataset: options.dataset || {},
     style: options.style || {},
     classList: createClassList(options.classes || []),
+    get firstChild() {
+      return children.length ? children[0] : null;
+    },
+    appendChild(child) {
+      children.push(child);
+      self.innerHTML += textSnapshot(child);
+      return child;
+    },
+    removeChild(child) {
+      const idx = children.indexOf(child);
+      if (idx !== -1) children.splice(idx, 1);
+      self.innerHTML = children.map(textSnapshot).join('');
+      return child;
+    },
     addEventListener(type, handler) {
       const arr = listeners.get(type) || [];
       arr.push(handler);
@@ -90,6 +115,7 @@ function createElement(options = {}) {
       return null;
     },
   };
+  return self;
 }
 
 function buildContext(options = {}) {
