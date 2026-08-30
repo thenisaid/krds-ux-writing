@@ -428,6 +428,12 @@
       showToast('❌ 결과 복사 형식을 만들지 못했습니다');
       return;
     }
+    // formatCLI/buildCliFallback은 필터링된 이슈 개수와 함께 원본(예외 적용 전)
+    // 점수를 그대로 찍는다 — 온스크린 라벨과 동일하게 명시해준다
+    // (2026-08-30 codex 재검토 지적).
+    if (computeExemptCounts(lastResult.issues || []).total > 0) {
+      text += '\n\n※ 위 품질 점수는 기관 승인 예외 적용 전 기준입니다.';
+    }
     var btn = this;
     var actionId = (btn._copyActionId || 0) + 1;
     btn._copyActionId = actionId;
@@ -891,7 +897,7 @@
 
   function computeExemptCounts(issues) {
     var counts = { total: 0, errors: 0, warnings: 0, infos: 0 };
-    issues.forEach(function (issue) {
+    (Array.isArray(issues) ? issues : []).forEach(function (issue) {
       if (!issue || !ruleExceptions.has(issue.match)) return;
       counts.total += 1;
       if (issue.severity === 'error') counts.errors += 1;
