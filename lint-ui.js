@@ -186,7 +186,7 @@
     renderScore(lastResult);
     renderHighlight(text, lastResult.issues);
     renderIssues(lastResult.issues);
-    renderImproved(text, lastResult.issues);
+    renderImproved(text, getEffectiveIssues(lastResult.issues));
     saveHistory(text, lastResult.score, lastResult.issues.length);
     renderHistory();
     renderCliBanner(lastResult.score, text.length);
@@ -257,7 +257,7 @@
         '<div class="stat-badge stat-info"><div class="num">' + (result.summary.infos - exempt.infos) + '</div><div class="lbl">안내</div></div>' +
       '</div>' +
       (exempt.total > 0
-        ? '<div style="font-size:12px; color:var(--text-muted); margin-top:8px;">기관 승인 예외 ' + exempt.total + '건 제외</div>'
+        ? '<div style="font-size:12px; color:var(--text-muted); margin-top:8px;">기관 승인 예외 ' + exempt.total + '건 제외 · 위 품질 점수는 예외 적용 전 기준입니다</div>'
         : '');
   }
 
@@ -416,9 +416,10 @@
 
   copyBtn.addEventListener('click', function () {
     if (!lastResult) return;
+    var effectiveResult = buildEffectiveResult(lastResult, getEffectiveIssues(lastResult.issues));
     var text = '';
     try {
-      text = formatResultForClipboard(lastResult);
+      text = formatResultForClipboard(effectiveResult);
     } catch (e) {
       showToast('❌ 결과 복사 형식을 만들지 못했습니다');
       return;
@@ -469,6 +470,8 @@
   // ── CSV 내보내기 ──
   downloadBtn.addEventListener('click', function () {
     if (!lastResult || !lastResult.issues.length) return;
+    var exportIssues = getEffectiveIssues(lastResult.issues);
+    if (!exportIssues.length) { showToast('❌ 내보낼 이슈가 없습니다(전부 기관 승인 예외)'); return; }
     var url = '';
     var anchor = null;
     try {
@@ -480,7 +483,7 @@
       }
 
       var rows = [['줄', '열', '심각도', '카테고리', '메시지', '검출어', '제안']];
-      lastResult.issues.forEach(function (i) {
+      exportIssues.forEach(function (i) {
         rows.push([i.line, i.col, i.severity, i.category, i.message, i.match, i.suggestion]);
       });
       var csv = rows.map(function (r) {
@@ -898,6 +901,29 @@
     return counts;
   }
 
+  // Rule Pack 예외로 처리된 이슈를 뺀 "실제 조치가 필요한" 이슈 목록.
+  // 복사/CSV 내보내기·개선문 생성·AI 제안이 전부 이 함수를 거쳐야
+  // 기관 승인 예외 용어가 여전히 오류로 내보내지거나 재작성·AI 전송되는
+  // 불일치가 생기지 않는다 (2026-08-30 codex 감사).
+  function getEffectiveIssues(issues) {
+    return (Array.isArray(issues) ? issues : []).filter(function (issue) {
+      return !(issue && ruleExceptions.has(issue.match));
+    });
+  }
+
+  function buildEffectiveResult(result, effectiveIssues) {
+    return {
+      score: result.score,
+      summary: {
+        total: effectiveIssues.length,
+        errors: effectiveIssues.filter(function (i) { return i && i.severity === 'error'; }).length,
+        warnings: effectiveIssues.filter(function (i) { return i && i.severity === 'warning'; }).length,
+        infos: effectiveIssues.filter(function (i) { return i && i.severity === 'info'; }).length,
+      },
+      issues: effectiveIssues,
+    };
+  }
+
   function buildExceptionMap(entries) {
     var map = new Map();
     entries.forEach(function (entry) { map.set(entry.term, entry); });
@@ -906,19 +932,33 @@
 
   function renderRulePackStatus(result) {
     if (!rulepackStatus) return;
+    // innerHTML 대신 DOM API로 구성한다(CLAUDE.md CSP 준수 규칙 —
+    // 동적 콘텐츠에 innerHTML 금지, 2026-08-30 codex 감사 지적).
+    while (rulepackStatus.firstChild) rulepackStatus.removeChild(rulepackStatus.firstChild);
+
     if (result.valid) {
-      rulepackStatus.innerHTML =
-        '<p class="rulepack-status-success">적용됨: ' + escapeHtml(result.data.agencyName) +
-        ' Rule Pack (버전 ' + escapeHtml(String(result.data.version)) +
-        ', 승인 예외 용어 ' + result.data.entries.length + '건)</p>';
+      var successP = document.createElement('p');
+      successP.className = 'rulepack-status-success';
+      successP.textContent = '적용됨: ' + result.data.agencyName +
+        ' Rule Pack (버전 ' + String(result.data.version) +
+        ', 승인 예외 용어 ' + result.data.entries.length + '건)';
+      rulepackStatus.appendChild(successP);
       return;
     }
-    var html = '<p class="rulepack-status-error">Rule Pack 적용 실패:</p><ul class="rulepack-status-list">';
+
+    var errorP = document.createElement('p');
+    errorP.className = 'rulepack-status-error';
+    errorP.textContent = 'Rule Pack 적용 실패:';
+    rulepackStatus.appendChild(errorP);
+
+    var list = document.createElement('ul');
+    list.className = 'rulepack-status-list';
     result.errors.forEach(function (message) {
-      html += '<li>' + escapeHtml(message) + '</li>';
+      var li = document.createElement('li');
+      li.textContent = message;
+      list.appendChild(li);
     });
-    html += '</ul>';
-    rulepackStatus.innerHTML = html;
+    rulepackStatus.appendChild(list);
   }
 
   function applyRulePack() {
@@ -938,6 +978,8 @@
     if (lastResult) {
       renderScore(lastResult);
       renderIssues(lastResult.issues);
+      renderImproved(inputText.value, getEffectiveIssues(lastResult.issues));
+      updateAiSuggestBtn();
     }
   }
 
@@ -978,7 +1020,7 @@
 
   function updateAiSuggestBtn() {
     if (!aiSuggestBtn) return;
-    var hasIssues = lastResult && lastResult.issues && lastResult.issues.length > 0;
+    var hasIssues = lastResult && lastResult.issues && getEffectiveIssues(lastResult.issues).length > 0;
     aiSuggestBtn.disabled = !hasIssues;
   }
 
@@ -991,6 +1033,7 @@
 
   function renderAiSuggestError(msg) {
     if (!aiSuggestText) return;
+    if (aiSuggestCard) aiSuggestCard.style.display = 'block';
     aiSuggestText.textContent = msg || 'AI 제안을 생성할 수 없습니다. 잠시 후 다시 시도해 주세요.';
     if (copyAiSuggestBtn) copyAiSuggestBtn.disabled = true;
   }
@@ -1005,6 +1048,8 @@
 
   function generateImprovement() {
     if (!lastResult || !lastResult.issues || !lastResult.issues.length) return;
+    var effectiveForAi = getEffectiveIssues(lastResult.issues);
+    if (!effectiveForAi.length) { renderAiSuggestError('기관 승인 예외 처리된 이슈뿐이라 AI 제안이 필요하지 않습니다.'); return; }
 
     if (!aiSuggestConsented) {
       var confirmed = typeof window.confirm === 'function'
@@ -1017,7 +1062,7 @@
     if (aiSuggestAbort) { try { aiSuggestAbort.abort(); } catch(e){} }
     aiSuggestAbort = typeof AbortController !== 'undefined' ? new AbortController() : null;
 
-    var samples = lastResult.issues.slice(0, 3).map(function(i) { return i.match || i.message; });
+    var samples = effectiveForAi.slice(0, 3).map(function(i) { return i.match || i.message; });
     if (!samples.length) { renderAiSuggestError('감지된 이슈가 없습니다.'); return; }
 
     renderAiSuggestLoading();
