@@ -25,6 +25,7 @@ export function walkHtmlFiles(dir, options = {}) {
   const ignoredDirs = new Set([
     'node_modules',
     '.git',
+    'design-mockups',
     ...(options.ignoredDirs || []),
   ]);
 
