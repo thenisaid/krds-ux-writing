@@ -44,3 +44,7 @@ pnpm-lock.yaml
 
 # graphify 캐시 (graphify update . 로 재생성)
 graphify-out/
+
+# 디자인 시안·로고 컨셉 — 로컬 전용, Pages 노출 금지
+/design-mockups/
+/uxw-logo-concept*.svg
