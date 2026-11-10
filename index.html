@@ -11,7 +11,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://thenisaid.github.io/krds-ux-writing/">
 <link rel="canonical" href="https://thenisaid.github.io/krds-ux-writing/">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23256ef4'/><text x='16' y='22' font-family='sans-serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>K</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><clipPath id='c'><circle cx='100' cy='100' r='96'/></clipPath><g clip-path='url(%23c)'><circle cx='100' cy='100' r='96' fill='%23ed1a3b'/><path d='M100,4 A48,48 0 0,1 100,100 A48,48 0 0,0 100,196 A96,96 0 0,1 100,4' fill='%23003964'/></g></svg>">
 <title>KRDS UX Writing 가이드라인</title>
 
 <script>(function(){var prefersDark=typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches;var t='light';try{t=localStorage.getItem('krds-theme')||(prefersDark?'dark':'light');}catch(e){t=prefersDark?'dark':'light';}if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);})();</script>
@@ -73,6 +73,8 @@
   --color-bg-subtle: var(--bg-subtle);
   --color-border-gray-light: var(--color-gray-20);
   --color-text-muted: var(--text-muted);
+  --logo-blue: #003964;
+  --logo-red: #ed1a3b;
 
   /* Typography */
   --font-sans:  'Pretendard GOV Variable', 'Pretendard Variable', system-ui, -apple-system, sans-serif;
@@ -112,6 +114,8 @@
   --color-bg-subtle: rgba(255,255,255,0.06);
   --color-border-gray-light: var(--color-gray-70);
   --color-text-muted: var(--text-muted);
+  --logo-blue: #8cb6ff;
+  --logo-red: #ff9bad;
   color-scheme: dark;
 }
 
@@ -210,16 +214,15 @@ img { max-width: 100%; height: auto; }
 .gnb-logo-mark {
   width: 28px;
   height: 28px;
-  border-radius: var(--radius-sm);
-  background: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: -0.05em;
+  flex-shrink: 0;
+  display: block;
 }
+
+.gnb-logo-wordmark { font-weight: 800; }
+.gnb-logo-wordmark .u { color: var(--logo-blue); }
+.gnb-logo-wordmark .w { color: var(--logo-red); }
+.logo-fill-blue { fill: var(--logo-blue); }
+.logo-fill-red { fill: var(--logo-red); }
 
 .gnb-nav { display: flex; align-items: center; gap: 2px; flex: 1; margin-left: 24px; }
 .gnb-nav-link {
@@ -1409,8 +1412,14 @@ footer {
 <!-- ═══ GNB ═══ -->
 <header class="gnb" id="gnb" role="banner">
   <a href="/krds-ux-writing/" class="gnb-logo" aria-label="KRDS UX Writing 가이드라인 홈">
-    <span class="gnb-logo-mark" aria-hidden="true">K</span>
-    <span>UX Writing</span>
+    <svg class="gnb-logo-mark" aria-hidden="true" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <clipPath id="gnbLogoClip"><circle cx="100" cy="100" r="96"/></clipPath>
+      <g clip-path="url(#gnbLogoClip)">
+        <circle cx="100" cy="100" r="96" class="logo-fill-red"/>
+        <path d="M100,4 A48,48 0 0,1 100,100 A48,48 0 0,0 100,196 A96,96 0 0,1 100,4" class="logo-fill-blue"/>
+      </g>
+    </svg>
+    <span class="gnb-logo-wordmark"><span class="u">U</span>X<span class="w">W</span></span>
   </a>
   <nav class="gnb-nav" aria-label="섹션 내비게이션">
     <a href="/krds-ux-writing/principles/" class="gnb-nav-link" data-section="principles">원칙</a>
@@ -2435,7 +2444,13 @@ footer {
     <div class="footer-inner">
       <div>
         <a href="/krds-ux-writing/" class="footer-logo">
-          <span style="width:20px;height:20px;border-radius:4px;background:var(--accent);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800" aria-hidden="true">K</span>
+          <svg style="width:20px;height:20px;flex-shrink:0" aria-hidden="true" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <clipPath id="footerLogoClip"><circle cx="100" cy="100" r="96"/></clipPath>
+            <g clip-path="url(#footerLogoClip)">
+              <circle cx="100" cy="100" r="96" class="logo-fill-red"/>
+              <path d="M100,4 A48,48 0 0,1 100,100 A48,48 0 0,0 100,196 A96,96 0 0,1 100,4" class="logo-fill-blue"/>
+            </g>
+          </svg>
           KRDS UX Writing 가이드라인
         </a>
         <p class="footer-desc">
