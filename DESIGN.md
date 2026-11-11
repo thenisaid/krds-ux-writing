@@ -40,7 +40,7 @@
 | 17 | 다크 `--accent`(`#86aff9`) 위 흰 텍스트 | §11이 '다크 버튼은 `--color-primary-60` 사용'이라 규정 | `index.html` 다크: `.btn-primary`·`.skip-nav`·필터 칩·배지가 **흰 글자 on `#86aff9` = 2.21:1** | 코드 (§13) |
 | 18 | 다크 Primary 버튼 대비 서술 | `#0b50d0` 를 '#131416 위 6.8:1' 로 적은 곳과 '2.7:1' 로 적은 곳이 혼재(글자-배경 쌍과 버튼-페이지 쌍을 혼동) | 정확한 값: 흰 글자 on `#0b50d0` = 6.83:1(통과). 버튼 **배경** `#0b50d0` vs 페이지 `#131416` = 2.70:1(WCAG 1.4.11 UI 3:1 미달, 단 텍스트가 있어 통상 허용) | 문서 |
 | 19 | `color-scheme` | 'before-after 적용, 나머지 TODO' (index 는 2026-05-21 추가 완료로 기재) | 선언된 파일은 **index·before-after·generator 3개뿐**(`grep -E '(^\|[^-])color-scheme *:'`). lint·archive·corpus·dictionary/*·case-studies·prompt-library·shared/style.css(principles/*)·ontology-query·term-graph·offline-app·확장은 **미선언** — 다크에서 스크롤바·폼 컨트롤이 라이트로 렌더 | 문서 + 코드(§13-11) |
-| 20 | 최소 13px 규칙 현황 | '2026-05-21 4개 파일 전수 통일 완료' | 정본 4파일에도 `index.html` 5곳·`before-after.html` 3곳·`lint.html` 3곳·`archive.html` 2곳(`.8rem`=12.8px) 잔존. 레포 전체 25개 파일 202곳 | 문서(정정) + 코드(§13) |
+| 20 | 최소 13px 규칙 현황 | '2026-05-21 4개 파일 전수 통일 완료' | 정본 4파일에도 `index.html` 5곳·`before-after.html` 3곳·`lint.html` 3곳·`archive.html` 2곳(`.8rem`=12.8px) 잔존. 레포 전체 건수는 재집계 필요(슬라이드·목업 포함 시 400건대) | 문서(정정) + 코드(§13) |
 | 21 | `.gnb-icon-btn` 44px | index·before-after 44×44 | 일치. `shared/style.css` 의 `.gnb-icon-btn`은 `padding:6px`(실측 28×28) | 문서 + 코드(§13) |
 | 22 | 경고 색 `--color-warning-dark` | `#d08000` 토큰 | 코드에 `--color-warning-dark` 토큰은 **없음**. 실제로는 `--color-warning-50` 을 다크에서 `#d08000` 으로 **재정의** (before-after·lint) | 문서 |
 | 23 | 폰트 로딩 | 'Pretendard GOV Variable' 단일 | `index/before-after/corpus/prompt-library/principles` = variable-gov CDN(`document.fonts` 에 `Pretendard GOV Variable` loaded 확인). `generator` = static `pretendard-gov.min.css` → `document.fonts` 에는 `Pretendard GOV`(공백 포함) 9개 face 가 등록되지만, body 스택은 `PretendardGOV`(공백 없음) → `Pretendard GOV Variable` → `Pretendard Variable` → `Pretendard` 순이라 **등록된 패밀리명 `Pretendard GOV` 가 스택에 없어** 측정 시점 loaded 0건(시스템 폴백). **`lint.html`은 `<link rel="preconnect">` 만 있고 폰트 스타일시트 링크가 없어 `document.fonts` 가 비어 있음(0 faces) → 시스템 폴백**. `offline-app` = 시스템 폰트 스택(의도) | 문서(현황) + 코드(§13-12) |
@@ -214,7 +214,7 @@ CLAUDE.md 의 컴포넌트 기준(버튼 8px · 카드 12px · 배지 4px)과 �
 
 > 이전 문서의 '로고마크 K 10px' 예외는 삭제했다. index 푸터 로고는 이제 SVG이고, 다른 페이지의 K 마크는 11–14px 이다.
 
-레포 전체 현황(2026-11-10 측정): 13px 미만 `font-size` 선언 **202곳 / 25개 파일**. 이 중 `principles/*` 9개 파일이 69곳. 정본 4파일은 index 5 · before-after 3 · lint 3 · archive 2(`.8rem`).
+레포 전체 현황(2026-11-10): 13px 미만 `font-size` 선언의 **정확한 건수는 재집계 필요**(슬라이드·목업 포함 시 400건대, 집계 범위·정규식에 따라 달라짐). 참고로 `principles/*`에서만 69곳이 확인된다. 정본 4파일은 index 5 · before-after 3 · lint 3 · archive 2(`.8rem`).
 
 ### 헤딩 타입스케일 (실측)
 
@@ -602,7 +602,7 @@ lint.html 전용:
 | 10 | `krds-extension/popup.css` | `--text-muted #8a949e` 3.08:1 / 2.82:1, 10~12px 10곳, 다크모드·버튼 `:focus-visible` 없음 | 4.5:1 / 13px | `--text-muted:#6d7882` 이상, 13px |
 | 11 | `shared/style.css` 외 다수 | `shared/style.css`: `.gnb-icon-btn` 28×28, `.gnb-badge`·`.sidebar-label` 10px, `prefers-reduced-motion` 없음. **`color-scheme` 는 index·before-after·generator 외 전 파일 미선언** | 13px / 44px / 다크 폼 컨트롤 | `[data-theme="dark"]{color-scheme:dark}` 일괄 추가 |
 | 12 | `lint.html` | Pretendard GOV 스타일시트 `<link>` 없음(`preconnect` 만 존재) → 시스템 폴백 | 폰트 규칙 | `<link rel="stylesheet" href=".../pretendardvariable-gov.min.css" integrity=...>` + CSP `style-src` 확인 |
-| 13 | 레포 전체 | 13px 미만 `font-size` 202곳/25파일(principles/* 69곳 포함) | 13px | 점진 정리 |
+| 13 | 레포 전체 | 13px 미만 `font-size` 건수 재집계 필요(슬라이드·목업 포함 시 400건대, principles/* 69곳 포함) | 13px | 점진 정리 |
 | 14 | `index.html` 색 대비 | 라이트 `.tag`·`.dg-agency-desc`·`.quote-avatar` 등 `#6d7882` on `#f4f5f6` 4.13:1(Playwright 텍스트 노드 스캔에서 16+6+6+3+1 노드, 고유 선택자 5종), `.ba-col-label` 개선 전 `#f48771` on 연핑크 2.30:1, `.ba-tag--level` 4.05:1 | 1.4.3 | `--text-muted` 를 `--color-gray-60`(#58616a, 5.77:1) 로 상향 또는 배경 흰색 사용 |
 | 15 | `index.html` 다크 | `.ba-col-label`(개선 후) 3.79:1, `.arc-entry-label` 3.56:1, `.footer-link` 계열 | 1.4.3 | 다크 전용 색 지정 |
 | 16 | `before-after.html` 다크 | `.footer-legal #58616a` on `#1e2124` 2.57:1, `.footer-link #6d7882` 3.59:1, `.gnb-badge` 1.97:1, 라이트 `.gnb-nav-link` 4.23:1 | 1.4.3 | 토큰 상향 |
