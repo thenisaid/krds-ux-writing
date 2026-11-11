@@ -79,6 +79,14 @@ jobs:
             fi
           fi
 
+          # 린트 제외: 기술 용어·표·코드 위주의 설계 문서라 UX 문구 린터 대상이 아님.
+          # 와일드카드·디렉터리 제외 없이 명시적 파일 경로(전체 일치)만 거른다.
+          # PR 경로·workflow_dispatch(전체/target_file) 경로 모두 여기서 걸러진다.
+          sed 's#^\./##' /tmp/changed_files.txt \
+            | grep -vxF -e 'TRD.md' -e 'DESIGN.md' -e 'design-guide.md' \
+            > /tmp/changed_files.filtered || true
+          mv /tmp/changed_files.filtered /tmp/changed_files.txt
+
           echo "변경된 검사 대상 파일:"
           cat /tmp/changed_files.txt || echo "(없음)"
           FILE_COUNT=$(wc -l < /tmp/changed_files.txt | tr -d ' ')
@@ -108,29 +116,41 @@ jobs:
             [ -z "$file" ] && continue
             [ ! -f "$file" ] && continue
 
-            JSON_RESULT=$(node bin/krds-lint --json "$file" 2>/dev/null)
+            # stdout 파이프(약 64KB 절단 위험) 대신 임시 파일로 JSON 수신
+            JSON_FILE=$(mktemp)
+            node bin/krds-lint --json "$file" > "$JSON_FILE"
             EXIT_CODE=$?
 
-            ERRORS=$(echo "$JSON_RESULT" | node -e "
-              let d=''; process.stdin.on('data',c=>d+=c).on('end',()=>{
-                try { const r=JSON.parse(d); console.log(r.summary&&r.summary.errors||0); }
-                catch(e) { console.log(0); }
-              });
-            " 2>/dev/null || echo "0")
+            # fail-closed: 파싱 실패·summary 누락은 통과가 아니라 FAIL 로 보고한다
+            PARSED=$(node -e "
+              const fs=require('fs');
+              try {
+                const r=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));
+                const s=r&&r.summary;
+                if(!s||!Number.isInteger(s.errors)||!Number.isInteger(s.warnings)) throw new Error('summary 누락');
+                console.log('OK|'+s.errors+'|'+s.warnings+'|'+(r.score!==undefined?r.score:100));
+              } catch(e) { console.log('FAIL|'+e.name+': '+e.message.slice(0,80)); }
+            " "$JSON_FILE" 2>/dev/null || echo "FAIL|node 파서 실행 실패")
 
-            WARNINGS=$(echo "$JSON_RESULT" | node -e "
-              let d=''; process.stdin.on('data',c=>d+=c).on('end',()=>{
-                try { const r=JSON.parse(d); console.log(r.summary&&r.summary.warnings||0); }
-                catch(e) { console.log(0); }
-              });
-            " 2>/dev/null || echo "0")
+            IFS='|' read -r PARSE_STATUS ERRORS WARNINGS SCORE <<< "$PARSED"
 
-            SCORE=$(echo "$JSON_RESULT" | node -e "
-              let d=''; process.stdin.on('data',c=>d+=c).on('end',()=>{
-                try { const r=JSON.parse(d); console.log(r.score!==undefined?r.score:100); }
-                catch(e) { console.log(100); }
-              });
-            " 2>/dev/null || echo "100")
+            FAIL_REASON=""
+            if [ "$PARSE_STATUS" != "OK" ]; then
+              FAIL_REASON="린트 결과(JSON) 파싱 실패 또는 출력 절단 — ${ERRORS} (exit ${EXIT_CODE})"
+            elif [ "$EXIT_CODE" -gt 1 ]; then
+              FAIL_REASON="린터 비정상 종료 (exit ${EXIT_CODE})"
+            elif [ "$EXIT_CODE" -eq 1 ] && [ "$ERRORS" -eq 0 ]; then
+              FAIL_REASON="린터 exit 1 이지만 오류 0건으로 보고됨 (결과 불일치)"
+            fi
+            if [ -n "$FAIL_REASON" ]; then
+              # 통과로 처리하지 않고 해당 파일을 오류 1건 이상으로 집계
+              echo "::error file=${file}::${FAIL_REASON}"
+              if [ "$PARSE_STATUS" != "OK" ]; then
+                ERRORS=1; WARNINGS=0; SCORE=0
+              elif [ "$ERRORS" -lt 1 ]; then
+                ERRORS=1
+              fi
+            fi
 
             TOTAL_ERRORS=$((TOTAL_ERRORS + ERRORS))
             TOTAL_WARNINGS=$((TOTAL_WARNINGS + WARNINGS))
@@ -140,23 +160,26 @@ jobs:
               REPORT_LINES="${REPORT_LINES}### \`${file}\` — 점수: ${SCORE}/100\n"
               REPORT_LINES="${REPORT_LINES}> 오류 ${ERRORS}건 / 경고 ${WARNINGS}건\n\n"
 
+              if [ -n "$FAIL_REASON" ]; then
+                ISSUES="❌ ${FAIL_REASON}"
+              else
               # 상위 15개 이슈 추출
-              ISSUES=$(echo "$JSON_RESULT" | node -e "
-                let d=''; process.stdin.on('data',c=>d+=c).on('end',()=>{
-                  try {
-                    const r=JSON.parse(d);
-                    const issues=(r.issues||[]).slice(0,15);
-                    issues.forEach(i=>{
-                      const icon=i.severity==='error'?'❌':i.severity==='warning'?'⚠️':'ℹ️';
-                      console.log(icon+' ['+(i.line||'-')+'줄] ['+i.category+'] \`'+i.match+'\` → '+i.suggestion);
-                    });
-                    if((r.issues||[]).length>15) console.log('... 외 '+((r.issues||[]).length-15)+'건 더');
-                  } catch(e){}
-                });
-              " 2>/dev/null || echo "")
+              ISSUES=$(node -e "
+                try {
+                  const r=JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'));
+                  const issues=(r.issues||[]).slice(0,15);
+                  issues.forEach(i=>{
+                    const icon=i.severity==='error'?'❌':i.severity==='warning'?'⚠️':'ℹ️';
+                    console.log(icon+' ['+(i.line||'-')+'줄] ['+i.category+'] \`'+i.match+'\` → '+i.suggestion);
+                  });
+                  if((r.issues||[]).length>15) console.log('... 외 '+((r.issues||[]).length-15)+'건 더');
+                } catch(e){}
+              " "$JSON_FILE" 2>/dev/null || echo "")
+              fi
 
               REPORT_LINES="${REPORT_LINES}${ISSUES}\n\n"
             fi
+            rm -f "$JSON_FILE"
           done < /tmp/changed_files.txt
 
           # GitHub Actions 출력 변수
