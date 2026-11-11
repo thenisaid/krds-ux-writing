@@ -553,7 +553,7 @@ CSP 변경 시 이웃 페이지 동작(예: `term-graph.html`의 노드 클릭)�
 | 웹 `lint.html`/`index.html` | `prefers-reduced-motion` 각각 3건/1건 | 유지 |
 | 확장 `content.css` | `prefers-reduced-motion` 1건 (`:124`) | 유지 |
 | 오프라인 앱 `index.html` | `prefers-reduced-motion` **0건**, `transition/animation` 0건 | 움직임이 없으면 불필요하다는 주석을 넣거나 일관성을 위해 최소 규칙 추가. "reduced-motion 적용" 주장을 오프라인판에는 쓰지 않는다 (P1) |
-| 오프라인 앱 대상 크기 | **미측정** (`min-height:44px` 규칙 없음) | Playwright로 모든 버튼·체크·입력의 `getBoundingClientRect()` 측정 → 44×44 미만 목록 산출 → 회귀 테스트로 고정 (P1) |
+| 오프라인 앱 대상 크기 | 버튼 약 39.5px 실측(44px 미달, `DESIGN.md` §13-8), `min-height:44px` 규칙 없음. 버튼 외 체크·입력은 미측정 | Playwright로 모든 버튼·체크·입력의 `getBoundingClientRect()` 측정 → 44×44 미만 목록 산출 → 회귀 테스트로 고정 (P1) |
 | 확장 포커스 가림 | **미점검** | §4.2.5의 2.4.11 시나리오 |
 | 확대 | 미테스트 | 200% 확대 시 가로 스크롤 없이 사용 가능한지 테스트 추가 (P2) |
 

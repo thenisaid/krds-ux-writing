@@ -354,8 +354,8 @@ WCAG 2.1 공식으로 직접 계산(소수 둘째 자리). 마크는 비텍스�
 | 제출 완료 | "신청서를 제출했습니다" | 11자 |
 | 삭제 완료 | "삭제했습니다" | 6자 |
 | 복사 완료 | "복사했습니다" | 6자 |
-| 연결 오류 | "인터넷 연결을 확인해 주세요" | 14자 |
-| 파일 업로드 | "파일을 올렸습니다" | 8자 |
+| 연결 오류 | "인터넷 연결을 확인해 주세요" | 15자 |
+| 파일 업로드 | "파일을 올렸습니다" | 9자 |
 
 ### 6.6 모달 (Modal)
 
@@ -465,7 +465,7 @@ WCAG 2.1 공식으로 직접 계산(소수 둘째 자리). 마크는 비텍스�
 | `outline:none` 대체 | 포커스를 제거하면 `:focus-within` / `box-shadow` 로 반드시 대체 | index `.section-nav-input` ❌ (부모 변화 없음), dictionary·확장 popup ✅ |
 | 스킵 링크 | "본문 바로가기" | index·before-after·lint·archive·generator·corpus·dictionary·case-studies·principles/*·prompt-library ✅, ontology-query·term-graph·오프라인 앱 없음 |
 | 색상 대비 | 텍스트 4.5:1, UI·그래픽 3:1 | §2.2·§5.3. 소형 muted 텍스트가 `#f4f5f6` 위에서 4.13:1 인 곳이 index.html 에서만 고유 선택자 5종 |
-| 최소 폰트 | 13px | 레포 전체 13px 미만 선언 202곳/25파일(장식 요소 포함) |
+| 최소 폰트 | 13px | 레포 전체 13px 미만 선언은 장식 요소를 포함해 다수이며 정확한 건수는 재집계 필요 |
 | 다크모드 폼 컨트롤 | `color-scheme: dark` | index·before-after·generator 만 선언 |
 
 **적용 범위**
