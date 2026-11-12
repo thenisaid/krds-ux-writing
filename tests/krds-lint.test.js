@@ -1307,3 +1307,212 @@ describe('lint() 이슈 객체의 applyable/applyText 필드', () => {
     expect(issue.applyable).toBe(false);
   });
 });
+
+// ─── 의도된 예시 영역 제외 (data-lint-ignore) ───────────────────────────────
+// 가이드 사이트의 Before/After 예시는 '나쁜 문구'를 일부러 보여 준다. 그 요소에만
+// data-lint-ignore 속성을 붙이면 여는 태그부터 짝이 맞는 닫는 태그까지를 마스킹한다.
+// 짝이 없으면 마스킹하지 않는다(주석·<style> 마스킹과 같은 방침: 린트가 통째로
+// 사라지는 사고 방지). 속성 값(이유 문자열)은 선택이다.
+describe('data-lint-ignore 영역 마스킹', () => {
+  const opts = { checkAdminJargon: true, checkPatterns: true };
+  const jargon = (r) => r.issues.filter(i => i.type === 'admin-jargon' && i.match === '귀하');
+
+  it('(a) data-lint-ignore 요소 안의 위반 문구는 이슈를 만들지 않는다', () => {
+    const r = KRDSLint.lint('<p class="ba-text" data-lint-ignore>귀하께 안내드립니다.</p>', opts);
+    expect(jargon(r)).toHaveLength(0);
+  });
+  it('(a) 값(이유 문자열)이 있어도, 값이 비어 있어도 동작한다', () => {
+    const withReason = KRDSLint.lint('<p data-lint-ignore="의도된 Before 예시">귀하</p>', opts);
+    const emptyValue = KRDSLint.lint('<p data-lint-ignore="">귀하</p>', opts);
+    const singleQuoted = KRDSLint.lint("<p data-lint-ignore='의도된 예시'>귀하</p>", opts);
+    expect(jargon(withReason)).toHaveLength(0);
+    expect(jargon(emptyValue)).toHaveLength(0);
+    expect(jargon(singleQuoted)).toHaveLength(0);
+  });
+  it('(a) 속성 값 안의 > 문자나 대소문자 차이가 있어도 동작한다', () => {
+    const r1 = KRDSLint.lint('<p title="a > b" data-lint-ignore>귀하</p>', opts);
+    const r2 = KRDSLint.lint('<P DATA-LINT-IGNORE>귀하</P>', opts);
+    expect(jargon(r1)).toHaveLength(0);
+    expect(jargon(r2)).toHaveLength(0);
+  });
+  it('(b) 속성이 없는 같은 문구는 여전히 이슈다', () => {
+    const r = KRDSLint.lint('<p class="ba-text">귀하께 안내드립니다.</p>', opts);
+    expect(jargon(r)).toHaveLength(1);
+  });
+  it('(b) 속성 값이나 다른 속성 이름에 들어 있는 data-lint-ignore 문자열은 속성으로 보지 않는다', () => {
+    const r1 = KRDSLint.lint('<p title="data-lint-ignore">귀하</p>', opts);
+    const r2 = KRDSLint.lint('<p data-lint-ignored>귀하</p>', opts);
+    const r3 = KRDSLint.lint('<p x-data-lint-ignore>귀하</p>', opts);
+    expect(jargon(r1)).toHaveLength(1);
+    expect(jargon(r2)).toHaveLength(1);
+    expect(jargon(r3)).toHaveLength(1);
+  });
+  it('(b) 속성이 있는 요소 바깥(앞뒤·같은 줄)의 문구는 계속 검사한다', () => {
+    const r = KRDSLint.lint('귀하 <span data-lint-ignore>귀하</span> 귀하', opts);
+    expect(jargon(r)).toHaveLength(2);
+  });
+  it('(c) 여러 줄 영역 뒤 줄의 line 번호와 같은 줄 col 이 보존된다', () => {
+    const r = KRDSLint.lint('<div data-lint-ignore>\n귀하\n여러 줄\n</div>\n귀하', opts);
+    const hits = jargon(r);
+    expect(hits).toHaveLength(1);
+    expect(hits[0].line).toBe(5);
+    const r2 = KRDSLint.lint('<b data-lint-ignore>메모</b> 귀하', opts);
+    expect(jargon(r2)[0].col).toBe('<b data-lint-ignore>메모</b> '.length + 1);
+  });
+  it('(d) 같은 태그가 중첩돼도 짝이 맞는 바깥 닫는 태그까지 마스킹한다', () => {
+    const html = '<div data-lint-ignore><div>귀하</div>귀하</div>\n귀하';
+    const hits = jargon(KRDSLint.lint(html, opts));
+    expect(hits).toHaveLength(1);
+    expect(hits[0].line).toBe(2);
+  });
+  it('(d) 다른 태그가 안에 있어도, 안쪽 data-lint-ignore 가 중복돼도 안전하다', () => {
+    const html = '<div data-lint-ignore><span>귀하</span><div data-lint-ignore>귀하</div>귀하</div>\n귀하';
+    const hits = jargon(KRDSLint.lint(html, opts));
+    expect(hits).toHaveLength(1);
+    expect(hits[0].line).toBe(2);
+  });
+  it('(d) 같은 태그가 형제로 이어질 때 첫 닫는 태그에서 멈춘다', () => {
+    const html = '<p data-lint-ignore>귀하</p><p>귀하</p>';
+    expect(jargon(KRDSLint.lint(html, opts))).toHaveLength(1);
+  });
+  it('(e) 닫는 태그가 없으면 마스킹하지 않아 뒤 본문 린트를 가리지 않는다', () => {
+    const r = KRDSLint.lint('<p data-lint-ignore>귀하께 안내드립니다.\n귀하\nCOMING SOON', opts);
+    expect(jargon(r)).toHaveLength(2);
+    expect(r.issues.some(i => i.type === 'english-only-label' && i.match === 'COMING SOON')).toBe(true);
+  });
+  it('(e) 바깥 닫는 태그가 모자라 안쪽 태그가 짝을 가져가면 마스킹하지 않는다', () => {
+    const r = KRDSLint.lint('<div data-lint-ignore><div>x</div>\n귀하', opts);
+    expect(jargon(r)).toHaveLength(1);
+  });
+  it('(e) 닫히지 않은 속성 요소가 앞에 있어도 뒤쪽의 짝이 맞는 요소는 마스킹된다', () => {
+    const r = KRDSLint.lint('<p data-lint-ignore>\n<span data-lint-ignore>귀하</span>\n귀하', opts);
+    expect(jargon(r)).toHaveLength(1);
+    expect(jargon(r)[0].line).toBe(3);
+  });
+  it('(e) 태그가 중간에 끊겨 > 가 없거나 따옴표가 닫히지 않아도 마스킹하지 않는다', () => {
+    expect(jargon(KRDSLint.lint('<p data-lint-ignore 귀하', opts))).toHaveLength(1);
+    expect(jargon(KRDSLint.lint('<p data-lint-ignore title="귀하>귀하</p>', opts))).toHaveLength(2);
+  });
+  it('(e) void 요소와 self-closing 은 대상이 아니다 (뒤 본문을 가리지 않는다)', () => {
+    expect(jargon(KRDSLint.lint('<br data-lint-ignore>귀하</br>', opts))).toHaveLength(1);
+    expect(jargon(KRDSLint.lint('<img data-lint-ignore src="a.png">귀하', opts))).toHaveLength(1);
+    expect(jargon(KRDSLint.lint('<div data-lint-ignore />귀하</div>', opts))).toHaveLength(1);
+  });
+  it('(g) 코드 펜스·인라인 코드 안의 예시 속성은 무시되어 뒤 본문을 가리지 않는다', () => {
+    const fenced = '```html\n<p data-lint-ignore>\n```\n귀하\n</p>';
+    expect(jargon(KRDSLint.lint(fenced, opts))).toHaveLength(1);
+    const inline = '속성은 `<p data-lint-ignore>` 로 붙이고 귀하 문구를 쓴 뒤 `</p>` 로 닫습니다.';
+    expect(jargon(KRDSLint.lint(inline, opts))).toHaveLength(1);
+  });
+  it('(g) HTML 주석 안의 예시 속성도 무시된다', () => {
+    const r = KRDSLint.lint('<!-- <p data-lint-ignore> -->\n귀하\n<!-- </p> -->', opts);
+    expect(jargon(r)).toHaveLength(1);
+  });
+  it('마크다운 문서 안의 raw HTML 에도 같은 구문이 적용된다', () => {
+    const md = '# 제목\n\n<p data-lint-ignore="의도된 Before 예시">귀하께 안내드립니다.</p>\n\n귀하';
+    const hits = jargon(KRDSLint.lint(md, opts));
+    expect(hits).toHaveLength(1);
+    expect(hits[0].line).toBe(5);
+  });
+
+  // 열림 N개가 모두 닫히지 않는 입력에서 열림마다 끝까지 재탐색하면 O(n²)이 된다.
+  it('(f) 닫히지 않은 data-lint-ignore 요소 1만 개 반복을 1.5초 안에 처리한다', () => {
+    const text = '<p data-lint-ignore>'.repeat(10000) + '귀하';
+    const t0 = Date.now();
+    const r = KRDSLint.lint(text, opts);
+    expect(Date.now() - t0).toBeLessThan(1500);
+    expect(jargon(r)).toHaveLength(1);
+  });
+  it('(f) 닫히지 않은 열림을 10만자 분량 반복해도 1.5초 안에 처리한다', () => {
+    const text = '<p data-lint-ignore>'.repeat(5000);
+    expect(text.length).toBeGreaterThanOrEqual(100000);
+    const t0 = Date.now();
+    KRDSLint.lint(text, opts);
+    expect(Date.now() - t0).toBeLessThan(1500);
+  });
+  it('(f) 같은 태그가 깊게 중첩된 10만자 입력을 1.5초 안에 처리한다', () => {
+    const text = '<div data-lint-ignore>' + '<div>'.repeat(20000) + '귀하' + '</div>'.repeat(20000) + '</div>\n귀하';
+    const t0 = Date.now();
+    const r = KRDSLint.lint(text, opts);
+    expect(Date.now() - t0).toBeLessThan(1500);
+    expect(jargon(r)).toHaveLength(1);
+  });
+  it('(f) 닫는 따옴표가 없는 속성 태그를 반복해도 1.5초 안에 처리한다', () => {
+    const text = '<p data-lint-ignore title="'.repeat(10000);
+    const t0 = Date.now();
+    KRDSLint.lint(text, opts);
+    expect(Date.now() - t0).toBeLessThan(1500);
+  });
+  it('(f) > 가 없는 태그 시작을 10만 번 반복해도 1.5초 안에 처리한다', () => {
+    const text = '<p data-lint-ignore '.repeat(10000) + '귀하';
+    const t0 = Date.now();
+    KRDSLint.lint(text, opts);
+    expect(Date.now() - t0).toBeLessThan(1500);
+  });
+  it('(f) 짝이 맞는 data-lint-ignore 요소 1만 개도 1.5초 안에 처리한다', () => {
+    const text = '<p data-lint-ignore>귀하</p>\n'.repeat(10000) + '귀하';
+    const t0 = Date.now();
+    const r = KRDSLint.lint(text, opts);
+    expect(Date.now() - t0).toBeLessThan(1500);
+    expect(jargon(r)).toHaveLength(1);
+  });
+});
+
+// (h) 오남용 방지: 레포 전체의 data-lint-ignore 사용처가 허용 스냅샷과 같아야 한다.
+// 새 사용처가 생기면 이 테스트가 실패해 리뷰를 강제한다 — 어느 영역이 '의도된 예시'인지는
+// 콘텐츠 오너가 확인해야 하므로, 스냅샷을 고치는 PR 은 그 근거(이유 문자열)를 함께 리뷰받는다.
+// 항목 형식: '<경로> :: <속성 값(이유)>' (값이 없으면 빈 문자열).
+describe('data-lint-ignore 사용처 스냅샷', () => {
+  const ALLOWED_USAGES = [
+    // 현재 허용된 사용처 없음.
+  ];
+
+  // 구현·테스트 파일은 속성 이름을 설명/검증 목적으로만 언급한다.
+  const EXCLUDED = new Set([
+    'krds-lint.js',
+    'krds-extension/lib/krds-lint.js',
+    'offline-app/dist/krds-lint.js',
+    'tests/krds-lint.test.js',
+  ]);
+  const USAGE_RE = /data-lint-ignore(?:\s*=\s*("[^"]*"|'[^']*'|[^\s>"']+))?/gi;
+
+  function listFiles(root) {
+    const { execFileSync } = require('child_process');
+    const out = execFileSync('git', ['ls-files', '-z'], { cwd: root, maxBuffer: 64 * 1024 * 1024 });
+    return out.toString('utf8').split('\0').filter(Boolean);
+  }
+
+  it('레포 전체의 data-lint-ignore 사용처가 허용 스냅샷과 같다', () => {
+    const path = require('path');
+    const root = path.join(__dirname, '..');
+    const found = [];
+    listFiles(root).forEach((rel) => {
+      if (EXCLUDED.has(rel)) return;
+      let buf;
+      try { buf = fs.readFileSync(path.join(root, rel)); } catch (e) { return; }
+      if (buf.includes(0)) return; // 바이너리
+      const text = buf.toString('utf8');
+      if (!/data-lint-ignore/i.test(text)) return;
+      let m;
+      USAGE_RE.lastIndex = 0;
+      while ((m = USAGE_RE.exec(text)) !== null) {
+        const raw = m[1] || '';
+        const value = /^["']/.test(raw) ? raw.slice(1, -1) : raw;
+        found.push(rel + ' :: ' + value);
+      }
+    });
+    expect(found.sort()).toEqual(ALLOWED_USAGES.slice().sort());
+  });
+
+  it('스냅샷 수집 정규식은 따옴표/무따옴표/값 없는 형태를 모두 잡는다', () => {
+    const sample = '<p data-lint-ignore="이유 A"> <p data-lint-ignore=\'이유 B\'> <p data-lint-ignore=x> <p data-lint-ignore>';
+    const values = [];
+    let m;
+    USAGE_RE.lastIndex = 0;
+    while ((m = USAGE_RE.exec(sample)) !== null) {
+      const raw = m[1] || '';
+      values.push(/^["']/.test(raw) ? raw.slice(1, -1) : raw);
+    }
+    expect(values).toEqual(['이유 A', '이유 B', 'x', '']);
+  });
+});
