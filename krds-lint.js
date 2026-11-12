@@ -527,6 +527,51 @@
   // (2026-08-19 codex 리뷰에서 발견).
   var MASK_CHAR = String.fromCharCode(0);
 
+  // 여는 표지마다 정규식으로 닫는 표지를 다시 찾으면, 닫는 표지가 없는 열림이
+  // 길게 반복될 때 모든 시작점에서 끝까지 재탐색해 O(n²)이 된다(`<!--` 2.5만 번
+  // 약 0.8초). 닫는 표지를 못 찾으면 그 뒤의 열림도 못 찾으므로 즉시 멈춘다.
+  // 닫히지 않은 열림은 마스킹하지 않는다: 마크다운에서 문장 중간의 `<!--` 하나가
+  // 이후 본문 전체를 가려 린트가 통째로 사라지는 쪽이 더 위험하다.
+  // findEnd(str, from)는 닫는 표지 끝 위치(없으면 -1)를 반환한다.
+  function maskPairs(str, openRe, findEnd) {
+    var out = [];
+    var last = 0;
+    var m;
+    openRe.lastIndex = 0;
+    while ((m = openRe.exec(str)) !== null) {
+      var end = findEnd(str, m.index + m[0].length);
+      if (end < 0) break;
+      out.push(str.slice(last, m.index), str.slice(m.index, end).replace(/[^\n]/g, MASK_CHAR));
+      last = end;
+      openRe.lastIndex = end;
+    }
+    out.push(str.slice(last));
+    return out.join('');
+  }
+
+  // HTML 주석 <!-- ... --> (렌더되지 않는 개발자 메모)
+  // 닫는 표지 탐색을 여는 표지 안쪽(`<!`의 뒤)부터 시작해 HTML5의 빈 주석
+  // `<!-->`, `<!--->`를 즉시 닫힌 것으로 처리한다 — 그렇지 않으면 뒤쪽 본문의
+  // 다음 `-->`까지 가려진다.
+  function maskHtmlComments(text) {
+    return maskPairs(text, /<!--/g, function (str, from) {
+      var i = str.indexOf('-->', from - 2);
+      return i < 0 ? -1 : i + 3;
+    });
+  }
+
+  // <style ...> ... </style > (CSS 셀렉터·주석은 사용자에게 보이는 문구가 아님)
+  var STYLE_CLOSE_RE = /<\/style\s*>/gi;
+  function maskStyleBlocks(text) {
+    return maskPairs(text, /<style\b/gi, function (str, from) {
+      var gt = str.indexOf('>', from);
+      if (gt < 0) return -1;
+      STYLE_CLOSE_RE.lastIndex = gt + 1;
+      var c = STYLE_CLOSE_RE.exec(str);
+      return c ? c.index + c[0].length : -1;
+    });
+  }
+
   function maskNonProseRegions(text) {
     var maskRanges = function (str, regex) {
       return str.replace(regex, function (match) {
@@ -544,6 +589,11 @@
     // 안에서 앞쪽 한 글자를 "내용"으로 흡수해 다른 조합으로 재시도하다
     // 결국 닫히는 걸로 잘못 인식한다 (2026-08-19 6차 codex 리뷰에서 발견).
     text = maskRanges(text, /(`+)[\s\S]*?(?<!`)\1(?!`)/g);
+    // HTML 주석·<style>은 코드 펜스·인라인 코드 뒤에 처리한다: 코드 안의 예시
+    // `<!--`가 본문의 `-->`와 짝지어져 그 사이 본문을 가리는 사고를 막기 위함.
+    // (CommonMark에서도 코드 스팬이 raw HTML보다 우선한다.)
+    text = maskHtmlComments(text);
+    text = maskStyleBlocks(text);
     return text;
   }
 
