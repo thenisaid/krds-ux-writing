@@ -1200,6 +1200,12 @@ describe('HTML 주석·<style> 블록 마스킹', () => {
     expect(hasLabel(r)).toBe(false);
     expect(jargon(r)).toHaveLength(1);
   });
+  it('(e) 빈 주석 <!--> 와 <!---> 는 즉시 닫힌 것으로 보고 뒤 본문을 가리지 않는다 (HTML5 명세)', () => {
+    const r1 = KRDSLint.lint('<!-->\n귀하\n<!-- 메모 -->', opts);
+    expect(jargon(r1)).toHaveLength(1);
+    const r2 = KRDSLint.lint('<!--->\n귀하\n<!-- 메모 -->', opts);
+    expect(jargon(r2)).toHaveLength(1);
+  });
   it('마스킹 후에도 같은 줄의 이슈 col 이 밀리지 않는다', () => {
     const r = KRDSLint.lint('<!-- 메모 --> 귀하', opts);
     const hit = jargon(r)[0];
