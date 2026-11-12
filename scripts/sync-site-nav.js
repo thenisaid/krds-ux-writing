@@ -175,6 +175,19 @@ function chunkAfter(html, openEnd) {
   return html.slice(openEnd, close === -1 ? html.length : close);
 }
 
+/** 1차 nav(.gnb-nav) 안의 링크: {label, href(원문), target(정규화), current, active}. 1차 nav 가 없으면 [] */
+function extractPrimaryLinks(html, file) {
+  const primary = navOpenTags(html).find((n) => classTokens(n.attrs).includes('gnb-nav'));
+  if (!primary) return [];
+  return anchorsIn(chunkAfter(html, primary.openEnd)).map((l) => ({
+    label: l.label,
+    href: l.attrs.href || '',
+    target: resolveHref(file, l.attrs.href || ''),
+    current: l.attrs['aria-current'] || null,
+    active: classTokens(l.attrs).includes('active'),
+  }));
+}
+
 /** CSS 의 @media 블록 중 .gnb-nav 를 display:none 하는 것이 있는지 (중괄호 매칭) */
 function cssHidesGnbNavOnMobile(css) {
   const re = /@media\s*\(\s*max-width:\s*\d+px\s*\)\s*\{/g;
@@ -242,6 +255,7 @@ function inspectPage(html, file, root) {
     if (!sameLength || actualCurrent.some((v, i) => v !== expectedCurrent[i])) reasons.push('aria-current');
 
     const activeFlags = links.map((l) => classTokens(l.attrs).includes('active'));
+    details.activeFlags = activeFlags;
     if (links.some((l, i) => activeFlags[i] !== (actualCurrent[i] !== null))) reasons.push('active-class');
   } else {
     details.labels = [];
@@ -250,6 +264,10 @@ function inspectPage(html, file, root) {
   // 3-2. 로고 링크
   const logos = anchorsIn(html).filter((a) => classTokens(a.attrs).includes('gnb-logo'));
   details.logoCount = logos.length;
+  details.logo = logos.map((l) => ({
+    ariaLabel: Boolean(l.attrs['aria-label']),
+    target: resolveHref(file, l.attrs.href || ''),
+  }));
   const logoOk = logos.length === 1 &&
     Boolean(logos[0].attrs['aria-label']) &&
     resolveHref(file, logos[0].attrs.href || '') === '/';
@@ -275,7 +293,9 @@ function inspectPage(html, file, root) {
     } catch (e) { /* 공유 CSS 가 없으면 인라인만 본다 */ }
   }
   const hidesNav = cssHidesGnbNavOnMobile(inlineCss) || cssHidesGnbNavOnMobile(sharedCss);
-  const missingOnMobile = hidesNav && mobileLabels.length
+  // CSS 가 모바일에서 .gnb-nav 를 숨기면, 모든 1차 탭이 모바일 메뉴(.mobile-menu-link)에 있어야 한다.
+  // 모바일 메뉴 자체가 없으면(예: 햄버거가 LNB 만 여는 페이지) 4개 모두 도달 불가로 센다.
+  const missingOnMobile = hidesNav
     ? NAV.PRIMARY_TABS.map((t) => t.label).filter((l) => !mobileLabels.includes(l))
     : [];
   details.mobileAliases = aliases;
@@ -530,6 +550,8 @@ module.exports = {
   readMarkerRegion,
   applyFragment,
   inspectPage,
+  resolveHref,
+  extractPrimaryLinks,
   hasGnbMarkup,
   checkAll,
   summarize,

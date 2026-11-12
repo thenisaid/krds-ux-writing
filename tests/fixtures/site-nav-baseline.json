@@ -1,0 +1,168 @@
+{
+  "description": "GNB 일관성 baseline — 현재 main 의 불일치를 고정한다. 줄이기만 하고 늘리지 않는다. 갱신: UPDATE_NAV_BASELINE=1 npx vitest run tests/site-nav-consistency.test.js",
+  "definitionVersion": "0.1.0",
+  "items": {
+    "10-logo": {
+      "count": 14,
+      "offenders": {
+        "archive.html": "count=1 [{\"ariaLabel\":false,\"target\":\"/\"}]",
+        "generator/index.html": "count=0 []",
+        "lint.html": "count=1 [{\"ariaLabel\":false,\"target\":\"/\"}]",
+        "principles/components/index.html": "count=1 [{\"ariaLabel\":false,\"target\":\"/\"}]",
+        "principles/core-info/index.html": "count=1 [{\"ariaLabel\":false,\"target\":\"/\"}]",
+        "principles/derivative/index.html": "count=1 [{\"ariaLabel\":false,\"target\":\"/\"}]",
+        "principles/foundation/index.html": "count=1 [{\"ariaLabel\":false,\"target\":\"/\"}]",
+        "principles/governance/index.html": "count=1 [{\"ariaLabel\":false,\"target\":\"/\"}]",
+        "principles/index.html": "count=1 [{\"ariaLabel\":false,\"target\":\"/\"}]",
+        "principles/no-translation/index.html": "count=1 [{\"ariaLabel\":false,\"target\":\"/\"}]",
+        "principles/notation/index.html": "count=1 [{\"ariaLabel\":false,\"target\":\"/\"}]",
+        "principles/safety-net/index.html": "count=1 [{\"ariaLabel\":false,\"target\":\"/\"}]",
+        "principles/structure/index.html": "count=1 [{\"ariaLabel\":false,\"target\":\"/\"}]",
+        "prompt-library.html": "count=1 [{\"ariaLabel\":false,\"target\":\"/\"}]"
+      }
+    },
+    "11-mobile-menu": {
+      "count": 12,
+      "offenders": {
+        "index.html": "aliases=[\"사례 연구\",\"프롬프트 라이브러리\",\"Before/After 비교\"] missing=[\"사례\",\"도구\"]",
+        "principles/components/index.html": "aliases=[] missing=[\"원칙\",\"사전\",\"사례\",\"도구\"]",
+        "principles/core-info/index.html": "aliases=[] missing=[\"원칙\",\"사전\",\"사례\",\"도구\"]",
+        "principles/derivative/index.html": "aliases=[] missing=[\"원칙\",\"사전\",\"사례\",\"도구\"]",
+        "principles/foundation/index.html": "aliases=[] missing=[\"원칙\",\"사전\",\"사례\",\"도구\"]",
+        "principles/governance/index.html": "aliases=[] missing=[\"원칙\",\"사전\",\"사례\",\"도구\"]",
+        "principles/index.html": "aliases=[] missing=[\"원칙\",\"사전\",\"사례\",\"도구\"]",
+        "principles/no-translation/index.html": "aliases=[] missing=[\"원칙\",\"사전\",\"사례\",\"도구\"]",
+        "principles/notation/index.html": "aliases=[] missing=[\"원칙\",\"사전\",\"사례\",\"도구\"]",
+        "principles/safety-net/index.html": "aliases=[] missing=[\"원칙\",\"사전\",\"사례\",\"도구\"]",
+        "principles/structure/index.html": "aliases=[] missing=[\"원칙\",\"사전\",\"사례\",\"도구\"]",
+        "prompt-library.html": "aliases=[] missing=[\"원칙\",\"사전\",\"사례\",\"도구\"]"
+      }
+    },
+    "12-sync": {
+      "count": 20,
+      "offenders": {
+        "archive.html": "unmarked",
+        "before-after.html": "unmarked",
+        "case-studies/index.html": "unmarked",
+        "corpus/index.html": "unmarked",
+        "dictionary/full.html": "unmarked",
+        "dictionary/index.html": "unmarked",
+        "generator/index.html": "unmarked",
+        "index.html": "unmarked",
+        "lint.html": "unmarked",
+        "principles/components/index.html": "unmarked",
+        "principles/core-info/index.html": "unmarked",
+        "principles/derivative/index.html": "unmarked",
+        "principles/foundation/index.html": "unmarked",
+        "principles/governance/index.html": "unmarked",
+        "principles/index.html": "unmarked",
+        "principles/no-translation/index.html": "unmarked",
+        "principles/notation/index.html": "unmarked",
+        "principles/safety-net/index.html": "unmarked",
+        "principles/structure/index.html": "unmarked",
+        "prompt-library.html": "unmarked"
+      }
+    },
+    "14-touch-target": {
+      "count": 3,
+      "offenders": {
+        "shared/style.css .gnb-hamburger": "min-height 0px < 44, min-width 0px < 44",
+        "shared/style.css .gnb-icon-btn": "min-height 0px < 44, min-width 0px < 44",
+        "shared/style.css .gnb-nav-link": "min-height 0px < 44"
+      }
+    },
+    "2-nav-landmark": {
+      "count": 3,
+      "offenders": {
+        "archive.html": "count=1 nested=false aria-label=\"주요 메뉴\"",
+        "generator/index.html": "count=1 nested=false aria-label=\"주요 메뉴\"",
+        "lint.html": "count=1 nested=true aria-label=\"주요 메뉴\""
+      }
+    },
+    "3-labels": {
+      "count": 20,
+      "offenders": {
+        "archive.html": "홈|원칙|사전|사례|Before/After|린터|생성기",
+        "before-after.html": "원칙|사전|사례|프롬프트|Before/After|린터|생성기",
+        "case-studies/index.html": "원칙|사전|사례",
+        "corpus/index.html": "원칙|사전|사례|코퍼스",
+        "dictionary/full.html": "원칙|사전|사례|코퍼스",
+        "dictionary/index.html": "원칙|사전|사례",
+        "generator/index.html": "홈|원칙|사전|사례|Before/After|린터|생성기",
+        "index.html": "원칙|사전|사례|프롬프트|Before/After|린터|생성기",
+        "lint.html": "홈|원칙|사전|사례|Before/After|린터|생성기",
+        "principles/components/index.html": "원칙|사전|사례|프롬프트",
+        "principles/core-info/index.html": "원칙|사전|사례|프롬프트",
+        "principles/derivative/index.html": "원칙|사전|사례|프롬프트",
+        "principles/foundation/index.html": "원칙|사전|사례|프롬프트",
+        "principles/governance/index.html": "원칙|사전|사례|프롬프트",
+        "principles/index.html": "원칙|사전|사례|프롬프트",
+        "principles/no-translation/index.html": "원칙|사전|사례|프롬프트",
+        "principles/notation/index.html": "원칙|사전|사례|프롬프트",
+        "principles/safety-net/index.html": "원칙|사전|사례|프롬프트",
+        "principles/structure/index.html": "원칙|사전|사례|프롬프트",
+        "prompt-library.html": "원칙|사전|사례|프롬프트"
+      }
+    },
+    "4-hrefs": {
+      "count": 20,
+      "offenders": {
+        "archive.html": "/|/principles|/dictionary|/archive|/before-after|/lint|/generator",
+        "before-after.html": "/principles|/dictionary|/#case-studies|/prompt-library|/before-after|/lint|/generator",
+        "case-studies/index.html": "/principles|/dictionary|/case-studies",
+        "corpus/index.html": "/principles|/dictionary|/case-studies|/corpus",
+        "dictionary/full.html": "/principles|/dictionary|/case-studies|/corpus",
+        "dictionary/index.html": "/principles|/dictionary|/case-studies",
+        "generator/index.html": "/|/principles|/dictionary|/archive|/before-after|/lint|/generator",
+        "index.html": "/principles|/dictionary|/#case-studies|/prompt-library|/before-after|/lint|/generator",
+        "lint.html": "/|/principles|/dictionary|/archive|/before-after|/lint|/generator",
+        "principles/components/index.html": "/principles|/dictionary|/case-studies|/prompt-library",
+        "principles/core-info/index.html": "/principles|/dictionary|/case-studies|/prompt-library",
+        "principles/derivative/index.html": "/principles|/dictionary|/case-studies|/prompt-library",
+        "principles/foundation/index.html": "/principles|/dictionary|/case-studies|/prompt-library",
+        "principles/governance/index.html": "/principles|/dictionary|/case-studies|/prompt-library",
+        "principles/index.html": "/principles|/dictionary|/case-studies|/prompt-library",
+        "principles/no-translation/index.html": "/principles|/dictionary|/case-studies|/prompt-library",
+        "principles/notation/index.html": "/principles|/dictionary|/case-studies|/prompt-library",
+        "principles/safety-net/index.html": "/principles|/dictionary|/case-studies|/prompt-library",
+        "principles/structure/index.html": "/principles|/dictionary|/case-studies|/prompt-library",
+        "prompt-library.html": "/principles|/dictionary|/case-studies|/prompt-library"
+      }
+    },
+    "6-current": {
+      "count": 18,
+      "offenders": {
+        "archive.html": "expected=case-studies actual=홈,원칙,사전,사례[page]*,Before/After,린터,생성기",
+        "before-after.html": "expected=tools actual=원칙,사전,사례,프롬프트,Before/After[page]*,린터,생성기",
+        "case-studies/index.html": "expected=case-studies actual=원칙,사전,사례",
+        "corpus/index.html": "expected=dictionary actual=원칙,사전,사례,코퍼스",
+        "dictionary/full.html": "expected=dictionary actual=원칙,사전,사례,코퍼스",
+        "dictionary/index.html": "expected=dictionary actual=원칙,사전,사례",
+        "generator/index.html": "expected=tools actual=홈,원칙,사전,사례,Before/After,린터,생성기[page]*",
+        "principles/components/index.html": "expected=principles actual=원칙,사전,사례,프롬프트",
+        "principles/core-info/index.html": "expected=principles actual=원칙,사전,사례,프롬프트",
+        "principles/derivative/index.html": "expected=principles actual=원칙,사전,사례,프롬프트",
+        "principles/foundation/index.html": "expected=principles actual=원칙,사전,사례,프롬프트",
+        "principles/governance/index.html": "expected=principles actual=원칙,사전,사례,프롬프트",
+        "principles/index.html": "expected=principles actual=원칙,사전,사례,프롬프트",
+        "principles/no-translation/index.html": "expected=principles actual=원칙,사전,사례,프롬프트",
+        "principles/notation/index.html": "expected=principles actual=원칙,사전,사례,프롬프트",
+        "principles/safety-net/index.html": "expected=principles actual=원칙,사전,사례,프롬프트",
+        "principles/structure/index.html": "expected=principles actual=원칙,사전,사례,프롬프트",
+        "prompt-library.html": "expected=tools actual=원칙,사전,사례,프롬프트*"
+      }
+    },
+    "7-color-only": {
+      "count": 1,
+      "offenders": {
+        "shared/style.css": ".gnb-nav-link[aria-current] 규칙 없음 (현재는 .active 클래스 규칙만 있음)"
+      }
+    },
+    "9-exempt-clean": {
+      "count": 1,
+      "offenders": {
+        "index-v2.html": "gnb 마크업 보유 (삭제 후보 — 어디서도 링크되지 않는 구버전 홈 (삭제 시 이 항목도 제거))"
+      }
+    }
+  }
+}

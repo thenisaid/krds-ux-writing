@@ -250,6 +250,27 @@ describe('inspectPage: 현재 마크업 대조', () => {
     expect(details.mobileAliases).toEqual(['사례 연구']);
   });
 
+  it('모바일에서 .gnb-nav 를 숨기는데 모바일 메뉴가 없으면 4개 탭 모두 누락으로 센다', () => {
+    const html = '<style>@media (max-width: 480px) { .gnb-nav { display: none; } }</style>' +
+      '<header class="gnb"><nav class="gnb-nav" aria-label="섹션 내비게이션"></nav></header>';
+    const { reasons, details } = SYNC.inspectPage(html, 'lint.html', ROOT);
+    expect(reasons).toContain('mobile-menu');
+    expect(details.mobileMissing).toEqual(NAV.PRIMARY_TABS.map((t) => t.label));
+  });
+
+  it('모바일에서 숨기지 않으면 모바일 메뉴가 없어도 위반이 아니다', () => {
+    const html = '<header class="gnb"><nav class="gnb-nav" aria-label="섹션 내비게이션"></nav></header>';
+    expect(SYNC.inspectPage(html, 'lint.html', ROOT).details.mobileMissing).toEqual([]);
+  });
+
+  it('resolveHref: 상대경로·절대경로·외부 링크·해시를 정규화한다', () => {
+    expect(SYNC.resolveHref('generator/index.html', '../lint.html')).toBe('/lint');
+    expect(SYNC.resolveHref('lint.html', './index.html')).toBe('/');
+    expect(SYNC.resolveHref('lint.html', '/krds-ux-writing/generator/')).toBe('/generator');
+    expect(SYNC.resolveHref('index.html', '/krds-ux-writing/#case-studies')).toBe('/#case-studies');
+    expect(SYNC.resolveHref('index.html', 'https://www.krds.go.kr/')).toBeNull();
+  });
+
   it('hasGnbMarkup: gnb 계열 클래스 유무', () => {
     expect(SYNC.hasGnbMarkup('<div class="a gnb-nav">')).toBe(true);
     expect(SYNC.hasGnbMarkup('<header class="gnb">')).toBe(true);
