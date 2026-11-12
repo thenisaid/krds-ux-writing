@@ -572,6 +572,127 @@
     });
   }
 
+  // data-lint-ignore 속성이 붙은 HTML 요소 전체(여는 태그 ~ 짝이 맞는 닫는 태그)를
+  // 마스킹한다. 가이드 사이트의 Before/After 예시처럼 '의도된 나쁜 문구'를 린트에서
+  // 제외하는 명시적 표시 방식이다. 속성 값(이유 문자열)은 선택이며 비어 있어도 된다.
+  //
+  // 정규식으로 짝을 찾으면 같은 태그가 중첩된 입력(<div> 안 <div>)을 못 맞추고, 닫히지
+  // 않은 열림이 반복되면 O(n²)이 된다. 그래서 문자열을 한 번만 훑어 태그를 토큰화하고,
+  // 태그 이름별 스택으로 짝을 맞춘다(전체 O(n)). 정책은 주석·<style> 마스킹과 같다:
+  //  - 짝을 못 찾으면 마스킹하지 않는다(린트가 통째로 사라지는 사고 방지).
+  //  - void 요소(<br> 등)와 self-closing(<x />)은 내용이 없으므로 대상이 아니다.
+  //  - 태그 파싱이 EOF까지 닫히지 않으면(`>` 없음·닫히지 않은 따옴표) 그 뒤는 훑지
+  //    않는다: 시작점마다 끝까지 재탐색하는 O(n²)을 막고, 덜 마스킹하는 쪽이 안전하다.
+  // 코드 펜스·인라인 코드·주석은 이 함수보다 먼저 마스킹되므로, 그 안의 예시 속성은
+  // 토큰으로 보이지 않아 본문을 가리지 못한다.
+  var IGNORE_ATTR = 'data-lint-ignore';
+  var VOID_ELEMENTS = {
+    area: 1, base: 1, br: 1, col: 1, embed: 1, hr: 1, img: 1, input: 1,
+    link: 1, meta: 1, param: 1, source: 1, track: 1, wbr: 1
+  };
+
+  function isAsciiLetter(c) { return (c >= 65 && c <= 90) || (c >= 97 && c <= 122); }
+  function isTagNameChar(c) { return isAsciiLetter(c) || (c >= 48 && c <= 57) || c === 45; }
+  function isHtmlSpace(c) { return c === 32 || c === 9 || c === 10 || c === 12 || c === 13; }
+
+  // 여는 태그를 파싱한다. 반환: { end, selfClosing, ignore } 또는 null(EOF까지 안 닫힘).
+  // i는 태그 이름 직후 위치.
+  function parseOpenTagTail(str, i) {
+    var n = str.length;
+    var ignore = false;
+    while (i < n) {
+      var c = str.charCodeAt(i);
+      if (isHtmlSpace(c)) { i += 1; continue; }
+      if (c === 62) return { end: i + 1, selfClosing: false, ignore: ignore };
+      if (c === 47) {
+        if (str.charCodeAt(i + 1) === 62) return { end: i + 2, selfClosing: true, ignore: ignore };
+        i += 1;
+        continue;
+      }
+      // 속성 이름
+      var ns = i;
+      while (i < n) {
+        c = str.charCodeAt(i);
+        if (isHtmlSpace(c) || c === 47 || c === 62 || c === 61) break;
+        i += 1;
+      }
+      if (i === ns) { i += 1; continue; } // 이름 없이 '=' 로 시작하는 비정상 입력
+      if (str.slice(ns, i).toLowerCase() === IGNORE_ATTR) ignore = true;
+      while (i < n && isHtmlSpace(str.charCodeAt(i))) i += 1;
+      if (str.charCodeAt(i) !== 61) continue;
+      i += 1;
+      while (i < n && isHtmlSpace(str.charCodeAt(i))) i += 1;
+      c = str.charCodeAt(i);
+      if (c === 34 || c === 39) {
+        var q = str.indexOf(c === 34 ? '"' : "'", i + 1);
+        if (q < 0) return null;
+        i = q + 1;
+      } else {
+        while (i < n) {
+          c = str.charCodeAt(i);
+          if (isHtmlSpace(c) || c === 62) break;
+          i += 1;
+        }
+      }
+    }
+    return null;
+  }
+
+  function maskIgnoredElements(text) {
+    if (!/data-lint-ignore/i.test(text)) return text;
+    var n = text.length;
+    var stacks = Object.create(null); // 태그 이름 → 열린 태그 스택 [{ start, ignore }]
+    var ranges = [];
+    var i = text.indexOf('<');
+    while (i >= 0 && i < n) {
+      var next = i + 1;
+      var closing = text.charCodeAt(next) === 47;
+      var ns = closing ? next + 1 : next;
+      if (isAsciiLetter(text.charCodeAt(ns))) {
+        var ne = ns + 1;
+        while (ne < n && isTagNameChar(text.charCodeAt(ne))) ne += 1;
+        var after = text.charCodeAt(ne);
+        // 이름 직후가 공백·'/'·'>' 가 아니면(`<https://…>` 자동 링크 등) 태그로 보지 않는다.
+        if (isHtmlSpace(after) || after === 47 || after === 62) {
+          var name = text.slice(ns, ne).toLowerCase();
+          if (closing) {
+            var gt = text.indexOf('>', ne);
+            if (gt < 0) break;
+            var st = stacks[name];
+            if (st && st.length) {
+              var open = st.pop();
+              if (open.ignore) ranges.push([open.start, gt + 1]);
+            }
+            next = gt + 1;
+          } else {
+            var tail = parseOpenTagTail(text, ne);
+            if (!tail) break;
+            if (!tail.selfClosing && !VOID_ELEMENTS[name]) {
+              (stacks[name] || (stacks[name] = [])).push({ start: i, ignore: tail.ignore });
+            }
+            next = tail.end;
+          }
+        }
+      }
+      i = text.indexOf('<', next);
+    }
+    if (!ranges.length) return text;
+    // 짝은 닫는 순서(안쪽 먼저)로 나오므로 시작 위치로 정렬한 뒤, 이미 바깥 범위에
+    // 포함된 안쪽 범위는 건너뛰어 같은 글자를 두 번 치환하지 않는다.
+    ranges.sort(function (a, b) { return a[0] - b[0] || b[1] - a[1]; });
+    var out = [];
+    var last = 0;
+    for (var r = 0; r < ranges.length; r += 1) {
+      var s = ranges[r][0];
+      var e = ranges[r][1];
+      if (e <= last) continue;
+      out.push(text.slice(last, s), text.slice(s, e).replace(/[^\n]/g, MASK_CHAR));
+      last = e;
+    }
+    out.push(text.slice(last));
+    return out.join('');
+  }
+
   function maskNonProseRegions(text) {
     var maskRanges = function (str, regex) {
       return str.replace(regex, function (match) {
@@ -594,6 +715,8 @@
     // (CommonMark에서도 코드 스팬이 raw HTML보다 우선한다.)
     text = maskHtmlComments(text);
     text = maskStyleBlocks(text);
+    // 가장 마지막: 코드·주석·<style> 안의 예시 태그가 먼저 지워진 뒤에 짝을 맞춘다.
+    text = maskIgnoredElements(text);
     return text;
   }
 
