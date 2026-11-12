@@ -1119,6 +1119,137 @@ describe('코드/인용 구간 마스킹', () => {
   });
 });
 
+// HTML 주석(<!-- -->)과 <style> 블록도 렌더되지 않거나 사용자에게 보이는 문구가
+// 아니므로 <script>·<!DOCTYPE>·코드 구간과 같은 성격으로 마스킹한다. 개발자 주석
+// ('HERO SECTION', 'FOOTER')과 CSS 주석·셀렉터가 english-only-label 로 오탐되던 문제.
+// 닫는 표지('-->', '</style>')가 없는 열림은 마스킹하지 않는다 — 마크다운에서
+// 문장 중간의 '<!--' 하나가 이후 본문 전체를 가려 린트가 통째로 사라지는 사고를 막기 위함.
+describe('HTML 주석·<style> 블록 마스킹', () => {
+  const hasLabel = (r) => r.issues.some(i => i.type === 'english-only-label');
+  const jargon = (r) => r.issues.filter(i => i.type === 'admin-jargon' && i.match === '귀하');
+  const opts = { checkAdminJargon: true, checkPatterns: true };
+
+  it('(a) HTML 주석 안의 영문 레이블은 감지하지 않는다', () => {
+    const r = KRDSLint.lint('<!-- HERO SECTION -->\n<p>안내드립니다.</p>', opts);
+    expect(hasLabel(r)).toBe(false);
+  });
+  it('(b) 주석 밖의 같은 문자열은 여전히 감지한다 (마스킹이 과하지 않음)', () => {
+    const r = KRDSLint.lint('<!-- 주석 -->\nHERO SECTION', opts);
+    expect(r.issues.some(i => i.type === 'english-only-label' && i.match === 'HERO SECTION' && i.line === 2)).toBe(true);
+  });
+  it('(b) 주석 앞뒤 같은 줄의 문구도 계속 검사한다', () => {
+    const r = KRDSLint.lint('귀하 <!-- 메모 --> 귀하', opts);
+    expect(jargon(r)).toHaveLength(2);
+  });
+  it('(c) 여러 줄 주석 뒤 줄의 line 번호가 보존된다', () => {
+    const r = KRDSLint.lint('<!--\n귀하\n여러 줄\n-->\n귀하', opts);
+    const hits = jargon(r);
+    expect(hits).toHaveLength(1);
+    expect(hits[0].line).toBe(5);
+  });
+  it('(d) <style> 블록 안의 CSS 주석·셀렉터 영문은 감지하지 않고, 블록 뒤 줄 번호는 보존된다', () => {
+    const css = '<style>\n/* HERO SECTION */\n.COLORS { color: red; }\n</style>\n귀하';
+    const r = KRDSLint.lint(css, opts);
+    expect(hasLabel(r)).toBe(false);
+    const hits = jargon(r);
+    expect(hits).toHaveLength(1);
+    expect(hits[0].line).toBe(5);
+  });
+  it('(d) 속성이 있는 <style media="print"> 와 닫는 태그 앞 공백(</style >)도 마스킹한다', () => {
+    const r = KRDSLint.lint('<style media="print">.LABELS { }</style >', opts);
+    expect(hasLabel(r)).toBe(false);
+  });
+  it('(d) 대소문자가 섞인 <STYLE> 도 마스킹한다', () => {
+    const r = KRDSLint.lint('<STYLE>.LABELS { }</STYLE>', opts);
+    expect(hasLabel(r)).toBe(false);
+  });
+  it('(e) 닫히지 않은 <!-- 는 마스킹하지 않아 뒤 본문 린트를 가리지 않는다', () => {
+    const r = KRDSLint.lint('안내 <!-- 임시 메모\n귀하께 안내드립니다.\nCOMING SOON', opts);
+    expect(jargon(r)).toHaveLength(1);
+    expect(r.issues.some(i => i.type === 'english-only-label' && i.match === 'COMING SOON')).toBe(true);
+  });
+  it('(e) 닫히지 않은 <style> 도 마스킹하지 않는다', () => {
+    const r = KRDSLint.lint('<style>\n귀하께 안내드립니다.', opts);
+    expect(jargon(r)).toHaveLength(1);
+  });
+  it('(e) 닫히지 않은 <!-- 가 있어도 앞쪽의 닫힌 주석은 마스킹된다', () => {
+    const r = KRDSLint.lint('<!-- HERO SECTION -->\n<!-- 닫히지 않음\nCOMING SOON', opts);
+    expect(r.issues.some(i => i.match === 'HERO SECTION')).toBe(false);
+    expect(r.issues.some(i => i.match === 'COMING SOON')).toBe(true);
+  });
+  it('(f) 펜스 코드 블록 안의 <!-- 는 뒤 본문을 가리지 않는다', () => {
+    const md = '```html\n<!-- 예시\n```\n귀하께 안내드립니다.\n\n다른 문단 -->\nCOMING SOON';
+    const r = KRDSLint.lint(md, opts);
+    expect(jargon(r)).toHaveLength(1);
+    expect(r.issues.some(i => i.match === 'COMING SOON')).toBe(true);
+  });
+  it('(f) 인라인 코드 스팬 안의 <!-- 와 --> 사이 본문도 가리지 않는다', () => {
+    const md = '주석은 `<!--` 로 열고 귀하 문구를 쓴 뒤 `-->` 로 닫습니다.';
+    const r = KRDSLint.lint(md, opts);
+    expect(jargon(r)).toHaveLength(1);
+  });
+  it('(f) 펜스 코드 블록 안의 짝이 맞는 예시 주석은 안전하게 마스킹된다', () => {
+    const md = '```html\n<!-- HERO SECTION -->\n```\n귀하';
+    const r = KRDSLint.lint(md, opts);
+    expect(hasLabel(r)).toBe(false);
+    expect(jargon(r)).toHaveLength(1);
+  });
+  it('주석 안의 <script> 와 <script> 안의 <!-- 가 서로를 깨뜨리지 않는다', () => {
+    const html = '<script>var a = "<!--"; var COLORS = 1;</script>\n귀하\n<!-- FOOTER -->';
+    const r = KRDSLint.lint(html, opts);
+    expect(hasLabel(r)).toBe(false);
+    expect(jargon(r)).toHaveLength(1);
+  });
+  it('(e) 빈 주석 <!--> 와 <!---> 는 즉시 닫힌 것으로 보고 뒤 본문을 가리지 않는다 (HTML5 명세)', () => {
+    const r1 = KRDSLint.lint('<!-->\n귀하\n<!-- 메모 -->', opts);
+    expect(jargon(r1)).toHaveLength(1);
+    const r2 = KRDSLint.lint('<!--->\n귀하\n<!-- 메모 -->', opts);
+    expect(jargon(r2)).toHaveLength(1);
+  });
+  it('마스킹 후에도 같은 줄의 이슈 col 이 밀리지 않는다', () => {
+    const r = KRDSLint.lint('<!-- 메모 --> 귀하', opts);
+    const hit = jargon(r)[0];
+    expect(hit).toBeDefined();
+    expect(hit.line).toBe(1);
+    expect(hit.col).toBe('<!-- 메모 --> '.length + 1);
+  });
+
+  // 닫는 표지가 없는 열림이 길게 반복되면 단순 /<!--[\s\S]*?-->/g 는 모든 시작점에서
+  // 끝까지 재탐색해 O(n²)이 된다 (<!-- x25000 약 0.8초, x50000 약 3초). 선형 스캔 유지 확인.
+  it('(g) 닫히지 않은 <!-- 뒤 한글 10만자를 1.5초 안에 처리한다', () => {
+    const text = '<!--' + '가'.repeat(100000);
+    const t0 = Date.now();
+    KRDSLint.lint(text, opts);
+    expect(Date.now() - t0).toBeLessThan(1500);
+  });
+  it('(g) 닫히지 않은 <!-- 를 5만 번 반복한 입력을 1.5초 안에 처리한다', () => {
+    const text = '<!--'.repeat(50000);
+    const t0 = Date.now();
+    KRDSLint.lint(text, opts);
+    expect(Date.now() - t0).toBeLessThan(1500);
+  });
+  it('(g) 닫히지 않은 <style> 을 3만 번 반복한 입력을 1.5초 안에 처리한다', () => {
+    const text = '<style>'.repeat(30000);
+    const t0 = Date.now();
+    KRDSLint.lint(text, opts);
+    expect(Date.now() - t0).toBeLessThan(1500);
+  });
+  it('(g) 속성 꼬리가 닫히지 않은 <style 을 5만 번 반복한 입력을 1.5초 안에 처리한다', () => {
+    const text = '<style'.repeat(50000);
+    const t0 = Date.now();
+    KRDSLint.lint(text, opts);
+    expect(Date.now() - t0).toBeLessThan(1500);
+  });
+  it('(g) 10만자짜리 닫힌 주석도 1.5초 안에 처리하고 내용은 감지하지 않는다', () => {
+    const text = '<!-- ' + 'HERO SECTION '.repeat(8000) + '-->\n귀하';
+    const t0 = Date.now();
+    const r = KRDSLint.lint(text, opts);
+    expect(Date.now() - t0).toBeLessThan(1500);
+    expect(hasLabel(r)).toBe(false);
+    expect(jargon(r)).toHaveLength(1);
+  });
+});
+
 // 2026-08-20 TODO-026 — accept 액션(적용 버튼) undo-safety 검증 후, "자동 적용
 // 가능한 alt인지" 판별하는 isSimpleReplacement 도입. PATTERN_RULES의 alt는
 // 전부 예시 나열형이라 항상 applyable: false, ADMIN_JARGON은 단순 치환일 때만
