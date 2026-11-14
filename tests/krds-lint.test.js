@@ -1464,7 +1464,12 @@ describe('data-lint-ignore 영역 마스킹', () => {
 // 항목 형식: '<경로> :: <속성 값(이유)>' (값이 없으면 빈 문자열).
 describe('data-lint-ignore 사용처 스냅샷', () => {
   const ALLOWED_USAGES = [
-    // 현재 허용된 사용처 없음.
+    // index.html: Before/After 예시 중 '개선 전(ba-col--before)' 의 p.ba-text 12곳.
+    // 린터가 나쁜 예시 자체를 위반으로 잡지 않도록 의도된 Before 예시에만 붙인다 (After·본문 제외).
+    ...Array(12).fill('index.html :: 의도된 Before 예시'),
+    // 위 12곳(Before 만, After 는 없음)을 클래스 구조로 단언하는 회귀 테스트가 속성 이름을 언급한다.
+    ...Array(4).fill('tests/index-before-lint-ignore-html.test.js :: '),
+    ...Array(2).fill('tests/index-before-lint-ignore-html.test.js :: 의도된 Before 예시'),
   ];
 
   // 구현·테스트 파일은 속성 이름을 설명/검증 목적으로만 언급한다.
