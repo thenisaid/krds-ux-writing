@@ -87,6 +87,24 @@ describe('admin-jargon — 일상어 바로 뒤 괄호 안 병기 허용', () =>
   it('닫는 괄호가 없으면 병기로 보지 않는다', () => {
     expect(jargonOf('추가 세금(가산세가 붙습니다.', '가산세')).toHaveLength(1);
   });
+
+  it('병기로 면제된 긴 금지어 안의 더 짧은 금지어가 대신 지적되지 않는다 (새 이슈 방지)', () => {
+    const text = '급여에서 공제된 세금 확인서 (원천징수영수증)';
+    expect(jargonOf(text, '원천징수영수증')).toHaveLength(0);
+    expect(jargonOf(text, '원천징수')).toHaveLength(0);
+  });
+
+  it('같은 긴 금지어가 괄호 밖 단독이면 긴 금지어 하나만 지적한다', () => {
+    const text = '원천징수영수증을 발급합니다.';
+    expect(jargonOf(text, '원천징수영수증')).toHaveLength(1);
+    expect(jargonOf(text, '원천징수')).toHaveLength(0);
+  });
+
+  it('줄 어디서든 같은 금지어의 괄호 안 병기와 괄호 밖 단독 사용이 섞이면 단독 사용만 지적한다', () => {
+    const issues = jargonOf('추가 세금(가산세)이 붙고, 가산세 안내도 있습니다.', '가산세');
+    expect(issues).toHaveLength(1);
+    expect(issues[0].col).toBeGreaterThan(11);
+  });
 });
 
 // ── (3) 고유 용어 예외 ───────────────────────────────────────────────────────
