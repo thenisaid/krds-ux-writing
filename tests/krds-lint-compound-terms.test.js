@@ -212,6 +212,25 @@ describe('error-no-action — 문장 경계를 넘는 행동 표현 면제', () 
     const before = '<p class="ba-text">공동인증서 확인이 완료되지 않았습니다.</p>';
     expect(issuesOf(before, 'error-no-action')).toHaveLength(1);
   });
+
+  // 면제 창은 같은 문단 안에서만 본다. 표의 이웃 셀(After)에 행동 표현이 있다고 해서
+  // 행동 없는 Before 셀의 문구가 면제되면 정당한 지적이 사라진다.
+  it('마크다운 표의 이웃 셀에 행동 표현이 있어도 행동 없는 셀은 여전히 지적한다', () => {
+    const row = '| 오류가 발생했습니다. 죄송합니다. | 처리할 수 없습니다.<br>잠시 후 다시 시도해 주세요. |';
+    expect(issuesOf(row, 'error-no-action').map((i) => i.match.slice(0, 5))).toEqual(['오류가 발']);
+  });
+
+  it('HTML 표의 이웃 셀에 행동 표현이 있어도 행동 없는 셀은 여전히 지적한다', () => {
+    const row = '<tr><td class="strike">오류가 발생했습니다. 죄송합니다.</td><td class="ok">잠시 후 다시 시도해 주세요.</td></tr>';
+    expect(issuesOf(row, 'error-no-action')).toHaveLength(1);
+  });
+
+  it('같은 표 셀 안에서 문장 경계를 넘는 행동 표현은 여전히 면제한다', () => {
+    const row = '| 인증서 | 확인이 완료되지 않았습니다.<br>기간이 지났을 수 있습니다.<br>[간편인증으로 다시 시도하기] | T1 |';
+    expect(issuesOf(row, 'error-no-action')).toHaveLength(0);
+    const html = '<td>확인이 완료되지 않았습니다.<br>기간이 지났을 수 있습니다.<br>[다시 시도하기]</td>';
+    expect(issuesOf(html, 'error-no-action')).toHaveLength(0);
+  });
 });
 
 describe('error-no-action — 최악 입력 성능 (PR #2 수준 유지: 4만자 1초 미만)', () => {
