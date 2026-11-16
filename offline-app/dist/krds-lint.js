@@ -370,9 +370,17 @@
       id: 'error-no-action',
       name: '에러 메시지: 행동 지침 누락',
       severity: 'error',
-      // 에러 키워드 + "습니다/됩니다" + 마침표 → 같은 줄 120자 내에 행동 지침 없으면 감지
+      // 에러 키워드 + "습니다/됩니다" + 마침표 → 같은 줄에서 마침표 뒤 160자 내에 행동 지침 없으면 감지
       // 같은 줄에 "하세요/해 주세요/바랍니다" 등이 있으면 면제 (부정 전방탐색)
-      pattern: /(?:오류|실패|불가능|처리할 수 없|등록할 수 없|확인할 수 없|만료|초과|완료되지 않|처리되지 않|되지 않았)[^.。\n]*?(?:습니다|됩니다|입니다)[.。](?!(?:[^.。\n]{0,120})(?:하세요|해 주세요|해주세요|바랍니다|하시기 바랍니다|눌러|선택하|입력하))/g,
+      // 면제 창은 두 가지다.
+      //  (가) 기존: 마침표 없는 같은 문장 120자 (동작 변경 없음 — 새 이슈가 생기지 않게 목록·범위를 그대로 둔다).
+      //  (나) 신규: 문장 경계(. 。)를 넘어 최대 160자. 에러 문장 뒤에 원인 문장이 한 번 더 오고
+      //       그 뒤에 버튼 라벨("[간편인증으로 다시 시도하기]")이 오는 좋은 메시지가 오탐이던 문제를 막는다.
+      //       표의 이웃 셀(| · <td> · </td> · <th> · </th> · <tr> · </tr>)은 넘지 않는다 — 행동이 없는
+      //       Before 셀이 이웃 After 셀의 "다시 시도해 주세요" 덕에 면제되면 정당한 지적이 사라진다.
+      //       창 크기를 160자로 고정해 줄 길이에 비례해 느려지지 않게 한다(줄 끝 \n 도 넘지 않는다).
+      //       (나)에서만 시도하·다시 시도·재시도·하기] (재시도 안내와 버튼 라벨 [~하기])를 행동 표현으로 본다.
+      pattern: /(?:오류|실패|불가능|처리할 수 없|등록할 수 없|확인할 수 없|만료|초과|완료되지 않|처리되지 않|되지 않았)[^.。\n]*?(?:습니다|됩니다|입니다)[.。](?!(?:[^.。\n]{0,120})(?:하세요|해 주세요|해주세요|바랍니다|하시기 바랍니다|눌러|선택하|입력하)|(?:(?!\||<\/?t[dhr]\b)[^\n]){0,160}?(?:하세요|해 주세요|해주세요|바랍니다|하시기 바랍니다|눌러|선택하|입력하|시도하|다시 시도|재시도|하기\]))/g,
       message: () => '에러 메시지에 행동 지침("~하세요")이 없습니다. 상황+원인+행동 3단 구조로 완성하세요.',
       alt: '"파일 크기가 초과되었습니다. 5MB 이하로 줄여 다시 업로드해 주세요."',
     },
@@ -415,7 +423,10 @@
       // 3자 이상 연속 대문자 단어 (URL·약어 예외: GNB, UX, ID, ERROR, HTML, CSS 등 2자 이하 또는 알려진 약어 제외)
       // 단, 코드·파일명 맥락("ERROR 404") 제외 — ERROR는 error-code-standalone이 별도 처리
       // KRDS/KWCAG: 정부 공식 디자인 시스템·접근성 지침의 고유명사 — 번역 대상 아님 (제품/표준 이름)
-      pattern: /\b(?!ERROR|HTML|CSS|URL|PDF|UX|UI|API|GNB|LNB|FAQ|KRDS\b|KWCAG\b|NEW(?:\s|$)|HOT(?:\s|$)|ID\b)[A-Z]{4,}(?:\s+[A-Z]{3,})*\b/g,
+      // JSON: 데이터 형식 이름이라 번역 대상이 아니다 (JSONL 같은 더 긴 단어는 \b 로 계속 잡는다).
+      // CASE: '사례 번호 체계' 이름("CASE 12", "CASE 묶음", "CASE 번호", "CASE 시작점")일 때만 제외한다.
+      //       뒤따르는 말이 이 문맥이 아니면(CASE입니다, SHOWCASE, COMING SOON 등) 계속 잡는다.
+      pattern: /\b(?!ERROR|HTML|CSS|URL|PDF|UX|UI|API|GNB|LNB|FAQ|KRDS\b|KWCAG\b|NEW(?:\s|$)|HOT(?:\s|$)|ID\b|JSON\b|CASE(?=\s*(?:\d|묶음|번호|시작점)))[A-Z]{4,}(?:\s+[A-Z]{3,})*\b/g,
       message: (match) => `영문 단독 표기 "${match}" — 한국어로 번역하거나 병기하세요.`,
       alt: '"출시 예정", "신규", "인기" 등 한국어 레이블 사용',
     },
@@ -777,6 +788,76 @@
     return lines.join('\n');
   }
 
+  // ─── 3-0. admin-jargon 예외: 고유 용어 · 괄호 병기 ───────────────────────────
+  // 사전(jargon-dictionary.*)은 principles.md 에서 생성되므로 고치지 않고, 매칭 단계에서 좁게 제외한다.
+
+  /**
+   * 고유 용어 예외 — 아래 용어 '구간 안'의 금지어만 지적에서 제외한다.
+   * 같은 줄의 다른 위치에 있는 금지어 단독 사용은 계속 지적한다.
+   * 새 항목은 tests/krds-lint-compound-terms.test.js 의 허용 스냅샷을 함께 고쳐야 추가할 수 있다(리뷰 강제).
+   *   term   : 공식 제도명·메뉴명 등 고유 용어 전체
+   *   banned : term 안에서 지적을 제외할 사전 금지어 (term 에 포함되어야 함)
+   *   usage  : 현재 사용처
+   *   reason : 예외 근거
+   */
+  const COMPOUND_TERM_EXCEPTIONS = Object.freeze([
+    Object.freeze({
+      term: '육아휴직 급여',
+      banned: '급여',
+      usage: 'index.html After 예시 "육아휴직 급여 신청하기" 등 (고용보험 포털 유사 화면)',
+      reason: '고용보험법상 공식 제도명이라 일상어로 바꿀 수 없다. 사전의 "급여" 는 단독 사용(복지 맥락 "지원금")을 겨냥한다. principles.md A.4 법령상 공식 명칭 병기 허용.',
+    }),
+    Object.freeze({
+      term: '이슈 아카이브',
+      banned: '아카이브',
+      usage: 'index.html 진입 카드 레이블 "이슈 아카이브" (archive.html 메뉴·페이지 이름)',
+      reason: '사이트 자체의 메뉴·페이지 이름이라 본문 문구처럼 "자료실" 로 바꾸면 이름이 달라져 길을 잃는다. 사전의 "아카이브" 는 일반 본문 사용을 겨냥한다.',
+    }),
+  ]);
+
+  // 괄호 병기 허용 대상 카테고리: 어휘 치환형 금지어만. 경어·수식·이중 부정·에러 메시지 문구는
+  // 괄호로 병기해도 정당화되지 않으므로 대상에서 뺀다.
+  var PAREN_GLOSS_CATEGORIES = { '행정 관습어': true, '전문 용어': true };
+
+  /**
+   * 한 줄에서 고유 용어 예외 구간을 모은다: [{ banned, start, end }]
+   */
+  function findCompoundTermRanges(line) {
+    var ranges = [];
+    COMPOUND_TERM_EXCEPTIONS.forEach(function (exc) {
+      var offset = exc.term.indexOf(exc.banned);
+      var pos = line.indexOf(exc.term);
+      while (pos !== -1) {
+        ranges.push({ banned: exc.banned, start: pos + offset, end: pos + offset + exc.banned.length });
+        pos = line.indexOf(exc.term, pos + exc.term.length);
+      }
+    });
+    return ranges;
+  }
+
+  /**
+   * 일상어 바로 뒤 괄호 안 병기인지 판정한다. 예: "추가 세금(가산세)", "세금 상담 전화(국세상담센터 126)".
+   * 근거: principles.md:4463 "기능 설명을 먼저 쓰고 브랜드나 공식 명칭은 괄호로 보조",
+   *       principles.md A.4 "법령상 공식 명칭인 경우 병기 허용". 사이트 정책을 린터가 따른다.
+   * 조건 — 금지어 바로 앞 문자가 '(' 이고 그 앞(공백 건너뜀)이 한글, 금지어 뒤는 번호·공백류만 있다가
+   *       ')' 로 닫힐 것. 줄 첫머리·태그 뒤·숫자 뒤의 괄호나, 괄호 안에 다른 말이 이어지면 병기로 보지 않는다.
+   */
+  function isParenGloss(line, start, end) {
+    if (line.charAt(start - 1) !== '(') return false;
+    var before = start - 2;
+    while (before >= 0 && (line.charAt(before) === ' ' || line.charAt(before) === '\t')) before -= 1;
+    if (before < 0 || !/[가-힣]/.test(line.charAt(before))) return false;
+    return /^[\s\d\-·]{0,20}\)/.test(line.slice(end, end + 21));
+  }
+
+  function isJargonSuppressed(line, entryBanned, cat, start, end, compoundRanges) {
+    var inCompound = compoundRanges.some(function (r) {
+      return r.banned === entryBanned && start >= r.start && end <= r.end;
+    });
+    if (inCompound) return true;
+    return PAREN_GLOSS_CATEGORIES[cat] === true && isParenGloss(line, start, end);
+  }
+
   function lint(text, options) {
     options = Object.assign({ checkAdminJargon: true, checkPatterns: true, minSeverity: 'info', agency: null }, options || {});
     const SEV_ORDER = { error: 0, warning: 1, info: 2 };
@@ -791,6 +872,7 @@
     if (options.checkAdminJargon) {
       lines.forEach(function (line, lineIdx) {
         var occupiedRanges = [];
+        var compoundRanges = findCompoundTermRanges(line);
 
         ADMIN_JARGON_MATCH_ORDER.forEach(function (entry) {
           if (entry.bannedRegex) {
@@ -806,18 +888,22 @@
               });
 
               if (!overlaps) {
-                issues.push({
-                  type: 'admin-jargon',
-                  severity: 'error',
-                  category: entry.cat,
-                  line: lineIdx + 1,
-                  col: start + 1,
-                  match: matchedText,
-                  message: '행정어/금지어: "' + matchedText + '"',
-                  suggestion: '→ ' + entry.alt,
-                  applyable: isSimpleReplacement(entry.alt),
-                  applyText: entry.alt,
-                });
+                // 면제된 구간도 점유 처리한다: 안 그러면 면제된 긴 금지어("원천징수영수증") 안의
+                // 더 짧은 금지어("원천징수")가 대신 지적되어 새 이슈가 생긴다.
+                if (!isJargonSuppressed(line, entry.banned, entry.cat, start, end, compoundRanges)) {
+                  issues.push({
+                    type: 'admin-jargon',
+                    severity: 'error',
+                    category: entry.cat,
+                    line: lineIdx + 1,
+                    col: start + 1,
+                    match: matchedText,
+                    message: '행정어/금지어: "' + matchedText + '"',
+                    suggestion: '→ ' + entry.alt,
+                    applyable: isSimpleReplacement(entry.alt),
+                    applyText: entry.alt,
+                  });
+                }
                 occupiedRanges.push({ start: start, end: end });
               }
 
@@ -835,18 +921,20 @@
             });
 
             if (!overlaps) {
-              issues.push({
-                type: 'admin-jargon',
-                severity: 'error',
-                category: entry.cat,
-                line: lineIdx + 1,
-                col: idx + 1,
-                match: entry.banned,
-                message: '행정어/금지어: "' + entry.banned + '"',
-                suggestion: '→ ' + entry.alt,
-                applyable: isSimpleReplacement(entry.alt),
-                applyText: entry.alt,
-              });
+              if (!isJargonSuppressed(line, entry.banned, entry.cat, idx, end, compoundRanges)) {
+                issues.push({
+                  type: 'admin-jargon',
+                  severity: 'error',
+                  category: entry.cat,
+                  line: lineIdx + 1,
+                  col: idx + 1,
+                  match: entry.banned,
+                  message: '행정어/금지어: "' + entry.banned + '"',
+                  suggestion: '→ ' + entry.alt,
+                  applyable: isSimpleReplacement(entry.alt),
+                  applyText: entry.alt,
+                });
+              }
               occupiedRanges.push({ start: idx, end: end });
             }
 
@@ -993,6 +1081,7 @@
     lint: lint,
     formatCLI: formatCLI,
     ADMIN_JARGON: ADMIN_JARGON,
+    COMPOUND_TERM_EXCEPTIONS: COMPOUND_TERM_EXCEPTIONS,
     PATTERN_RULES: PATTERN_RULES,
     isSimpleReplacement: isSimpleReplacement,
     version: '1.0.0',
