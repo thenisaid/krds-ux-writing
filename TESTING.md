@@ -41,6 +41,7 @@ tests/
 ├── presentation-inline-safety.test.js
 ├── krds-lint-browser.test.js
 ├── switch-ai-mode-script.test.js
+├── lint-delta.test.js
 └── krds-lint.test.js
 ```
 
@@ -59,6 +60,7 @@ tests/
 - `tests/css-token-contracts.test.js`: 모든 HTML이 fallback 없는 CSS 커스텀 속성을 실제 정의 토큰에만 연결하는지 검증
 - `tests/nationality-copy-sync.test.js`: `국적 회복 허가` follow-up wording stays aligned across corpus, principles pages, case studies, and regression tests so stale `2년` copy cannot drift back in
 - `tests/switch-ai-mode-script.test.js`: `scripts/switch-ai-mode.sh` local/cloud 전환, 백업 복원, 잘못된 모드 usage 경로 검증
+- `tests/lint-delta.test.js`: `scripts/lint-delta.js` — `krds-lint.yml` PR 게이트의 "신규 오류" 판정. (category, match) 다중집합 비교(줄 번호 무시, 상쇄 없음), 새 파일, base/PR 파싱 실패·절단·린터 비정상 종료 시 fail-closed, 코멘트 포맷, CLI 인자 경로. 파일별 루프 `scripts/lint-delta-run.sh` 는 워크플로 전용이라 단위 테스트가 아니라 PR 브랜치 로컬 재현으로 확인한다(`LINT_FILE_LIST`, `LINT_BASE_REF=origin/main` 환경변수로 실행).
 
 ### Smoke Tests
 - Manual: open `lint.html`, paste Korean text, verify lint results appear
@@ -78,6 +80,7 @@ tests/
 | `functions/api/generate.js` | ✅ Yes | Cloudflare Pages handler can be called with mock context |
 | `index.html` / `index-v2.html` | ✅ Yes (token contract) | 홈 페이지 토큰 누락이 CI에서 바로 걸리도록 HTML+로컬 CSS 계약 테스트가 돈다 |
 | `scripts/switch-ai-mode.sh` | ✅ Yes (spawned shell) | 로컬/클라우드 전환이 임시 `.env` fixture에서 회귀 테스트된다 |
+| `scripts/lint-delta.js` | ✅ Yes | 순수 판정 함수 + CLI. PR 린트 게이트의 신규 오류 계산을 단위·child process 테스트로 검증 |
 | `archive.js` | ✅ Yes (VM DOM harness) | Browser-DOM IIFE, verified with mocked tabs/search/fetch via `vm.runInNewContext` |
 | `dictionary/dict.js` | ✅ Yes (VM DOM harness) | Browser-DOM filter/search logic covered with mocked DOM state |
 | `shared/nav.js` | ✅ Yes (VM DOM harness) | Path rewriting, Ctrl+K behavior, and shared theme logic are exercised directly |
