@@ -4,8 +4,15 @@ name: KRDS UX 라이팅 린팅 (CLI)
 # @krds/cli (bin/krds-lint) 를 사용하여 변경된 파일을 검사합니다.
 #
 # ✅ PR 열기 / 커밋 추가 시 자동 실행
-# ❌ 오류 1건 이상이면 exit 1 → CI 실패 → 머지 차단
+# ❌ 이 PR 이 "새로 만든" 오류가 1건 이상이면 exit 1 → CI 실패 → 머지 차단
+#    (파일별로 base 와 PR 의 린트 결과를 (category, match) 다중집합으로 비교.
+#     base 에 이미 있던 오류는 참고용으로만 보고하고 게이트에 쓰지 않는다.
+#     비교 불가 상태(base 린트 실패·파싱 실패 등)는 통과가 아니라 FAIL.)
 # 💬 린트 결과를 PR 코멘트로 자동 게시 (이전 코멘트는 업데이트)
+#
+# workflow_dispatch(전체/target_file 검사)는 base 가 없으므로 기존처럼 오류 절대 총합 기준.
+# 판정 로직: scripts/lint-delta.js (단위 테스트: tests/lint-delta.test.js)
+# 파일별 루프: scripts/lint-delta-run.sh
 
 on:
   pull_request:
@@ -37,7 +44,7 @@ jobs:
       - name: 코드 체크아웃
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          fetch-depth: 0  # 변경 파일 감지를 위해 전체 히스토리 필요
+          fetch-depth: 0  # 변경 파일 감지 + base 쪽 파일 조회를 위해 전체 히스토리 필요
 
       - name: Node.js 설정
         uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
@@ -57,7 +64,7 @@ jobs:
         run: npm test
 
       - name: bin/krds-lint 실행 권한 부여
-        run: chmod +x bin/krds-lint
+        run: chmod +x bin/krds-lint scripts/lint-delta-run.sh
 
       - name: 변경된 파일 목록 수집
         id: changed-files
@@ -92,143 +99,47 @@ jobs:
           FILE_COUNT=$(wc -l < /tmp/changed_files.txt | tr -d ' ')
           echo "file_count=$FILE_COUNT" >> $GITHUB_OUTPUT
 
-      - name: KRDS 린팅 실행 (CLI)
+      - name: KRDS 린팅 실행 (CLI, 신규 오류 판정)
         id: lint
-        run: |
-          set +e  # exit code를 직접 제어
-
-          FILE_COUNT="${{ steps.changed-files.outputs.file_count }}"
-          if [ "$FILE_COUNT" -eq 0 ]; then
-            echo "검사할 파일이 없습니다. 건너뜁니다."
-            echo "total_errors=0" >> $GITHUB_OUTPUT
-            echo "total_warnings=0" >> $GITHUB_OUTPUT
-            echo "report=" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          # JSON 결과를 파일별로 수집
-          TOTAL_ERRORS=0
-          TOTAL_WARNINGS=0
-          REPORT_LINES=""
-          HAS_ISSUES=false
-
-          while IFS= read -r file; do
-            [ -z "$file" ] && continue
-            [ ! -f "$file" ] && continue
-
-            # stdout 파이프(약 64KB 절단 위험) 대신 임시 파일로 JSON 수신
-            JSON_FILE=$(mktemp)
-            node bin/krds-lint --json "$file" > "$JSON_FILE"
-            EXIT_CODE=$?
-
-            # fail-closed: 파싱 실패·summary 누락은 통과가 아니라 FAIL 로 보고한다
-            PARSED=$(node -e "
-              const fs=require('fs');
-              try {
-                const r=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));
-                const s=r&&r.summary;
-                if(!s||!Number.isInteger(s.errors)||!Number.isInteger(s.warnings)) throw new Error('summary 누락');
-                console.log('OK|'+s.errors+'|'+s.warnings+'|'+(r.score!==undefined?r.score:100));
-              } catch(e) { console.log('FAIL|'+e.name+': '+e.message.slice(0,80)); }
-            " "$JSON_FILE" 2>/dev/null || echo "FAIL|node 파서 실행 실패")
-
-            IFS='|' read -r PARSE_STATUS ERRORS WARNINGS SCORE <<< "$PARSED"
-
-            FAIL_REASON=""
-            if [ "$PARSE_STATUS" != "OK" ]; then
-              FAIL_REASON="린트 결과(JSON) 파싱 실패 또는 출력 절단 — ${ERRORS} (exit ${EXIT_CODE})"
-            elif [ "$EXIT_CODE" -gt 1 ]; then
-              FAIL_REASON="린터 비정상 종료 (exit ${EXIT_CODE})"
-            elif [ "$EXIT_CODE" -eq 1 ] && [ "$ERRORS" -eq 0 ]; then
-              FAIL_REASON="린터 exit 1 이지만 오류 0건으로 보고됨 (결과 불일치)"
-            fi
-            if [ -n "$FAIL_REASON" ]; then
-              # 통과로 처리하지 않고 해당 파일을 오류 1건 이상으로 집계
-              echo "::error file=${file}::${FAIL_REASON}"
-              if [ "$PARSE_STATUS" != "OK" ]; then
-                ERRORS=1; WARNINGS=0; SCORE=0
-              elif [ "$ERRORS" -lt 1 ]; then
-                ERRORS=1
-              fi
-            fi
-
-            TOTAL_ERRORS=$((TOTAL_ERRORS + ERRORS))
-            TOTAL_WARNINGS=$((TOTAL_WARNINGS + WARNINGS))
-
-            if [ "$ERRORS" -gt 0 ] || [ "$WARNINGS" -gt 0 ]; then
-              HAS_ISSUES=true
-              REPORT_LINES="${REPORT_LINES}### \`${file}\` — 점수: ${SCORE}/100\n"
-              REPORT_LINES="${REPORT_LINES}> 오류 ${ERRORS}건 / 경고 ${WARNINGS}건\n\n"
-
-              if [ -n "$FAIL_REASON" ]; then
-                ISSUES="❌ ${FAIL_REASON}"
-              else
-              # 상위 15개 이슈 추출
-              ISSUES=$(node -e "
-                try {
-                  const r=JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'));
-                  const issues=(r.issues||[]).slice(0,15);
-                  issues.forEach(i=>{
-                    const icon=i.severity==='error'?'❌':i.severity==='warning'?'⚠️':'ℹ️';
-                    console.log(icon+' ['+(i.line||'-')+'줄] ['+i.category+'] \`'+i.match+'\` → '+i.suggestion);
-                  });
-                  if((r.issues||[]).length>15) console.log('... 외 '+((r.issues||[]).length-15)+'건 더');
-                } catch(e){}
-              " "$JSON_FILE" 2>/dev/null || echo "")
-              fi
-
-              REPORT_LINES="${REPORT_LINES}${ISSUES}\n\n"
-            fi
-            rm -f "$JSON_FILE"
-          done < /tmp/changed_files.txt
-
-          # GitHub Actions 출력 변수
-          echo "total_errors=${TOTAL_ERRORS}" >> $GITHUB_OUTPUT
-          echo "total_warnings=${TOTAL_WARNINGS}" >> $GITHUB_OUTPUT
-
-          # 멀티라인 출력은 heredoc 방식 사용
-          {
-            echo "report<<REPORT_EOF"
-            printf "%b" "$REPORT_LINES"
-            echo "REPORT_EOF"
-          } >> $GITHUB_OUTPUT
-
-          echo ""
-          echo "════════════════════════════════════════"
-          echo "KRDS UX 라이팅 린팅 완료"
-          echo "총 오류: ${TOTAL_ERRORS}건 / 총 경고: ${TOTAL_WARNINGS}건"
-          echo "════════════════════════════════════════"
-
-          # 오류 있으면 CI 실패
-          if [ "$TOTAL_ERRORS" -gt 0 ]; then
-            echo ""
-            echo "❌ 오류 ${TOTAL_ERRORS}건 발견 — PR 머지를 차단합니다."
-            exit 1
-          fi
-
-          exit 0
+        env:
+          LINT_FILE_LIST: /tmp/changed_files.txt
+          # PR 이면 base 와 비교(delta 모드), 아니면 비워 두어 전체 절대 총합 기준(기존 동작)
+          LINT_BASE_REF: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || '' }}
+        run: bash scripts/lint-delta-run.sh
 
       - name: PR 코멘트 게시
         if: github.event_name == 'pull_request' && always()
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         env:
-          LINT_TOTAL_ERRORS: ${{ steps.lint.outputs.total_errors }}
+          LINT_OUTCOME: ${{ steps.lint.outcome }}
+          LINT_NEW_ERRORS: ${{ steps.lint.outputs.new_errors }}
+          LINT_EXISTING_ERRORS: ${{ steps.lint.outputs.existing_errors }}
           LINT_TOTAL_WARNINGS: ${{ steps.lint.outputs.total_warnings }}
+          LINT_FAIL_COUNT: ${{ steps.lint.outputs.fail_count }}
           LINT_FILE_COUNT: ${{ steps.changed-files.outputs.file_count }}
           LINT_REPORT: ${{ steps.lint.outputs.report }}
         with:
           script: |
-            const totalErrors = parseInt(process.env.LINT_TOTAL_ERRORS || '0');
+            const newErrors = parseInt(process.env.LINT_NEW_ERRORS || '0');
+            const existingErrors = parseInt(process.env.LINT_EXISTING_ERRORS || '0');
             const totalWarnings = parseInt(process.env.LINT_TOTAL_WARNINGS || '0');
+            const failCount = parseInt(process.env.LINT_FAIL_COUNT || '0');
             const fileCount = parseInt(process.env.LINT_FILE_COUNT || '0');
-            const report = process.env.LINT_REPORT || '';
+            // 린트 단계가 출력값 없이 죽은 경우를 "이슈 없음"으로 오해하지 않도록 outcome 도 본다
+            const stepCrashed = process.env.LINT_OUTCOME === 'failure' && newErrors === 0;
+            let report = process.env.LINT_REPORT || '';
+            // 코멘트 길이 제한(65536자) 대비
+            if (report.length > 50000) report = report.slice(0, 50000) + '\n\n... (길이 제한으로 이하 생략)';
 
-            const statusIcon = totalErrors > 0 ? '❌' : totalWarnings > 0 ? '⚠️' : '✅';
-            const statusText = totalErrors > 0
-              ? `오류 **${totalErrors}건** 발견 — 머지 전 수정 필요`
-              : totalWarnings > 0
-                ? `경고 **${totalWarnings}건** 발견 — 검토 권장`
-                : '이슈 없음';
+            const blocked = newErrors > 0 || stepCrashed;
+            const statusIcon = blocked ? '❌' : totalWarnings > 0 ? '⚠️' : '✅';
+            const statusText = stepCrashed
+              ? '린트 단계가 비정상 종료되어 판정할 수 없음 — 워크플로 로그 확인 필요'
+              : newErrors > 0
+                ? `이 PR 이 새로 만든 오류 **${newErrors}건** — 머지 전 수정 필요`
+                : totalWarnings > 0
+                  ? `신규 오류 없음 (경고 **${totalWarnings}건** — 검토 권장)`
+                  : '신규 오류 없음';
 
             const body = [
               `## ${statusIcon} KRDS UX 라이팅 린팅 결과`,
@@ -236,13 +147,15 @@ jobs:
               `| 항목 | 결과 |`,
               `|------|------|`,
               `| 검사 파일 수 | ${fileCount}개 |`,
-              `| 오류 | ${totalErrors}건 |`,
+              `| 신규 오류 (이 PR 이 만든 것, 게이트 기준) | ${newErrors}건 |`,
+              `| 기존 오류 (base 에 이미 있음, 참고) | ${existingErrors}건 |`,
               `| 경고 | ${totalWarnings}건 |`,
+              ...(failCount > 0 ? [`| 비교 불가(FAIL) 파일 | ${failCount}개 |`] : []),
               `| 상태 | ${statusText} |`,
               '',
               ...(report && report.trim() ? [
                 '<details>',
-                '<summary>📋 상세 결과 펼치기</summary>',
+                '<summary>📋 상세 결과 펼치기 (파일별 기존/신규, 신규 오류만 나열)</summary>',
                 '',
                 report.trim(),
                 '',
@@ -250,7 +163,7 @@ jobs:
                 '',
               ] : []),
               `> 📖 [KRDS UX 라이팅 가이드](https://thenisaid.github.io/krds-ux-writing/) · [린터 도구](https://thenisaid.github.io/krds-ux-writing/lint.html)`,
-              `> 🤖 \`@krds/cli\` (bin/krds-lint v1.0.0) — [IND-182](/IND/issues/IND-182)`,
+              `> 🤖 \`@krds/cli\` (bin/krds-lint) — 파일별 base 대비 신규 오류만 게이트합니다. [IND-182](/IND/issues/IND-182)`,
             ].join('\n');
 
             // 기존 봇 코멘트 찾기 (업데이트 또는 새 코멘트)
@@ -287,15 +200,25 @@ jobs:
 
       - name: 워크플로우 요약 작성
         if: always()
+        env:
+          LINT_MODE: ${{ steps.lint.outputs.mode }}
+          LINT_REPORT: ${{ steps.lint.outputs.report }}
         run: |
           {
             echo "## KRDS UX 라이팅 린팅 결과"
             echo ""
             echo "| 항목 | 결과 |"
             echo "|------|------|"
+            echo "| 판정 모드 | ${LINT_MODE:-(미실행)} |"
             echo "| 검사 파일 수 | ${{ steps.changed-files.outputs.file_count }}개 |"
-            echo "| 총 오류 | ${{ steps.lint.outputs.total_errors }}건 |"
-            echo "| 총 경고 | ${{ steps.lint.outputs.total_warnings }}건 |"
+            echo "| 신규 오류 (게이트 기준) | ${{ steps.lint.outputs.new_errors }}건 |"
+            echo "| 기존 오류 (참고) | ${{ steps.lint.outputs.existing_errors }}건 |"
+            echo "| 경고 | ${{ steps.lint.outputs.total_warnings }}건 |"
+            echo "| 비교 불가(FAIL) 파일 | ${{ steps.lint.outputs.fail_count }}개 |"
             echo ""
+            if [ -n "$LINT_REPORT" ]; then
+              echo "$LINT_REPORT"
+              echo ""
+            fi
             echo "📖 [KRDS UX 라이팅 린터](https://thenisaid.github.io/krds-ux-writing/lint.html)"
           } >> $GITHUB_STEP_SUMMARY
