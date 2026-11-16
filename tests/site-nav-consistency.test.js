@@ -98,7 +98,7 @@ function px(body, prop) {
 // 즉시 강제 (ENFORCED)
 // ═══════════════════════════════════════════════════════════════════════════
 describe('site-nav-consistency — 즉시 강제', () => {
-  it('[1] defines primary tabs with unique ids and 2+ char noun labels (Before/After 는 TODO 로 일시 허용)', () => {
+  it('[1] defines primary tabs with unique ids and 2+ char noun labels (영문 단독 라벨 금지)', () => {
     const ids = NAV.PRIMARY_TABS.map((t) => t.id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(NAV.PRIMARY_TABS).toHaveLength(4);
