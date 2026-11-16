@@ -38,3 +38,22 @@ describe('index section explorer markup', () => {
     expect(HTML).toContain('각 기관의 사용자 맥락, KRDS 컴포넌트 조합, Before/After 사례를 함께 확인하세요.');
   });
 });
+
+describe('index action button radius', () => {
+  const ruleBody = (selector) => {
+    const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const match = HTML.match(new RegExp(`(?:^|\\n)${escaped}\\s*\\{([^}]*)\\}`));
+    return match ? match[1] : '';
+  };
+
+  it('keeps .btn at 8px (CLAUDE.md/DESIGN.md spec) and not pill', () => {
+    const body = ruleBody('.btn');
+    expect(body).toMatch(/border-radius:\s*8px/);
+    expect(body).not.toMatch(/radius-pill|9999px/);
+  });
+
+  it('keeps toggle chips and the clear control as pill', () => {
+    expect(ruleBody('.section-filter-chip')).toMatch(/border-radius:\s*var\(--radius-pill\)/);
+    expect(ruleBody('.section-nav-clear')).toMatch(/border-radius:\s*var\(--radius-pill\)/);
+  });
+});
