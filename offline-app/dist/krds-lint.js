@@ -293,7 +293,8 @@
       name: '이중 부정',
       severity: 'error',
       // 한국어에서 실제로 자주 쓰이는 이중 부정 템플릿만 잡아 과검출을 줄인다.
-      pattern: /(?:[\uac00-\ud7a3A-Za-z0-9_-]+지\s*않(?:으면|는다면?)\s*안\s*(?:됩(?:니다|니까)?|된다|되다|됨|돼요|돼)|없지\s*않(?:습니다|는다|다)|미비하지\s*않(?:으면|습니다|다)|불가능하지\s*않(?:습니다|다))/g,
+      // 선두 반복에 상한(40)을 둔 것은 공백 없는 긴 입력의 O(n²) 재시도를 막기 위함.
+      pattern: /(?:[\uac00-\ud7a3A-Za-z0-9_-]{1,40}지\s*않(?:으면|는다면?)\s*안\s*(?:됩(?:니다|니까)?|된다|되다|됨|돼요|돼)|없지\s*않(?:습니다|는다|다)|미비하지\s*않(?:으면|습니다|다)|불가능하지\s*않(?:습니다|다))/g,
       message: (match) => `이중 부정 "${match.substring(0,30)}..." — 긍정문으로 전환하세요.`,
       alt: '"모두 준비되면 신청할 수 있습니다" 등 긍정문 사용',
     },
@@ -324,7 +325,8 @@
       id: 'noun-chain',
       name: '과도한 명사 체인',
       severity: 'info',
-      pattern: /[\uac00-\ud7a3·]{14,}(이|을|를|의|에|으로|로|와|과|이다|합니다)/g,
+      // 상한(80)은 공백 없는 긴 입력의 O(n²) 재시도를 막기 위함.
+      pattern: /[\uac00-\ud7a3·]{14,80}(이|을|를|의|에|으로|로|와|과|이다|합니다)/g,
       message: (match) => `명사 체인 의심 "${match.substring(0,20)}..." — 동사 구조로 풀어쓰세요.`,
       alt: '"UI를 만드는 기본 재료입니다" 등 동사 구조 사용',
     },
@@ -334,9 +336,9 @@
       id: 'translation-artifact',
       name: '번역투 표현',
       severity: 'warning',
-      // "~에 대한 안내", "~에 대하여 설명" 등
+      // "~에 대한 안내", "~에 대하여 설명" 등 (선두 상한 40: O(n²) 재시도 방지)
       // 단, FAQ·영문 단어 바로 뒤 레이블성 표현은 면제
-      pattern: /[가-힣A-Za-z0-9]{2,}에\s*대한\s*[가-힣]{2,}|[가-힣A-Za-z0-9]{2,}에\s*대하여/g,
+      pattern: /[가-힣A-Za-z0-9]{2,40}에\s*대한\s*[가-힣]{2,}|[가-힣A-Za-z0-9]{2,40}에\s*대하여/g,
       message: (match) => `번역투 "${match}" — 동사 구조로 바꾸세요.`,
       alt: '"~을 안내합니다", "~를 설명합니다" 등 직접 서술 구조',
     },
@@ -356,8 +358,8 @@
       id: 'over-nominalization',
       name: '명사화 남용',
       severity: 'info',
-      // "-화를", "-성을", "-적인" 이 명사 뒤에 오는 패턴
-      pattern: /[가-힣]{2,}화를\s|[가-힣]{2,}화가\s|[가-힣]{2,}화에\s|[가-힣]{2,}성을\s확보|[가-힣]{2,}성이\s요구|[가-힣]{2,}적인\s[가-힣]/g,
+      // "-화를", "-성을", "-적인" 이 명사 뒤에 오는 패턴 (선두 상한 40: O(n²) 재시도 방지)
+      pattern: /[가-힣]{2,40}화를\s|[가-힣]{2,40}화가\s|[가-힣]{2,40}화에\s|[가-힣]{2,40}성을\s확보|[가-힣]{2,40}성이\s요구|[가-힣]{2,40}적인\s[가-힣]/g,
       message: (match) => `명사화 남용 "${match}" — 동사 구조로 풀어쓰세요.`,
       alt: '"~을 확보합니다", "~이 필요합니다" 등 동사형 표현',
     },
@@ -368,9 +370,17 @@
       id: 'error-no-action',
       name: '에러 메시지: 행동 지침 누락',
       severity: 'error',
-      // 에러 키워드 + "습니다/됩니다" + 마침표 → 같은 줄 120자 내에 행동 지침 없으면 감지
+      // 에러 키워드 + "습니다/됩니다" + 마침표 → 같은 줄에서 마침표 뒤 160자 내에 행동 지침 없으면 감지
       // 같은 줄에 "하세요/해 주세요/바랍니다" 등이 있으면 면제 (부정 전방탐색)
-      pattern: /(?:오류|실패|불가능|처리할 수 없|등록할 수 없|확인할 수 없|만료|초과|완료되지 않|처리되지 않|되지 않았)[^.。\n]*?(?:습니다|됩니다|입니다)[.。](?!(?:[^.。\n]{0,120})(?:하세요|해 주세요|해주세요|바랍니다|하시기 바랍니다|눌러|선택하|입력하))/g,
+      // 면제 창은 두 가지다.
+      //  (가) 기존: 마침표 없는 같은 문장 120자 (동작 변경 없음 — 새 이슈가 생기지 않게 목록·범위를 그대로 둔다).
+      //  (나) 신규: 문장 경계(. 。)를 넘어 최대 160자. 에러 문장 뒤에 원인 문장이 한 번 더 오고
+      //       그 뒤에 버튼 라벨("[간편인증으로 다시 시도하기]")이 오는 좋은 메시지가 오탐이던 문제를 막는다.
+      //       표의 이웃 셀(| · <td> · </td> · <th> · </th> · <tr> · </tr>)은 넘지 않는다 — 행동이 없는
+      //       Before 셀이 이웃 After 셀의 "다시 시도해 주세요" 덕에 면제되면 정당한 지적이 사라진다.
+      //       창 크기를 160자로 고정해 줄 길이에 비례해 느려지지 않게 한다(줄 끝 \n 도 넘지 않는다).
+      //       (나)에서만 시도하·다시 시도·재시도·하기] (재시도 안내와 버튼 라벨 [~하기])를 행동 표현으로 본다.
+      pattern: /(?:오류|실패|불가능|처리할 수 없|등록할 수 없|확인할 수 없|만료|초과|완료되지 않|처리되지 않|되지 않았)[^.。\n]*?(?:습니다|됩니다|입니다)[.。](?!(?:[^.。\n]{0,120})(?:하세요|해 주세요|해주세요|바랍니다|하시기 바랍니다|눌러|선택하|입력하)|(?:(?!\||<\/?t[dhr]\b)[^\n]){0,160}?(?:하세요|해 주세요|해주세요|바랍니다|하시기 바랍니다|눌러|선택하|입력하|시도하|다시 시도|재시도|하기\]))/g,
       message: () => '에러 메시지에 행동 지침("~하세요")이 없습니다. 상황+원인+행동 3단 구조로 완성하세요.',
       alt: '"파일 크기가 초과되었습니다. 5MB 이하로 줄여 다시 업로드해 주세요."',
     },
@@ -413,7 +423,10 @@
       // 3자 이상 연속 대문자 단어 (URL·약어 예외: GNB, UX, ID, ERROR, HTML, CSS 등 2자 이하 또는 알려진 약어 제외)
       // 단, 코드·파일명 맥락("ERROR 404") 제외 — ERROR는 error-code-standalone이 별도 처리
       // KRDS/KWCAG: 정부 공식 디자인 시스템·접근성 지침의 고유명사 — 번역 대상 아님 (제품/표준 이름)
-      pattern: /\b(?!ERROR|HTML|CSS|URL|PDF|UX|UI|API|GNB|LNB|FAQ|KRDS\b|KWCAG\b|NEW(?:\s|$)|HOT(?:\s|$)|ID\b)[A-Z]{4,}(?:\s+[A-Z]{3,})*\b/g,
+      // JSON: 데이터 형식 이름이라 번역 대상이 아니다 (JSONL 같은 더 긴 단어는 \b 로 계속 잡는다).
+      // CASE: '사례 번호 체계' 이름("CASE 12", "CASE 묶음", "CASE 번호", "CASE 시작점")일 때만 제외한다.
+      //       뒤따르는 말이 이 문맥이 아니면(CASE입니다, SHOWCASE, COMING SOON 등) 계속 잡는다.
+      pattern: /\b(?!ERROR|HTML|CSS|URL|PDF|UX|UI|API|GNB|LNB|FAQ|KRDS\b|KWCAG\b|NEW(?:\s|$)|HOT(?:\s|$)|ID\b|JSON\b|CASE(?=\s*(?:\d|묶음|번호|시작점)))[A-Z]{4,}(?:\s+[A-Z]{3,})*\b/g,
       message: (match) => `영문 단독 표기 "${match}" — 한국어로 번역하거나 병기하세요.`,
       alt: '"출시 예정", "신규", "인기" 등 한국어 레이블 사용',
     },
@@ -525,6 +538,172 @@
   // (2026-08-19 codex 리뷰에서 발견).
   var MASK_CHAR = String.fromCharCode(0);
 
+  // 여는 표지마다 정규식으로 닫는 표지를 다시 찾으면, 닫는 표지가 없는 열림이
+  // 길게 반복될 때 모든 시작점에서 끝까지 재탐색해 O(n²)이 된다(`<!--` 2.5만 번
+  // 약 0.8초). 닫는 표지를 못 찾으면 그 뒤의 열림도 못 찾으므로 즉시 멈춘다.
+  // 닫히지 않은 열림은 마스킹하지 않는다: 마크다운에서 문장 중간의 `<!--` 하나가
+  // 이후 본문 전체를 가려 린트가 통째로 사라지는 쪽이 더 위험하다.
+  // findEnd(str, from)는 닫는 표지 끝 위치(없으면 -1)를 반환한다.
+  function maskPairs(str, openRe, findEnd) {
+    var out = [];
+    var last = 0;
+    var m;
+    openRe.lastIndex = 0;
+    while ((m = openRe.exec(str)) !== null) {
+      var end = findEnd(str, m.index + m[0].length);
+      if (end < 0) break;
+      out.push(str.slice(last, m.index), str.slice(m.index, end).replace(/[^\n]/g, MASK_CHAR));
+      last = end;
+      openRe.lastIndex = end;
+    }
+    out.push(str.slice(last));
+    return out.join('');
+  }
+
+  // HTML 주석 <!-- ... --> (렌더되지 않는 개발자 메모)
+  // 닫는 표지 탐색을 여는 표지 안쪽(`<!`의 뒤)부터 시작해 HTML5의 빈 주석
+  // `<!-->`, `<!--->`를 즉시 닫힌 것으로 처리한다 — 그렇지 않으면 뒤쪽 본문의
+  // 다음 `-->`까지 가려진다.
+  function maskHtmlComments(text) {
+    return maskPairs(text, /<!--/g, function (str, from) {
+      var i = str.indexOf('-->', from - 2);
+      return i < 0 ? -1 : i + 3;
+    });
+  }
+
+  // <style ...> ... </style > (CSS 셀렉터·주석은 사용자에게 보이는 문구가 아님)
+  var STYLE_CLOSE_RE = /<\/style\s*>/gi;
+  function maskStyleBlocks(text) {
+    return maskPairs(text, /<style\b/gi, function (str, from) {
+      var gt = str.indexOf('>', from);
+      if (gt < 0) return -1;
+      STYLE_CLOSE_RE.lastIndex = gt + 1;
+      var c = STYLE_CLOSE_RE.exec(str);
+      return c ? c.index + c[0].length : -1;
+    });
+  }
+
+  // data-lint-ignore 속성이 붙은 HTML 요소 전체(여는 태그 ~ 짝이 맞는 닫는 태그)를
+  // 마스킹한다. 가이드 사이트의 Before/After 예시처럼 '의도된 나쁜 문구'를 린트에서
+  // 제외하는 명시적 표시 방식이다. 속성 값(이유 문자열)은 선택이며 비어 있어도 된다.
+  //
+  // 정규식으로 짝을 찾으면 같은 태그가 중첩된 입력(<div> 안 <div>)을 못 맞추고, 닫히지
+  // 않은 열림이 반복되면 O(n²)이 된다. 그래서 문자열을 한 번만 훑어 태그를 토큰화하고,
+  // 태그 이름별 스택으로 짝을 맞춘다(전체 O(n)). 정책은 주석·<style> 마스킹과 같다:
+  //  - 짝을 못 찾으면 마스킹하지 않는다(린트가 통째로 사라지는 사고 방지).
+  //  - void 요소(<br> 등)와 self-closing(<x />)은 내용이 없으므로 대상이 아니다.
+  //  - 태그 파싱이 EOF까지 닫히지 않으면(`>` 없음·닫히지 않은 따옴표) 그 뒤는 훑지
+  //    않는다: 시작점마다 끝까지 재탐색하는 O(n²)을 막고, 덜 마스킹하는 쪽이 안전하다.
+  // 코드 펜스·인라인 코드·주석은 이 함수보다 먼저 마스킹되므로, 그 안의 예시 속성은
+  // 토큰으로 보이지 않아 본문을 가리지 못한다.
+  var IGNORE_ATTR = 'data-lint-ignore';
+  var VOID_ELEMENTS = {
+    area: 1, base: 1, br: 1, col: 1, embed: 1, hr: 1, img: 1, input: 1,
+    link: 1, meta: 1, param: 1, source: 1, track: 1, wbr: 1
+  };
+
+  function isAsciiLetter(c) { return (c >= 65 && c <= 90) || (c >= 97 && c <= 122); }
+  function isTagNameChar(c) { return isAsciiLetter(c) || (c >= 48 && c <= 57) || c === 45; }
+  function isHtmlSpace(c) { return c === 32 || c === 9 || c === 10 || c === 12 || c === 13; }
+
+  // 여는 태그를 파싱한다. 반환: { end, selfClosing, ignore } 또는 null(EOF까지 안 닫힘).
+  // i는 태그 이름 직후 위치.
+  function parseOpenTagTail(str, i) {
+    var n = str.length;
+    var ignore = false;
+    while (i < n) {
+      var c = str.charCodeAt(i);
+      if (isHtmlSpace(c)) { i += 1; continue; }
+      if (c === 62) return { end: i + 1, selfClosing: false, ignore: ignore };
+      if (c === 47) {
+        if (str.charCodeAt(i + 1) === 62) return { end: i + 2, selfClosing: true, ignore: ignore };
+        i += 1;
+        continue;
+      }
+      // 속성 이름
+      var ns = i;
+      while (i < n) {
+        c = str.charCodeAt(i);
+        if (isHtmlSpace(c) || c === 47 || c === 62 || c === 61) break;
+        i += 1;
+      }
+      if (i === ns) { i += 1; continue; } // 이름 없이 '=' 로 시작하는 비정상 입력
+      if (str.slice(ns, i).toLowerCase() === IGNORE_ATTR) ignore = true;
+      while (i < n && isHtmlSpace(str.charCodeAt(i))) i += 1;
+      if (str.charCodeAt(i) !== 61) continue;
+      i += 1;
+      while (i < n && isHtmlSpace(str.charCodeAt(i))) i += 1;
+      c = str.charCodeAt(i);
+      if (c === 34 || c === 39) {
+        var q = str.indexOf(c === 34 ? '"' : "'", i + 1);
+        if (q < 0) return null;
+        i = q + 1;
+      } else {
+        while (i < n) {
+          c = str.charCodeAt(i);
+          if (isHtmlSpace(c) || c === 62) break;
+          i += 1;
+        }
+      }
+    }
+    return null;
+  }
+
+  function maskIgnoredElements(text) {
+    if (!/data-lint-ignore/i.test(text)) return text;
+    var n = text.length;
+    var stacks = Object.create(null); // 태그 이름 → 열린 태그 스택 [{ start, ignore }]
+    var ranges = [];
+    var i = text.indexOf('<');
+    while (i >= 0 && i < n) {
+      var next = i + 1;
+      var closing = text.charCodeAt(next) === 47;
+      var ns = closing ? next + 1 : next;
+      if (isAsciiLetter(text.charCodeAt(ns))) {
+        var ne = ns + 1;
+        while (ne < n && isTagNameChar(text.charCodeAt(ne))) ne += 1;
+        var after = text.charCodeAt(ne);
+        // 이름 직후가 공백·'/'·'>' 가 아니면(`<https://…>` 자동 링크 등) 태그로 보지 않는다.
+        if (isHtmlSpace(after) || after === 47 || after === 62) {
+          var name = text.slice(ns, ne).toLowerCase();
+          if (closing) {
+            var gt = text.indexOf('>', ne);
+            if (gt < 0) break;
+            var st = stacks[name];
+            if (st && st.length) {
+              var open = st.pop();
+              if (open.ignore) ranges.push([open.start, gt + 1]);
+            }
+            next = gt + 1;
+          } else {
+            var tail = parseOpenTagTail(text, ne);
+            if (!tail) break;
+            if (!tail.selfClosing && !VOID_ELEMENTS[name]) {
+              (stacks[name] || (stacks[name] = [])).push({ start: i, ignore: tail.ignore });
+            }
+            next = tail.end;
+          }
+        }
+      }
+      i = text.indexOf('<', next);
+    }
+    if (!ranges.length) return text;
+    // 짝은 닫는 순서(안쪽 먼저)로 나오므로 시작 위치로 정렬한 뒤, 이미 바깥 범위에
+    // 포함된 안쪽 범위는 건너뛰어 같은 글자를 두 번 치환하지 않는다.
+    ranges.sort(function (a, b) { return a[0] - b[0] || b[1] - a[1]; });
+    var out = [];
+    var last = 0;
+    for (var r = 0; r < ranges.length; r += 1) {
+      var s = ranges[r][0];
+      var e = ranges[r][1];
+      if (e <= last) continue;
+      out.push(text.slice(last, s), text.slice(s, e).replace(/[^\n]/g, MASK_CHAR));
+      last = e;
+    }
+    out.push(text.slice(last));
+    return out.join('');
+  }
+
   function maskNonProseRegions(text) {
     var maskRanges = function (str, regex) {
       return str.replace(regex, function (match) {
@@ -542,6 +721,13 @@
     // 안에서 앞쪽 한 글자를 "내용"으로 흡수해 다른 조합으로 재시도하다
     // 결국 닫히는 걸로 잘못 인식한다 (2026-08-19 6차 codex 리뷰에서 발견).
     text = maskRanges(text, /(`+)[\s\S]*?(?<!`)\1(?!`)/g);
+    // HTML 주석·<style>은 코드 펜스·인라인 코드 뒤에 처리한다: 코드 안의 예시
+    // `<!--`가 본문의 `-->`와 짝지어져 그 사이 본문을 가리는 사고를 막기 위함.
+    // (CommonMark에서도 코드 스팬이 raw HTML보다 우선한다.)
+    text = maskHtmlComments(text);
+    text = maskStyleBlocks(text);
+    // 가장 마지막: 코드·주석·<style> 안의 예시 태그가 먼저 지워진 뒤에 짝을 맞춘다.
+    text = maskIgnoredElements(text);
     return text;
   }
 
@@ -602,6 +788,76 @@
     return lines.join('\n');
   }
 
+  // ─── 3-0. admin-jargon 예외: 고유 용어 · 괄호 병기 ───────────────────────────
+  // 사전(jargon-dictionary.*)은 principles.md 에서 생성되므로 고치지 않고, 매칭 단계에서 좁게 제외한다.
+
+  /**
+   * 고유 용어 예외 — 아래 용어 '구간 안'의 금지어만 지적에서 제외한다.
+   * 같은 줄의 다른 위치에 있는 금지어 단독 사용은 계속 지적한다.
+   * 새 항목은 tests/krds-lint-compound-terms.test.js 의 허용 스냅샷을 함께 고쳐야 추가할 수 있다(리뷰 강제).
+   *   term   : 공식 제도명·메뉴명 등 고유 용어 전체
+   *   banned : term 안에서 지적을 제외할 사전 금지어 (term 에 포함되어야 함)
+   *   usage  : 현재 사용처
+   *   reason : 예외 근거
+   */
+  const COMPOUND_TERM_EXCEPTIONS = Object.freeze([
+    Object.freeze({
+      term: '육아휴직 급여',
+      banned: '급여',
+      usage: 'index.html After 예시 "육아휴직 급여 신청하기" 등 (고용보험 포털 유사 화면)',
+      reason: '고용보험법상 공식 제도명이라 일상어로 바꿀 수 없다. 사전의 "급여" 는 단독 사용(복지 맥락 "지원금")을 겨냥한다. principles.md A.4 법령상 공식 명칭 병기 허용.',
+    }),
+    Object.freeze({
+      term: '이슈 아카이브',
+      banned: '아카이브',
+      usage: 'index.html 진입 카드 레이블 "이슈 아카이브" (archive.html 메뉴·페이지 이름)',
+      reason: '사이트 자체의 메뉴·페이지 이름이라 본문 문구처럼 "자료실" 로 바꾸면 이름이 달라져 길을 잃는다. 사전의 "아카이브" 는 일반 본문 사용을 겨냥한다.',
+    }),
+  ]);
+
+  // 괄호 병기 허용 대상 카테고리: 어휘 치환형 금지어만. 경어·수식·이중 부정·에러 메시지 문구는
+  // 괄호로 병기해도 정당화되지 않으므로 대상에서 뺀다.
+  var PAREN_GLOSS_CATEGORIES = { '행정 관습어': true, '전문 용어': true };
+
+  /**
+   * 한 줄에서 고유 용어 예외 구간을 모은다: [{ banned, start, end }]
+   */
+  function findCompoundTermRanges(line) {
+    var ranges = [];
+    COMPOUND_TERM_EXCEPTIONS.forEach(function (exc) {
+      var offset = exc.term.indexOf(exc.banned);
+      var pos = line.indexOf(exc.term);
+      while (pos !== -1) {
+        ranges.push({ banned: exc.banned, start: pos + offset, end: pos + offset + exc.banned.length });
+        pos = line.indexOf(exc.term, pos + exc.term.length);
+      }
+    });
+    return ranges;
+  }
+
+  /**
+   * 일상어 바로 뒤 괄호 안 병기인지 판정한다. 예: "추가 세금(가산세)", "세금 상담 전화(국세상담센터 126)".
+   * 근거: principles.md:4463 "기능 설명을 먼저 쓰고 브랜드나 공식 명칭은 괄호로 보조",
+   *       principles.md A.4 "법령상 공식 명칭인 경우 병기 허용". 사이트 정책을 린터가 따른다.
+   * 조건 — 금지어 바로 앞 문자가 '(' 이고 그 앞(공백 건너뜀)이 한글, 금지어 뒤는 번호·공백류만 있다가
+   *       ')' 로 닫힐 것. 줄 첫머리·태그 뒤·숫자 뒤의 괄호나, 괄호 안에 다른 말이 이어지면 병기로 보지 않는다.
+   */
+  function isParenGloss(line, start, end) {
+    if (line.charAt(start - 1) !== '(') return false;
+    var before = start - 2;
+    while (before >= 0 && (line.charAt(before) === ' ' || line.charAt(before) === '\t')) before -= 1;
+    if (before < 0 || !/[가-힣]/.test(line.charAt(before))) return false;
+    return /^[\s\d\-·]{0,20}\)/.test(line.slice(end, end + 21));
+  }
+
+  function isJargonSuppressed(line, entryBanned, cat, start, end, compoundRanges) {
+    var inCompound = compoundRanges.some(function (r) {
+      return r.banned === entryBanned && start >= r.start && end <= r.end;
+    });
+    if (inCompound) return true;
+    return PAREN_GLOSS_CATEGORIES[cat] === true && isParenGloss(line, start, end);
+  }
+
   function lint(text, options) {
     options = Object.assign({ checkAdminJargon: true, checkPatterns: true, minSeverity: 'info', agency: null }, options || {});
     const SEV_ORDER = { error: 0, warning: 1, info: 2 };
@@ -616,6 +872,7 @@
     if (options.checkAdminJargon) {
       lines.forEach(function (line, lineIdx) {
         var occupiedRanges = [];
+        var compoundRanges = findCompoundTermRanges(line);
 
         ADMIN_JARGON_MATCH_ORDER.forEach(function (entry) {
           if (entry.bannedRegex) {
@@ -631,18 +888,22 @@
               });
 
               if (!overlaps) {
-                issues.push({
-                  type: 'admin-jargon',
-                  severity: 'error',
-                  category: entry.cat,
-                  line: lineIdx + 1,
-                  col: start + 1,
-                  match: matchedText,
-                  message: '행정어/금지어: "' + matchedText + '"',
-                  suggestion: '→ ' + entry.alt,
-                  applyable: isSimpleReplacement(entry.alt),
-                  applyText: entry.alt,
-                });
+                // 면제된 구간도 점유 처리한다: 안 그러면 면제된 긴 금지어("원천징수영수증") 안의
+                // 더 짧은 금지어("원천징수")가 대신 지적되어 새 이슈가 생긴다.
+                if (!isJargonSuppressed(line, entry.banned, entry.cat, start, end, compoundRanges)) {
+                  issues.push({
+                    type: 'admin-jargon',
+                    severity: 'error',
+                    category: entry.cat,
+                    line: lineIdx + 1,
+                    col: start + 1,
+                    match: matchedText,
+                    message: '행정어/금지어: "' + matchedText + '"',
+                    suggestion: '→ ' + entry.alt,
+                    applyable: isSimpleReplacement(entry.alt),
+                    applyText: entry.alt,
+                  });
+                }
                 occupiedRanges.push({ start: start, end: end });
               }
 
@@ -660,18 +921,20 @@
             });
 
             if (!overlaps) {
-              issues.push({
-                type: 'admin-jargon',
-                severity: 'error',
-                category: entry.cat,
-                line: lineIdx + 1,
-                col: idx + 1,
-                match: entry.banned,
-                message: '행정어/금지어: "' + entry.banned + '"',
-                suggestion: '→ ' + entry.alt,
-                applyable: isSimpleReplacement(entry.alt),
-                applyText: entry.alt,
-              });
+              if (!isJargonSuppressed(line, entry.banned, entry.cat, idx, end, compoundRanges)) {
+                issues.push({
+                  type: 'admin-jargon',
+                  severity: 'error',
+                  category: entry.cat,
+                  line: lineIdx + 1,
+                  col: idx + 1,
+                  match: entry.banned,
+                  message: '행정어/금지어: "' + entry.banned + '"',
+                  suggestion: '→ ' + entry.alt,
+                  applyable: isSimpleReplacement(entry.alt),
+                  applyText: entry.alt,
+                });
+              }
               occupiedRanges.push({ start: idx, end: end });
             }
 
@@ -818,6 +1081,7 @@
     lint: lint,
     formatCLI: formatCLI,
     ADMIN_JARGON: ADMIN_JARGON,
+    COMPOUND_TERM_EXCEPTIONS: COMPOUND_TERM_EXCEPTIONS,
     PATTERN_RULES: PATTERN_RULES,
     isSimpleReplacement: isSimpleReplacement,
     version: '1.0.0',
