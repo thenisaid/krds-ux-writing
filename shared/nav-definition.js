@@ -45,12 +45,10 @@
   //   신설 전까지는 기본값으로 린터를 도착지로 둔다. 허브를 만들면 이 값만 바꾸면 된다.
   var TOOLS_HUB_HREF = BASE + '/lint.html';
 
-  // TODO(오너 결정): 'Before/After' 라벨의 한글화 여부(이 사이트 원칙은 '무번역').
-  //   결정 전까지 현재 라벨을 그대로 두고, 영문 단독 라벨 금지 규칙에서만 일시 허용한다.
-  //   한글화되면 이 목록에서 항목을 지운다(테스트가 미사용 허용 항목을 감지한다).
-  var LABEL_TODO_ALLOW = {
-    'Before/After': 'TODO(오너 결정): 한글화 여부 (예: "전후 비교")'
-  };
+  // 영문 단독 라벨 허용 목록. 이 사이트의 원칙은 '무번역'이므로 비어 있는 것이 정상이다.
+  // 'Before/After' 는 오너 결정(2026-11)으로 '전후 비교' 로 한글화되어 항목을 지웠다(URL 은 그대로).
+  // 예외가 꼭 필요하면 {라벨: 사유} 로 추가한다(테스트가 미사용 허용 항목을 감지한다).
+  var LABEL_TODO_ALLOW = {};
 
   // ─── 2. 1차 탭 ─────────────────────────────────────────────────────────────
   // match[] : 사이트 상대 정규화 경로(normalizePath 결과)의 prefix. 가장 긴 prefix 가 이긴다.
@@ -103,8 +101,8 @@
     ],
     tools: [
       { id: 'prompt-library', label: '프롬프트', href: BASE + '/prompt-library.html', match: ['/prompt-library'] },
-      // TODO(오너 결정): 'Before/After' 라벨 한글화 여부
-      { id: 'before-after', label: 'Before/After', href: BASE + '/before-after.html', match: ['/before-after'] },
+      // 라벨만 한글화(오너 결정), URL 은 before-after.html 유지
+      { id: 'before-after', label: '전후 비교', href: BASE + '/before-after.html', match: ['/before-after'] },
       { id: 'lint', label: '린터', href: BASE + '/lint.html', match: ['/lint'] },
       { id: 'generator', label: '생성기', href: BASE + '/generator/', match: ['/generator'] }
     ]
