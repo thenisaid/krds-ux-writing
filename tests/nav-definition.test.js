@@ -21,7 +21,7 @@ describe('nav-definition: 정의 자체 검증 (즉시 강제)', () => {
     expect(NAV.PRIMARY_TABS.some((t) => t.label === '홈')).toBe(false);
   });
 
-  it('모든 라벨(1차+2차)이 2자 이상이고 영문 단독이 아니다 (Before/After 는 TODO 로 일시 허용)', () => {
+  it('모든 라벨(1차+2차)이 2자 이상이고 영문 단독이 아니다', () => {
     const offenders = NAV.allLabels()
       .map((label) => ({ label, problems: NAV.labelProblems(label) }))
       .filter((r) => r.problems.length > 0);
@@ -78,10 +78,17 @@ describe('nav-definition: 정의 자체 검증 (즉시 강제)', () => {
     expect(tools.href).toBe(tools.hubHref);
   });
 
-  it('Before/After 라벨은 아직 그대로이며 TODO 허용 목록에만 있다', () => {
+  it("'Before/After' 라벨은 '전후 비교' 로 한글화되었고 URL 은 before-after.html 을 유지한다", () => {
     const labels = NAV.allLabels();
-    expect(labels).toContain('Before/After');
-    expect(Object.keys(NAV.LABEL_TODO_ALLOW)).toEqual(['Before/After']);
+    expect(labels).toContain('전후 비교');
+    expect(labels).not.toContain('Before/After');
+    const sub = NAV.SECONDARY_TABS.tools.find((s) => s.id === 'before-after');
+    expect(sub.label).toBe('전후 비교');
+    expect(sub.href).toBe('/krds-ux-writing/before-after.html');
+  });
+
+  it('영문 단독 라벨 허용 목록은 비어 있다 (무번역 원칙)', () => {
+    expect(Object.keys(NAV.LABEL_TODO_ALLOW)).toEqual([]);
   });
 
   it('TODO 허용 목록에 미사용 항목이 남지 않는다 (한글화되면 허용 항목도 지울 것)', () => {
@@ -95,7 +102,8 @@ describe('nav-definition: 정의 자체 검증 (즉시 강제)', () => {
     expect(NAV.labelProblems('원')).toContain('2자 미만');
     expect(NAV.labelProblems('Lint')).toContain('영문 단독 라벨');
     expect(NAV.labelProblems('린터')).toEqual([]);
-    expect(NAV.labelProblems('Before/After')).toEqual([]);
+    expect(NAV.labelProblems('Before/After')).toContain('영문 단독 라벨');
+    expect(NAV.labelProblems('전후 비교')).toEqual([]);
     expect(NAV.labelProblems('')).toContain('2자 미만');
   });
 
