@@ -9,6 +9,7 @@
 
 | 날짜 | 내용 |
 |------|------|
+| 2026-11-16 | 버튼 `border-radius` 8px 복귀(PR #4, 머지 커밋 `0aa5ece`)를 반영: §3 드리프트 5번·§7 버튼 비교 표·§7 버튼 속성 표·`--radius-pill` 사용처 갱신, §13-6 해결됨 처리 |
 | 2026-11-10 | 코드 대조 감사. §9 로고 시스템 신설(태극 마크·UXW 워드마크·`--logo-blue/red`). §3·§7·§8·§12 드리프트 정정: `--radius-*` 값(index 12/20px), 버튼 pill, GNB 높이 60px 통일, 대비율 재계산(4.5:1 경계값 소수 둘째 자리 표기), 다크 `--accent` 위 흰 텍스트 위반 기록. §13 '코드 수정 필요' 목록 신설 |
 | 2026-05-26 | 터치 타겟 ⚠️ 표기 오류 수정 (`3619697`) |
 | 2026-05-21 | 전면 재작성 — 4개 파일 시맨틱 토큰 통일(Phase 2 완료) |
@@ -24,8 +25,8 @@
 | 1 | GNB 로고 마크 | `28×28`, `border-radius:6px`, `var(--accent)` 배경 'K' | `index.html`은 태극 SVG(28×28) + `UXW` 워드마크. 나머지 페이지는 여전히 'K' 사각 마크 | 문서 (§9 신설, 적용 현황 표) |
 | 2 | 로고 토큰 | 없음 | `--logo-blue` `#003964`/`#8cb6ff`, `--logo-red` `#ed1a3b`/`#ff9bad` (`index.html`만) | 문서 |
 | 3 | favicon | 언급 없음 | `index.html`만 태극 data URI. 나머지는 'K' 파랑 원. `lint.html`·`ontology-query.html`·`term-graph.html`·`offline-app`은 favicon 없음. 루트 `favicon.svg`(K 사각)는 어디서도 참조되지 않음 | 문서(현황) + 코드(§13) |
-| 4 | `--radius-md/lg` (index.html) | 8px / 16px | **12px / 20px**, 추가로 `--radius-pill: 9999px`. `before-after.html`만 8/16 유지 | 문서 |
-| 5 | 버튼 radius (index.html) | `var(--radius-sm)` 4px, padding `12px 20px` | **pill 9999px**, padding `13px 24px`, `min-height:44px` (`31ef00a`, 2026-06-24 Mintlify 리디자인) | 문서 |
+| 4 | `--radius-md/lg` (index.html) | 8px / 16px | **12px / 20px**, 추가로 `--radius-pill: 9999px`(필터 칩·검색 지우기 버튼에 사용, 버튼 `.btn` 은 미사용). `before-after.html`만 8/16 유지 | 문서 |
+| 5 | 버튼 radius (index.html) | `var(--radius-sm)` 4px, padding `12px 20px` | **8px**, padding `13px 24px`, `min-height:44px` (`31ef00a`, 2026-06-24 Mintlify 리디자인에서 pill 로 바뀌었다가 PR #4 `0aa5ece` 에서 8px 복귀. padding·min-height 는 리디자인 값 유지) | 문서 |
 | 6 | 카드 radius (index.html) | 16px | `--radius-md` = **12px** (`.quote-card`, `.ba-card`, `.dg-checklist`) | 문서 |
 | 7 | GNB 높이 | 파일별 표는 index 56px, 미해결 표(§12)는 '60px 통일 완료'로 기재 — 문서 내부 모순 | index·before-after·lint·archive·dictionary·generator·case-studies **60px**, corpus **62px**, `shared/style.css` 사용 페이지(principles/*, prompt-library) **56px** | 문서 (페이지별 현황 표) |
 | 8 | GNB 배경 (index.html) | `var(--bg)` 불투명 | 동일(불투명). before-after·lint·archive는 `rgba(248,247,245,.92)`+blur | 일치 (현황 표 정정) |
@@ -171,13 +172,13 @@
 | `--radius-sm` | `4px` | `4px` | 배지, 칩, 네비 링크 hover |
 | `--radius-md` | **`12px`** | `8px` | 카드, 입력 필드 |
 | `--radius-lg` | **`20px`** | `16px` | 큰 패널 |
-| `--radius-pill` | `9999px` | — | **index `.btn`**, 필터 칩 |
+| `--radius-pill` | `9999px` | — | index `.section-filter-chip`, `.section-nav-clear` (필터 칩·검색 지우기). `.btn` 은 미사용 |
 
 CLAUDE.md 의 컴포넌트 기준(버튼 8px · 카드 12px · 배지 4px)과 비교:
 
 | 컴포넌트 | CLAUDE.md | index.html | before-after.html | lint/offline |
 |----------|-----------|-----------|-------------------|--------------|
-| 버튼 | 8px | **pill** (불일치 — §13-6) | `.lint-btn` 4px · `.seminar-btn` 8px | 8px ✅ |
+| 버튼 | 8px | 8px ✅ | `.lint-btn` 4px · `.seminar-btn` 8px | 8px ✅ |
 | 카드 | 12px | 12px ✅ | 8px | 12px ✅ |
 | 배지 | 4px | 4px ✅ | 100px(칩) | 4px ✅ |
 
@@ -262,7 +263,7 @@ CLAUDE.md 의 컴포넌트 기준(버튼 8px · 카드 12px · 배지 4px)과 �
 | 속성 | 값 |
 |------|----|
 | `padding` | `13px 24px`, `min-height: 44px` |
-| `border-radius` | `var(--radius-pill)` (9999px) |
+| `border-radius` | `8px` (PR #4 `0aa5ece` 에서 pill 에서 복귀) |
 | `font-size / weight` | `14px / 600`, `line-height:1` |
 | Primary | `background: var(--accent)`, `color:#fff` (라이트 4.55:1 ✅ / 다크 2.21:1 ❌ §13-1) |
 | Outline | `1px solid var(--border-mid)`, `color: var(--text-mid)` |
@@ -595,7 +596,7 @@ lint.html 전용:
 | 3 | `before-after.html` `footer{background:gray-90}` 에 로고 이식 시 | 라이트 파랑 1.36:1 | §9.3-4 | 푸터는 다크 토큰 강제 |
 | 4 | `lint.html` | 다크 `--accent` 미재정의 → 링크/active nav `#256ef4` on `#1e2124` **3.52:1**, hero-badge 2.95:1, `.footer a` 만 `--color-primary-30` | WCAG 1.4.3 | `[data-theme="dark"] { --accent: #86aff9 }` |
 | 5 | `index.html` `.section-nav-input:focus{outline:none}` | 대체 포커스 표시 없음 | WCAG 2.4.7 | `.section-nav-search:focus-within{ border-color:var(--accent); box-shadow:0 0 0 3px ... }` |
-| 6 | `index.html` `.btn` `border-radius: pill` | CLAUDE.md '버튼 8px' 와 불일치 | CLAUDE.md | **결정 필요**: 2026-06-24 Mintlify 리디자인의 의도적 선택이면 CLAUDE.md 를 pill 로 개정, 아니면 8px 로 복귀 |
+| 6 | ~~`index.html` `.btn` `border-radius: pill`~~ | CLAUDE.md '버튼 8px' 와 불일치 | CLAUDE.md | **해결됨**: 8px 로 복귀 (PR #4, 머지 커밋 `0aa5ece`). 현재 `.btn { border-radius: 8px }` |
 | 7 | `.gnb-logo` (index 69.3×28) | 터치 타겟 28px | 2.5.5 | `min-height:44px` |
 | 8 | `lint.html .btn`(36), `.gnb-nav-link`(≈32), `offline-app #lint-btn/#clear-btn`(39.5), `principles/*` `.gnb-actions button`(28) | 터치 44px 미달 | 2.5.5 | `min-height:44px` |
 | 9 | `generator/index.html` `--color-border #9ca3af` | 주석 '3.1:1' 과 달리 실측 2.54:1, 동일 파일 `.btn-primary` disabled 2.05:1 | WCAG 1.4.11 | `#8a949e`(3.08) 이하 또는 `#6d7882` |
