@@ -148,11 +148,10 @@
     'sema_p4.html': '강연 슬라이드(SeMA) — 자체 슬라이드 내비게이션',
     'demo-slides.html': '발표용 슬라이드 — GNB 면제',
     'krds-guide-intro.html': '소개 페이지 — GNB 면제',
-    'ontology-query.html': '내부 도구 — 자체 header/nav (공개 여부는 오너 확인 필요)',
-    'term-graph.html': '내부 도구 — 자체 header, 항상 다크 (공개 여부는 오너 확인 필요)',
+    'ontology-query.html': '내부 도구, 웹 게시 제외(오너 확정 2026-11-17), 저장소에는 유지 — 자체 header/nav',
+    'term-graph.html': '내부 도구, 웹 게시 제외(오너 확정 2026-11-17), 저장소에는 유지 — 자체 header, 항상 다크',
     'krds-extension/popup.html': '크롬 확장 팝업 — 사이트 페이지 아님',
-    // 아래 항목은 오너 지정 면제 목록에 없던 것 — 분류 누락 방지를 위해 이 정의에서 추가함
-    'offline-app/index.html': '오프라인 앱 번들 산출물 — scripts/build-offline-app.js 가 생성'
+    'offline-app/index.html': '오너 확정(2026-11-17): 공공기관 납품 오프라인 번들은 공개 사이트 GNB 대상이 아님 — scripts/build-offline-app.js 가 생성'
   };
 
   // ─── 6. 경로 정규화와 활성 탭 계산 ─────────────────────────────────────────
