@@ -184,7 +184,6 @@ function normalizeStaticPath(pathname) {
 
 const PUBLIC_STATIC_ROOT_FILES = new Set([
   '/index.html',
-  '/index-v2.html',
   '/archive.html',
   '/archive.js',
   '/before-after.html',

@@ -400,7 +400,7 @@ function formatCheckReport(result) {
   lines.push('  정의와 의미가 어긋난 페이지: ' + s.semanticBad.length + '/' + s.total + ' (라벨·href·aria·로고·2차 탭·모바일 메뉴 기준)');
   lines.push('  동기화 미완료(마커+바이트 동일이 아닌) 페이지: ' + s.notInSync.length + '/' + s.total);
   lines.push('  동기화 완료: ' + s.inSync + '/' + s.total);
-  // 감사 보고서의 'GNB 있는 21개'는 PAGE_MAP 20개 + 면제 목록의 GNB 보유 파일(index-v2 등)이다.
+  // 감사 보고서의 'GNB 있는 21개'는 PAGE_MAP 20개 + 면제 목록의 GNB 보유 파일이다.
   const extra = result.exemptWithGnb.length;
   lines.push('  GNB 보유 전체(면제지만 GNB 마크업이 남은 ' + extra + '개 포함): ' +
     (s.total + extra) + '개 중 ' + (s.semanticBad.length + extra) + '개가 정의와 어긋남');

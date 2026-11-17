@@ -592,7 +592,7 @@ lint.html 전용:
 | # | 위치 | 문제 | 기준 | 권장 수정 |
 |---|------|------|------|-----------|
 | 1 | `index.html` 다크 `.btn-primary` `.skip-nav` `.section-filter-chip.active` `.generator-banner-badge/cta` `.dg-agency-badge` | 흰 글자 on `#86aff9` **2.21:1** | WCAG 1.4.3 / §10 | 다크에서 `color: var(--text-on-dark)`(`#1e2124`, 7.33:1) 또는 배경 `--color-primary-60` |
-| 2 | `before-after`·`lint`·`archive`·`dictionary/*`·`corpus`·`case-studies`·`principles/*`·`prompt-library`·`index-v2` | GNB 로고가 'K' 사각 마크, favicon 'K' 파랑 원 (`lint`·`ontology-query`·`term-graph`·`offline-app` 은 favicon 자체 없음) | §9 로고 시스템 | 태극 SVG + `UXW` + `--logo-*` 토큰 이식, 루트 `favicon.svg` 는 태극으로 교체 또는 삭제 (현재 미참조) |
+| 2 | `before-after`·`lint`·`archive`·`dictionary/*`·`corpus`·`case-studies`·`principles/*`·`prompt-library` | GNB 로고가 'K' 사각 마크, favicon 'K' 파랑 원 (`lint`·`ontology-query`·`term-graph`·`offline-app` 은 favicon 자체 없음) | §9 로고 시스템 | 태극 SVG + `UXW` + `--logo-*` 토큰 이식, 루트 `favicon.svg` 는 태극으로 교체 또는 삭제 (현재 미참조) |
 | 3 | `before-after.html` `footer{background:gray-90}` 에 로고 이식 시 | 라이트 파랑 1.36:1 | §9.3-4 | 푸터는 다크 토큰 강제 |
 | 4 | `lint.html` | 다크 `--accent` 미재정의 → 링크/active nav `#256ef4` on `#1e2124` **3.52:1**, hero-badge 2.95:1, `.footer a` 만 `--color-primary-30` | WCAG 1.4.3 | `[data-theme="dark"] { --accent: #86aff9 }` |
 | 5 | `index.html` `.section-nav-input:focus{outline:none}` | 대체 포커스 표시 없음 | WCAG 2.4.7 | `.section-nav-search:focus-within{ border-color:var(--accent); box-shadow:0 0 0 3px ... }` |
