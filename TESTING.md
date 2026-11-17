@@ -78,14 +78,14 @@ tests/
 | `bin/krds-lint` | ✅ Yes | Spawnable CLI, verified via child process integration tests |
 | `api/generate.js` | ✅ Yes | Edge handler can be called with `Request` + mocked `fetch` |
 | `functions/api/generate.js` | ✅ Yes | Cloudflare Pages handler can be called with mock context |
-| `index.html` / `index-v2.html` | ✅ Yes (token contract) | 홈 페이지 토큰 누락이 CI에서 바로 걸리도록 HTML+로컬 CSS 계약 테스트가 돈다 |
+| `index.html` | ✅ Yes (token contract) | 홈 페이지 토큰 누락이 CI에서 바로 걸리도록 HTML+로컬 CSS 계약 테스트가 돈다 |
 | `scripts/switch-ai-mode.sh` | ✅ Yes (spawned shell) | 로컬/클라우드 전환이 임시 `.env` fixture에서 회귀 테스트된다 |
 | `scripts/lint-delta.js` | ✅ Yes | 순수 판정 함수 + CLI. PR 린트 게이트의 신규 오류 계산을 단위·child process 테스트로 검증 |
 | `archive.js` | ✅ Yes (VM DOM harness) | Browser-DOM IIFE, verified with mocked tabs/search/fetch via `vm.runInNewContext` |
 | `dictionary/dict.js` | ✅ Yes (VM DOM harness) | Browser-DOM filter/search logic covered with mocked DOM state |
 | `shared/nav.js` | ✅ Yes (VM DOM harness) | Path rewriting, Ctrl+K behavior, and shared theme logic are exercised directly |
 | `script.js` | ✅ Yes (VM DOM harness) | Live index page behavior (theme, mobile menu, skip link) is tested with a lightweight DOM harness |
-| Inline page scripts | ✅ Yes (VM DOM harness) | `before-after`, `index`, `index-v2`, presentation pages, and prompt-library interactions have direct regression tests |
+| Inline page scripts | ✅ Yes (VM DOM harness) | `before-after`, `index`, presentation pages, and prompt-library interactions have direct regression tests |
 
 ## Conventions
 

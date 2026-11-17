@@ -98,17 +98,6 @@ describe('site link safety', () => {
     });
   });
 
-  it('keeps index-v2 internal links deployment-aware', () => {
-    const html = fs.readFileSync(path.join(ROOT, 'index-v2.html'), 'utf8');
-
-    expect(html).toContain('shared/base-path.js');
-    expect(html).not.toMatch(/href="\/(?:principles|dictionary|case-studies)(?:\/|#)/);
-    expect(html).not.toMatch(/href="\/"\s+class="(?:gnb-logo|footer-logo)"/);
-    expect(html).toMatch(/href="\/krds-ux-writing\/principles\//);
-    expect(html).toMatch(/href="\/krds-ux-writing\/dictionary\//);
-    expect(html).toMatch(/href="\/krds-ux-writing\/case-studies\//);
-  });
-
   it('keeps local hash links pointing at real section ids', () => {
     const brokenAnchors = listBrokenHashAnchors();
 

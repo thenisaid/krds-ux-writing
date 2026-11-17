@@ -151,7 +151,6 @@
     'ontology-query.html': '내부 도구 — 자체 header/nav (공개 여부는 오너 확인 필요)',
     'term-graph.html': '내부 도구 — 자체 header, 항상 다크 (공개 여부는 오너 확인 필요)',
     'krds-extension/popup.html': '크롬 확장 팝업 — 사이트 페이지 아님',
-    'index-v2.html': '삭제 후보 — 어디서도 링크되지 않는 구버전 홈 (삭제 시 이 항목도 제거)',
     // 아래 항목은 오너 지정 면제 목록에 없던 것 — 분류 누락 방지를 위해 이 정의에서 추가함
     'offline-app/index.html': '오프라인 앱 번들 산출물 — scripts/build-offline-app.js 가 생성'
   };
