@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - **PR lint gate now fails only on errors the PR introduces** (`.github/workflows/krds-lint.yml`): previously any error in a changed file failed CI, so editing one line of an old document charged the PR with every pre-existing error in it (e.g. an unrelated PR with 0 new errors failed with 1,353). The gate now lints each changed file at the PR head and at `origin/<base>`, groups errors by `(category, match)` and compares the multisets (line numbers are ignored; a decrease in one key never offsets an increase in another). Any excess is a new error and fails the check. New files count all errors as new. Renamed files are compared against their old path.
-- Fail-closed is kept and extended: if the base-side lint fails, cannot be parsed, or the base ref is missing, the file is reported as FAIL instead of being treated as "0 base errors".
+- Fail-closed is kept and extended: if the base-side lint fails, cannot be parsed, or the base ref is missing, the file is reported as a failure instead of being treated as "0 base errors".
 - PR comment and step summary now show per-file existing/new counts and list only the new errors. `workflow_dispatch` (full / `target_file`) keeps the old absolute-total behaviour because there is no base to compare with.
 
 ### Added
