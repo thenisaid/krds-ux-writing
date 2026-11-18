@@ -377,10 +377,11 @@ describe('기존 gnb 마커 동작 회귀', () => {
     expect(SYNC.applyAll(html, 'lint.html')).toBe(SYNC.applyFragment(html, 'lint.html'));
   });
 
-  it('저장소의 실제 HTML 은 어느 것도 아직 드로어 마커를 갖지 않는다 (HTML 무변경 PR)', () => {
+  it('저장소의 실제 HTML 중 shared/style.css 를 쓰는 11개(PR-B 이전 대상)만 드로어 마커를 갖는다', () => {
     Object.keys(NAV.PAGE_MAP).forEach((file) => {
       const html = fs.readFileSync(path.join(ROOT, file), 'utf8');
-      expect(SYNC.readMarkerRegion(html, 'drawer').state, file).toBe('none');
+      const migrated = /shared\/style\.css/.test(html);
+      expect(SYNC.readMarkerRegion(html, 'drawer').state, file).toBe(migrated ? 'ok' : 'none');
     });
   });
 

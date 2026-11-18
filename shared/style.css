@@ -157,6 +157,25 @@ a:hover { text-decoration: underline; }
   color: var(--text-muted); margin-left: auto;
 }
 
+/* ---- Drawer nav (모바일 통합 메뉴) — 901px 이상에서는 헤더에 탭이 있으므로 숨기고, 900px 이하에서만 보인다 ---- */
+.drawer-nav { display: none; }
+.drawer-list, .drawer-sublist { list-style: none; }
+.drawer-link, .drawer-sublink {
+  display: flex; align-items: center;
+  min-height: 44px; padding: 0 20px;
+  font-size: 14px; font-weight: 500; color: var(--text-mid);
+  text-decoration: none; transition: color 0.15s, background 0.15s;
+}
+.drawer-sublink { padding-left: 36px; font-size: 13px; }
+.drawer-link:hover, .drawer-sublink:hover { color: var(--text); background: var(--bg-subtle); text-decoration: none; }
+/* 포커스 링은 사이트 공통(:focus-visible)과 같은 2px accent. 사이드바가 overflow 스크롤이라 바깥 offset 은 잘리므로 안쪽으로 그린다. */
+.drawer-link:focus-visible, .drawer-sublink:focus-visible { outline-offset: -2px; }
+/* 현재 위치: 색 단독 구분 금지 — 굵기 + 2px 밑줄을 함께 쓴다 (.gnb-nav-link 와 동일 규칙). */
+.drawer-link[aria-current], .drawer-sublink[aria-current] {
+  color: var(--accent); font-weight: 700;
+  text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px;
+}
+
 /* ---- Content ---- */
 .content { padding: 48px 56px 80px; }
 .content-header { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
@@ -202,6 +221,11 @@ a:hover { text-decoration: underline; }
   .gnb-hamburger { display: flex; }
   .gnb-badge { display: none; }
 
+  /* 1차+2차 탭은 드로어(.drawer-nav)로 옮긴다 — 헤더에는 햄버거 하나만 남긴다 */
+  .gnb-nav { display: none; }
+  .gnb-subnav { display: none; }
+  .drawer-nav { display: block; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border-mid); }
+
   /* Sidebar becomes fixed overlay on mobile */
   .sidebar {
     position: fixed;
@@ -218,16 +242,12 @@ a:hover { text-decoration: underline; }
 
   .content { padding: 32px 20px 64px; }
   .page-footer { padding: 24px 20px; }
-  .gnb-nav .gnb-nav-link { padding: 6px 8px; font-size: 12px; }
 }
 
-/* 헤더 한 줄에 1차+2차 탭이 들어가지 않는 폭: 2차 탭을 숨겨 가로 스크롤을 막는다(모바일 통합 메뉴는 후속 PR) */
-@media (max-width: 700px) {
-  .gnb-subnav { display: none; }
-}
-
-@media (max-width: 480px) {
-  .gnb-nav { display: none; }
+/* 움직임 줄이기 설정: 드로어 슬라이드·링크 전환 제거 */
+@media (prefers-reduced-motion: reduce) {
+  .sidebar { transition: none; }
+  .drawer-link, .drawer-sublink { transition: none; }
 }
 
 /* ---- LNB Accordion — principles pages ---- */
