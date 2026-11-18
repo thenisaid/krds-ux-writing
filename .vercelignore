@@ -18,10 +18,6 @@ research/*
 !research/public-service-corpus.md
 !research/public-service-survey-expanded.md
 
-# B2G 제안서 초안 — 법무·조달 검토 전 대외 배포 금지
-# (research/2026-08-20-project-audit-business-strategy.md 9절 참고).
-b2g-service-package/
-
 # 내부 도구 2개 — 오너 확정(2026-11-17)으로 웹 게시 제외, 저장소에는 유지.
 # GitHub Pages 쪽은 _config.yml 의 exclude 가 담당한다.
 ontology-query.html
