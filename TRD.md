@@ -589,7 +589,7 @@ CSP 변경 시 이웃 페이지 동작(예: `term-graph.html`의 노드 클릭)�
 
 ### 7.3 `.vercelignore` · `release-manifest.json` 정합
 
-- `.vercelignore`는 `offline-app/`, `research/*`(공개 코퍼스 2개만 `!`로 예외), `b2g-service-package/`를 제외한다. Vercel은 `.gitignore`와 같은 negation 문법을 지원하므로 `research/*` + `!파일` 방식이 통한다 (Jekyll과 동작이 다르다).
+- `.vercelignore`는 `offline-app/`, `research/*`(공개 코퍼스 2개만 `!`로 예외)를 제외한다. Vercel은 `.gitignore`와 같은 negation 문법을 지원하므로 `research/*` + `!파일` 방식이 통한다 (Jekyll과 동작이 다르다).
 - `release-manifest.json`의 `forbidden.prefixes`(`research/`, `tests/`, `api/`, `krds-extension/`, `.github/` 등)는 **어떤 번들에도** 포함 금지다. `scripts/verify-release-manifest.js`가 `npm pack --dry-run` 결과·`offline-app/` 디렉터리와 대조한다.
 - 요구 REL-1: **배포 경계 정의는 한 곳(`release-manifest.json`)이 단일 근거**이고, `_config.yml`·`.vercelignore`·`package.json#files`가 그와 어긋나지 않음을 검증 스크립트가 잡아야 한다. 현재 검증은 npm·offline-app 중심이며 `_config.yml` exclude ↔ `research/` 비공개 목록의 일치는 *자동 검증이 없다* — `research/`의 비공개 파일이 exclude 목록에 모두 있는지 확인하는 테스트를 추가한다 (P2).
 - 요구 REL-2: 새 번들 파일은 `release-manifest.json`을 **먼저** 수정한다(리뷰 없이 번들이 커지는 것을 방지).
