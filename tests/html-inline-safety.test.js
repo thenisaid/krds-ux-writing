@@ -10,7 +10,6 @@ const THEME_INIT_FILES = [
   'before-after.html',
   'case-studies/index.html',
   'dictionary/index.html',
-  'index-v2.html',
   'index.html',
   'principles/index.html',
   'principles/components/index.html',
