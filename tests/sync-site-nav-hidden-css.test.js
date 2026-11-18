@@ -105,21 +105,22 @@ describe('cssHidesGnbNavOnMobile: 알 수 없는 숨김은 조용히 통과하�
 describe('실제 CSS: 판정 결과는 바뀌지 않는다', () => {
   const sharedCss = fs.readFileSync(path.join(ROOT, 'shared', 'style.css'), 'utf8');
 
-  it('shared/style.css 의 @media (max-width: 480px) { .gnb-nav { display: none } } 를 감지한다', () => {
+  it('shared/style.css 의 @media (max-width: 900px) { .gnb-nav { display: none } } 를 감지한다', () => {
     // 이것이 false 가 되면 [11] 이 '조용히 통과'한다 — baseline 12건이 사라지는 쪽으로 무너지기 때문에 여기서 잡는다.
     expect(SYNC.cssHidesGnbNavOnMobile(sharedCss)).toBe(true);
     expect(SYNC.gnbNavHidingOnMobile(sharedCss)).toEqual(['display']);
   });
 
-  it('shared/style.css 를 쓰는 페이지의 [11] 판정(mobile-menu 사유)은 11개 모두 유지된다', () => {
+  it('shared/style.css 를 쓰는 11개 페이지는 드로어 마커로 4개 라벨을 채워 [11] mobile-menu 사유가 사라진다', () => {
+    // PR-B 이전에는 11개 모두 mobile-menu 사유였다. 숨김 감지(위 테스트)가 살아 있는 채로 사유가 사라지는 것이 정상.
     const files = Object.keys(require('../shared/nav-definition.js').PAGE_MAP)
       .filter((f) => /shared\/style\.css/.test(fs.readFileSync(path.join(ROOT, f), 'utf8')));
     expect(files).toHaveLength(11);
     files.forEach((f) => {
       const html = fs.readFileSync(path.join(ROOT, f), 'utf8');
       const { reasons, details } = SYNC.inspectPage(html, f, ROOT);
-      expect(reasons, f).toContain('mobile-menu');
-      expect(details.mobileMissing.length, f).toBeGreaterThan(0);
+      expect(reasons, f).not.toContain('mobile-menu');
+      expect(details.mobileMissing, f).toHaveLength(0);
     });
   });
 });
