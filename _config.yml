@@ -34,3 +34,6 @@ exclude:
   - research/raw/
   - b2g-service-package/
   - offline-app/
+  # 내부 도구 2개 — 오너 확정(2026-11-17)으로 웹 게시 제외, 저장소에는 유지
+  - ontology-query.html
+  - term-graph.html

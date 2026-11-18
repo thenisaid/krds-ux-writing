@@ -102,10 +102,8 @@
       "offenders": {}
     },
     "9-exempt-clean": {
-      "count": 1,
-      "offenders": {
-        "index-v2.html": "gnb 마크업 보유 (삭제 후보 — 어디서도 링크되지 않는 구버전 홈 (삭제 시 이 항목도 제거))"
-      }
+      "count": 0,
+      "offenders": {}
     }
   }
 }
