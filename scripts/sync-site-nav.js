@@ -188,22 +188,69 @@ function extractPrimaryLinks(html, file) {
   }));
 }
 
-/** CSS 의 @media 블록 중 .gnb-nav 를 display:none 하는 것이 있는지 (중괄호 매칭) */
-function cssHidesGnbNavOnMobile(css) {
+/** 규칙 본문이 요소를 숨기는 방식: 'display' | 'visibility' | 'width' | 'suspect' 배열 (없으면 []) */
+function hidingKindsOf(body) {
+  const kinds = [];
+  if (/(^|[;\s])display\s*:\s*none\b/i.test(body)) kinds.push('display');
+  if (/(^|[;\s])visibility\s*:\s*(hidden|collapse)\b/i.test(body)) kinds.push('visibility');
+  // width:0 은 넘치는 내용을 자를 때(overflow:hidden)만 숨김이다. max-width:0 도 같은 취급.
+  if (/(^|[;\s])(max-)?width\s*:\s*0(px)?\s*(;|!|$)/i.test(body) && /(^|[;\s])overflow(-x)?\s*:\s*hidden\b/i.test(body)) {
+    kinds.push('width');
+  }
+  // 위에서 알아보지 못한 숨김 수법은 '조용한 통과'가 되지 않도록 숨김으로 간주한다(fail-closed).
+  if (!kinds.length && (
+    /(^|[;\s])opacity\s*:\s*0(\.0+)?\s*(;|!|$)/i.test(body) ||
+    /(^|[;\s])(max-)?height\s*:\s*0(px)?\s*(;|!|$)/i.test(body) ||
+    /(^|[;\s])font-size\s*:\s*0(px)?\s*(;|!|$)/i.test(body) ||
+    /(^|[;\s])clip(-path)?\s*:/i.test(body) ||
+    /(^|[;\s])content-visibility\s*:\s*hidden\b/i.test(body) ||
+    /(^|[;\s])(left|right|top|inset-inline-start)\s*:\s*-\d{3,}/i.test(body) ||
+    /(^|[;\s])text-indent\s*:\s*-\d{3,}/i.test(body)
+  )) {
+    kinds.push('suspect');
+  }
+  return kinds;
+}
+
+/** 선택자 목록(쉼표 구분) 중 마지막 복합 선택자가 정확히 .gnb-nav 인 것이 있는가 */
+function selectorTargetsGnbNav(selectorList) {
+  return selectorList.split(',').some((sel) => {
+    const last = sel.trim().split(/\s*[>+~]\s*|\s+/).pop();
+    return last === '.gnb-nav';
+  });
+}
+
+/**
+ * CSS 의 @media (max-width) 블록 안에서 .gnb-nav 를 숨기는 규칙의 숨김 방식 목록 (중괄호 매칭).
+ * 쉼표 선택자는 앞뒤 어느 위치든 본다. 하위 선택자(.gnb .gnb-nav)도 마지막 요소가 .gnb-nav 면 대상이다.
+ */
+function gnbNavHidingOnMobile(css) {
+  const found = [];
+  const clean = css.replace(/\/\*[\s\S]*?\*\//g, '');
   const re = /@media\s*\(\s*max-width:\s*\d+px\s*\)\s*\{/g;
   let m;
-  while ((m = re.exec(css))) {
+  while ((m = re.exec(clean))) {
     let depth = 1;
     let i = re.lastIndex;
-    while (i < css.length && depth > 0) {
-      if (css[i] === '{') depth += 1;
-      else if (css[i] === '}') depth -= 1;
+    while (i < clean.length && depth > 0) {
+      if (clean[i] === '{') depth += 1;
+      else if (clean[i] === '}') depth -= 1;
       i += 1;
     }
-    const block = css.slice(re.lastIndex, i - 1);
-    if (/(^|[\s,}])\.gnb-nav\s*\{[^}]*display:\s*none/.test(block)) return true;
+    const block = clean.slice(re.lastIndex, i - 1);
+    const ruleRe = /([^{}]+)\{([^{}]*)\}/g;
+    let r;
+    while ((r = ruleRe.exec(block))) {
+      if (!selectorTargetsGnbNav(r[1])) continue;
+      hidingKindsOf(r[2]).forEach((k) => { if (!found.includes(k)) found.push(k); });
+    }
   }
-  return false;
+  return found;
+}
+
+/** CSS 의 @media 블록 중 .gnb-nav 를 숨기는 것이 있는지 */
+function cssHidesGnbNavOnMobile(css) {
+  return gnbNavHidingOnMobile(css).length > 0;
 }
 
 /**
@@ -552,6 +599,8 @@ module.exports = {
   inspectPage,
   resolveHref,
   extractPrimaryLinks,
+  cssHidesGnbNavOnMobile,
+  gnbNavHidingOnMobile,
   hasGnbMarkup,
   checkAll,
   summarize,
