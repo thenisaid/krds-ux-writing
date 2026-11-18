@@ -4,12 +4,14 @@
  *
  * shared/nav-definition.js 의 정의로부터 정적 GNB 마크업 조각을 만들고,
  * 각 HTML 의 마커 구간(<!-- gnb:start --> … <!-- gnb:end -->)과 대조·갱신한다.
+ * 모바일 드로어용 두 번째 마커 쌍(<!-- drawer-nav:start --> … <!-- drawer-nav:end -->)은 독립적으로 읽고 갱신한다.
  *
  * 모드 (기본 실행은 아무 파일도 쓰지 않는다 = --dry-run):
  *   --dry-run        무엇이 바뀔지 출력만 한다 (기본값)
  *   --check          정의와 어긋난 페이지 수·목록을 출력한다 (마이그레이션 진행도). 어긋남이 있으면 종료코드 1
  *   --write          마커 구간이 있는 파일만 실제로 갱신한다 (유일한 쓰기 모드)
  *   --print <file>   해당 파일에 대해 생성될 마크업 조각을 출력한다
+ *   --print-drawer <file>  해당 파일에 대해 생성될 모바일 드로어 조각을 출력한다
  *   --root <dir>     대상 루트 (기본: 현재 디렉터리). 사본에서 시험할 때 사용
  *   --json           --check 결과를 JSON 으로 출력한다
  *
@@ -26,6 +28,19 @@ const NAV = require('../shared/nav-definition.js');
 const MARKER_START = '<!-- gnb:start -->';
 const MARKER_END = '<!-- gnb:end -->';
 const MARKER_RE = /^([ \t]*)<!-- gnb:start -->[\s\S]*?<!-- gnb:end -->/m;
+
+// 모바일 드로어(사이드바 안)용 두 번째 마커 쌍. gnb 쌍과 독립적으로 읽고 갱신한다.
+const DRAWER_MARKER_START = '<!-- drawer-nav:start -->';
+const DRAWER_MARKER_END = '<!-- drawer-nav:end -->';
+const DRAWER_MARKER_RE = /^([ \t]*)<!-- drawer-nav:start -->[\s\S]*?<!-- drawer-nav:end -->/m;
+
+// 드로어 랜드마크 라벨. 데스크톱 GNB('섹션 내비게이션')·2차('세부 메뉴')와 겹치지 않아야 한다.
+const DRAWER_ARIA_LABEL = '사이트 메뉴';
+
+const MARKER_KINDS = {
+  gnb: { start: MARKER_START, end: MARKER_END, re: MARKER_RE },
+  drawer: { start: DRAWER_MARKER_START, end: DRAWER_MARKER_END, re: DRAWER_MARKER_RE },
+};
 
 // ─── 1. 마크업 생성 ─────────────────────────────────────────────────────────
 
@@ -75,6 +90,42 @@ function renderFragment(file) {
   return lines;
 }
 
+/**
+ * 모바일 드로어(aside#mainSidebar 첫 자식)용 사이트 메뉴 조각의 줄 배열. 분류되지 않은 파일은 null.
+ * 1차 탭 4개는 항상, 현재 섹션에 2차 탭이 있으면 해당 1차 항목 아래 <ul class="drawer-sublist"> 로 항상 펼쳐 둔다.
+ * 라벨·href·aria-current 는 정의(NAV)에서만 읽는다.
+ */
+function renderDrawerFragment(file) {
+  const entry = NAV.PAGE_MAP[file];
+  if (!entry) return null;
+
+  const current = NAV.ariaCurrentFor(NAV.pathForFile(file));
+  const lines = [];
+
+  lines.push('<nav class="drawer-nav" aria-label="' + escapeAttr(DRAWER_ARIA_LABEL) + '">');
+  lines.push('  <ul class="drawer-list">');
+  NAV.PRIMARY_TABS.forEach((tab) => {
+    const aria = tab.id === current.tabId && current.tab ? ' aria-current="' + current.tab + '"' : '';
+    const link = '<a href="' + escapeAttr(tab.href) + '" class="drawer-link mobile-menu-link"' + aria + '>' + escapeText(tab.label) + '</a>';
+    const subs = tab.id === current.tabId ? NAV.SECONDARY_TABS[tab.id] || [] : [];
+    if (!subs.length) {
+      lines.push('    <li>' + link + '</li>');
+      return;
+    }
+    lines.push('    <li>' + link);
+    lines.push('      <ul class="drawer-sublist">');
+    subs.forEach((sub) => {
+      const subAria = sub.id === current.subId && current.sub ? ' aria-current="' + current.sub + '"' : '';
+      lines.push('        <li><a href="' + escapeAttr(sub.href) + '" class="drawer-sublink"' + subAria + '>' + escapeText(sub.label) + '</a></li>');
+    });
+    lines.push('      </ul>');
+    lines.push('    </li>');
+  });
+  lines.push('  </ul>');
+  lines.push('</nav>');
+  return lines;
+}
+
 function indentLines(lines, indent) {
   return lines.map((line) => indent + line).join('\n');
 }
@@ -85,28 +136,85 @@ function countOf(html, needle) {
   return html.split(needle).length - 1;
 }
 
-/** 마커 상태: {state:'none'|'ok'|'malformed', indent, current} */
-function readMarkerRegion(html) {
-  const starts = countOf(html, MARKER_START);
-  const ends = countOf(html, MARKER_END);
+/**
+ * 마커 상태: {state:'none'|'ok'|'malformed', indent, current, index}
+ * kind: 'gnb'(기본) | 'drawer'. 쌍은 종류별로 정확히 1개일 때만 ok 다.
+ */
+function readMarkerRegion(html, kind) {
+  const marker = MARKER_KINDS[kind || 'gnb'];
+  const starts = countOf(html, marker.start);
+  const ends = countOf(html, marker.end);
   if (starts === 0 && ends === 0) return { state: 'none' };
-  if (starts !== 1 || ends !== 1 || html.indexOf(MARKER_START) > html.indexOf(MARKER_END)) {
+  if (starts !== 1 || ends !== 1 || html.indexOf(marker.start) > html.indexOf(marker.end)) {
     return { state: 'malformed' };
   }
-  const match = html.match(MARKER_RE);
+  const match = html.match(marker.re);
   if (!match) return { state: 'malformed' };
-  return { state: 'ok', indent: match[1], current: match[0] };
+  return { state: 'ok', indent: match[1], current: match[0], index: match.index };
 }
 
-/** 마커 구간을 생성 결과로 바꾼 새 HTML. 마커가 없거나 깨졌으면 null. */
+/** 마커 구간 하나를 lines 로 바꾼 새 HTML (구간은 ok 라고 가정) */
+function replaceRegion(html, kind, region, lines) {
+  const marker = MARKER_KINDS[kind];
+  const indent = region.indent;
+  const replacement = indent + marker.start + '\n' + indentLines(lines, indent) + '\n' + indent + marker.end;
+  return html.replace(marker.re, () => replacement);
+}
+
+/** 마커 구간을 생성 결과로 바꾼 새 HTML. 마커가 없거나 깨졌으면 null. (gnb 구간 전용) */
 function applyFragment(html, file) {
-  const region = readMarkerRegion(html);
+  const region = readMarkerRegion(html, 'gnb');
   if (region.state !== 'ok') return null;
   const lines = renderFragment(file);
   if (!lines) return null;
-  const indent = region.indent;
-  const replacement = indent + MARKER_START + '\n' + indentLines(lines, indent) + '\n' + indent + MARKER_END;
-  return html.replace(MARKER_RE, () => replacement);
+  return replaceRegion(html, 'gnb', region, lines);
+}
+
+/** 드로어 마커 구간을 생성 결과로 바꾼 새 HTML. 드로어 마커가 없거나 깨졌으면 null. */
+function applyDrawerFragment(html, file) {
+  const region = readMarkerRegion(html, 'drawer');
+  if (region.state !== 'ok') return null;
+  const lines = renderDrawerFragment(file);
+  if (!lines) return null;
+  return replaceRegion(html, 'drawer', region, lines);
+}
+
+/**
+ * 두 마커 쌍의 상태를 함께 본다.
+ * state: 'none'(둘 다 없음) | 'malformed'(어느 쪽이든 깨짐, 또는 두 구간이 겹침) | 'ok'(적어도 하나 정상)
+ */
+function readAllMarkers(html) {
+  const gnb = readMarkerRegion(html, 'gnb');
+  const drawer = readMarkerRegion(html, 'drawer');
+  let state;
+  if (gnb.state === 'malformed' || drawer.state === 'malformed') state = 'malformed';
+  else if (gnb.state === 'none' && drawer.state === 'none') state = 'none';
+  else state = 'ok';
+  if (state === 'ok' && gnb.state === 'ok' && drawer.state === 'ok') {
+    const gnbEnd = gnb.index + gnb.current.length;
+    const drawerEnd = drawer.index + drawer.current.length;
+    if (gnb.index < drawerEnd && drawer.index < gnbEnd) state = 'malformed';
+  }
+  return { state, gnb, drawer };
+}
+
+/**
+ * 정상인 마커 구간을 모두 생성 결과로 바꾼 새 HTML (gnb 와 drawer 는 서로 독립).
+ * 마커가 하나도 없거나 어느 쪽이든 깨졌거나 미분류 파일이면 null.
+ */
+function applyAll(html, file) {
+  const markers = readAllMarkers(html);
+  if (markers.state !== 'ok') return null;
+  let next = html;
+  if (markers.gnb.state === 'ok') {
+    next = applyFragment(next, file);
+    if (next === null) return null;
+  }
+  if (markers.drawer.state === 'ok') {
+    next = applyDrawerFragment(next, file);
+    if (next === null) return null;
+  }
+  return next;
 }
 
 // ─── 3. 기존 HTML 의 의미 추출 (마커가 없는 현재 상태 대조용) ──────────────
@@ -374,7 +482,7 @@ function checkAll(root) {
       return { file, status: 'missing', reasons: ['missing-file'], semanticOk: false, details: {} };
     }
     const html = fs.readFileSync(abs, 'utf8');
-    const region = readMarkerRegion(html);
+    const region = readAllMarkers(html);
     const inspected = inspectPage(html, file, root);
     const reasons = inspected.reasons.slice();
     let status;
@@ -385,7 +493,7 @@ function checkAll(root) {
       status = 'malformed';
       reasons.push('markers');
     } else {
-      const expected = applyFragment(html, file);
+      const expected = applyAll(html, file);
       status = expected === html ? 'in-sync' : 'drift';
       if (status === 'drift') reasons.push('sync');
     }
@@ -475,10 +583,10 @@ function planSync(root) {
     const abs = path.join(root, file);
     if (!fs.existsSync(abs)) return { file, action: 'missing' };
     const html = fs.readFileSync(abs, 'utf8');
-    const region = readMarkerRegion(html);
+    const region = readAllMarkers(html);
     if (region.state === 'none') return { file, action: 'skip-no-markers' };
     if (region.state === 'malformed') return { file, action: 'skip-malformed' };
-    const next = applyFragment(html, file);
+    const next = applyAll(html, file);
     return { file, action: next === html ? 'up-to-date' : 'update', next };
   });
 }
@@ -504,10 +612,19 @@ const ACTION_LABELS = {
 // ─── 6. CLI ─────────────────────────────────────────────────────────────────
 
 function parseArgs(argv) {
-  const opts = { mode: null, root: process.cwd(), json: false, print: null, help: false, errors: [] };
+  const opts = { mode: null, root: process.cwd(), json: false, print: null, printKind: 'gnb', help: false, errors: [] };
   const setMode = (mode) => {
     if (opts.mode && opts.mode !== mode) opts.errors.push('모드는 하나만 지정할 수 있습니다: --' + opts.mode + ' 와 --' + mode);
     opts.mode = mode;
+  };
+  let printFlag = null;
+  // --print 와 --print-drawer 는 서로 다른 조각을 가리키므로 함께 쓰면 어느 쪽인지 모호하다.
+  const setPrint = (file, kind, flag) => {
+    if (printFlag && printFlag !== flag) opts.errors.push('모드는 하나만 지정할 수 있습니다: ' + printFlag + ' 와 ' + flag);
+    printFlag = flag;
+    setMode('print');
+    opts.print = file;
+    opts.printKind = kind;
   };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -523,16 +640,21 @@ function parseArgs(argv) {
     } else if (arg === '--print') {
       i += 1;
       if (!argv[i]) opts.errors.push('--print 에 파일 경로가 필요합니다');
-      else { setMode('print'); opts.print = argv[i]; }
+      else { setPrint(argv[i], 'gnb', '--print'); }
+    } else if (arg === '--print-drawer') {
+      i += 1;
+      if (!argv[i]) opts.errors.push('--print-drawer 에 파일 경로가 필요합니다');
+      else { setPrint(argv[i], 'drawer', '--print-drawer'); }
     } else opts.errors.push('알 수 없는 옵션: ' + arg);
   }
   return opts;
 }
 
 const USAGE = [
-  '사용법: node scripts/sync-site-nav.js [--dry-run | --check | --write | --print <file>] [--root <dir>] [--json]',
+  '사용법: node scripts/sync-site-nav.js [--dry-run | --check | --write | --print <file> | --print-drawer <file>] [--root <dir>] [--json]',
   '  (모드 없음) = --dry-run: 아무 파일도 쓰지 않는다',
-  '  --write 는 마커 구간이 이미 있는 파일만 갱신한다 (1단계에서는 마커를 삽입하지 않음)',
+  '  --write 는 마커 구간(gnb, drawer-nav)이 이미 있는 파일만 갱신한다 (마커를 삽입하지 않음)',
+  '  --print-drawer 는 모바일 드로어 조각(<!-- drawer-nav:start --> … end)을 출력한다',
 ].join('\n');
 
 function main(argv, out) {
@@ -543,9 +665,12 @@ function main(argv, out) {
   const mode = opts.mode || 'dry-run';
 
   if (mode === 'print') {
-    const lines = renderFragment(opts.print.replace(/^\.?\//, ''));
+    const file = opts.print.replace(/^\.?\//, '');
+    const drawer = opts.printKind === 'drawer';
+    const lines = drawer ? renderDrawerFragment(file) : renderFragment(file);
     if (!lines) { log('오류: 분류되지 않았거나 면제된 파일입니다: ' + opts.print); return 2; }
-    log(MARKER_START + '\n' + lines.join('\n') + '\n' + MARKER_END);
+    const marker = MARKER_KINDS[opts.printKind];
+    log(marker.start + '\n' + lines.join('\n') + '\n' + marker.end);
     return 0;
   }
 
@@ -593,9 +718,15 @@ if (require.main === module) {
 module.exports = {
   MARKER_START,
   MARKER_END,
+  DRAWER_MARKER_START,
+  DRAWER_MARKER_END,
   renderFragment,
+  renderDrawerFragment,
   readMarkerRegion,
+  readAllMarkers,
   applyFragment,
+  applyDrawerFragment,
+  applyAll,
   inspectPage,
   resolveHref,
   extractPrimaryLinks,
