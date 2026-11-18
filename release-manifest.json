@@ -1,7 +1,7 @@
 {
   "$comment": "이 저장소가 만들어내는 배포 번들(bundle)별 명시적 allowlist. scripts/verify-release-manifest.js가 이 파일을 읽어 실제 npm pack 결과 및 offline-app/ 디렉터리 내용과 대조한다. 새 파일을 배포 대상에 추가하려면 이 파일을 먼저 수정해야 한다 — 그래야 리뷰 없이 조용히 번들이 커지는 것을 막을 수 있다.",
   "forbidden": {
-    "$comment": "어떤 번들에도 절대 포함되면 안 되는 경로 접두사. 웹 데모(.vercelignore)·npm(package.json files)·offline-app(아래 offline-app 섹션) 세 배포 경로 모두에 공통 적용.",
+    "$comment": "어떤 번들에도 절대 포함되면 안 되는 경로 접두사. 웹 데모(.vercelignore)·npm(package.json files)·offline-app(아래 offline-app 섹션) 세 배포 경로 모두에 공통 적용. b2g-service-package/는 2026-11-18 저장소에서 삭제됐으나 재유입 방지용으로 항목을 남긴다(해당 경로가 없으면 매치되지 않아 검증 동작에 영향 없음).",
     "prefixes": [
       "research/",
       "b2g-service-package/",
