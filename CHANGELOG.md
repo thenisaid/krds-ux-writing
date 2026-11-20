@@ -25,7 +25,6 @@ All notable changes to this project will be documented in this file.
 - Product-boundary separation for a government-agency offline deployment: new `offline-app/` (rule-based lint only, no AI/network/history/URL-share), Rule Pack import with schema validation, minimal Electron scaffold with hardened `BrowserWindow` settings.
 - Closed a GitHub Pages/Vercel/npm exposure gap where `research/`, `b2g-service-package/`, and `offline-app/` could have been served or packaged publicly.
 - `LICENSE`, `NOTICE`, `SECURITY.md` added; `pnpm-lock.yaml` removed in favor of a single npm lockfile; two high-severity dev-dependency advisories (nanoid, postcss) resolved.
-- Full detail: `research/2026-08-27-overnight-delivery-report.md`.
 
 ## [0.1.0.2] - 2026-05-07
 

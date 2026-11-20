@@ -17,9 +17,6 @@
 # research/public-service-survey-expanded.md
 # (corpus/index.html, dictionary/full.html이 직접 링크함).
 exclude:
-  - research/2026-08-20-offline-release-benchmark.md
-  - research/2026-08-21-security-review.md
-  - research/2026-08-27-overnight-delivery-report.md
   - research/agency-rule-pack-template.md
   - research/ai-vs-rules-validation-2026-08-20.md
   - research/et3-data-governance-2026-08-20.md
@@ -27,7 +24,6 @@ exclude:
   - research/mcst-terms-candidates.md
   - research/mcst-terms-review.md
   - research/mcst-terms-scored.json
-  - research/phase4-runtime-verification.md
   - research/raw/
   - offline-app/
   # 내부 도구 2개 — 오너 확정(2026-11-17)으로 웹 게시 제외, 저장소에는 유지
