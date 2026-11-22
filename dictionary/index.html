@@ -397,12 +397,18 @@
       #dictTable thead th:nth-child(3), #dictTable tbody td:nth-child(3) { display: none; }
     }
   </style>
+  <link rel="stylesheet" href="../shared/drawer.css">
 </head>
 <body>
 
 <a href="#main-content" class="skip-link">본문으로 이동</a>
 
 <header class="gnb">
+  <button class="gnb-icon-btn gnb-hamburger" id="gnbHamburger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mainSidebar" type="button">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+  </button>
   <a href="/krds-ux-writing/" class="gnb-logo" aria-label="KRDS UX Writing 가이드라인 홈">
     <span class="gnb-logo-mark" aria-hidden="true">K</span>
     <span>UX Writing</span>
@@ -417,6 +423,26 @@
     <button class="gnb-icon-btn" id="themeToggle" aria-label="다크 모드로 전환" type="button"></button>
   </div>
 </header>
+
+<aside class="sidebar site-drawer" id="mainSidebar" aria-label="사이트 메뉴">
+  <!-- drawer-nav:start -->
+  <nav class="drawer-nav" aria-label="사이트 메뉴">
+    <ul class="drawer-list">
+      <li><a href="/krds-ux-writing/principles/" class="drawer-link mobile-menu-link">원칙</a></li>
+      <li><a href="/krds-ux-writing/dictionary/" class="drawer-link mobile-menu-link" aria-current="true">사전</a>
+        <ul class="drawer-sublist">
+          <li><a href="/krds-ux-writing/dictionary/" class="drawer-sublink" aria-current="page">대체어 사전</a></li>
+          <li><a href="/krds-ux-writing/dictionary/full.html" class="drawer-sublink">전체 공개본</a></li>
+          <li><a href="/krds-ux-writing/corpus/" class="drawer-sublink">코퍼스</a></li>
+        </ul>
+      </li>
+      <li><a href="/krds-ux-writing/case-studies/" class="drawer-link mobile-menu-link">사례</a></li>
+      <li><a href="/krds-ux-writing/lint.html" class="drawer-link mobile-menu-link">도구</a></li>
+    </ul>
+  </nav>
+  <!-- drawer-nav:end -->
+</aside>
+<div class="sidebar-backdrop"></div>
 
 <section class="hero">
   <div class="hero-tag">
