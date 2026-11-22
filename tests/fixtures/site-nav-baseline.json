@@ -21,10 +21,10 @@
       "offenders": {
         "archive.html": "unmarked",
         "before-after.html": "unmarked",
-        "case-studies/index.html": "unmarked",
-        "corpus/index.html": "unmarked",
-        "dictionary/full.html": "unmarked",
-        "dictionary/index.html": "unmarked",
+        "case-studies/index.html": "partial",
+        "corpus/index.html": "partial",
+        "dictionary/full.html": "partial",
+        "dictionary/index.html": "partial",
         "generator/index.html": "unmarked",
         "index.html": "unmarked",
         "lint.html": "unmarked"
