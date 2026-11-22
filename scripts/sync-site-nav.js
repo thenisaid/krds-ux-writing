@@ -37,6 +37,9 @@ const DRAWER_MARKER_RE = /^([ \t]*)<!-- drawer-nav:start -->[\s\S]*?<!-- drawer-
 // 드로어 랜드마크 라벨. 데스크톱 GNB('섹션 내비게이션')·2차('세부 메뉴')와 겹치지 않아야 한다.
 const DRAWER_ARIA_LABEL = '사이트 메뉴';
 
+// 모바일 드로어 규칙(.gnb-nav 숨김 포함)을 담는 공유 CSS. 페이지가 이 중 하나를 링크하면 드로어 마커가 필요하다.
+const SHARED_CSS_FILES = ['style.css', 'drawer.css'];
+
 const MARKER_KINDS = {
   gnb: { start: MARKER_START, end: MARKER_END, re: MARKER_RE },
   drawer: { start: DRAWER_MARKER_START, end: DRAWER_MARKER_END, re: DRAWER_MARKER_RE },
@@ -442,11 +445,13 @@ function inspectPage(html, file, root) {
   const aliases = mobileLabels.filter((l) => !allLabels.has(l));
   const inlineCss = (html.match(/<style\b[^>]*>[\s\S]*?<\/style>/gi) || []).join('\n');
   let sharedCss = '';
-  if (/shared\/style\.css/.test(html)) {
+  // 페이지가 링크하는 공유 CSS(style.css, drawer.css)를 모두 읽어 합친다. 링크하지 않는 파일은 읽지 않는다.
+  SHARED_CSS_FILES.forEach((name) => {
+    if (!new RegExp('shared\\/' + name.replace('.', '\\.')).test(html)) return;
     try {
-      sharedCss = fs.readFileSync(path.join(root, 'shared', 'style.css'), 'utf8');
+      sharedCss += '\n' + fs.readFileSync(path.join(root, 'shared', name), 'utf8');
     } catch (e) { /* 공유 CSS 가 없으면 인라인만 본다 */ }
-  }
+  });
   const hidesNav = cssHidesGnbNavOnMobile(inlineCss) || cssHidesGnbNavOnMobile(sharedCss);
   // CSS 가 모바일에서 .gnb-nav 를 숨기면, 모든 1차 탭이 모바일 메뉴(.mobile-menu-link)에 있어야 한다.
   // 모바일 메뉴 자체가 없으면(예: 햄버거가 LNB 만 여는 페이지) 4개 모두 도달 불가로 센다.
@@ -458,6 +463,11 @@ function inspectPage(html, file, root) {
   if (aliases.length || missingOnMobile.length) reasons.push('mobile-menu');
 
   return { reasons, details };
+}
+
+/** 페이지가 모바일 드로어용 공유 CSS 를 링크하는가 (드로어 마커를 요구할지 결정) */
+function linksSharedDrawerCss(html) {
+  return SHARED_CSS_FILES.some((name) => new RegExp('shared\\/' + name.replace('.', '\\.')).test(html));
 }
 
 function hasGnbMarkup(html) {
@@ -473,8 +483,11 @@ function hasGnbMarkup(html) {
 
 /**
  * 모든 PAGE_MAP 페이지를 점검한다.
- * status: 'in-sync'(마커 있고 바이트 동일) | 'drift'(마커 있고 다름) | 'malformed' | 'unmarked'(마커 없음)
+ * status: 'in-sync'(필요한 마커가 모두 있고 바이트 동일) | 'drift'(마커 있고 다름) | 'partial'(마커는 있으나 필요한 쪽이 빠짐)
+ *         | 'malformed' | 'unmarked'(마커 없음)
  */
+const NON_SEMANTIC_REASONS = ['markers', 'sync', 'gnb-marker-missing', 'drawer-marker-missing'];
+
 function checkAll(root) {
   const pages = Object.keys(NAV.PAGE_MAP).map((file) => {
     const abs = path.join(root, file);
@@ -493,11 +506,21 @@ function checkAll(root) {
       status = 'malformed';
       reasons.push('markers');
     } else {
-      const expected = applyAll(html, file);
-      status = expected === html ? 'in-sync' : 'drift';
-      if (status === 'drift') reasons.push('sync');
+      // in-sync 는 gnb 마커가 ok 이고, 공유 CSS(style.css·drawer.css)를 링크하면 드로어 마커도 ok 일 때만 가능하다.
+      // 링크하지 않는 페이지(예: index.html 의 자체 모바일 메뉴)는 드로어 마커를 요구하지 않는다.
+      const missing = [];
+      if (region.gnb.state !== 'ok') missing.push('gnb-marker-missing');
+      if (linksSharedDrawerCss(html) && region.drawer.state !== 'ok') missing.push('drawer-marker-missing');
+      if (missing.length) {
+        status = 'partial';
+        reasons.push('markers', ...missing);
+      } else {
+        const expected = applyAll(html, file);
+        status = expected === html ? 'in-sync' : 'drift';
+        if (status === 'drift') reasons.push('sync');
+      }
     }
-    const semanticReasons = reasons.filter((r) => r !== 'markers' && r !== 'sync');
+    const semanticReasons = reasons.filter((r) => !NON_SEMANTIC_REASONS.includes(r));
     return { file, status, reasons, semanticOk: semanticReasons.length === 0, details: inspected.details };
   });
 
@@ -520,6 +543,8 @@ const REASON_LABELS = {
   subnav: '2차 탭 없음',
   'mobile-menu': '모바일 메뉴 라벨',
   markers: '마커 구간 없음',
+  'gnb-marker-missing': 'gnb 마커 없음',
+  'drawer-marker-missing': '드로어 마커 없음',
   sync: '마커 구간이 생성 결과와 다름',
   'missing-file': '파일 없음',
 };
@@ -733,6 +758,7 @@ module.exports = {
   cssHidesGnbNavOnMobile,
   gnbNavHidingOnMobile,
   hasGnbMarkup,
+  linksSharedDrawerCss,
   checkAll,
   summarize,
   formatCheckReport,
