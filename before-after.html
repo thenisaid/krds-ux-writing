@@ -42,6 +42,7 @@
   --color-warning-50: #92580a;
   --color-warning-10: #fdf3dc;
   --bg:          var(--color-gray-0);
+  --surface:     var(--bg); /* 공유 드로어 CSS 의 배경(--d-bg)이 읽는 변수 */
   --bg-subtle:   var(--color-gray-5);
   --bg-strong:   var(--color-gray-90);
   --border:      var(--color-gray-10);
@@ -496,6 +497,7 @@ footer{
   @page{margin:2cm}
 }
 </style>
+<link rel="stylesheet" href="shared/drawer.css">
 </head>
 <body>
 
@@ -503,6 +505,11 @@ footer{
 
 <!-- GNB -->
 <header class="gnb" role="banner">
+  <button class="gnb-icon-btn gnb-hamburger" id="gnbHamburger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mainSidebar" type="button">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+  </button>
   <a href="/krds-ux-writing/" class="gnb-logo" aria-label="KRDS UX Writing 가이드라인 홈">
     <span class="gnb-logo-mark" aria-hidden="true">K</span>
     <span>UX Writing</span>
@@ -525,6 +532,27 @@ footer{
     </button>
   </div>
 </header>
+
+<aside class="sidebar site-drawer" id="mainSidebar" aria-label="사이트 메뉴">
+  <!-- drawer-nav:start -->
+  <nav class="drawer-nav" aria-label="사이트 메뉴">
+    <ul class="drawer-list">
+      <li><a href="/krds-ux-writing/principles/" class="drawer-link mobile-menu-link">원칙</a></li>
+      <li><a href="/krds-ux-writing/dictionary/" class="drawer-link mobile-menu-link">사전</a></li>
+      <li><a href="/krds-ux-writing/case-studies/" class="drawer-link mobile-menu-link">사례</a></li>
+      <li><a href="/krds-ux-writing/lint.html" class="drawer-link mobile-menu-link" aria-current="true">도구</a>
+        <ul class="drawer-sublist">
+          <li><a href="/krds-ux-writing/prompt-library.html" class="drawer-sublink">프롬프트</a></li>
+          <li><a href="/krds-ux-writing/before-after.html" class="drawer-sublink" aria-current="page">전후 비교</a></li>
+          <li><a href="/krds-ux-writing/lint.html" class="drawer-sublink">린터</a></li>
+          <li><a href="/krds-ux-writing/generator/" class="drawer-sublink">생성기</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+  <!-- drawer-nav:end -->
+</aside>
+<div class="sidebar-backdrop"></div>
 
 <main id="main">
 
@@ -860,6 +888,7 @@ footer{
 <script src="shared/base-path.js"></script>
 <script src="jargon-dictionary.js"></script>
 <script src="krds-lint.js"></script>
+<script src="shared/drawer.js"></script>
 <script>
 (function () {
   'use strict';
