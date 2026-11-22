@@ -166,6 +166,17 @@
       .site-header .gnb-nav-link { padding: 6px 7px; font-size: 12px; }
     }
 
+    /* 모바일 드로어(shared/drawer.css)와 함께 쓰는 보정.
+       위 .site-header .gnb-nav(명시도 0,2,0)가 drawer.css 의 .gnb-nav { display:none }(0,1,0)을 이기므로
+       같은 명시도로 다시 숨긴다. 탭이 숨으면 .gnb-nav 의 margin-left:auto 도 사라지므로 테마 버튼이 오른쪽 끝을 맡는다. */
+    @media (max-width: 900px) {
+      /* 드로어(160)·backdrop(150)보다 위에 둬서 열린 채로도 햄버거·테마 버튼을 누를 수 있게 한다
+         (drawer.css 의 .gnb { z-index:200 } 은 이 페이지의 .site-header 에 적용되지 않는다) */
+      .site-header { z-index: 200; }
+      .site-header .gnb-nav { display: none; }
+      .site-header #genThemeToggle { margin-left: auto; }
+    }
+
     /* ===== 화면 전환 ===== */
     .screen { display: none; flex: 1; padding-bottom: 48px; }
     .screen.active { display: block; }
@@ -829,6 +840,7 @@
       .output-card { page-break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
     }
   </style>
+  <link rel="stylesheet" href="../shared/drawer.css">
 </head>
 <body>
 <a href="#main-content" class="skip-link">본문으로 이동</a>
@@ -837,6 +849,11 @@
   <!-- 헤더 -->
   <header class="site-header">
     <div class="inner">
+      <button class="gnb-icon-btn gnb-hamburger" id="gnbHamburger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mainSidebar" type="button">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+          <path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
       <a href="../index.html" class="site-name" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;">
         <span class="logo-badge" aria-hidden="true">K</span>
         KRDS
@@ -858,6 +875,27 @@
       </button>
     </div>
   </header>
+
+  <aside class="sidebar site-drawer" id="mainSidebar" aria-label="사이트 메뉴">
+    <!-- drawer-nav:start -->
+    <nav class="drawer-nav" aria-label="사이트 메뉴">
+      <ul class="drawer-list">
+        <li><a href="/krds-ux-writing/principles/" class="drawer-link mobile-menu-link">원칙</a></li>
+        <li><a href="/krds-ux-writing/dictionary/" class="drawer-link mobile-menu-link">사전</a></li>
+        <li><a href="/krds-ux-writing/case-studies/" class="drawer-link mobile-menu-link">사례</a></li>
+        <li><a href="/krds-ux-writing/lint.html" class="drawer-link mobile-menu-link" aria-current="true">도구</a>
+          <ul class="drawer-sublist">
+            <li><a href="/krds-ux-writing/prompt-library.html" class="drawer-sublink">프롬프트</a></li>
+            <li><a href="/krds-ux-writing/before-after.html" class="drawer-sublink">전후 비교</a></li>
+            <li><a href="/krds-ux-writing/lint.html" class="drawer-sublink">린터</a></li>
+            <li><a href="/krds-ux-writing/generator/" class="drawer-sublink" aria-current="page">생성기</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+    <!-- drawer-nav:end -->
+  </aside>
+  <div class="sidebar-backdrop"></div>
 
   <main class="container" id="main-content" aria-label="UX Writing 가이드라인 생성기">
 
@@ -1204,6 +1242,7 @@
 <script src="../jargon-dictionary.js"></script>
 <script src="../krds-lint.js"></script>
 <script src="app.js"></script>
+<script src="../shared/drawer.js"></script>
 <script>
 (function() {
   var btn = document.getElementById('genThemeToggle');
