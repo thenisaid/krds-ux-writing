@@ -255,9 +255,9 @@ describe('페이지 계약', () => {
     expect(both).toEqual([]);
   });
 
-  it('drawer.js 를 로드하는 페이지는 archive.html·before-after.html 이다', () => {
+  it('drawer.js 를 로드하는 페이지는 archive.html·before-after.html·lint.html·generator/index.html 이다', () => {
     const pages = ALL_HTML.filter((f) => loadsDrawer(fs.readFileSync(path.join(ROOT, f), 'utf8'))).sort();
-    expect(pages).toEqual(['archive.html', 'before-after.html']);
+    expect(pages).toEqual(['archive.html', 'before-after.html', 'generator/index.html', 'lint.html']);
   });
 
   describe.each(['archive.html', 'before-after.html'])('%s', (file) => {
@@ -281,5 +281,54 @@ describe('페이지 계약', () => {
       expect(html).not.toMatch(/\sonclick=/);
       expect(html).toMatch(/<script src="shared\/drawer\.js"><\/script>/);
     });
+  });
+
+  // C3: 인라인 스크립트가 있거나 페이지 전용 스크립트(app.js, lint-ui.js)가 있는 2쪽. 로드 순서가 중요하다.
+  describe.each([
+    { file: 'lint.html', src: 'shared/drawer.js', prior: ['lint-ui.js', 'rulepack-validator.js', 'krds-lint.js'] },
+    { file: 'generator/index.html', src: '../shared/drawer.js', prior: ['app.js', '../krds-lint.js', '../shared/base-path.js'] },
+  ])('$file (C3)', ({ file, src, prior }) => {
+    const html = fs.readFileSync(path.join(ROOT, file), 'utf8');
+    const scriptTags = [...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*>/g)].map((m) => m[1]);
+    const srcIndex = (needle) => scriptTags.findIndex((s) => s.replace(/\?.*$/, '').replace(/^\.\//, '') === needle);
+
+    it('drawer.js 를 정확히 한 번 로드하고 nav.js 는 로드하지 않는다', () => {
+      expect(count(html, /shared\/drawer\.js/g)).toBe(1);
+      expect(html).toContain('<script src="' + src + '"></script>');
+      expect(html).not.toMatch(/shared\/nav\.js/);
+    });
+
+    it('drawer.js 는 기존 스크립트(페이지 스크립트·린터·base-path) 뒤, 즉 마지막 외부 스크립트다', () => {
+      const drawerAt = srcIndex(src);
+      expect(drawerAt).toBe(scriptTags.length - 1);
+      prior.forEach((name) => {
+        const at = srcIndex(name);
+        expect(at, name).toBeGreaterThanOrEqual(0);
+        expect(at, name).toBeLessThan(drawerAt);
+      });
+    });
+
+    it('햄버거·aside#mainSidebar·.sidebar-backdrop·드로어 마커가 각각 정확히 1개이고 테마 토글 id 는 그대로다', () => {
+      expect(count(html, /id="gnbHamburger"/g)).toBe(1);
+      expect(count(html, /<aside\b[^>]*id="mainSidebar"/g)).toBe(1);
+      expect(count(html, /class="sidebar-backdrop"/g)).toBe(1);
+      expect(count(html, /<!-- drawer-nav:start -->/g)).toBe(1);
+      expect(count(html, /<!-- drawer-nav:end -->/g)).toBe(1);
+      expect(count(html, /id="(themeToggle|genThemeToggle)"/g)).toBe(1);
+    });
+
+    it('인라인 <script> 를 새로 늘리지 않는다(CSP 해시 목록은 그대로) 그리고 onclick 이 없다', () => {
+      const csp = html.match(/script-src[^;]*/)[0];
+      expect(csp).toContain("'sha256-nVj/NnPbJL5e5wJ+7LC+cqhLvjQRyCIQRCka3ELZVak='");
+      expect(count(csp, /sha256-/g)).toBe(1);
+      expect(html).not.toMatch(/\sonclick=/);
+    });
+  });
+
+  it('lint.html 은 드로어 링크(/krds-ux-writing/…)를 재작성하는 shared/base-path.js 를 page 스크립트보다 먼저 한 번 로드한다', () => {
+    const html = fs.readFileSync(path.join(ROOT, 'lint.html'), 'utf8');
+    expect(count(html, /shared\/base-path\.js/g)).toBe(1);
+    expect(html.indexOf('shared/base-path.js')).toBeLessThan(html.indexOf('lint-ui.js'));
+    expect(html.indexOf('shared/base-path.js')).toBeLessThan(html.indexOf('shared/drawer.js'));
   });
 });
