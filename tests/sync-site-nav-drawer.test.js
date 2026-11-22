@@ -347,22 +347,92 @@ describe('CLI: 드로어 마커 인식', () => {
     expect(snapshot(tmpRoot)).toEqual(before);
   });
 
-  it('--check: gnb 구간이 최신이어도 드로어 구간이 어긋나면 drift, 둘 다 최신이면 in-sync', () => {
+  // 판정 규칙: in-sync = gnb 마커 ok + 생성 결과와 동일, 그리고 shared/style.css·drawer.css 를 링크하면 드로어 마커도 ok + 동일.
+  const STYLE_LINK = '<link rel="stylesheet" href="shared/style.css">\n';
+  const DRAWER_LINK = '<link rel="stylesheet" href="shared/drawer.css">\n';
+  const statusOf = (file) => SYNC.checkAll(tmpRoot).pages.find((p) => p.file === file);
+
+  it('--check: gnb·드로어 둘 다 있고 style.css 를 링크할 때, 드로어 구간이 어긋나면 drift, 둘 다 최신이면 in-sync', () => {
     const gnbHtml = SYNC.applyFragment(GNB('x'), 'lint.html');
-    put('lint.html', gnbHtml + DRAWER('<nav>stale</nav>'));
-    let page = SYNC.checkAll(tmpRoot).pages.find((p) => p.file === 'lint.html');
+    put('lint.html', STYLE_LINK + gnbHtml + DRAWER('<nav>stale</nav>'));
+    let page = statusOf('lint.html');
     expect(page.status).toBe('drift');
     expect(page.reasons).toContain('sync');
 
-    put('lint.html', SYNC.applyAll(gnbHtml + DRAWER('<nav>stale</nav>'), 'lint.html'));
-    page = SYNC.checkAll(tmpRoot).pages.find((p) => p.file === 'lint.html');
+    put('lint.html', SYNC.applyAll(STYLE_LINK + gnbHtml + DRAWER('<nav>stale</nav>'), 'lint.html'));
+    page = statusOf('lint.html');
     expect(page.status).toBe('in-sync');
   });
 
-  it('--check: 드로어 마커만 있는 파일도 마커 없음(unmarked)이 아니다', () => {
-    put('lint.html', DRAWER('<nav>x</nav>'));
-    const page = SYNC.checkAll(tmpRoot).pages.find((p) => p.file === 'lint.html');
-    expect(page.status).toBe('drift');
+  it('--check: 드로어 마커만 있고 drawer.css 를 링크하면 partial(gnb 마커 없음) — in-sync·drift 가 아니다', () => {
+    put('lint.html', DRAWER_LINK + SYNC.applyDrawerFragment(DRAWER('x'), 'lint.html'));
+    const page = statusOf('lint.html');
+    expect(page.status).toBe('partial');
+    expect(page.reasons).toContain('markers');
+    expect(page.reasons).toContain('gnb-marker-missing');
+    expect(page.reasons).not.toContain('drawer-marker-missing');
+    expect(page.reasons).not.toContain('sync');
+  });
+
+  it('--check: 드로어 마커만 있고 공유 CSS 링크가 없어도 gnb 마커가 없으면 partial', () => {
+    put('lint.html', SYNC.applyDrawerFragment(DRAWER('x'), 'lint.html'));
+    const page = statusOf('lint.html');
+    expect(page.status).toBe('partial');
+    expect(page.reasons).toContain('gnb-marker-missing');
+  });
+
+  it('--check: gnb 마커만 있고 style.css 를 링크하면 partial(드로어 마커 없음)', () => {
+    put('lint.html', STYLE_LINK + SYNC.applyFragment(GNB('x'), 'lint.html'));
+    const page = statusOf('lint.html');
+    expect(page.status).toBe('partial');
+    expect(page.reasons).toContain('markers');
+    expect(page.reasons).toContain('drawer-marker-missing');
+    expect(page.reasons).not.toContain('gnb-marker-missing');
+  });
+
+  it('--check: gnb 마커만 있고 drawer.css 를 링크해도 partial(드로어 마커 없음)', () => {
+    put('lint.html', DRAWER_LINK + SYNC.applyFragment(GNB('x'), 'lint.html'));
+    expect(statusOf('lint.html').status).toBe('partial');
+  });
+
+  it('--check: gnb 마커만 있고 어떤 공유 CSS 도 링크하지 않으면 드로어 마커를 요구하지 않아 in-sync (index.html 같은 경우)', () => {
+    put('lint.html', SYNC.applyFragment(GNB('x'), 'lint.html'));
+    const page = statusOf('lint.html');
+    expect(page.status).toBe('in-sync');
+    expect(page.reasons).not.toContain('markers');
+  });
+
+  it('--check: 마커가 하나도 없으면 링크와 무관하게 unmarked', () => {
+    put('lint.html', STYLE_LINK + '<p>x</p>');
+    expect(statusOf('lint.html').status).toBe('unmarked');
+    put('lint.html', '<p>x</p>');
+    expect(statusOf('lint.html').status).toBe('unmarked');
+  });
+
+  it('--check: 한쪽 마커가 깨지면 다른 쪽이 정상이어도 malformed', () => {
+    put('lint.html', STYLE_LINK + SYNC.applyFragment(GNB('x'), 'lint.html') + '<!-- drawer-nav:start -->\n');
+    expect(statusOf('lint.html').status).toBe('malformed');
+    put('lint.html', STYLE_LINK + '<!-- gnb:start -->\n' + DRAWER('x'));
+    expect(statusOf('lint.html').status).toBe('malformed');
+  });
+
+  it('--check: partial 은 동기화 미완료로 세고, 요약·사유 집계에 사유 라벨이 나온다', () => {
+    put('lint.html', DRAWER_LINK + SYNC.applyDrawerFragment(DRAWER('x'), 'lint.html'));
+    const result = SYNC.checkAll(tmpRoot);
+    const summary = SYNC.summarize(result);
+    expect(summary.notInSync.map((p) => p.file)).toContain('lint.html');
+    expect(summary.reasonCounts['gnb-marker-missing']).toBe(1);
+    const report = SYNC.formatCheckReport(result);
+    expect(report).toContain('gnb 마커 없음');
+    expect(report).toMatch(/\[(마커|어긋남)\] lint\.html/);
+  });
+
+  it('--write 는 partial 페이지의 갱신 동작이 이전과 같다(있는 마커 구간만 갱신, 없는 마커는 삽입하지 않음)', () => {
+    const dest = put('lint.html', DRAWER_LINK + DRAWER('<nav>old</nav>'));
+    capture(['--write', '--root', tmpRoot]);
+    const written = fs.readFileSync(dest, 'utf8');
+    expect(written).toContain('class="drawer-nav"');
+    expect(written).not.toContain('gnb:start');
   });
 });
 
@@ -377,18 +447,34 @@ describe('기존 gnb 마커 동작 회귀', () => {
     expect(SYNC.applyAll(html, 'lint.html')).toBe(SYNC.applyFragment(html, 'lint.html'));
   });
 
-  it('저장소의 실제 HTML 중 shared/style.css 를 쓰는 11개(PR-B 이전 대상)만 드로어 마커를 갖는다', () => {
+  it('저장소의 실제 HTML 중 shared/style.css 또는 shared/drawer.css 를 링크하는 페이지만 드로어 마커를 갖는다(나머지는 none)', () => {
     Object.keys(NAV.PAGE_MAP).forEach((file) => {
       const html = fs.readFileSync(path.join(ROOT, file), 'utf8');
-      const migrated = /shared\/style\.css/.test(html);
+      const migrated = /shared\/(style|drawer)\.css/.test(html);
       expect(SYNC.readMarkerRegion(html, 'drawer').state, file).toBe(migrated ? 'ok' : 'none');
     });
   });
 
-  it('저장소의 실제 HTML 에 대해 readAllMarkers 는 gnb 단독 판정과 같다', () => {
+  it('저장소의 실제 HTML 에 대해 readAllMarkers 는 gnb 단독 판정과 같다. 단 gnb 마커 없이 드로어 마커만 가진 페이지(C1 의 4쪽)는 ok', () => {
     Object.keys(NAV.PAGE_MAP).forEach((file) => {
       const html = fs.readFileSync(path.join(ROOT, file), 'utf8');
-      expect(SYNC.readAllMarkers(html).state, file).toBe(SYNC.readMarkerRegion(html, 'gnb').state);
+      const gnb = SYNC.readMarkerRegion(html, 'gnb').state;
+      const drawer = SYNC.readMarkerRegion(html, 'drawer').state;
+      const expected = gnb === 'none' && drawer === 'ok' ? 'ok' : gnb;
+      expect(SYNC.readAllMarkers(html).state, file).toBe(expected);
+    });
+  });
+
+  it('저장소의 실제 HTML: gnb 마커 없이 드로어 마커만 가진 페이지는 in-sync 가 아니라 partial 이다', () => {
+    const result = SYNC.checkAll(ROOT);
+    result.pages.forEach((p) => {
+      const html = fs.readFileSync(path.join(ROOT, p.file), 'utf8');
+      const gnb = SYNC.readMarkerRegion(html, 'gnb').state;
+      const drawer = SYNC.readMarkerRegion(html, 'drawer').state;
+      if (gnb !== 'ok' && drawer === 'ok') {
+        expect(p.status, p.file).toBe('partial');
+        expect(p.reasons, p.file).toContain('gnb-marker-missing');
+      }
     });
   });
 });

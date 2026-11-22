@@ -1,0 +1,91 @@
+/*
+ * shared/drawer.css — 모바일 햄버거 드로어 (인라인 <style> 만 쓰는 페이지용)
+ *
+ * shared/style.css 의 드로어 규칙(.gnb-hamburger, .drawer-*, .sidebar, .sidebar-backdrop)을 복사하되,
+ * 색은 페이지마다 이름이 다른 변수(--bg/--text/--accent… 또는 --color-*)를 폴백 체인으로 받는다.
+ * 반드시 페이지의 인라인 <style> 뒤에 링크한다 (@media 규칙이 인라인 .gnb-nav { display:flex } 를 이겨야 함).
+ * 중단점은 900px 하나뿐이다. 열기·닫기·포커스 가두기는 shared/nav.js 가 처리한다.
+ */
+
+/* 요소 위에서 변수를 정의해 그 페이지의 변수가 해석되게 한다. 리터럴은 변수가 전혀 없을 때만 쓰인다. */
+.site-drawer,
+.gnb-hamburger {
+  --d-bg: var(--surface, var(--color-surface, #fff));
+  --d-text: var(--text, var(--color-text, #1e2124));
+  --d-muted: var(--text-muted, var(--color-text-muted, #6d7882));
+  --d-accent: var(--accent, var(--color-primary, #256ef4));
+  --d-border: var(--border, var(--color-border, #e6e8ea));
+  --d-hover: rgba(127, 127, 127, 0.14);
+}
+/* 다크 배경에서 #256ef4 는 14px 글자 대비가 4.5:1 에 못 미친다 — KRDS primary-30 으로 올린다. */
+[data-theme="dark"] .site-drawer { --d-accent: #86aff9; }
+
+/* ---- 기본(901px 이상): 햄버거·드로어·backdrop 은 화면과 레이아웃에서 빠진다 ---- */
+.gnb-hamburger { display: none; }
+.site-drawer { display: none; }
+.sidebar-backdrop { display: none; }
+.drawer-nav { display: none; }
+
+.drawer-list, .drawer-sublist { list-style: none; margin: 0; padding: 0; }
+.drawer-link, .drawer-sublink {
+  display: flex; align-items: center;
+  min-height: 44px; padding: 0 20px;
+  font-size: 14px; font-weight: 500; color: var(--d-text);
+  text-decoration: none; transition: color 0.15s, background 0.15s;
+}
+.drawer-sublink { padding-left: 36px; font-size: 13px; color: var(--d-muted); }
+.drawer-link:hover, .drawer-sublink:hover { color: var(--d-text); background: var(--d-hover); text-decoration: none; }
+/* 포커스 링: 드로어가 overflow 스크롤이라 바깥 offset 은 잘리므로 안쪽으로 그린다. */
+.drawer-link:focus-visible, .drawer-sublink:focus-visible,
+.gnb-hamburger:focus-visible {
+  outline: 2px solid var(--d-accent); outline-offset: -2px;
+}
+/* 현재 위치: 색 단독 구분 금지 — 굵기 700 + 2px 밑줄을 함께 쓴다. */
+.drawer-link[aria-current], .drawer-sublink[aria-current] {
+  color: var(--d-accent); font-weight: 700;
+  text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px;
+}
+
+@media (max-width: 900px) {
+  /* 햄버거 하나만 헤더에 남기고, 1차·2차 탭은 드로어로 옮긴다 */
+  .gnb-hamburger {
+    display: flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px; margin-right: 8px; margin-left: -8px; flex-shrink: 0;
+  }
+  .gnb-nav { display: none; }
+  .gnb-subnav { display: none; }
+  .drawer-nav { display: block; padding-bottom: 8px; }
+
+  /* 헤더(z-index 200)가 드로어·backdrop 위에 남아 햄버거로 다시 닫을 수 있다. 4쪽 인라인 값(100)은 여기서 올린다. */
+  .gnb { z-index: 200; }
+
+  .site-drawer {
+    display: block;
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: 264px; max-width: 80vw;
+    overflow-y: auto;
+    padding-top: 84px;
+    background: var(--d-bg); color: var(--d-text);
+    border-right: 1px solid var(--d-border);
+    box-shadow: 2px 0 24px rgba(0, 0, 0, 0.12);
+    transform: translateX(-110%);
+    /* 닫힌 드로어는 Tab 으로 도달되지 않게 visibility 로 숨긴다(닫을 때만 슬라이드가 끝난 뒤 적용) */
+    visibility: hidden;
+    transition: transform 0.25s ease, visibility 0s linear 0.25s;
+    z-index: 160;
+  }
+  .site-drawer.open { transform: none; visibility: visible; transition: transform 0.25s ease, visibility 0s; }
+
+  .sidebar-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 150;
+  }
+  .sidebar-backdrop.open { display: block; }
+}
+
+/* 움직임 줄이기 설정: 드로어 슬라이드·링크 전환 제거 */
+@media (prefers-reduced-motion: reduce) {
+  .site-drawer, .site-drawer.open { transition: none; }
+  .drawer-link, .drawer-sublink { transition: none; }
+}
