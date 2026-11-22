@@ -270,3 +270,105 @@ describe('archive.html 모바일 헤더(2줄) 보정', () => {
     expect(media).toMatch(/aside\.site-drawer\s*\{\s*padding-top:\s*108px/);
   });
 });
+
+// C3: lint.html·generator/index.html — 인라인 CSS 의 선택자가 drawer.css 와 충돌해 보정 규칙을 둔 2쪽.
+const C3_PAGES = [
+  { file: 'lint.html', css: 'shared/drawer.css', header: /<nav class="gnb" aria-label="주 내비게이션">/, themeId: 'themeToggle' },
+  { file: 'generator/index.html', css: '../shared/drawer.css', header: /<header class="site-header">/, themeId: 'genThemeToggle' },
+];
+
+describe.each(C3_PAGES)('$file (C3 drawer.js 쪽)', ({ file, css, header, themeId }) => {
+  const html = read(file);
+  const inline = (html.match(/<style\b[^>]*>[\s\S]*?<\/style>/gi) || []).join('\n');
+
+  it('인라인 <style> 뒤에 drawer.css 를 정확히 한 번 링크한다', () => {
+    const link = '<link rel="stylesheet" href="' + css + '">';
+    expect(count(html, /href="[^"]*shared\/drawer\.css"/g)).toBe(1);
+    expect(html).toContain(link);
+    expect(html.indexOf(link)).toBeGreaterThan(html.lastIndexOf('</style>'));
+    expect(html.indexOf(link)).toBeLessThan(html.indexOf('</head>'));
+  });
+
+  it('햄버거(aria-controls=mainSidebar)는 헤더 안 첫 요소, aside·backdrop 은 헤더 바로 뒤', () => {
+    const btn = html.match(/<button[^>]*id="gnbHamburger"[^>]*>/)[0];
+    expect(btn).toContain('aria-controls="mainSidebar"');
+    expect(btn).toContain('aria-expanded="false"');
+    expect(btn).toContain('aria-label="메뉴 열기"');
+    expect(btn).toContain('type="button"');
+    expect(btn).toMatch(/class="gnb-icon-btn gnb-hamburger"/);
+    const open = html.match(header)[0];
+    let inner = html.slice(html.indexOf(open) + open.length).trimStart();
+    if (file === 'generator/index.html') inner = inner.replace(/^<div class="inner">\s*/, '');
+    expect(inner.startsWith('<button class="gnb-icon-btn gnb-hamburger"')).toBe(true);
+    const closing = file === 'lint.html' ? '</nav>\n\n<aside' : '</header>\n\n  <aside';
+    expect(html).toContain(closing + ' class="sidebar site-drawer" id="mainSidebar" aria-label="사이트 메뉴">');
+    expect(html).toMatch(/<\/aside>\s*<div class="sidebar-backdrop"><\/div>/);
+  });
+
+  it('드로어 마커 구간은 생성기 결과와 바이트 동일하다', () => {
+    expect(SYNC.readMarkerRegion(html, 'drawer').state).toBe('ok');
+    expect(SYNC.applyDrawerFragment(html, file)).toBe(html);
+  });
+
+  it('gnb 마커는 아직 없고(데스크톱 헤더 통일은 후속) 데스크톱 .gnb-nav 마크업은 그대로 있다', () => {
+    expect(html).not.toContain('<!-- gnb:start -->');
+    expect(count(html, /<nav class="gnb-nav"/g)).toBe(1);
+  });
+
+  it('nav.js 는 로드하지 않고 테마 토글 id 는 하나다', () => {
+    expect(html).not.toMatch(/shared\/nav\.js/);
+    expect(count(html, new RegExp('id="' + themeId + '"', 'g'))).toBe(1);
+  });
+
+  it('인라인 CSS 에 일반 .sidebar 규칙이 없어 .site-drawer 와 충돌하지 않는다', () => {
+    expect(inline).not.toMatch(/(^|[\s,}])\.sidebar\b/);
+  });
+
+  it('drawer.css 가 .gnb-nav 를 숨기고 드로어에 1차 탭 4개가 모두 있어 [11] 에 걸리지 않는다', () => {
+    const r = SYNC.inspectPage(html, file, ROOT);
+    expect(r.details.mobileMissing).toEqual([]);
+    expect(r.reasons).not.toContain('mobile-menu');
+  });
+});
+
+describe('lint.html 드로어 보정', () => {
+  const html = read('lint.html');
+  const inline = (html.match(/<style\b[^>]*>[\s\S]*?<\/style>/gi) || []).join('\n');
+
+  it('드로어 배경이 투명·흰색으로 떨어지지 않도록 --surface 를 페이지 배경(--bg)으로 정의한다', () => {
+    expect(inline).toMatch(/--surface:\s*var\(--bg\)/);
+  });
+
+  it('641~900px 에서도 .gnb-nav 가 숨은 뒤 테마 버튼을 오른쪽 끝으로 민다(900px 블록)', () => {
+    expect(inline).toMatch(/@media \(max-width: 900px\) \{\s*\.gnb-theme-btn \{ margin-left: auto; \}\s*\}/);
+  });
+
+  it('인라인 .gnb-nav 선택자는 단일 클래스(0,1,0)라 drawer.css 의 숨김 규칙이 순서만으로 이긴다', () => {
+    const selectors = [...inline.matchAll(/(^|\})\s*([^{}@]*\.gnb-nav\b[^{}]*)\{/g)].map((m) => m[2].trim());
+    selectors.forEach((sel) => expect(sel, sel).not.toMatch(/\.[\w-]+\s+\.gnb-nav\b/));
+  });
+});
+
+describe('generator/index.html 드로어 보정', () => {
+  const html = read('generator/index.html');
+  const inline = (html.match(/<style\b[^>]*>[\s\S]*?<\/style>/gi) || []).join('\n');
+  const block = inline.slice(inline.indexOf('@media (max-width: 900px)'), inline.indexOf('/* ===== 화면 전환 ===== */'));
+
+  it('.site-header .gnb-nav 의 명시도(0,2,0)가 drawer.css 를 이기므로 900px 이하에서 같은 명시도로 숨긴다', () => {
+    expect(inline).toMatch(/\.site-header \.gnb-nav \{\s*display: flex;/);
+    expect(block).toMatch(/\.site-header \.gnb-nav \{ display: none; \}/);
+  });
+
+  it('.site-header 를 드로어(160)·backdrop(150) 위로 올려 열린 채로도 햄버거·테마 버튼이 눌린다', () => {
+    const z = Number(block.match(/\.site-header \{ z-index: (\d+); \}/)[1]);
+    expect(z).toBeGreaterThan(160);
+  });
+
+  it('탭이 숨은 뒤 테마 버튼이 오른쪽 끝을 맡는다', () => {
+    expect(block).toMatch(/\.site-header #genThemeToggle \{ margin-left: auto; \}/);
+  });
+
+  it('인쇄에서는 .site-header 가 그대로 숨는다(드로어 요소는 drawer.css 가 숨김)', () => {
+    expect(inline).toMatch(/@media print \{\s*\.site-header,/);
+  });
+});

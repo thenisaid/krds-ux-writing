@@ -25,9 +25,9 @@
         "corpus/index.html": "partial",
         "dictionary/full.html": "partial",
         "dictionary/index.html": "partial",
-        "generator/index.html": "unmarked",
+        "generator/index.html": "partial",
         "index.html": "unmarked",
-        "lint.html": "unmarked"
+        "lint.html": "partial"
       }
     },
     "14-touch-target": {
