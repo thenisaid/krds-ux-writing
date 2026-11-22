@@ -19,8 +19,8 @@
     "12-sync": {
       "count": 9,
       "offenders": {
-        "archive.html": "unmarked",
-        "before-after.html": "unmarked",
+        "archive.html": "partial",
+        "before-after.html": "partial",
         "case-studies/index.html": "partial",
         "corpus/index.html": "partial",
         "dictionary/full.html": "partial",
