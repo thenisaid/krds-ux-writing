@@ -24,6 +24,7 @@
     --color-info-50: #1565c0;
     --color-info-10: #e3f2fd;
     --bg: #ffffff;
+    --surface: var(--bg); /* 공유 드로어 CSS 의 배경(--d-bg)이 읽는 변수 */
     --bg-subtle: #f8f7f5;
     --border: #e4e2df;
     --color-border-emphasis: #cdd1d5;
@@ -119,6 +120,12 @@
     .gnb-nav { order: 3; flex-basis: 100%; overflow-x: auto; scrollbar-width: none; gap: 4px; }
     .gnb-nav::-webkit-scrollbar { display: none; }
     .gnb-nav-link { padding: 6px 7px; font-size: 12px; flex-shrink: 0; min-height: 36px; }
+    .gnb-theme-btn { margin-left: auto; }
+  }
+
+  /* 공유 드로어(shared/drawer.css)가 901px 미만에서 .gnb-nav 를 숨기면 테마 버튼이 로고 옆에 떠 버린다.
+     위 640px 블록은 그 이하 폭만 덮으므로, 641~900px 에서도 버튼을 오른쪽 끝으로 민다. */
+  @media (max-width: 900px) {
     .gnb-theme-btn { margin-left: auto; }
   }
 
@@ -436,12 +443,18 @@
     #toast { transition: none; }
   }
 </style>
+<link rel="stylesheet" href="shared/drawer.css">
 </head>
 <body>
 <a href="#main" class="skip-link">본문으로 이동</a>
 
 <!-- GNB -->
 <nav class="gnb" aria-label="주 내비게이션">
+  <button class="gnb-icon-btn gnb-hamburger" id="gnbHamburger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mainSidebar" type="button">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+  </button>
   <a class="gnb-logo" href="./index.html">
     <span class="gnb-logo-icon" aria-hidden="true">K</span>
     KRDS
@@ -466,6 +479,27 @@
     </svg>
   </button>
 </nav>
+
+<aside class="sidebar site-drawer" id="mainSidebar" aria-label="사이트 메뉴">
+  <!-- drawer-nav:start -->
+  <nav class="drawer-nav" aria-label="사이트 메뉴">
+    <ul class="drawer-list">
+      <li><a href="/krds-ux-writing/principles/" class="drawer-link mobile-menu-link">원칙</a></li>
+      <li><a href="/krds-ux-writing/dictionary/" class="drawer-link mobile-menu-link">사전</a></li>
+      <li><a href="/krds-ux-writing/case-studies/" class="drawer-link mobile-menu-link">사례</a></li>
+      <li><a href="/krds-ux-writing/lint.html" class="drawer-link mobile-menu-link" aria-current="true">도구</a>
+        <ul class="drawer-sublist">
+          <li><a href="/krds-ux-writing/prompt-library.html" class="drawer-sublink">프롬프트</a></li>
+          <li><a href="/krds-ux-writing/before-after.html" class="drawer-sublink">전후 비교</a></li>
+          <li><a href="/krds-ux-writing/lint.html" class="drawer-sublink" aria-current="page">린터</a></li>
+          <li><a href="/krds-ux-writing/generator/" class="drawer-sublink">생성기</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+  <!-- drawer-nav:end -->
+</aside>
+<div class="sidebar-backdrop"></div>
 
 <!-- Hero -->
 <section class="hero">
@@ -649,10 +683,12 @@
 </footer>
 
 <div id="toast" role="status" aria-live="polite"></div>
+<script src="shared/base-path.js"></script>
 <script src="./jargon-dictionary.js?v=2"></script>
 <script src="./krds-lint.js?v=2"></script>
 <script src="./rulepack-schema.js?v=1"></script>
 <script src="./rulepack-validator.js?v=1"></script>
 <script src="./lint-ui.js?v=3"></script>
+<script src="shared/drawer.js"></script>
 </body>
 </html>
