@@ -282,7 +282,7 @@ describe('archive.html 모바일 헤더(2줄) 보정', () => {
 
 // C3: lint.html·generator/index.html — 인라인 CSS 의 선택자가 drawer.css 와 충돌해 보정 규칙을 둔 2쪽.
 const C3_PAGES = [
-  { file: 'lint.html', css: 'shared/drawer.css', header: /<nav class="gnb" aria-label="주 내비게이션">/, themeId: 'themeToggle' },
+  { file: 'lint.html', css: 'shared/drawer.css', header: /<header class="gnb" role="banner">/, themeId: 'themeToggle' },
   { file: 'generator/index.html', css: '../shared/drawer.css', header: /<header class="site-header">/, themeId: 'genThemeToggle' },
 ];
 
@@ -309,7 +309,7 @@ describe.each(C3_PAGES)('$file (C3 drawer.js 쪽)', ({ file, css, header, themeI
     let inner = html.slice(html.indexOf(open) + open.length).trimStart();
     if (file === 'generator/index.html') inner = inner.replace(/^<div class="inner">\s*/, '');
     expect(inner.startsWith('<button class="gnb-icon-btn gnb-hamburger"')).toBe(true);
-    const closing = file === 'lint.html' ? '</nav>\n\n<aside' : '</header>\n\n  <aside';
+    const closing = file === 'lint.html' ? '</header>\n\n<aside' : '</header>\n\n  <aside';
     expect(html).toContain(closing + ' class="sidebar site-drawer" id="mainSidebar" aria-label="사이트 메뉴">');
     expect(html).toMatch(/<\/aside>\s*<div class="sidebar-backdrop"><\/div>/);
   });
@@ -319,9 +319,14 @@ describe.each(C3_PAGES)('$file (C3 drawer.js 쪽)', ({ file, css, header, themeI
     expect(SYNC.applyDrawerFragment(html, file)).toBe(html);
   });
 
-  it('gnb 마커는 아직 없고(데스크톱 헤더 통일은 후속) 데스크톱 .gnb-nav 마크업은 그대로 있다', () => {
-    expect(html).not.toContain('<!-- gnb:start -->');
+  it('gnb 마커 1쌍이 있고 구간 안 .gnb-nav 는 1개이며 구간은 생성기 결과와 바이트 동일하다(D3)', () => {
+    expect(count(html, /<!-- gnb:start -->/g)).toBe(1);
+    expect(count(html, /<!-- gnb:end -->/g)).toBe(1);
+    expect(SYNC.readMarkerRegion(html, 'gnb').state).toBe('ok');
+    const region = SYNC.readMarkerRegion(html, 'gnb').current;
+    expect(count(region, /<nav class="gnb-nav"/g)).toBe(1);
     expect(count(html, /<nav class="gnb-nav"/g)).toBe(1);
+    expect(SYNC.applyFragment(html, file)).toBe(html);
   });
 
   it('nav.js 는 로드하지 않고 테마 토글 id 는 하나다', () => {

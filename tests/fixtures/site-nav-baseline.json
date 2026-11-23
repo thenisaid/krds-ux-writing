@@ -3,11 +3,8 @@
   "definitionVersion": "0.1.0",
   "items": {
     "10-logo": {
-      "count": 2,
-      "offenders": {
-        "generator/index.html": "count=0 []",
-        "lint.html": "count=1 [{\"ariaLabel\":false,\"target\":\"/\"}]"
-      }
+      "count": 0,
+      "offenders": {}
     },
     "11-mobile-menu": {
       "count": 1,
@@ -16,11 +13,9 @@
       }
     },
     "12-sync": {
-      "count": 3,
+      "count": 1,
       "offenders": {
-        "generator/index.html": "partial",
-        "index.html": "unmarked",
-        "lint.html": "partial"
+        "index.html": "unmarked"
       }
     },
     "14-touch-target": {
@@ -32,33 +27,24 @@
       }
     },
     "2-nav-landmark": {
-      "count": 2,
-      "offenders": {
-        "generator/index.html": "count=1 nested=false aria-label=\"주요 메뉴\"",
-        "lint.html": "count=1 nested=true aria-label=\"주요 메뉴\""
-      }
+      "count": 0,
+      "offenders": {}
     },
     "3-labels": {
-      "count": 3,
+      "count": 1,
       "offenders": {
-        "generator/index.html": "홈|원칙|사전|사례|Before/After|린터|생성기",
-        "index.html": "원칙|사전|사례|프롬프트|Before/After|린터|생성기",
-        "lint.html": "홈|원칙|사전|사례|Before/After|린터|생성기"
+        "index.html": "원칙|사전|사례|프롬프트|Before/After|린터|생성기"
       }
     },
     "4-hrefs": {
-      "count": 3,
+      "count": 1,
       "offenders": {
-        "generator/index.html": "/|/principles|/dictionary|/archive|/before-after|/lint|/generator",
-        "index.html": "/principles|/dictionary|/#case-studies|/prompt-library|/before-after|/lint|/generator",
-        "lint.html": "/|/principles|/dictionary|/archive|/before-after|/lint|/generator"
+        "index.html": "/principles|/dictionary|/#case-studies|/prompt-library|/before-after|/lint|/generator"
       }
     },
     "6-current": {
-      "count": 1,
-      "offenders": {
-        "generator/index.html": "expected=tools actual=홈,원칙,사전,사례,Before/After,린터,생성기[page]*"
-      }
+      "count": 0,
+      "offenders": {}
     },
     "7-color-only": {
       "count": 0,
