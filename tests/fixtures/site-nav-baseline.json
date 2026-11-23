@@ -3,9 +3,8 @@
   "definitionVersion": "0.1.0",
   "items": {
     "10-logo": {
-      "count": 3,
+      "count": 2,
       "offenders": {
-        "archive.html": "count=1 [{\"ariaLabel\":false,\"target\":\"/\"}]",
         "generator/index.html": "count=0 []",
         "lint.html": "count=1 [{\"ariaLabel\":false,\"target\":\"/\"}]"
       }
@@ -17,10 +16,8 @@
       }
     },
     "12-sync": {
-      "count": 5,
+      "count": 3,
       "offenders": {
-        "archive.html": "partial",
-        "before-after.html": "partial",
         "generator/index.html": "partial",
         "index.html": "unmarked",
         "lint.html": "partial"
@@ -35,38 +32,31 @@
       }
     },
     "2-nav-landmark": {
-      "count": 3,
+      "count": 2,
       "offenders": {
-        "archive.html": "count=1 nested=false aria-label=\"주요 메뉴\"",
         "generator/index.html": "count=1 nested=false aria-label=\"주요 메뉴\"",
         "lint.html": "count=1 nested=true aria-label=\"주요 메뉴\""
       }
     },
     "3-labels": {
-      "count": 5,
+      "count": 3,
       "offenders": {
-        "archive.html": "홈|원칙|사전|사례|Before/After|린터|생성기",
-        "before-after.html": "원칙|사전|사례|프롬프트|Before/After|린터|생성기",
         "generator/index.html": "홈|원칙|사전|사례|Before/After|린터|생성기",
         "index.html": "원칙|사전|사례|프롬프트|Before/After|린터|생성기",
         "lint.html": "홈|원칙|사전|사례|Before/After|린터|생성기"
       }
     },
     "4-hrefs": {
-      "count": 5,
+      "count": 3,
       "offenders": {
-        "archive.html": "/|/principles|/dictionary|/archive|/before-after|/lint|/generator",
-        "before-after.html": "/principles|/dictionary|/#case-studies|/prompt-library|/before-after|/lint|/generator",
         "generator/index.html": "/|/principles|/dictionary|/archive|/before-after|/lint|/generator",
         "index.html": "/principles|/dictionary|/#case-studies|/prompt-library|/before-after|/lint|/generator",
         "lint.html": "/|/principles|/dictionary|/archive|/before-after|/lint|/generator"
       }
     },
     "6-current": {
-      "count": 3,
+      "count": 1,
       "offenders": {
-        "archive.html": "expected=case-studies actual=홈,원칙,사전,사례[page]*,Before/After,린터,생성기",
-        "before-after.html": "expected=tools actual=원칙,사전,사례,프롬프트,Before/After[page]*,린터,생성기",
         "generator/index.html": "expected=tools actual=홈,원칙,사전,사례,Before/After,린터,생성기[page]*"
       }
     },

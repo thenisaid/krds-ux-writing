@@ -1,4 +1,4 @@
-// shared/gnb-desktop.css 와 이를 링크하는 4쪽(dictionary 2쪽·corpus·case-studies)의 데스크톱 GNB 계약 (D0·D1).
+// shared/gnb-desktop.css 와 이를 링크하는 6쪽(dictionary 2쪽·corpus·case-studies + archive·before-after)의 데스크톱 GNB 계약 (D0·D1·D2).
 import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -8,7 +8,13 @@ const require = createRequire(import.meta.url);
 const ROOT = path.resolve(__dirname, '..');
 const SYNC = require('../scripts/sync-site-nav.js');
 
-const PAGES = ['dictionary/index.html', 'dictionary/full.html', 'corpus/index.html', 'case-studies/index.html'];
+// D1: 하위 폴더 쪽(링크 ../shared/…). D2: 루트 쪽(링크 shared/…) — 헤더 구조가 서로 다르다.
+const SUB_PAGES = ['dictionary/index.html', 'dictionary/full.html', 'corpus/index.html', 'case-studies/index.html'];
+const ROOT_PAGES = ['archive.html', 'before-after.html'];
+const PAGES = [...SUB_PAGES, ...ROOT_PAGES];
+// 헤더 안에서 gnb:end 마커 뒤에 오는 첫 요소(마커가 이 앞에 있어야 한다). archive 는 .gnb-actions 가 없고 테마 버튼이 바로 온다.
+const AFTER_MARKER = { 'archive.html': 'class="gnb-theme-btn"' };
+const HEADER_OPEN = { 'archive.html': '<header class="gnb" role="banner">', 'before-after.html': '<header class="gnb" role="banner">' };
 // shared/style.css 를 쓰는 쪽은 같은 규칙이 이미 있어 이 CSS 를 링크하지 않는다.
 const STYLE_CSS_PAGES = [
   'principles/index.html', 'principles/components/index.html', 'principles/core-info/index.html',
@@ -98,13 +104,16 @@ describe('shared/gnb-desktop.css', () => {
 describe.each(PAGES)('%s', (file) => {
   const html = read(file);
 
-  it('(d) 인라인 <style> 뒤에 ../shared/gnb-desktop.css 를 정확히 한 번 링크한다', () => {
-    const link = '<link rel="stylesheet" href="../shared/gnb-desktop.css">';
+  it('(d) 인라인 <style> 뒤에 shared/gnb-desktop.css 를 정확히 한 번 링크한다', () => {
+    const link = '<link rel="stylesheet" href="' + (ROOT_PAGES.includes(file) ? '' : '../') + 'shared/gnb-desktop.css">';
     expect(count(html, /shared\/gnb-desktop\.css/g)).toBe(1);
     expect(html).toContain(link);
     expect(html.indexOf(link)).toBeGreaterThan(html.lastIndexOf('</style>'));
     expect(html.indexOf(link)).toBeLessThan(html.indexOf('</head>'));
-    expect(fs.existsSync(path.join(ROOT, path.dirname(file), '../shared/gnb-desktop.css'))).toBe(true);
+    expect(fs.existsSync(path.join(ROOT, path.dirname(file), ROOT_PAGES.includes(file) ? '' : '..', 'shared/gnb-desktop.css'))).toBe(true);
+    // 드로어 CSS 바로 뒤에 온다(두 파일의 규칙은 서로 다른 미디어 범위라 순서와 무관하지만, 위치를 고정한다).
+    expect(html.indexOf('shared/drawer.css')).toBeGreaterThan(-1);
+    expect(html.indexOf('shared/drawer.css')).toBeLessThan(html.indexOf(link));
   });
 
   it('(d) gnb:start/end 마커가 각각 정확히 1개이고 로고 </a> 뒤, .gnb-actions 앞에 있다', () => {
@@ -114,7 +123,9 @@ describe.each(PAGES)('%s', (file) => {
     const end = html.indexOf('<!-- gnb:end -->');
     expect(start).toBeGreaterThan(html.indexOf('class="gnb-logo"'));
     expect(start).toBeGreaterThan(html.indexOf('</a>', html.indexOf('class="gnb-logo"')));
-    expect(end).toBeLessThan(html.indexOf('class="gnb-actions"'));
+    const after = AFTER_MARKER[file] || 'class="gnb-actions"';
+    expect(html.indexOf(after)).toBeGreaterThan(-1);
+    expect(end).toBeLessThan(html.indexOf(after));
     expect(SYNC.readMarkerRegion(html, 'gnb').state).toBe('ok');
   });
 
@@ -132,8 +143,15 @@ describe.each(PAGES)('%s', (file) => {
     const region = SYNC.readMarkerRegion(html, 'gnb').current;
     expect(region).not.toContain('data-section');
     // 헤더 전체에도 남아 있지 않다.
-    const header = html.slice(html.indexOf('<header class="gnb">'), html.indexOf('</header>'));
+    const open = HEADER_OPEN[file] || '<header class="gnb">';
+    expect(html.indexOf(open)).toBeGreaterThan(-1);
+    const header = html.slice(html.indexOf(open), html.indexOf('</header>'));
     expect(header).not.toContain('data-section');
+    // 마커 구간 안에 .gnb-nav 는 정확히 1개(1차 탭), 마커 밖 헤더에는 .gnb-nav 가 없다(옛 탭이 남지 않음).
+    expect(count(region, /<nav class="gnb-nav"/g)).toBe(1);
+    const outside = header.replace(region, '');
+    expect(outside).not.toMatch(/class="gnb-nav"/);
+    expect(outside).not.toMatch(/class="gnb-nav-link/);
   });
 
   it('헤더의 다른 요소(로고·배지·테마 버튼·햄버거)는 그대로이고 로고 aria-label 이 정의와 같다', () => {
@@ -141,7 +159,8 @@ describe.each(PAGES)('%s', (file) => {
     expect(html).toContain('class="gnb-logo" aria-label="' + NAV.LOGO.ariaLabel + '"');
     expect(count(html, /id="themeToggle"/g)).toBe(1);
     expect(count(html, /id="gnbHamburger"/g)).toBe(1);
-    expect(count(html, /class="gnb-badge"/g)).toBe(1);
+    // 배지는 .gnb-actions 가 있는 쪽에만 있다(archive 는 원래 없다).
+    expect(count(html, /class="gnb-badge"/g)).toBe(file === 'archive.html' ? 0 : 1);
   });
 
   it('생성기는 이 쪽을 in-sync 로 본다(gnb·drawer 마커 모두 ok)', () => {
@@ -156,13 +175,13 @@ describe('(f) 이 CSS 를 링크하지 않는 페이지는 영향 없음', () =>
     expect(read(file)).not.toContain('gnb-desktop.css');
   });
 
-  it('D0·D1 범위 밖 쪽(index·archive·before-after·lint·generator)도 링크하지 않는다', () => {
-    ['index.html', 'archive.html', 'before-after.html', 'lint.html', 'generator/index.html'].forEach((f) => {
+  it('D0~D2 범위 밖 쪽(index·lint·generator)도 링크하지 않는다', () => {
+    ['index.html', 'lint.html', 'generator/index.html'].forEach((f) => {
       expect(read(f), f).not.toContain('gnb-desktop.css');
     });
   });
 
-  it('gnb-desktop.css 를 링크하는 쪽은 정확히 이 4쪽뿐이다', () => {
+  it('gnb-desktop.css 를 링크하는 쪽은 정확히 이 6쪽뿐이다', () => {
     const all = [];
     const walk = (dir) => {
       fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true }).forEach((e) => {
@@ -174,6 +193,7 @@ describe('(f) 이 CSS 를 링크하지 않는 페이지는 영향 없음', () =>
       });
     };
     walk('');
+    expect(all.length).toBe(6);
     expect(all.sort()).toEqual(PAGES.slice().sort());
   });
 
