@@ -31,14 +31,19 @@ describe('shared/gnb-desktop.css', () => {
   });
 
   it('(a2) 모든 규칙이 데스크톱 @media 안에 있다 — 최상위(미디어 밖)에 규칙이 없어 drawer.css 의 900px 이하 숨김을 덮지 않는다', () => {
-    // @media … { … } 블록을 모두 걷어낸 뒤 남는 것이 없어야 한다.
-    let rest = CSS_NO_COMMENT;
-    let prev;
-    do {
-      prev = rest;
-      rest = rest.replace(/@media[^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/g, '');
-    } while (rest !== prev);
-    expect(rest.trim()).toBe('');
+    // 최상위 블록(중괄호 깊이 0 에서 시작)의 머리글이 모두 @media 여야 한다. 중첩 @supports 도 허용한다.
+    const heads = [];
+    let depth = 0;
+    let buf = '';
+    for (const ch of CSS_NO_COMMENT) {
+      if (ch === '{') { if (depth === 0) heads.push(buf.trim()); depth += 1; buf = ''; }
+      else if (ch === '}') { depth -= 1; buf = ''; }
+      else if (depth === 0) buf += ch;
+    }
+    expect(depth).toBe(0);
+    expect(heads.length).toBeGreaterThan(0);
+    heads.forEach((h) => expect(h).toMatch(/^@media\s*\(\s*min-width:\s*901px\s*\)/));
+    expect(buf.trim()).toBe('');
   });
 
   it('(b) .gnb-subnav·[aria-current] 규칙이 있고, 현재 위치는 굵기 700 + 2px 밑줄을 함께 쓴다(색 단독 금지, 틴트 배경 없음)', () => {
@@ -72,8 +77,12 @@ describe('shared/gnb-desktop.css', () => {
     expect(CSS).toContain('--g-muted: var(--text-muted, var(--color-text-muted,');
     expect(CSS).toContain('--g-accent: var(--accent, var(--color-primary,');
     expect(CSS).toContain('--g-border: var(--border, var(--color-border,');
-    // 다크에서는 accent 를 KRDS primary-30 으로 올린다.
+    // 현재 위치 색: 라이트는 accent 에 본문색을 섞어(color-mix) 어둡게 해 4.5:1 을 확보하고, 다크는 accent(#86aff9) 를 그대로 쓴다.
     expect(CSS).toMatch(/\[data-theme="dark"\]\s+\.gnb\s*\{\s*--g-accent:\s*#86aff9/);
+    expect(CSS).toMatch(/--g-current:\s*color-mix\(in srgb,\s*var\(--g-accent\)\s*70%,\s*var\(--g-text\)\)/);
+    expect(CSS).toMatch(/\[data-theme="dark"\]\s+\.gnb\s*\{\s*--g-current:\s*var\(--g-accent\)/);
+    // 현재 위치 규칙은 --g-current 를 쓴다(--g-accent 아님).
+    expect(CSS_NO_COMMENT).toMatch(/\[aria-current\]\s*\{[^}]*color:\s*var\(--g-current\)/);
   });
 
   it('(c2) 새 JS·인라인 스크립트·onclick·!important 가 없다', () => {
