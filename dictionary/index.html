@@ -398,6 +398,7 @@
     }
   </style>
   <link rel="stylesheet" href="../shared/drawer.css">
+  <link rel="stylesheet" href="../shared/gnb-desktop.css">
 </head>
 <body>
 
@@ -413,11 +414,19 @@
     <span class="gnb-logo-mark" aria-hidden="true">K</span>
     <span>UX Writing</span>
   </a>
+  <!-- gnb:start -->
   <nav class="gnb-nav" aria-label="섹션 내비게이션">
-    <a href="/krds-ux-writing/principles/" class="gnb-nav-link" data-section="principles">원칙</a>
-    <a href="/krds-ux-writing/dictionary/" class="gnb-nav-link" data-section="dictionary">사전</a>
-    <a href="/krds-ux-writing/case-studies/" class="gnb-nav-link" data-section="case-studies">사례</a>
+    <a href="/krds-ux-writing/principles/" class="gnb-nav-link">원칙</a>
+    <a href="/krds-ux-writing/dictionary/" class="gnb-nav-link active" aria-current="true">사전</a>
+    <a href="/krds-ux-writing/case-studies/" class="gnb-nav-link">사례</a>
+    <a href="/krds-ux-writing/lint.html" class="gnb-nav-link">도구</a>
   </nav>
+  <nav class="gnb-subnav" aria-label="세부 메뉴">
+    <a href="/krds-ux-writing/dictionary/" class="gnb-subnav-link active" aria-current="page">대체어 사전</a>
+    <a href="/krds-ux-writing/dictionary/full.html" class="gnb-subnav-link">전체 공개본</a>
+    <a href="/krds-ux-writing/corpus/" class="gnb-subnav-link">코퍼스</a>
+  </nav>
+  <!-- gnb:end -->
   <div class="gnb-actions">
     <span class="gnb-badge">v2.0</span>
     <button class="gnb-icon-btn" id="themeToggle" aria-label="다크 모드로 전환" type="button"></button>

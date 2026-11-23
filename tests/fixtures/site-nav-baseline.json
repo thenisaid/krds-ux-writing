@@ -17,14 +17,10 @@
       }
     },
     "12-sync": {
-      "count": 9,
+      "count": 5,
       "offenders": {
         "archive.html": "partial",
         "before-after.html": "partial",
-        "case-studies/index.html": "partial",
-        "corpus/index.html": "partial",
-        "dictionary/full.html": "partial",
-        "dictionary/index.html": "partial",
         "generator/index.html": "partial",
         "index.html": "unmarked",
         "lint.html": "partial"
@@ -47,42 +43,30 @@
       }
     },
     "3-labels": {
-      "count": 9,
+      "count": 5,
       "offenders": {
         "archive.html": "홈|원칙|사전|사례|Before/After|린터|생성기",
         "before-after.html": "원칙|사전|사례|프롬프트|Before/After|린터|생성기",
-        "case-studies/index.html": "원칙|사전|사례",
-        "corpus/index.html": "원칙|사전|사례|코퍼스",
-        "dictionary/full.html": "원칙|사전|사례|코퍼스",
-        "dictionary/index.html": "원칙|사전|사례",
         "generator/index.html": "홈|원칙|사전|사례|Before/After|린터|생성기",
         "index.html": "원칙|사전|사례|프롬프트|Before/After|린터|생성기",
         "lint.html": "홈|원칙|사전|사례|Before/After|린터|생성기"
       }
     },
     "4-hrefs": {
-      "count": 9,
+      "count": 5,
       "offenders": {
         "archive.html": "/|/principles|/dictionary|/archive|/before-after|/lint|/generator",
         "before-after.html": "/principles|/dictionary|/#case-studies|/prompt-library|/before-after|/lint|/generator",
-        "case-studies/index.html": "/principles|/dictionary|/case-studies",
-        "corpus/index.html": "/principles|/dictionary|/case-studies|/corpus",
-        "dictionary/full.html": "/principles|/dictionary|/case-studies|/corpus",
-        "dictionary/index.html": "/principles|/dictionary|/case-studies",
         "generator/index.html": "/|/principles|/dictionary|/archive|/before-after|/lint|/generator",
         "index.html": "/principles|/dictionary|/#case-studies|/prompt-library|/before-after|/lint|/generator",
         "lint.html": "/|/principles|/dictionary|/archive|/before-after|/lint|/generator"
       }
     },
     "6-current": {
-      "count": 7,
+      "count": 3,
       "offenders": {
         "archive.html": "expected=case-studies actual=홈,원칙,사전,사례[page]*,Before/After,린터,생성기",
         "before-after.html": "expected=tools actual=원칙,사전,사례,프롬프트,Before/After[page]*,린터,생성기",
-        "case-studies/index.html": "expected=case-studies actual=원칙,사전,사례",
-        "corpus/index.html": "expected=dictionary actual=원칙,사전,사례,코퍼스",
-        "dictionary/full.html": "expected=dictionary actual=원칙,사전,사례,코퍼스",
-        "dictionary/index.html": "expected=dictionary actual=원칙,사전,사례",
         "generator/index.html": "expected=tools actual=홈,원칙,사전,사례,Before/After,린터,생성기[page]*"
       }
     },

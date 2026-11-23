@@ -125,10 +125,14 @@ describe.each(PAGES)('%s', (file) => {
     expect(SYNC.applyDrawerFragment(html, file)).toBe(html);
   });
 
-  it('(e) gnb 마커는 아직 없다(데스크톱 헤더 탭 통일은 후속 작업) — 헤더에 .gnb-nav 마크업은 그대로 있다', () => {
-    expect(html).not.toContain('<!-- gnb:start -->');
-    expect(html).not.toContain('<!-- gnb:end -->');
+  it('(e) gnb 마커가 각각 정확히 1개 있고(D1: 데스크톱 헤더 탭 통일), 마커 구간 안에 .gnb-nav 가 정확히 1개, 구간 밖에는 없다', () => {
+    expect(count(html, /<!-- gnb:start -->/g)).toBe(1);
+    expect(count(html, /<!-- gnb:end -->/g)).toBe(1);
     expect(count(html, /<nav class="gnb-nav"/g)).toBe(1);
+    const gnb = SYNC.readMarkerRegion(html, 'gnb');
+    expect(gnb.state).toBe('ok');
+    expect(gnb.current).toContain('<nav class="gnb-nav"');
+    expect(SYNC.applyFragment(html, file)).toBe(html);
   });
 
   it('(CSP) 새 인라인 스크립트·onclick 이 없고 shared/nav.js 는 한 번만 로드한다', () => {
