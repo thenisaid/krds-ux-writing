@@ -240,9 +240,14 @@ describe.each(ROOT_PAGES)('%s (drawer.js 쪽)', (file) => {
     expect(SYNC.applyDrawerFragment(html, file)).toBe(html);
   });
 
-  it('gnb 마커는 아직 없고 데스크톱 .gnb-nav 마크업은 그대로 있다', () => {
-    expect(html).not.toContain('<!-- gnb:start -->');
+  it('gnb 마커가 각각 정확히 1개 있고(D2: 데스크톱 헤더 탭 통일), 마커 구간 안에 .gnb-nav 가 정확히 1개, 구간 밖에는 없다', () => {
+    expect(count(html, /<!-- gnb:start -->/g)).toBe(1);
+    expect(count(html, /<!-- gnb:end -->/g)).toBe(1);
     expect(count(html, /<nav class="gnb-nav"/g)).toBe(1);
+    const gnb = SYNC.readMarkerRegion(html, 'gnb');
+    expect(gnb.state).toBe('ok');
+    expect(gnb.current).toContain('<nav class="gnb-nav"');
+    expect(SYNC.applyFragment(html, file)).toBe(html);
   });
 
   it('nav.js 는 로드하지 않고(이중 토글 방지) 테마 토글 id 는 하나다', () => {
