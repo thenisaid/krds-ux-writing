@@ -227,6 +227,42 @@ describe('inspectPage: 현재 마크업 대조', () => {
     expect(SYNC.inspectPage(html, file, ROOT).reasons).toEqual([]);
   });
 
+  describe('로고 링크 판정 (aria-label 은 정의와 같아야 한다)', () => {
+    const file = 'lint.html';
+    const frag = () => SYNC.renderFragment(file).join('\n');
+    const logo = (attrs) => `<a class="gnb-logo" ${attrs}>K</a>`;
+    const page = (logos) => `<header class="gnb">${logos}\n${frag()}</header>`;
+    const OK = `href="/krds-ux-writing/" aria-label="${NAV.LOGO.ariaLabel}"`;
+
+    it('정의 값과 같으면 logo 사유가 없다', () => {
+      expect(SYNC.inspectPage(page(logo(OK)), file, ROOT).reasons).not.toContain('logo');
+    });
+
+    it('옛 값(KRDS UX Writing 가이드라인 홈)이면 logo 사유가 잡힌다', () => {
+      const old = 'href="/krds-ux-writing/" aria-label="KRDS UX Writing 가이드라인 홈"';
+      expect(SYNC.inspectPage(page(logo(old)), file, ROOT).reasons).toContain('logo');
+    });
+
+    it('다른 aria-label 이면 logo 사유가 잡힌다', () => {
+      const other = 'href="/krds-ux-writing/" aria-label="홈"';
+      expect(SYNC.inspectPage(page(logo(other)), file, ROOT).reasons).toContain('logo');
+    });
+
+    it('aria-label 이 없으면 logo 사유가 잡힌다', () => {
+      expect(SYNC.inspectPage(page(logo('href="/krds-ux-writing/"')), file, ROOT).reasons).toContain('logo');
+    });
+
+    it('로고 0개·2개는 logo 사유가 잡힌다', () => {
+      expect(SYNC.inspectPage(page(''), file, ROOT).reasons).toContain('logo');
+      expect(SYNC.inspectPage(page(logo(OK) + logo(OK)), file, ROOT).reasons).toContain('logo');
+    });
+
+    it('href 가 사이트 루트가 아니면 logo 사유가 잡힌다', () => {
+      const bad = `href="/krds-ux-writing/lint.html" aria-label="${NAV.LOGO.ariaLabel}"`;
+      expect(SYNC.inspectPage(page(logo(bad)), file, ROOT).reasons).toContain('logo');
+    });
+  });
+
   it('탭 라벨을 바꾸면 labels 사유가 잡힌다', () => {
     const file = 'lint.html';
     const frag = SYNC.renderFragment(file).join('\n').replace('>사전<', '>용어집<');
