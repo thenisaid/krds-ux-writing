@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Logo accessible name now starts with the visible wordmark: `LOGO.ariaLabel` is `UXW KRDS UX Writing 가이드라인 홈` on all 20 pages (success criterion 2.5.3, Label in Name). `inspectPage` now requires the logo `aria-label` to equal the definition, and `tests/logo-label-in-name.test.js` pins the 11 pages whose visible `K` mark still leaves them unmet (`KNOWN_UNMET`, may only shrink).
 - `scripts/lint-delta.js` (decision logic, dependency-free) with `tests/lint-delta.test.js`, and `scripts/lint-delta-run.sh` (per-file loop called by the workflow).
 
 ## [0.1.2] - 2026-08-28
