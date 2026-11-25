@@ -159,6 +159,18 @@ body{
   .gnb-badge{display:none}
 }
 
+/* 헤더 일반 탭(1·2차) 글자 대비 — 이 페이지 헤더 배경(오프화이트 합성)에서 --text-muted(#6d7882)는 4.25:1 이라
+   4.5:1 에 못 미친다. --text-muted 자체는 본문(.page-hero-desc 등)이 쓰므로 건드리지 않고, 헤더 탭 전용 변수
+   --g-muted(2차 탭은 gnb-desktop.css 가 이 변수를 읽는다)를 라이트에서 한 단계 진한 gray-60(#58616a)으로 덮고,
+   1차 탭도 같은 변수를 읽게 한다. 다크는 기존 값(--text-muted)을 그대로 쓴다.
+   gnb-desktop.css 는 이 <style> 뒤에 링크돼 같은 .gnb(0,1,0)로는 져서 header.gnb(0,1,1)로 명시도를 높였다.
+   .gnb-nav-link 는 (0,1,0) 그대로라 :hover·[aria-current](0,2,0)의 색을 덮지 않는다. */
+@media (min-width: 901px) {
+  header.gnb { --g-muted: var(--color-gray-60); }
+  [data-theme="dark"] header.gnb { --g-muted: var(--text-muted); }
+  .gnb-nav-link { color: var(--g-muted); }
+}
+
 /* ─── Page Hero ─── */
 .page-hero{
   padding:56px 0 40px;
