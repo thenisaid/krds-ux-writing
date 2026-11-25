@@ -34,9 +34,10 @@
 
   // 로고 링크 규칙: 페이지당 정확히 1개, aria-label 필수, 도착지는 사이트 루트.
   // 로고 안쪽 그래픽(태극 SVG vs 'K' 마크)은 이 단계에서 정하지 않는다(생성 대상 아님).
+  // 접근성 이름은 보이는 글자 UXW 로 시작한다(WCAG 2.5.3 Label in Name).
   var LOGO = {
     href: BASE + '/',
-    ariaLabel: 'KRDS UX Writing 가이드라인 홈',
+    ariaLabel: 'UXW KRDS UX Writing 가이드라인 홈',
     rule: '페이지당 .gnb-logo 1개 · aria-label 필수 · href 는 사이트 루트(' + BASE + '/)'
   };
 

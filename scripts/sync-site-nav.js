@@ -426,8 +426,10 @@ function inspectPage(html, file, root) {
     ariaLabel: Boolean(l.attrs['aria-label']),
     target: resolveHref(file, l.attrs.href || ''),
   }));
+  // aria-label 은 '있다' 만이 아니라 정의(NAV.LOGO.ariaLabel)와 '같아야' 통과한다(WCAG 2.5.3, 단일 출처).
   const logoOk = logos.length === 1 &&
     Boolean(logos[0].attrs['aria-label']) &&
+    logos[0].attrs['aria-label'] === NAV.LOGO.ariaLabel &&
     resolveHref(file, logos[0].attrs.href || '') === '/';
   if (!logoOk) reasons.push('logo');
 

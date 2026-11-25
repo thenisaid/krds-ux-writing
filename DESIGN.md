@@ -421,7 +421,7 @@ lint.html 전용:
 | 마크 내부 빨강↔파랑(다크) | — | **1.03:1** | 〃 | 명도 차 거의 없음 — **색상(hue) 차에만 의존**. 형태 인식은 가능하나 색각 이상 사용자에게는 두 영역이 합쳐 보일 수 있다 (§9.7) |
 
 **해석**
-1. **빨강 `W`(텍스트) 는 라이트에서 AA 4.5:1 미달.** `W` 는 14px/800 이라 WCAG '큰 글자'(≥18.66px bold)에 해당하지 않아 4.5:1 이 필요하다. 그러나 `.gnb-logo` 는 `aria-label="KRDS UX Writing 가이드라인 홈"` 을 갖고 워드마크는 **로고(브랜드 마크)** 이므로 WCAG 1.4.3 의 **'로고타입(logotypes) 예외'** 대상이다. 따라서 규정 위반은 아니지만, 본문/링크 텍스트로 `#ed1a3b` 를 쓰는 것은 금지된다. 자동 대비 검사기는 이 항목을 위반으로 보고한다(Playwright 스캔에서 `w` 1건 검출).
+1. **빨강 `W`(텍스트) 는 라이트에서 AA 4.5:1 미달.** `W` 는 14px/800 이라 WCAG '큰 글자'(≥18.66px bold)에 해당하지 않아 4.5:1 이 필요하다. 그러나 `.gnb-logo` 는 `aria-label="UXW KRDS UX Writing 가이드라인 홈"` 을 갖고 워드마크는 **로고(브랜드 마크)** 이므로 WCAG 1.4.3 의 **'로고타입(logotypes) 예외'** 대상이다. 따라서 규정 위반은 아니지만, 본문/링크 텍스트로 `#ed1a3b` 를 쓰는 것은 금지된다. 자동 대비 검사기는 이 항목을 위반으로 보고한다(Playwright 스캔에서 `w` 1건 검출).
 2. 마크의 빨강/파랑 영역은 **비텍스트 그래픽**이므로 3:1 기준이며 라이트·다크 모두 충족한다.
 3. 다크 값은 모두 7.9:1 이상이라 텍스트로 써도 안전하다.
 4. **라이트 로고를 어두운 배경(푸터 `#1e2124`)에 쓰면 안 된다**: `#003964` on `#1e2124` = **1.36:1**, `#ed1a3b` on `#1e2124` = 3.71:1. 현재 `index.html` 푸터는 투명 배경이라 페이지 배경(`--bg`)을 따르므로 안전하지만, `before-after.html` 처럼 `footer{background:var(--color-gray-90)}` 인 페이지에 로고를 이식할 때는 다크 토큰(`#8cb6ff`/`#ff9bad`)을 강제해야 한다.
@@ -456,7 +456,7 @@ lint.html 전용:
 ### 9.6 접근성 마크업
 
 ```html
-<a href="/krds-ux-writing/" class="gnb-logo" aria-label="KRDS UX Writing 가이드라인 홈">
+<a href="/krds-ux-writing/" class="gnb-logo" aria-label="UXW KRDS UX Writing 가이드라인 홈">
   <svg class="gnb-logo-mark" aria-hidden="true" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <clipPath id="gnbLogoClip"><circle cx="100" cy="100" r="96"/></clipPath>
     <g clip-path="url(#gnbLogoClip)">
@@ -468,7 +468,7 @@ lint.html 전용:
 </a>
 ```
 
-- 마크 SVG 는 **장식**이므로 `aria-hidden="true"`. 링크의 접근 가능한 이름은 `aria-label="KRDS UX Writing 가이드라인 홈"` 하나가 책임진다(워드마크 `UXW` 는 `aria-label` 이 덮어씀 → 스크린 리더가 'U X W' 로 낭독하지 않음).
+- 마크 SVG 는 **장식**이므로 `aria-hidden="true"`. 링크의 접근 가능한 이름은 `aria-label="UXW KRDS UX Writing 가이드라인 홈"` 하나가 책임진다. 이름이 보이는 워드마크 `UXW` 로 시작해 홈을 포함한 9쪽에서 접근성 기준 2.5.3(Label in Name)을 충족한다(음성 제어 사용자가 보이는 글자 'UXW' 로 링크를 부를 수 있게 하려는 규칙이다). 보이는 글자가 'K UX Writing' 인 11쪽(`principles/` 10쪽, `prompt-library.html`)은 아직 미충족이며 후속 결정 사항이다(`tests/logo-label-in-name.test.js` 의 `KNOWN_UNMET`). 스크린 리더의 낭독과 음성 제어 동작은 실제 기기로 확인하지 못했다(접근성 트리의 이름 기준으로만 확인).
 - 클릭 영역: `.gnb-logo` 실측 69.3×28. 44px 미달이나 GNB 높이 60px 안에서 링크 자체가 세로 28px 이므로 **2.5.5 미충족**(§13-7). 해결안: `.gnb-logo` 에 `min-height:44px; padding-block:8px`.
 - 포커스: 전역 `:focus-visible` (2px `--accent`, offset 2px) 적용. 로고 링크에도 별도 `outline:none` 금지.
 - 푸터 로고 링크: 가시 텍스트 `KRDS UX Writing 가이드라인` 이 이름을 제공하므로 SVG 는 `aria-hidden="true"` 만 두고 `aria-label` 불필요(이미 코드와 일치).
