@@ -302,7 +302,7 @@ CLAUDE.md 의 컴포넌트 기준(버튼 8px · 카드 12px · 배지 4px)과 �
 
 ### 모달·다이얼로그
 
-`before-after.html` `#seminarOverlay` — `role="dialog"` `aria-modal="true"` `aria-label`. `index.html` 모바일 메뉴 — `trapFocus()` (`script.js`). 모달 전용 radius/padding 토큰은 코드에 **없음**(이전 `design-guide.md`의 '모달 32px/16px'은 이상값).
+`before-after.html` `#seminarOverlay` — `role="dialog"` `aria-modal="true"` `aria-label`. `index.html` 모바일 메뉴 — 햄버거 드로어(`shared/drawer.js` 의 `trapFocus()`; D4 이전에는 `script.js` 가 맡았다). 모달 전용 radius/padding 토큰은 코드에 **없음**(이전 `design-guide.md`의 '모달 32px/16px'은 이상값).
 
 ---
 
