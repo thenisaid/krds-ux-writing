@@ -1264,27 +1264,7 @@
 <script src="../jargon-dictionary.js"></script>
 <script src="../krds-lint.js"></script>
 <script src="app.js"></script>
+<script src="theme-toggle.js"></script>
 <script src="../shared/drawer.js"></script>
-<script>
-(function() {
-  var btn = document.getElementById('genThemeToggle');
-  var moon = document.querySelector('.gen-icon-moon');
-  var sun = document.querySelector('.gen-icon-sun');
-  function applyTheme(t) {
-    document.documentElement.setAttribute('data-theme', t);
-    if (moon) moon.style.display = t === 'dark' ? 'none' : 'block';
-    if (sun) sun.style.display = t === 'dark' ? 'block' : 'none';
-    if (btn) btn.setAttribute('aria-label', t === 'dark' ? '라이트모드 전환' : '다크모드 전환');
-    try { localStorage.setItem('krds-theme', t); } catch(e) {}
-  }
-  var saved = null;
-  try { saved = localStorage.getItem('krds-theme'); } catch(e) {}
-  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches;
-  applyTheme(saved || (prefersDark ? 'dark' : 'light'));
-  if (btn) btn.addEventListener('click', function() {
-    applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-  });
-})();
-</script>
 </body>
 </html>
