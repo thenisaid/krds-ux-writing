@@ -272,76 +272,14 @@ describe('script.js live index interactions', () => {
     expect(elements.themeToggle.getAttribute('aria-label')).toBe('다크모드로 전환');
   });
 
-  it('opens and closes the mobile menu with focus and body scroll state updates', () => {
-    const { context, document, elements } = createEnvironment();
-    const firstLink = createElement(document);
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: {
-        'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [firstLink],
-      },
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-
-    mobileMenuBtn.dispatch('click');
-
-    expect(mobileMenu.classList.contains('open')).toBe(true);
-    expect(mobileMenu.getAttribute('aria-hidden')).toBe('false');
-    expect(mobileMenuBtn.getAttribute('aria-expanded')).toBe('true');
-    expect(mobileMenuBtn.getAttribute('aria-label')).toBe('메뉴 닫기');
-    expect(document.body.style.overflow).toBe('hidden');
-    expect(firstLink.focus).toHaveBeenCalled();
-
-    document.dispatch('keydown', { key: 'Escape' });
-
-    expect(mobileMenu.classList.contains('open')).toBe(false);
-    expect(mobileMenu.getAttribute('aria-hidden')).toBe('true');
-    expect(mobileMenuBtn.getAttribute('aria-expanded')).toBe('false');
-    expect(mobileMenuBtn.getAttribute('aria-label')).toBe('메뉴 열기');
-    expect(document.body.style.overflow).toBe('');
-    expect(mobileMenuBtn.focus).toHaveBeenCalled();
+  // D4: 홈의 모바일 메뉴는 shared/drawer.js(햄버거 드로어)로 이전했다. 그 동작은 tests/drawer-js.test.js 가 검증한다.
+  it('모바일 메뉴 코드가 script.js 에서 사라졌다(drawer.js 로 이전)', () => {
+    expect(SOURCE).not.toMatch(/mobileMenu|MobileMenu|mobile-menu|trapFocus|releaseFocus|closestIfPossible/);
   });
 
-  it('does not move focus when Escape is pressed while the mobile menu is already closed', () => {
-    const { context, document, elements } = createEnvironment();
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: {
-        'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [],
-      },
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-
-    document.dispatch('keydown', { key: 'Escape' });
-
-    expect(mobileMenu.classList.contains('open')).toBe(false);
-    expect(mobileMenuBtn.focus).not.toHaveBeenCalled();
-    expect(document.body.style.overflow || '').toBe('');
-  });
-
-  it('closes the mobile menu when the viewport grows past the mobile breakpoint', () => {
+  it('#mobileMenu·#mobileMenuBtn 이 있어도 script.js 는 아무것도 바인딩하지 않는다(열리지 않고 포커스도 옮기지 않음)', () => {
     const { context, document, window, elements } = createEnvironment();
-    const firstLink = createElement(document);
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: {
-        'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [firstLink],
-      },
-    });
+    const mobileMenu = createElement(document, { attributes: { 'aria-hidden': 'true' } });
     const mobileMenuBtn = createElement(document, {
       attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
     });
@@ -352,42 +290,46 @@ describe('script.js live index interactions', () => {
     document.dispatch('DOMContentLoaded');
 
     mobileMenuBtn.dispatch('click');
-
-    expect(mobileMenu.classList.contains('open')).toBe(true);
-    expect(document.body.style.overflow).toBe('hidden');
-
+    document.dispatch('keydown', { key: 'Escape' });
     window.innerWidth = 1200;
     window.dispatch('resize');
 
     expect(mobileMenu.classList.contains('open')).toBe(false);
     expect(mobileMenu.getAttribute('aria-hidden')).toBe('true');
     expect(mobileMenuBtn.getAttribute('aria-expanded')).toBe('false');
-    expect(document.body.style.overflow).toBe('');
     expect(mobileMenuBtn.focus).not.toHaveBeenCalled();
+    expect(document.body.style.overflow || '').toBe('');
   });
 
-  it('ignores non-element mobile menu click targets without throwing', () => {
-    const { context, document, elements } = createEnvironment();
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: {
-        'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [],
-      },
+  it('script.js 는 document 의 keydown·window 의 resize 를 듣지 않는다(드로어 처리는 drawer.js 몫)', () => {
+    const { context, document, window } = createEnvironment();
+    const docAdd = vi.spyOn(document, 'addEventListener');
+    const winAdd = vi.spyOn(window, 'addEventListener');
+    vm.runInNewContext(SOURCE, context);
+    document.dispatch('DOMContentLoaded');
+    expect(docAdd.mock.calls.map((c) => c[0])).not.toContain('keydown');
+    expect(winAdd.mock.calls.map((c) => c[0])).not.toContain('resize');
+  });
+
+  it('drawer-link mobile-menu-link 클래스를 가진 링크도 같은 페이지 앵커이면 평소처럼 스크롤한다(제외 분기 삭제)', () => {
+    const { context, document, window, elements, anchorLinks } = createEnvironment();
+    const section = createElement(document, { rect: { top: 420 } });
+    const link = createElement(document, {
+      classes: ['drawer-link', 'mobile-menu-link'],
+      attributes: { href: '/krds-ux-writing/#case-studies' },
     });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
+    elements['case-studies'] = section;
+    anchorLinks.push(link);
+    window.scrollY = 60;
 
     vm.runInNewContext(SOURCE, context);
     document.dispatch('DOMContentLoaded');
 
-    expect(() => {
-      mobileMenu.dispatch('click', { target: { nodeType: 3 } });
-    }).not.toThrow();
-    expect(mobileMenu.classList.contains('open')).toBe(false);
-    expect(mobileMenuBtn.focus).not.toHaveBeenCalled();
+    const preventDefault = vi.fn();
+    link.dispatch('click', { preventDefault });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(window.scrollTo).toHaveBeenCalledWith({ top: 394, behavior: 'smooth' });
   });
 
   it('focuses the skip target instead of only scrolling past it', () => {
@@ -613,86 +555,6 @@ describe('script.js live index interactions', () => {
 
     expect(preventDefault).not.toHaveBeenCalled();
     expect(window.scrollTo).not.toHaveBeenCalled();
-  });
-
-  it('moves focus to same-page mobile menu targets instead of restoring focus to the opener only', () => {
-    const { context, document, window, elements } = createEnvironment();
-    const caseStudies = createElement(document, { rect: { top: 420 } });
-    const samePageLink = createElement(document, {
-      classes: ['mobile-menu-link'],
-      attributes: { href: '/krds-ux-writing/#case-studies' },
-      closestSelectors: ['.mobile-menu-item, .mobile-menu-link'],
-    });
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: {
-        'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [samePageLink],
-      },
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-    elements['case-studies'] = caseStudies;
-    window.scrollY = 60;
-
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-
-    mobileMenuBtn.dispatch('click');
-
-    const preventDefault = vi.fn();
-    mobileMenu.dispatch('click', { target: samePageLink, preventDefault });
-
-    expect(preventDefault).toHaveBeenCalled();
-    expect(mobileMenu.classList.contains('open')).toBe(false);
-    expect(mobileMenu.getAttribute('aria-hidden')).toBe('true');
-    expect(mobileMenuBtn.focus).not.toHaveBeenCalled();
-    expect(caseStudies.getAttribute('tabindex')).toBe('-1');
-    expect(caseStudies.focus).toHaveBeenCalled();
-    expect(window.scrollTo).toHaveBeenLastCalledWith({ top: 480, behavior: 'auto' });
-  });
-
-  it('treats explicit index.html root URLs as same-page mobile menu targets', () => {
-    const { context, document, window, elements } = createEnvironment();
-    const caseStudies = createElement(document, { rect: { top: 420 } });
-    const samePageLink = createElement(document, {
-      classes: ['mobile-menu-link'],
-      attributes: { href: '/krds-ux-writing/#case-studies' },
-      closestSelectors: ['.mobile-menu-item, .mobile-menu-link'],
-    });
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: {
-        'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [samePageLink],
-      },
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-    elements['case-studies'] = caseStudies;
-    window.location.href = 'https://example.com/krds-ux-writing/index.html';
-    window.location.pathname = '/krds-ux-writing/index.html';
-    window.scrollY = 60;
-
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-
-    mobileMenuBtn.dispatch('click');
-
-    const preventDefault = vi.fn();
-    mobileMenu.dispatch('click', { target: samePageLink, preventDefault });
-
-    expect(preventDefault).toHaveBeenCalled();
-    expect(mobileMenu.classList.contains('open')).toBe(false);
-    expect(mobileMenu.getAttribute('aria-hidden')).toBe('true');
-    expect(mobileMenuBtn.focus).not.toHaveBeenCalled();
-    expect(caseStudies.getAttribute('tabindex')).toBe('-1');
-    expect(caseStudies.focus).toHaveBeenCalled();
-    expect(window.scrollTo).toHaveBeenLastCalledWith({ top: 480, behavior: 'auto' });
   });
 
   it('filters the section explorer cards by inline search query and restores them with the clear button', () => {
@@ -928,223 +790,64 @@ describe('script.js live index interactions', () => {
     expect(elements.gnb.classList.contains('scrolled')).toBe(false);
   });
 
-  it('wraps focus forward to the first menu element when Tab is pressed on the last focusable element', () => {
-    const { context, document, elements } = createEnvironment();
-    const firstLink = createElement(document, { attributes: { href: '#first' } });
-    const lastLink = createElement(document, { attributes: { href: '#last' } });
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [firstLink, lastLink] },
+  it('focuses the skip-nav target without calling scrollTo when window.scrollTo is not a function', () => {
+    const { context, document, elements, anchorLinks } = createEnvironment();
+    const content = createElement(document, { rect: { top: 420 } });
+    const skipLink = createElement(document, {
+      classes: ['skip-nav'],
+      attributes: { href: '#content' },
     });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-    mobileMenuBtn.dispatch('click');
-
-    document.activeElement = lastLink;
-    const preventDefault = vi.fn();
-    mobileMenu.dispatch('keydown', { key: 'Tab', shiftKey: false, preventDefault });
-
-    expect(preventDefault).toHaveBeenCalled();
-    expect(firstLink.focus).toHaveBeenCalled();
-  });
-
-  it('wraps focus backward to the last menu element when Shift+Tab is pressed on the first focusable element', () => {
-    const { context, document, elements } = createEnvironment();
-    const firstLink = createElement(document, { attributes: { href: '#first' } });
-    const lastLink = createElement(document, { attributes: { href: '#last' } });
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [firstLink, lastLink] },
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-    mobileMenuBtn.dispatch('click');
-
-    document.activeElement = firstLink;
-    const preventDefault = vi.fn();
-    mobileMenu.dispatch('keydown', { key: 'Tab', shiftKey: true, preventDefault });
-
-    expect(preventDefault).toHaveBeenCalled();
-    expect(lastLink.focus).toHaveBeenCalled();
-  });
-
-  it('does not intercept Tab when the focused element is not the last focusable element in the mobile menu', () => {
-    const { context, document, elements } = createEnvironment();
-    const firstLink = createElement(document, { attributes: { href: '#first' } });
-    const lastLink = createElement(document, { attributes: { href: '#last' } });
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [firstLink, lastLink] },
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-    mobileMenuBtn.dispatch('click');
-
-    document.activeElement = firstLink;
-    const preventDefault = vi.fn();
-    mobileMenu.dispatch('keydown', { key: 'Tab', shiftKey: false, preventDefault });
-
-    expect(preventDefault).not.toHaveBeenCalled();
-    expect(lastLink.focus).not.toHaveBeenCalled();
-  });
-
-  it('does not intercept Shift+Tab when the focused element is not the first focusable element in the mobile menu', () => {
-    const { context, document, elements } = createEnvironment();
-    const firstLink = createElement(document, { attributes: { href: '#first' } });
-    const lastLink = createElement(document, { attributes: { href: '#last' } });
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [firstLink, lastLink] },
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-    mobileMenuBtn.dispatch('click');
-
-    document.activeElement = lastLink;
-    const preventDefault = vi.fn();
-    mobileMenu.dispatch('keydown', { key: 'Tab', shiftKey: true, preventDefault });
-
-    expect(preventDefault).not.toHaveBeenCalled();
-    expect(lastLink.focus).not.toHaveBeenCalled();
-  });
-
-  it('opens the mobile menu without installing a focus trap when all candidate links are aria-hidden', () => {
-    const { context, document, elements } = createEnvironment();
-    const ariaHiddenLink = createElement(document, {
-      attributes: { href: '#', 'aria-hidden': 'true' },
-    });
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [ariaHiddenLink] },
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-    mobileMenuBtn.dispatch('click');
-
-    expect(mobileMenu.classList.contains('open')).toBe(true);
-    ariaHiddenLink.focus.mockClear();
-    expect(() => mobileMenu.dispatch('keydown', { key: 'Tab', shiftKey: false, preventDefault: vi.fn() })).not.toThrow();
-    expect(ariaHiddenLink.focus).not.toHaveBeenCalled();
-  });
-
-  it('focuses the anchor target without calling scrollTo when window.scrollTo is not a function', () => {
-    const { context, document, elements } = createEnvironment();
-    const caseStudies = createElement(document, { rect: { top: 420 } });
-    const samePageLink = createElement(document, {
-      classes: ['mobile-menu-link'],
-      attributes: { href: '/krds-ux-writing/#case-studies' },
-      closestSelectors: ['.mobile-menu-item, .mobile-menu-link'],
-    });
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [samePageLink] },
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-    elements['case-studies'] = caseStudies;
+    elements.content = content;
+    anchorLinks.push(skipLink);
     context.window.scrollTo = undefined;
 
     vm.runInNewContext(SOURCE, context);
     document.dispatch('DOMContentLoaded');
 
-    mobileMenuBtn.dispatch('click');
-    mobileMenu.dispatch('click', { target: samePageLink, preventDefault: vi.fn() });
+    skipLink.dispatch('click', { preventDefault: vi.fn() });
 
-    expect(caseStudies.getAttribute('tabindex')).toBe('-1');
-    expect(caseStudies.focus).toHaveBeenCalled();
+    expect(content.getAttribute('tabindex')).toBe('-1');
+    expect(content.focus).toHaveBeenCalled();
   });
 
-  it('focuses the anchor target without scrolling when the target has no getBoundingClientRect method', () => {
-    const { context, document, window, elements } = createEnvironment();
-    const caseStudies = createElement(document, { rect: { top: 420 } });
-    const samePageLink = createElement(document, {
-      classes: ['mobile-menu-link'],
-      attributes: { href: '/krds-ux-writing/#case-studies' },
-      closestSelectors: ['.mobile-menu-item, .mobile-menu-link'],
+  it('focuses the skip-nav target without scrolling when the target has no getBoundingClientRect method', () => {
+    const { context, document, window, elements, anchorLinks } = createEnvironment();
+    const content = createElement(document, { rect: { top: 420 } });
+    const skipLink = createElement(document, {
+      classes: ['skip-nav'],
+      attributes: { href: '#content' },
     });
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [samePageLink] },
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-    elements['case-studies'] = caseStudies;
+    elements.content = content;
+    anchorLinks.push(skipLink);
 
     vm.runInNewContext(SOURCE, context);
     document.dispatch('DOMContentLoaded');
 
-    delete caseStudies.getBoundingClientRect;
-    mobileMenuBtn.dispatch('click');
-    mobileMenu.dispatch('click', { target: samePageLink, preventDefault: vi.fn() });
+    delete content.getBoundingClientRect;
+    skipLink.dispatch('click', { preventDefault: vi.fn() });
 
-    expect(caseStudies.focus).toHaveBeenCalled();
+    expect(content.focus).toHaveBeenCalled();
     expect(window.scrollTo).not.toHaveBeenCalled();
   });
 
-  it('sets tabindex and scrolls without throwing when the anchor target has no focus method', () => {
-    const { context, document, window, elements } = createEnvironment();
-    const caseStudies = createElement(document, { rect: { top: 420 } });
-    const samePageLink = createElement(document, {
-      classes: ['mobile-menu-link'],
-      attributes: { href: '/krds-ux-writing/#case-studies' },
-      closestSelectors: ['.mobile-menu-item, .mobile-menu-link'],
+  it('sets tabindex and scrolls without throwing when the skip-nav target has no focus method', () => {
+    const { context, document, window, elements, anchorLinks } = createEnvironment();
+    const content = createElement(document, { rect: { top: 420 } });
+    const skipLink = createElement(document, {
+      classes: ['skip-nav'],
+      attributes: { href: '#content' },
     });
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [samePageLink] },
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-    elements['case-studies'] = caseStudies;
+    elements.content = content;
+    anchorLinks.push(skipLink);
     window.scrollY = 60;
 
     vm.runInNewContext(SOURCE, context);
     document.dispatch('DOMContentLoaded');
 
-    caseStudies.focus = undefined;
-    mobileMenuBtn.dispatch('click');
-    expect(() => mobileMenu.dispatch('click', { target: samePageLink, preventDefault: vi.fn() })).not.toThrow();
+    content.focus = undefined;
+    expect(() => skipLink.dispatch('click', { preventDefault: vi.fn() })).not.toThrow();
 
-    expect(caseStudies.getAttribute('tabindex')).toBe('-1');
+    expect(content.getAttribute('tabindex')).toBe('-1');
     expect(window.scrollTo).toHaveBeenCalledWith({ top: 480, behavior: 'auto' });
   });
 
@@ -1179,54 +882,6 @@ describe('script.js live index interactions', () => {
     expect(item.hidden).toBe(false);
   });
 
-  it('returns early from the anchor click handler when the link has the mobile-menu-link class', () => {
-    const { context, document, elements, anchorLinks } = createEnvironment();
-    const target = createElement(document, { rect: { top: 200 } });
-    const link = createElement(document, {
-      classes: ['mobile-menu-link'],
-      attributes: { href: '/krds-ux-writing/#section' },
-    });
-    elements.section = target;
-    anchorLinks.push(link);
-
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-
-    const preventDefault = vi.fn();
-    link.dispatch('click', { preventDefault });
-
-    expect(preventDefault).not.toHaveBeenCalled();
-    expect(target.focus).not.toHaveBeenCalled();
-  });
-
-  it('calls closeMobileMenu when the mobile menu item href resolves to an id not found in the DOM', () => {
-    const { context, document, elements } = createEnvironment();
-    const menuItem = createElement(document, {
-      classes: ['mobile-menu-item'],
-      attributes: { href: '/krds-ux-writing/#ghost-section' },
-      closestSelectors: ['.mobile-menu-item, .mobile-menu-link'],
-    });
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [menuItem] },
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-
-    mobileMenuBtn.dispatch('click');
-    expect(mobileMenu.classList.contains('open')).toBe(true);
-
-    mobileMenu.dispatch('click', { target: menuItem, preventDefault: vi.fn() });
-
-    expect(mobileMenu.classList.contains('open')).toBe(false);
-  });
-
   it('does not scroll when a same-page anchor link target id is absent from the DOM', () => {
     const { context, document, window, anchorLinks } = createEnvironment();
     const link = createElement(document, {
@@ -1241,40 +896,6 @@ describe('script.js live index interactions', () => {
 
     expect(preventDefault).not.toHaveBeenCalled();
     expect(window.scrollTo).not.toHaveBeenCalled();
-  });
-
-  it('closes the mobile menu and focuses the anchor target when a same-page menu item is clicked and the target exists', () => {
-    const { context, document, elements } = createEnvironment();
-    const sectionTarget = createElement(document, { rect: { top: 300 } });
-    const menuItem = createElement(document, {
-      classes: ['mobile-menu-item'],
-      attributes: { href: '#target-section' },
-      closestSelectors: ['.mobile-menu-item, .mobile-menu-link'],
-    });
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [menuItem] },
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements['target-section'] = sectionTarget;
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-
-    mobileMenuBtn.dispatch('click');
-    expect(mobileMenu.classList.contains('open')).toBe(true);
-
-    const preventDefault = vi.fn();
-    mobileMenu.dispatch('click', { target: menuItem, preventDefault });
-
-    expect(mobileMenu.classList.contains('open')).toBe(false);
-    expect(preventDefault).toHaveBeenCalled();
-    expect(sectionTarget.focus).toHaveBeenCalled();
-    expect(mobileMenuBtn.focus).not.toHaveBeenCalled();
   });
 
   it('does not set tabindex on a skip-nav anchor target that already has a tabindex attribute', () => {
@@ -1371,31 +992,6 @@ describe('script.js live index interactions', () => {
     expect(searchInput.value).toBe('');
   });
 
-  it('does not restore focus to the button when closeMobileMenu is called with restoreFocus false and no trap was installed', () => {
-    const { context, document, window, elements } = createEnvironment();
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [] },
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-
-    mobileMenuBtn.dispatch('click');
-    expect(mobileMenu.classList.contains('open')).toBe(true);
-
-    window.innerWidth = 1200;
-    window.dispatch('resize');
-
-    expect(mobileMenu.classList.contains('open')).toBe(false);
-    expect(mobileMenuBtn.getAttribute('aria-expanded')).toBe('false');
-    expect(mobileMenuBtn.focus).not.toHaveBeenCalled();
-  });
-
   it('does not intercept anchor click when window.location is null even though URL is available', () => {
     const { context, document, window, elements, anchorLinks } = createEnvironment();
     const target = createElement(document, { rect: { top: 300 } });
@@ -1434,56 +1030,6 @@ describe('script.js live index interactions', () => {
 
     expect(preventDefault).not.toHaveBeenCalled();
     expect(window.scrollTo).not.toHaveBeenCalled();
-  });
-
-  it('returns early from the anchor click handler when the link has only the mobile-menu-item class (not mobile-menu-link)', () => {
-    const { context, document, elements, anchorLinks } = createEnvironment();
-    const target = createElement(document, { rect: { top: 200 } });
-    const link = createElement(document, {
-      classes: ['mobile-menu-item'],
-      attributes: { href: '/krds-ux-writing/#section' },
-    });
-    elements.section = target;
-    anchorLinks.push(link);
-
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-
-    const preventDefault = vi.fn();
-    link.dispatch('click', { preventDefault });
-
-    expect(preventDefault).not.toHaveBeenCalled();
-    expect(target.focus).not.toHaveBeenCalled();
-  });
-
-  it('does not call preventDefault when a non-Tab key is dispatched inside the focus trap (e.key !== Tab early return)', () => {
-    const { context, document, elements } = createEnvironment();
-    const firstLink = createElement(document, { attributes: { href: '#first' } });
-    const lastLink = createElement(document, { attributes: { href: '#last' } });
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [firstLink, lastLink] },
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-    mobileMenuBtn.dispatch('click');
-
-    // openMobileMenu calls firstLink.focus() — clear before testing the trap handler
-    firstLink.focus.mockClear();
-    lastLink.focus.mockClear();
-
-    const preventDefault = vi.fn();
-    mobileMenu.dispatch('keydown', { key: 'Escape', shiftKey: false, preventDefault });
-
-    expect(preventDefault).not.toHaveBeenCalled();
-    expect(firstLink.focus).not.toHaveBeenCalled();
-    expect(lastLink.focus).not.toHaveBeenCalled();
   });
 
   it('does nothing when Escape is pressed in the section search input while the value is already empty', () => {
@@ -1558,26 +1104,6 @@ describe('script.js live index interactions', () => {
     expect(window.scrollTo).toHaveBeenCalledWith({ top: 114, behavior: 'smooth' });
   });
 
-  it('opens the mobile menu without focusing when the menu has no focusable elements (firstFocusable null guard)', () => {
-    const { context, document, elements } = createEnvironment();
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: {},
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-
-    expect(() => mobileMenuBtn.dispatch('click')).not.toThrow();
-    expect(mobileMenu.classList.contains('open')).toBe(true);
-    expect(mobileMenuBtn.focus).not.toHaveBeenCalled();
-  });
-
   it('returns early from initSectionExplorer without throwing when input and status exist but there are no editorial items (!items.length branch)', () => {
     const { context, document, elements } = createEnvironment();
     const searchInput = createElement(document);
@@ -1593,66 +1119,4 @@ describe('script.js live index interactions', () => {
     expect(status.textContent).toBe('');
   });
 
-  it('closes the mobile menu when a cross-page menu item is clicked (samePageTargetId falsy → closeMobileMenu() direct call)', () => {
-    // A mobile-menu-item with a cross-page href has no hash → resolveSamePageAnchorId returns ''
-    // → if (samePageTargetId) is false → falls through to closeMobileMenu() at the bottom
-    const { context, document, elements } = createEnvironment();
-    const crossPageItem = createElement(document, {
-      classes: ['mobile-menu-item'],
-      attributes: { href: '/other-page' }, // no hash → samePageTargetId === ''
-      closestSelectors: ['.mobile-menu-item, .mobile-menu-link'],
-    });
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [crossPageItem] },
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-
-    mobileMenuBtn.dispatch('click');
-    expect(mobileMenu.classList.contains('open')).toBe(true);
-
-    mobileMenu.dispatch('click', { target: crossPageItem });
-
-    // closeMobileMenu() (with restoreFocus defaulting to true) should close the menu
-    // and restore focus to mobileMenuBtn
-    expect(mobileMenu.classList.contains('open')).toBe(false);
-    expect(mobileMenu.getAttribute('aria-hidden')).toBe('true');
-    expect(mobileMenuBtn.getAttribute('aria-expanded')).toBe('false');
-    expect(mobileMenuBtn.focus).toHaveBeenCalled();
-  });
-
-  it('does not close the mobile menu on a resize event when the viewport is still narrow (window.innerWidth ≤ 900 false branch)', () => {
-    // The resize handler only calls closeMobileMenu(false) when innerWidth > 900.
-    // When the viewport stays ≤ 900 the menu should remain open.
-    const { context, document, window, elements } = createEnvironment();
-    const firstLink = createElement(document);
-    const mobileMenu = createElement(document, {
-      attributes: { 'aria-hidden': 'true' },
-      queryMap: { 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])': [firstLink] },
-    });
-    const mobileMenuBtn = createElement(document, {
-      attributes: { 'aria-expanded': 'false', 'aria-label': '메뉴 열기' },
-    });
-    elements.mobileMenu = mobileMenu;
-    elements.mobileMenuBtn = mobileMenuBtn;
-
-    vm.runInNewContext(SOURCE, context);
-    document.dispatch('DOMContentLoaded');
-
-    mobileMenuBtn.dispatch('click');
-    expect(mobileMenu.classList.contains('open')).toBe(true);
-
-    // Simulate a resize while the viewport is still in mobile range (≤ 900)
-    window.innerWidth = 600;
-    window.dispatch('resize');
-
-    expect(mobileMenu.classList.contains('open')).toBe(true);
-  });
 });
