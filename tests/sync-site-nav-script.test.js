@@ -40,6 +40,15 @@ function capture(argv) {
 const PAGE = (body) => `<!doctype html><html lang="ko"><body>\n  <header class="gnb">\n    ${body}\n  </header>\n</body></html>\n`;
 const MARKED = (inner) => PAGE(`<!-- gnb:start -->\n    ${inner}\n    <!-- gnb:end -->`);
 
+// 정의와 어긋난 인위적 페이지: 실제 lint.html 사본에서 1차 탭 '사전' 의 라벨만 바꾼다(임시 디렉터리에만 쓴다).
+function makeMismatchedLint() {
+  const dest = copyFromRepo('lint.html');
+  const html = fs.readFileSync(dest, 'utf8');
+  const broken = html.replace('class="gnb-nav-link">사전</a>', 'class="gnb-nav-link">용어집</a>');
+  expect(broken).not.toBe(html);
+  fs.writeFileSync(dest, broken);
+}
+
 beforeEach(() => {
   tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'sync-site-nav-'));
 });
@@ -179,20 +188,20 @@ describe('CLI 모드', () => {
   });
 
   it('--check 는 어긋남이 있으면 종료코드 1, 숫자와 목록을 출력한다', () => {
-    // 아직 마이그레이션되지 않은 페이지(index.html — D4 에서 이전)를 어긋남 예시로 쓴다
-    copyFromRepo('index.html');
+    // 20쪽이 모두 정의와 맞으므로(D4), 어긋남 예시는 임시 디렉터리에 만든 인위적 사본(lint.html 의 탭 라벨을 바꾼 것)을 쓴다
+    makeMismatchedLint();
     const { code, text } = capture(['--check', '--root', tmpRoot]);
     expect(code).toBe(1);
     expect(text).toContain('정의와 의미가 어긋난 페이지');
-    expect(text).toContain('- index.html');
+    expect(text).toContain('- lint.html');
   });
 
   it('--check --json 은 파싱 가능한 JSON 을 낸다', () => {
-    copyFromRepo('index.html');
+    makeMismatchedLint();
     const { text } = capture(['--check', '--json', '--root', tmpRoot]);
     const json = JSON.parse(text);
     expect(json.total).toBe(Object.keys(NAV.PAGE_MAP).length);
-    expect(json.semanticMismatch).toContain('index.html');
+    expect(json.semanticMismatch).toContain('lint.html');
   });
 
   it('--print 는 조각을 출력하고 미분류 파일은 오류(2)', () => {

@@ -196,8 +196,8 @@ describe('생성기 ↔ drawer.css', () => {
   });
 });
 
-// C2: nav.js 를 로드하지 않아 shared/drawer.js 로 열고 닫는 루트 쪽 2쪽. 위 4쪽의 단언과 별개다.
-const ROOT_PAGES = ['archive.html', 'before-after.html'];
+// C2·D4: nav.js 를 로드하지 않아 shared/drawer.js 로 열고 닫는 루트 쪽 3쪽(archive·before-after·index). 위 4쪽의 단언과 별개다.
+const ROOT_PAGES = ['archive.html', 'before-after.html', 'index.html'];
 
 describe.each(ROOT_PAGES)('%s (drawer.js 쪽)', (file) => {
   const html = read(file);

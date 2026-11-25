@@ -1,4 +1,4 @@
-// shared/gnb-desktop.css 와 이를 링크하는 8쪽(dictionary 2쪽·corpus·case-studies + archive·before-after + generator·lint)의 데스크톱 GNB 계약 (D0~D3).
+// shared/gnb-desktop.css 와 이를 링크하는 9쪽(dictionary 2쪽·corpus·case-studies + archive·before-after + generator·lint + index)의 데스크톱 GNB 계약 (D0~D4).
 import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -11,7 +11,9 @@ const SYNC = require('../scripts/sync-site-nav.js');
 // D1: 하위 폴더 쪽(링크 ../shared/…). D2: 루트 쪽(링크 shared/…) — 헤더 구조가 서로 다르다.
 // D3: generator/index.html(하위 폴더, .gnb 클래스 없는 .site-header)·lint.html(루트, 바깥 요소를 <header class="gnb"> 로 바꿈).
 const SUB_PAGES = ['dictionary/index.html', 'dictionary/full.html', 'corpus/index.html', 'case-studies/index.html', 'generator/index.html'];
-const ROOT_PAGES = ['archive.html', 'before-after.html', 'lint.html'];
+// D4: index.html(홈, 루트 쪽) — 2차 탭이 없고 현재 위치 탭도 없다(tab null). 배지 v2.0 은 .gnb-actions 안에 남는다.
+const ROOT_PAGES = ['archive.html', 'before-after.html', 'lint.html', 'index.html'];
+const HOME = 'index.html';
 const PAGES = [...SUB_PAGES, ...ROOT_PAGES];
 // 헤더 안에서 gnb:end 마커 뒤에 오는 첫 요소(마커가 이 앞에 있어야 한다). archive 는 .gnb-actions 가 없고 테마 버튼이 바로 온다.
 const AFTER_MARKER = { 'archive.html': 'class="gnb-theme-btn"', 'lint.html': 'class="gnb-theme-btn"', 'generator/index.html': 'id="genThemeToggle"' };
@@ -20,6 +22,7 @@ const HEADER_OPEN = {
   'before-after.html': '<header class="gnb" role="banner">',
   'lint.html': '<header class="gnb" role="banner">',
   'generator/index.html': '<header class="site-header">',
+  'index.html': '<header class="gnb" id="gnb" role="banner">',
 };
 // 테마 버튼 id 와 .gnb-badge 유무(archive·lint·generator 에는 배지가 없다).
 const THEME_ID = { 'lint.html': 'themeToggle', 'generator/index.html': 'genThemeToggle' };
@@ -138,11 +141,16 @@ describe.each(PAGES)('%s', (file) => {
     expect(SYNC.readMarkerRegion(html, 'gnb').state).toBe('ok');
   });
 
-  it('(d) 마커 구간은 생성기 결과와 바이트 동일하고 1차 탭 4개 + 2차 탭을 가진다', () => {
+  it('(d) 마커 구간은 생성기 결과와 바이트 동일하고 1차 탭 4개 + 2차 탭을 가진다(홈은 1차 탭 4개만, 현재 위치 없음)', () => {
     expect(SYNC.applyFragment(html, file)).toBe(html);
     const region = SYNC.readMarkerRegion(html, 'gnb').current;
     expect(count(region, /class="gnb-nav-link/g)).toBe(4);
     expect(region).toContain('aria-label="섹션 내비게이션"');
+    if (file === HOME) {
+      expect(region).not.toContain('gnb-subnav');
+      expect(region).not.toContain('aria-current');
+      return;
+    }
     expect(region).toContain('<nav class="gnb-subnav" aria-label="세부 메뉴">');
     expect(count(region, /aria-current="page"/g)).toBe(1);
     expect(count(region, /aria-current="true"/g)).toBe(1);
@@ -174,6 +182,7 @@ describe.each(PAGES)('%s', (file) => {
     expect(count(html, /id="gnbHamburger"/g)).toBe(1);
     // 배지는 .gnb-actions 가 있는 쪽에만 있다(archive·lint·generator 는 원래 없다).
     expect(count(html, /class="gnb-badge"/g)).toBe(NO_BADGE.includes(file) ? 0 : 1);
+    if (file === HOME) expect(html).toContain('<span class="gnb-badge">v2.0</span>');
   });
 
   it('생성기는 이 쪽을 in-sync 로 본다(gnb·drawer 마커 모두 ok)', () => {
@@ -188,11 +197,7 @@ describe('(f) 이 CSS 를 링크하지 않는 페이지는 영향 없음', () =>
     expect(read(file)).not.toContain('gnb-desktop.css');
   });
 
-  it('D0~D3 범위 밖 쪽(index)도 링크하지 않는다', () => {
-    expect(read('index.html')).not.toContain('gnb-desktop.css');
-  });
-
-  it('gnb-desktop.css 를 링크하는 쪽은 정확히 이 8쪽뿐이다', () => {
+  it('gnb-desktop.css 를 링크하는 쪽은 정확히 이 9쪽뿐이다', () => {
     const all = [];
     const walk = (dir) => {
       fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true }).forEach((e) => {
@@ -204,7 +209,8 @@ describe('(f) 이 CSS 를 링크하지 않는 페이지는 영향 없음', () =>
       });
     };
     walk('');
-    expect(all.length).toBe(8);
+    expect(all.length).toBe(9);
+    expect(PAGES.length).toBe(9);
     expect(all.sort()).toEqual(PAGES.slice().sort());
   });
 
@@ -262,5 +268,32 @@ describe('generator/index.html 헤더 (D3)', () => {
   });
   it('로고에 gnb-logo 클래스는 한 곳뿐이고 이 페이지에 .gnb-logo 스타일 규칙은 없다', () => {
     expect(norm).not.toMatch(/\.gnb-logo/);
+  });
+});
+
+// D4: 홈은 2차 탭이 없고 현재 위치 탭이 없으며, 인라인 .gnb-nav { flex:1 } 이 공유 CSS 를 이긴다.
+describe('index.html 헤더 (D4)', () => {
+  const html = read('index.html');
+  it('옛 모바일 메뉴(#mobileMenu·#mobileMenuBtn·.mobile-menu)와 data-section 탭이 없다', () => {
+    expect(html).not.toMatch(/id="mobileMenu"|id="mobileMenuBtn"|class="(?:[^"]*\s)?mobile-menu(?:\s[^"]*)?"|gnb-mobile-btn/);
+    expect(html).not.toContain('data-section=');
+  });
+  it('햄버거는 헤더 안 첫 요소이고, aside 와 backdrop 은 </header> 바로 뒤에 온다', () => {
+    const open = '<header class="gnb" id="gnb" role="banner">';
+    const header = html.slice(html.indexOf(open), html.indexOf('</header>'));
+    expect(header.replace(open, '').trimStart().startsWith('<button class="gnb-icon-btn gnb-hamburger"')).toBe(true);
+    const after = html.slice(html.indexOf('</header>') + '</header>'.length).trimStart();
+    expect(after).toMatch(/^<aside class="sidebar site-drawer" id="mainSidebar" aria-label="사이트 메뉴">/);
+    expect(after).toMatch(/<\/aside>\s*<div class="sidebar-backdrop"><\/div>/);
+  });
+  it('로고는 정의와 같고 gnb:start 는 로고 뒤, .gnb-actions 앞에 있다', () => {
+    expect(html).toContain('aria-label="UXW KRDS UX Writing 가이드라인 홈"');
+    expect(html.indexOf('<!-- gnb:end -->')).toBeLessThan(html.indexOf('class="gnb-actions"'));
+  });
+  it('인라인 CSS 에 옛 모바일 메뉴 규칙과 768px 의 .gnb-nav 숨김이 없다(drawer.css 의 900px 가 대신한다)', () => {
+    const inline = (html.match(/<style\b[^>]*>[\s\S]*?<\/style>/gi) || []).join('\n');
+    expect(inline).not.toMatch(/\.mobile-menu|\.gnb-mobile-btn/);
+    expect(inline).not.toMatch(/@media \(max-width: 768px\)\s*\{\s*\.gnb-nav/);
+    expect(inline).toMatch(/@media print\s*\{\s*\.gnb \{ display: none; \}/);
   });
 });
