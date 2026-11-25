@@ -7,16 +7,12 @@
       "offenders": {}
     },
     "11-mobile-menu": {
-      "count": 1,
-      "offenders": {
-        "index.html": "aliases=[\"사례 연구\",\"프롬프트 라이브러리\",\"Before/After 비교\"] missing=[\"사례\",\"도구\"]"
-      }
+      "count": 0,
+      "offenders": {}
     },
     "12-sync": {
-      "count": 1,
-      "offenders": {
-        "index.html": "unmarked"
-      }
+      "count": 0,
+      "offenders": {}
     },
     "14-touch-target": {
       "count": 3,
@@ -31,16 +27,12 @@
       "offenders": {}
     },
     "3-labels": {
-      "count": 1,
-      "offenders": {
-        "index.html": "원칙|사전|사례|프롬프트|Before/After|린터|생성기"
-      }
+      "count": 0,
+      "offenders": {}
     },
     "4-hrefs": {
-      "count": 1,
-      "offenders": {
-        "index.html": "/principles|/dictionary|/#case-studies|/prompt-library|/before-after|/lint|/generator"
-      }
+      "count": 0,
+      "offenders": {}
     },
     "6-current": {
       "count": 0,

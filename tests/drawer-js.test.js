@@ -255,9 +255,9 @@ describe('페이지 계약', () => {
     expect(both).toEqual([]);
   });
 
-  it('drawer.js 를 로드하는 페이지는 archive.html·before-after.html·lint.html·generator/index.html 이다', () => {
+  it('drawer.js 를 로드하는 페이지는 archive.html·before-after.html·index.html·lint.html·generator/index.html 이다', () => {
     const pages = ALL_HTML.filter((f) => loadsDrawer(fs.readFileSync(path.join(ROOT, f), 'utf8'))).sort();
-    expect(pages).toEqual(['archive.html', 'before-after.html', 'generator/index.html', 'lint.html']);
+    expect(pages).toEqual(['archive.html', 'before-after.html', 'generator/index.html', 'index.html', 'lint.html']);
   });
 
   describe.each(['archive.html', 'before-after.html'])('%s', (file) => {
@@ -321,6 +321,54 @@ describe('페이지 계약', () => {
       const csp = html.match(/script-src[^;]*/)[0];
       expect(csp).toContain("'sha256-nVj/NnPbJL5e5wJ+7LC+cqhLvjQRyCIQRCka3ELZVak='");
       expect(count(csp, /sha256-/g)).toBe(1);
+      expect(html).not.toMatch(/\sonclick=/);
+    });
+  });
+
+  // D4: 홈. script.js 가 테마·앵커·검색을 맡고 모바일 메뉴 코드는 걷어냈다. 열기·닫기는 drawer.js 가 맡는다.
+  describe('index.html (D4)', () => {
+    const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+    const scriptTags = [...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"[^>]*>/g)].map((m) => m[1]);
+
+    it('drawer.js 를 정확히 한 번, nav.js 는 로드하지 않는다', () => {
+      expect(count(html, /shared\/drawer\.js/g)).toBe(1);
+      expect(html).toContain('<script src="shared/drawer.js"></script>');
+      expect(html).not.toMatch(/shared\/nav\.js/);
+      expect(count(html, /shared\/drawer\.css/g)).toBe(1);
+    });
+
+    it('drawer.js 는 기존 스크립트(base-path.js·script.js) 뒤, 즉 마지막 외부 스크립트다', () => {
+      expect(scriptTags[scriptTags.length - 1]).toBe('shared/drawer.js');
+      ['shared/base-path.js', 'script.js'].forEach((name) => {
+        const at = scriptTags.indexOf(name);
+        expect(at, name).toBeGreaterThanOrEqual(0);
+        expect(at, name).toBeLessThan(scriptTags.length - 1);
+      });
+    });
+
+    it('#gnbHamburger·aside#mainSidebar·.sidebar-backdrop·드로어 마커·gnb 마커가 각각 정확히 1개', () => {
+      expect(count(html, /id="gnbHamburger"/g)).toBe(1);
+      expect(count(html, /<aside\b[^>]*id="mainSidebar"/g)).toBe(1);
+      expect(count(html, /class="sidebar-backdrop"/g)).toBe(1);
+      expect(count(html, /<!-- drawer-nav:start -->/g)).toBe(1);
+      expect(count(html, /<!-- drawer-nav:end -->/g)).toBe(1);
+      expect(count(html, /<!-- gnb:start -->/g)).toBe(1);
+      expect(count(html, /<!-- gnb:end -->/g)).toBe(1);
+      expect(count(html, /id="themeToggle"/g)).toBe(1);
+    });
+
+    it('옛 모바일 메뉴(#mobileMenuBtn·#mobileMenu·.mobile-menu 컨테이너)가 없다', () => {
+      expect(html).not.toMatch(/id="mobileMenuBtn"|id="mobileMenu"|class="mobile-menu"|gnb-mobile-btn/);
+      // 드로어 링크가 쓰는 .mobile-menu-link 클래스(생성기가 붙인다)는 남아 있다.
+      expect(count(html, /class="drawer-link mobile-menu-link"/g)).toBe(4);
+    });
+
+    it('인라인 <script> 와 CSP 해시 목록은 그대로이고 onclick 이 없다', () => {
+      const csp = html.match(/script-src[^;]*/)[0];
+      expect(count(csp, /sha256-/g)).toBe(2);
+      expect(csp).toContain("'sha256-OesehxV/0tdfNHpD6TWq3YItSgoeYKUmPJGY6PB4dR8='");
+      expect(csp).toContain("'sha256-/WGcFxaHaUaoelBDNfGA8QWSV4j8JyQyTqZhCa0Kx8k='");
+      expect(count(html, /<script>/g)).toBe(2);
       expect(html).not.toMatch(/\sonclick=/);
     });
   });

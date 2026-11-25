@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 - Fail-closed is kept and extended: if the base-side lint fails, cannot be parsed, or the base ref is missing, the file is reported as a failure instead of being treated as "0 base errors".
 - PR comment and step summary now show per-file existing/new counts and list only the new errors. `workflow_dispatch` (full / `target_file`) keeps the old absolute-total behaviour because there is no base to compare with.
 
+- **Home (`index.html`) header tabs and mobile menu unified (D4)**: the 7 desktop tabs are replaced by the generated `gnb` marker region (4 primary tabs: 원칙·사전·사례·도구, no current-location tab, no secondary tabs) and the old `#mobileMenu` panel by the shared hamburger drawer (`shared/drawer.css` + `shared/gnb-desktop.css` + `shared/drawer.js`, no `nav.js`). `script.js` loses the mobile-menu code (`openMobileMenu`·`closeMobileMenu`·`toggleMobileMenu`·`setMobileMenuButtonState`·`trapFocus`·`releaseFocus`·`closestIfPossible` and their wiring); drawer open/close is now `drawer.js`. The breakpoint for the home page moves from 768px to 900px, so the tabs are replaced by the hamburger between 769 and 900px too. The external link "KRDS 공식 사이트 ↗" is no longer in the mobile menu (the footer and the body keep the same link). `node scripts/sync-site-nav.js --check` is now 20/20.
+
 ### Added
 
 - Logo accessible name now starts with the visible wordmark: `LOGO.ariaLabel` is `UXW KRDS UX Writing 가이드라인 홈` on all 20 pages (success criterion 2.5.3, Label in Name). `inspectPage` now requires the logo `aria-label` to equal the definition, and `tests/logo-label-in-name.test.js` pins the 11 pages whose visible `K` mark still leaves them unmet (`KNOWN_UNMET`, may only shrink).

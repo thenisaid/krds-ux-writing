@@ -74,93 +74,6 @@ function toggleTheme() {
   });
 })();
 
-function trapFocus(container) {
-  var focusable = Array.prototype.filter.call(
-    container.querySelectorAll('a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])'),
-    function (node) {
-      return !node.hasAttribute('hidden') && node.getAttribute('aria-hidden') !== 'true';
-    }
-  );
-
-  if (!focusable.length) return;
-
-  var first = focusable[0];
-  var last = focusable[focusable.length - 1];
-  container._trapHandler = function (e) {
-    if (e.key !== 'Tab') return;
-    if (e.shiftKey) {
-      if (document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      }
-      return;
-    }
-    if (document.activeElement === last) {
-      e.preventDefault();
-      first.focus();
-    }
-  };
-  container.addEventListener('keydown', container._trapHandler);
-}
-
-function releaseFocus(container) {
-  if (container && container._trapHandler) {
-    container.removeEventListener('keydown', container._trapHandler);
-    container._trapHandler = null;
-  }
-}
-
-function setMobileMenuButtonState(button, isOpen) {
-  if (!button) return;
-
-  button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-  button.setAttribute('aria-label', isOpen ? '메뉴 닫기' : '메뉴 열기');
-}
-
-function openMobileMenu() {
-  var menu = document.getElementById('mobileMenu');
-  var button = document.getElementById('mobileMenuBtn');
-  if (!menu || !button) return;
-
-  menu.classList.add('open');
-  menu.setAttribute('aria-hidden', 'false');
-  setMobileMenuButtonState(button, true);
-  document.body.style.overflow = 'hidden';
-  trapFocus(menu);
-
-  var firstFocusable = menu.querySelector('a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])');
-  if (firstFocusable) firstFocusable.focus();
-}
-
-function closeMobileMenu(restoreFocus) {
-  var menu = document.getElementById('mobileMenu');
-  var button = document.getElementById('mobileMenuBtn');
-  if (!menu || !menu.classList.contains('open')) return;
-
-  releaseFocus(menu);
-  menu.classList.remove('open');
-  menu.setAttribute('aria-hidden', 'true');
-  document.body.style.overflow = '';
-
-  if (restoreFocus !== false && button) {
-    setMobileMenuButtonState(button, false);
-    button.focus();
-  } else if (button) {
-    setMobileMenuButtonState(button, false);
-  }
-}
-
-function toggleMobileMenu() {
-  var menu = document.getElementById('mobileMenu');
-  if (!menu) return;
-
-  if (menu.classList.contains('open')) {
-    closeMobileMenu();
-  } else {
-    openMobileMenu();
-  }
-}
-
 function focusAnchorTarget(target) {
   if (!target) return;
 
@@ -215,10 +128,6 @@ function resolveSamePageAnchorId(link) {
   }
 }
 
-function closestIfPossible(node, selector) {
-  return node && typeof node.closest === 'function' ? node.closest(selector) : null;
-}
-
 function normalizeSearchToken(value) {
   return String(value || '').toLowerCase().replace(/\s+/g, ' ').trim();
 }
@@ -237,10 +146,6 @@ function setHiddenState(element, hidden) {
 function initAnchorLinks() {
   document.querySelectorAll('a[href]').forEach(function (link) {
     link.addEventListener('click', function (e) {
-      if (link.classList.contains('mobile-menu-link') || link.classList.contains('mobile-menu-item')) {
-        return;
-      }
-
       var id = resolveSamePageAnchorId(link);
       if (!id) return;
 
@@ -370,44 +275,6 @@ function initInlineHandlers() {
   if (themeToggleBtn) {
     themeToggleBtn.addEventListener('click', toggleTheme);
   }
-
-  var mobileMenuBtn = document.getElementById('mobileMenuBtn');
-  if (mobileMenuBtn) {
-    mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-  }
-
-  var mobileMenu = document.getElementById('mobileMenu');
-  if (mobileMenu) {
-    mobileMenu.addEventListener('click', function (e) {
-      var item = closestIfPossible(e.target, '.mobile-menu-item, .mobile-menu-link');
-      if (!item) return;
-
-      var samePageTargetId = resolveSamePageAnchorId(item);
-      if (samePageTargetId) {
-        var target = document.getElementById(samePageTargetId);
-        if (target) {
-          e.preventDefault();
-          closeMobileMenu(false);
-          focusAnchorTarget(target);
-          return;
-        }
-      }
-
-      closeMobileMenu();
-    });
-  }
-}
-
-document.addEventListener('keydown', function (e) {
-  if (e.key === 'Escape') closeMobileMenu();
-});
-
-if (typeof window.addEventListener === 'function') {
-  window.addEventListener('resize', function () {
-    if (window.innerWidth > 900) {
-      closeMobileMenu(false);
-    }
-  });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
