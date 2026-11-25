@@ -117,6 +117,12 @@ describe('nav-definition: 정의 자체 검증 (즉시 강제)', () => {
     expect(NAV.LOGO.ariaLabel.length).toBeGreaterThan(0);
   });
 
+  it('로고 접근성 이름은 보이는 글자 UXW 로 시작하고 기존 문구를 포함한다 (WCAG 2.5.3)', () => {
+    expect(NAV.LOGO.ariaLabel.startsWith('UXW')).toBe(true);
+    expect(NAV.LOGO.ariaLabel).toContain('KRDS UX Writing 가이드라인 홈');
+    expect(NAV.LOGO.ariaLabel).toBe('UXW KRDS UX Writing 가이드라인 홈');
+  });
+
   it('권고 배치: 코퍼스는 사전 하위, 이슈 아카이브는 사례 하위 2차 탭', () => {
     expect(NAV.SECONDARY_TABS.dictionary.map((s) => s.id)).toContain('corpus');
     expect(NAV.SECONDARY_TABS['case-studies'].map((s) => s.id)).toContain('archive');
