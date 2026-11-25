@@ -297,3 +297,51 @@ describe('index.html 헤더 (D4)', () => {
     expect(inline).toMatch(/@media print\s*\{\s*\.gnb \{ display: none; \}/);
   });
 });
+
+// before-after.html: 일반(비현재) 탭 글자 대비 4.5:1. 헤더 합성 배경(오프화이트)에서 --text-muted(#6d7882)는 4.25:1 이라
+// 헤더 탭 전용 변수 --g-muted 만 라이트에서 gray-60 으로 덮는다. 대비 수치는 합성 배경이 있어야 정확하므로
+// 브라우저(Playwright)에서 재고, 여기서는 규칙의 존재·범위·--text-muted 불변만 고정한다.
+describe('before-after.html 헤더 일반 탭 대비', () => {
+  const html = read('before-after.html');
+  const inline = (html.match(/<style\b[^>]*>[\s\S]*?<\/style>/gi) || []).join('\n').replace(/\/\*[\s\S]*?\*\//g, '');
+  // @media (min-width: 901px) { … } 블록 본문(중괄호 균형으로 추출)
+  const mediaBodies = [];
+  for (const m of inline.matchAll(/@media\s*\(\s*min-width:\s*901px\s*\)\s*\{/g)) {
+    let depth = 1;
+    let i = m.index + m[0].length;
+    const start = i;
+    while (i < inline.length && depth > 0) {
+      if (inline[i] === '{') depth += 1;
+      else if (inline[i] === '}') depth -= 1;
+      i += 1;
+    }
+    mediaBodies.push(inline.slice(start, i - 1));
+  }
+  const media = mediaBodies.join('\n');
+
+  it('min-width: 901px 안에서 header.gnb 의 --g-muted 를 더 진한 gray-60 으로 덮는다(.gnb 단독은 gnb-desktop.css 에 진다)', () => {
+    expect(media).toMatch(/header\.gnb\s*\{\s*--g-muted:\s*var\(--color-gray-60\)\s*;?\s*\}/);
+    expect(inline).toMatch(/--color-gray-60:\s*#58616a/);
+  });
+  it('다크는 기존 값(--text-muted)을 그대로 쓴다 — 다크 대비가 내려가지 않는다', () => {
+    expect(media).toMatch(/\[data-theme="dark"\]\s+header\.gnb\s*\{\s*--g-muted:\s*var\(--text-muted\)\s*;?\s*\}/);
+  });
+  it('1차 탭도 같은 변수를 읽는다: 901px 안에서 .gnb-nav-link { color: var(--g-muted) } (명시도 0,1,0 이라 :hover·[aria-current] 색을 덮지 않는다)', () => {
+    expect(media).toMatch(/(?:^|[}\s])\.gnb-nav-link\s*\{\s*color:\s*var\(--g-muted\)\s*;?\s*\}/);
+  });
+  it('--g-muted 덮어쓰기는 모두 min-width: 901px 안에만 있다(모바일·최상위에 새지 않는다)', () => {
+    const outside = inline.replace(media, '');
+    expect(outside).not.toMatch(/--g-muted\s*:/);
+    expect((inline.match(/--g-muted\s*:/g) || []).length).toBe(2);
+  });
+  it('--text-muted 값은 건드리지 않았다(본문 .page-hero-desc 등이 계속 gray-50 / 다크 gray-40 을 쓴다)', () => {
+    expect(inline).toMatch(/:root\s*\{[^}]*--text-muted:\s*var\(--color-gray-50\)/);
+    expect(inline).toMatch(/\[data-theme="dark"\]\s*\{[^}]*--text-muted:\s*var\(--color-gray-40\)/);
+    expect(inline).toMatch(/--color-gray-50:\s*#6d7882/);
+    expect(inline).toMatch(/--color-gray-40:\s*#8a949e/);
+    expect((inline.match(/--text-muted\s*:/g) || []).length).toBe(2);
+  });
+  it('공유 gnb-desktop.css 는 이 페이지의 인라인 <style> 뒤에 링크된다(그래서 명시도를 높였다)', () => {
+    expect(html.indexOf('</style>')).toBeLessThan(html.indexOf('shared/gnb-desktop.css'));
+  });
+});
